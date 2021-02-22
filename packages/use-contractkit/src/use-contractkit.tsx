@@ -42,6 +42,7 @@ function Kit() {
   }, [kit]);
 
   useEffect(() => {
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network);
     setKit((k) => {
       const existingWallet = k.getWallet();
       if (!existingWallet) {
@@ -52,7 +53,6 @@ function Kit() {
       nk.defaultAccount = existingWallet.getAccounts()[0];
       return nk;
     });
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network);
   }, [network]);
 
   const destroy = useCallback(() => {
@@ -66,18 +66,29 @@ function Kit() {
     setKit(k);
   }, []);
 
-  const send = useCallback(async (tx: CeloTransactionObject<any>) => {
-    if (!kit.defaultAccount) {
-      setModalIsOpen(true);
-      return;
-    }
+  const send = useCallback(
+    async (tx: CeloTransactionObject<any>) => {
+      if (!kit.defaultAccount) {
+        setModalIsOpen(true);
+        return;
+      }
 
-    await tx.sendAndWaitForReceipt();
-  }, []);
+      try {
+        await tx.sendAndWaitForReceipt();
+        console.log('sent!');
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [kit]
+  );
 
   return {
     network,
-    updateNetwork: setNetwork,
+    updateNetwork: (n: any) => {
+      console.log('update', n);
+      setNetwork(n);
+    },
     fornoUrl: getFornoUrl(network),
 
     address,

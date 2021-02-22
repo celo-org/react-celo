@@ -162,7 +162,7 @@ export function Modal({
             })}
       >
         <div className="use-ck">
-          <div className="rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-900 px-5 py-3">
+          <div className="rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-900 px-5 py-3 w-80 md:w-96">
             {component}
           </div>
         </div>

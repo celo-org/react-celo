@@ -29,7 +29,7 @@ export default function Home() {
     updateNetwork,
     openModal,
     destroy,
-    requireConnected,
+    send,
   } = useContractKit();
   const [summary, setSummary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
@@ -58,24 +58,19 @@ export default function Home() {
   }, [address]);
 
   const sendTestTransaction = async () => {
-    if (!kit.defaultAccount) {
-      openModal();
-      return;
-    }
-
     setSending(true);
     const celo = await kit.contracts.getGoldToken();
-    await celo
-      // impact market contract
-      .transfer(
-        '0x73D20479390E1acdB243570b5B739655989412f5',
-        Web3.utils.toWei('0.01', 'ether')
-      )
-      .sendAndWaitForReceipt();
+    await send(
+      celo
+        // impact market contract
+        .transfer(
+          '0x73D20479390E1acdB243570b5B739655989412f5',
+          Web3.utils.toWei('0.001', 'ether')
+        )
+    );
 
     fetchSummary();
     setSending(false);
-    console.log('Sent!');
   };
 
   useEffect(() => {
@@ -111,7 +106,7 @@ export default function Home() {
           network.
         </div>
 
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="mb-2 text-lg">Find it on:</div>
           <ul className="list-disc list-inside">
             <li>
@@ -135,7 +130,7 @@ export default function Home() {
           </ul>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="mb-2 text-lg">Used by:</div>
           <ul className="list-disc list-inside">
             <li>
@@ -159,7 +154,7 @@ export default function Home() {
           </ul>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="mb-2 text-lg">Try it out</div>
           <div className="text-gray-600 mb-4">
             Connect to your wallet of choice and send a test transaction
@@ -172,7 +167,9 @@ export default function Home() {
                 onChange={(e) => updateNetwork(e.target.value as Networks)}
               >
                 {Object.values(Networks).map((n) => (
-                  <option>{n}</option>
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
                 ))}
               </select>
               {address ? (
@@ -243,10 +240,10 @@ export default function Home() {
                 <div className="flex items-center space-x-4">
                   <div>
                     <div className="text-lg font-bold mb-2 text-gray-900">
-                      Send a test transaction
+                      Send test transaction
                     </div>
                     <p className="text-gray-600 text-sm">
-                      Will donate 0.01 CELO to{' '}
+                      Will donate 0.001 CELO to{' '}
                       <a
                         href="https://impactmarket.com/"
                         className="underline"

@@ -60,7 +60,7 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
   async loadAccountSigners(): Promise<Map<string, DappKitSigner>> {
     const addressToSigner = new Map<string, DappKitSigner>();
 
-    const requestId = `login-${Math.random()}`;
+    const requestId = `login-${(Math.random() * 100).toString().slice(0, 6)}`;
     requestAccountAddress({
       requestId,
       dappName: this.dappName,
@@ -90,7 +90,9 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
       throw new Error('Must call setKit before using dappKit wallet');
     }
 
-    const requestId = `signTransaction-${Math.random()}`;
+    const requestId = `signTransaction-${(Math.random() * 100)
+      .toString()
+      .slice(0, 6)}`;
     requestTxSig(this.kit, [txParams], {
       requestId,
       dappName: this.dappName,
@@ -98,8 +100,8 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
     });
 
     const dappkitResponse = await waitForSignedTxs(requestId);
-    const tx = dappkitResponse.rawTxs[0];
+    const raw = dappkitResponse.rawTxs[0];
 
-    return tx;
+    return { raw };
   }
 }
