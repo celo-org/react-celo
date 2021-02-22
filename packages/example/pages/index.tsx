@@ -90,7 +90,7 @@ export default function Home() {
       </Head>
 
       <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
-        <div className="font-medium text-2xl">use-contractkit</div>
+        <div className="font-semibold text-2xl">use-contractkit</div>
         <div className="text-gray-600 mt-2">
           A{' '}
           <a
@@ -112,7 +112,7 @@ export default function Home() {
         </div>
 
         <div className="mt-8">
-          <div className="text-xl mb-2">Find it on:</div>
+          <div className="mb-2 text-lg">Find it on:</div>
           <ul className="list-disc list-inside">
             <li>
               <a
@@ -136,7 +136,7 @@ export default function Home() {
         </div>
 
         <div className="mt-8">
-          <div className="text-xl mb-2">Used by:</div>
+          <div className="mb-2 text-lg">Used by:</div>
           <ul className="list-disc list-inside">
             <li>
               <a
@@ -144,7 +144,7 @@ export default function Home() {
                 className="text-blue-500"
                 href="https://celo-dapp.vercel.app"
               >
-                Celo Home
+                Celo Tools
               </a>
             </li>
             <li>
@@ -160,7 +160,10 @@ export default function Home() {
         </div>
 
         <div className="mt-8">
-          <div className="text-xl mb-4">Demo</div>
+          <div className="mb-2 text-lg">Try it out</div>
+          <div className="text-gray-600 mb-4">
+            Connect to your wallet of choice and send a test transaction
+          </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center space-x-8 mb-4">
               <select
@@ -188,7 +191,7 @@ export default function Home() {
                 </button>
               )}
             </div>
-            {address ? (
+            {address && (
               <div className="w-64 md:w-96 space-y-4 text-gray-700">
                 <div className="mb-4">
                   <div className="text-lg font-bold mb-2 text-gray-900">
@@ -268,8 +271,6 @@ export default function Home() {
                   )}
                 </div>
               </div>
-            ) : (
-              <span className="text-gray-500">No account connected</span>
             )}
           </div>
         </div>

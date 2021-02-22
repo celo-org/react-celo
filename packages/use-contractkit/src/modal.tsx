@@ -55,7 +55,7 @@ const providers: Provider[] = [
 function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
   return (
     <div
-      className="flex cursor-pointer border-b last:border-b-0 border-gray-300 dark:border-gray-700 py-5 px-4"
+      className="flex cursor-pointer py-5 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition rounded-md"
       onClick={provider.onClick}
     >
       <div className="flex w-1/4">
@@ -71,8 +71,10 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
           )}
         </span>
       </div>
-      <div className="w-3/4" style={{ width: '75%' }}>
-        <div className="text-lg pb-1 font-medium">{provider.name}</div>
+      <div className="w-3/4">
+        <div className="text-lg pb-1 font-medium dark:text-gray-300">
+          {provider.name}
+        </div>
         <div className="text-sm text-gray-600 dark:text-gray-400">
           {provider.description}
         </div>

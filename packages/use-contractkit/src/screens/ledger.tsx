@@ -35,7 +35,9 @@ export const Ledger: FunctionComponent<any> = ({
           </div>
 
           <div className="flex flex-col">
-            <div className="text-lg mb-1">Ledger Connect</div>
+            <div className="text-lg mb-1 font-medium dark:text-gray-200">
+              Ledger Connect
+            </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Securely connect Celo Manager to your ledger device. Before
               proceeding, please ensure you have:

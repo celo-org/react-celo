@@ -1,4 +1,5 @@
 import { ContractKit, newKit } from '@celo/contractkit';
+import { CeloTransactionObject } from '@celo/connect';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
@@ -65,11 +66,14 @@ function Kit() {
     setKit(k);
   }, []);
 
-  const requireConnected = useCallback(() => {
+  const send = useCallback(async (tx: CeloTransactionObject<any>) => {
     if (!kit.defaultAccount) {
       setModalIsOpen(true);
+      return;
     }
-  }, [kit]);
+
+    await tx.sendAndWaitForReceipt();
+  }, []);
 
   return {
     network,
@@ -79,7 +83,8 @@ function Kit() {
     address,
     kit,
     destroy,
-    requireConnected,
+
+    send,
 
     updateKit,
 
