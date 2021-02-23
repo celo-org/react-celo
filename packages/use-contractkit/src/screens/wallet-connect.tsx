@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 
 // import { Client } from '@walletconnect/client';
-import { WalletConnectWallet } from 'contractkit-walletconnect';
+// import { WalletConnectWallet } from 'contractkit-walletconnect';
 import QrCode from 'qrcode.react';
 import Loader from 'react-loader-spinner';
 import { CopyText } from '../components';
@@ -12,7 +12,7 @@ export function WalletConnect({ onSubmit }: { onSubmit: (w: any) => void }) {
 
   useEffect(() => {
     async function f() {
-      // const { WalletConnectWallet } = await import('contractkit-walletconnect');
+      const { WalletConnectWallet } = await import('contractkit-walletconnect');
       const wallet = new WalletConnectWallet({
         connect: {
           metadata: {
