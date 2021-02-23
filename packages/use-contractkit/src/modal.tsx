@@ -55,11 +55,11 @@ const providers: Provider[] = [
 function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
   return (
     <div
-      className="flex cursor-pointer py-5 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition rounded-md"
+      className="tw-flex tw-cursor-pointer tw-py-5 tw-px-4 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-transition tw-rounded-md"
       onClick={provider.onClick}
     >
-      <div className="flex w-1/4">
-        <span className="my-auto">
+      <div className="tw-flex tw-w-1/4">
+        <span className="tw-my-auto">
           {typeof provider.image === 'string' ? (
             <img
               src={provider.image}
@@ -71,11 +71,11 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
           )}
         </span>
       </div>
-      <div className="w-3/4">
-        <div className="text-lg pb-1 font-medium dark:text-gray-300">
+      <div className="tw-w-3/4">
+        <div className="tw-text-lg tw-pb-1 tw-font-medium dark:tw-text-gray-300">
           {provider.name}
         </div>
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400">
           {provider.description}
         </div>
       </div>
@@ -162,7 +162,7 @@ export function Modal({
             })}
       >
         <div className="use-ck">
-          <div className="rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-900 px-5 py-3 w-80 md:w-96">
+          <div className="tw-rounded-lg tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-px-5 tw-py-3 tw-w-80 md:tw-w-96">
             {component}
           </div>
         </div>

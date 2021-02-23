@@ -22,10 +22,10 @@ export const Ledger: FunctionComponent<any> = ({
   };
 
   return (
-    <div className="p-2">
+    <div className="tw-p-2">
       <div>
-        <div className="flex">
-          <div className="mr-4">
+        <div className="tw-flex">
+          <div className="tw-mr-4">
             <img
               src={
                 'https://www.ledger.com/wp-content/uploads/2020/02/puce_blue.png'
@@ -34,14 +34,14 @@ export const Ledger: FunctionComponent<any> = ({
             />
           </div>
 
-          <div className="flex flex-col">
-            <div className="text-lg mb-1 font-medium dark:text-gray-200">
+          <div className="tw-flex tw-flex-col">
+            <div className="tw-text-lg tw-mb-1 tw-font-medium dark:tw-text-gray-200">
               Ledger Connect
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="tw-text-sm tw-text-gray-600 tw-dark:text-gray-400">
               Securely connect Celo Manager to your ledger device. Before
               proceeding, please ensure you have:
-              <ul className="list-disc list-inside mt-2">
+              <ul className="tw-list-disc tw-list-inside tw-mt-2">
                 <li>Connected your Ledger (via USB)</li>
                 <li>Unlocked your Ledger</li>
                 <li>
@@ -68,7 +68,7 @@ export const Ledger: FunctionComponent<any> = ({
               </p>
             )}
             <button
-              className="mt-4 px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              className="tw-mt-4 tw-px-4 tw-py-2 tw-border tw-border-transparent tw-rounded-md tw-shadow-sm tw-text-base tw-font-medium tw-text-white tw-bg-gradient-to-r tw-from-purple-600 tw-to-indigo-600 hover:tw-from-purple-700 hover:tw-to-indigo-700"
               onClick={submit}
             >
               {submitting ? (

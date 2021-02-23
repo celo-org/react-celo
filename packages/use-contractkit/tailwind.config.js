@@ -1,4 +1,5 @@
 module.exports = {
+  prefix: 'tw-',
   important: true,
   purge: ['./src/**/*.{js,jsx,tsx}'],
   darkMode: 'media',
