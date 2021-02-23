@@ -5,7 +5,7 @@
   "scripts": {
     "build-styles": "NODE_ENV=production yarn tailwind build ./src/styles.css -o ./lib/styles.css -c ./tailwind.config.js",
     "build": "tsc -b && yarn run build-styles",
-    "dev": "tsc-watch --onSuccess \"yarn run build-styles\""
+    "dev": "yarn run build && tsc-watch --onSuccess \"yarn run build-styles\""
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

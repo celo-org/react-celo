@@ -16,16 +16,12 @@ export function CopyText({ text, payload }: { text: string; payload: string }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        color: '#6B7280',
-      }}
+      className="tw-flex tw-items-center tw-text-gray-700 dark:tw-text-gray-400"
     >
-      <span style={{ marginRight: '0.5em' }}>{text}</span>
+      <span className="tw-mr-2">{text}</span>
       {copied ? (
         <svg
-          style={{ height: '1.5em', width: '1.5em' }}
+          className="tw-h-4 tw-w-4 tw-text-green-500"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -40,7 +36,7 @@ export function CopyText({ text, payload }: { text: string; payload: string }) {
         </svg>
       ) : (
         <svg
-          style={{ height: '1.5em', width: '1.5em' }}
+          className="tw-h-4 tw-w-4"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

@@ -34,6 +34,7 @@ const providers: Provider[] = [
     description: 'Enter a plaintext private key to load your account',
     image: (
       <svg
+        className="dark:tw-text-gray-300"
         style={{ height: '24px', width: '24px' }}
         aria-hidden="true"
         focusable="false"
@@ -163,9 +164,28 @@ export function Modal({
                 'tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0',
             })}
       >
-        <div className="use-ck">
-          <div className="tw-rounded-lg tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-px-5 tw-py-3 tw-w-80 md:tw-w-96">
-            {component}
+        <div className="use-ck tw-max-h-screen">
+          <div className="tw-relative tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-w-80 md:tw-w-96">
+            <button
+              onClick={closeModal}
+              className="tw-absolute tw-top-4 tw-right-4 tw-text-gray-700 dark:tw-text-gray-400 hover:tw-text-gray-800 dark:hover:tw-text-gray-300 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-p-3 rounded-full"
+            >
+              <svg
+                className="tw-h-5 tw-w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>{' '}
+            </button>
+            <div className="tw-rounded-b-lg tw-px-5 tw-py-6">{component}</div>
           </div>
         </div>
       </ReactModal>
