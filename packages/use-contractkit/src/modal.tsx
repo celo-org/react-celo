@@ -159,6 +159,8 @@ export function Modal({
                   padding: 'unset',
                 },
               },
+              overlayClassName:
+                'tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0',
             })}
       >
         <div className="use-ck">

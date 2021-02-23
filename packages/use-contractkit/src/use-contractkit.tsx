@@ -20,7 +20,7 @@ const lastUsedAddress =
 function Kit() {
   const [address, setAddress] = useState(lastUsedAddress);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [network, setNetwork] = useState(lastUsedNetwork);
+  const [network, updateNetwork] = useState(lastUsedNetwork);
 
   const savedPrivateKey =
     typeof localStorage !== 'undefined' &&
@@ -67,28 +67,24 @@ function Kit() {
   }, []);
 
   const send = useCallback(
-    async (tx: CeloTransactionObject<any>) => {
+    async (
+      tx: CeloTransactionObject<any> | CeloTransactionObject<any>[],
+      sendOpts?: any
+    ) => {
       if (!kit.defaultAccount) {
         setModalIsOpen(true);
         return;
       }
 
-      try {
-        await tx.sendAndWaitForReceipt();
-        console.log('sent!');
-      } catch (e) {
-        console.log(e);
-      }
+      const txs = Array.isArray(tx) ? tx : [tx];
+      await Promise.all(txs.map((t) => t.sendAndWaitForReceipt(sendOpts)));
     },
     [kit]
   );
 
   return {
     network,
-    updateNetwork: (n: any) => {
-      console.log('update', n);
-      setNetwork(n);
-    },
+    updateNetwork,
     fornoUrl: getFornoUrl(network),
 
     address,
