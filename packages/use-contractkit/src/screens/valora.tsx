@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 
 export const Valora: FunctionComponent<any> = ({
   onSubmit,

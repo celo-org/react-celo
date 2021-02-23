@@ -113,7 +113,7 @@ export default function Home() {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://www.npmjs.com/settings/alexbh/packages"
+                href="https://www.npmjs.com/package/use-contractkit"
               >
                 NPM
               </a>

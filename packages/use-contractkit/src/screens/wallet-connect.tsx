@@ -1,7 +1,8 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 
-// import { WalletConnectWallet } from 'contractkit-walletconnect';
+// import { Client } from '@walletconnect/client';
+import { WalletConnectWallet } from 'contractkit-walletconnect';
 import QrCode from 'qrcode.react';
 import Loader from 'react-loader-spinner';
 import { CopyText } from '../components';
@@ -11,20 +12,23 @@ export function WalletConnect({ onSubmit }: { onSubmit: (w: any) => void }) {
 
   useEffect(() => {
     async function f() {
-      // const wallet = new WalletConnectWallet({
-      //   metadata: {
-      //     name: 'test',
-      //     description: 'test',
-      //     icons  : [],
-      //     url: 'https://example.com',
-      //   },
-      //   options: {
-      //     relayProvider: 'wss://bridge.walletconnect.org',
-      //   },
-      // });
-      // setUri(await wallet.getUri());
-      // await wallet.init();
-      // onSubmit(wallet);
+      // const { WalletConnectWallet } = await import('contractkit-walletconnect');
+      const wallet = new WalletConnectWallet({
+        connect: {
+          metadata: {
+            name: 'use-contractkit demo',
+            description: 'A showcase of use-contractkit',
+            url: 'https://use-contractkit.vercel.app',
+            icons: [],
+          },
+        },
+        init: {
+          relayProvider: 'wss://bridge.walletconnect.org',
+        },
+      });
+      setUri(await wallet.getUri());
+      await wallet.init();
+      onSubmit(wallet);
     }
     f();
   }, []);

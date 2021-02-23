@@ -12,6 +12,8 @@
   "files": [
     "lib"
   ],
+  "homepage": "https://use-contractkit.vercel.app",
+  "readme": "../../readme.md",
   "license": "MIT",
   "dependencies": {
     "@celo/contractkit": "^1.0.2",
@@ -22,6 +24,7 @@
     "@types/react-modal": "^3.12.0",
     "@walletconnect/client": "2.0.0-alpha.26",
     "autoprefixer": "^10.2.4",
+    "contractkit-walletconnect": "^0.0.3",
     "postcss": "^8.2.6",
     "qrcode.react": "^1.0.1",
     "react-loader-spinner": "^4.0.0",
