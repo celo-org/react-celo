@@ -133,7 +133,7 @@ export async function requestTxSig(
         txData: txParam.data, // Valora expects this
         estimatedGas,
         nonce: baseNonce + index,
-        feeCurrencyAddress: feeCurrencyContractAddress,
+        feeCurrencyAddress: undefined,
         value,
         ...txParam,
       };

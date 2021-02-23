@@ -7,7 +7,7 @@ export const Valora: FunctionComponent<any> = ({
 }) => {
   return (
     <div className="tw-p-2">
-      <div className="tw-text-lg tw-dark:text-gray-200 tw-font-medium">
+      <div className="tw-text-lg dark:tw-text-gray-200 tw-font-medium">
         Valora Connect
       </div>
       <div className="tw-text-gray-600 dark:tw-text-gray-400 tw-text-sm tw-mt-2">
