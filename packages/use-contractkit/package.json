@@ -1,6 +1,6 @@
 {
   "name": "use-contractkit",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "private": false,
   "scripts": {
     "build-styles": "NODE_ENV=production yarn tailwind build ./src/styles.css -o ./lib/styles.css -c ./tailwind.config.js",
