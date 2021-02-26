@@ -2,7 +2,10 @@ import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import { Networks, useContractKit } from 'use-contractkit';
+import { ensureLeading0x } from '@celo/utils/lib/address';
 import Web3 from 'web3';
+import { SecondaryButton, PrimaryButton, toast } from '../components';
+import { TYPED_DATA } from '../utils';
 
 const defaultSummary = {
   name: '',
@@ -31,6 +34,7 @@ export default function Home() {
     destroy,
     send,
   } = useContractKit();
+
   const [summary, setSummary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
 
@@ -57,19 +61,64 @@ export default function Home() {
     });
   }, [address]);
 
-  const sendTestTransaction = async () => {
+  const testSendTransaction = async () => {
     setSending(true);
     const celo = await kit.contracts.getGoldToken();
-    await send(
-      celo
-        // impact market contract
-        .transfer(
-          '0x73D20479390E1acdB243570b5B739655989412f5',
-          Web3.utils.toWei('0.001', 'ether')
-        )
-    );
 
-    fetchSummary();
+    try {
+      await send(
+        celo
+          // impact market contract
+          .transfer(
+            '0x73D20479390E1acdB243570b5B739655989412f5',
+            Web3.utils.toWei('0.00000001', 'ether')
+          )
+      );
+
+      fetchSummary();
+    } catch (e) {
+      toast.error(e.message);
+    }
+
+    setSending(false);
+  };
+
+  const testSignTypedData = async () => {
+    if (!kit.defaultAccount) {
+      openModal();
+      return;
+    }
+
+    setSending(true);
+    try {
+      await kit.signTypedData(kit.defaultAccount, TYPED_DATA);
+      toast.success('signTypedData succeeded');
+    } catch (e) {
+      toast.error(e.message);
+    }
+
+    setSending(false);
+  };
+
+  const testSignPersonal = async () => {
+    if (!kit.defaultAccount) {
+      openModal();
+      return;
+    }
+
+    setSending(true);
+    try {
+      await kit
+        .getWallet()
+        .signPersonalMessage(
+          kit.defaultAccount,
+          ensureLeading0x(Buffer.from('Hello').toString('hex'))
+        );
+      toast.success('sign_personal succeeded');
+    } catch (e) {
+      toast.error(e.message);
+    }
+
     setSending(false);
   };
 
@@ -101,7 +150,28 @@ export default function Home() {
             target="_blank"
             style={{ color: 'rgba(53,208,127,1.00)' }}
           >
-            Celo
+            Celo{' '}
+            <svg
+              data-name="Celo Rings"
+              viewBox="0 0 950 950"
+              className="inline h-4 w-4 mb-1"
+            >
+              <path
+                data-name="Top Ring"
+                d="M575 650c151.88 0 275-123.12 275-275S726.88 100 575 100 300 223.12 300 375s123.12 275 275 275zm0 100c-207.1 0-375-167.9-375-375S367.9 0 575 0s375 167.9 375 375-167.9 375-375 375z"
+                fill="#35d07f"
+              />
+              <path
+                data-name="Bottom Ring"
+                d="M375 850c151.88 0 275-123.12 275-275S526.88 300 375 300 100 423.12 100 575s123.12 275 275 275zm0 100C167.9 950 0 782.1 0 575s167.9-375 375-375 375 167.9 375 375-167.9 375-375 375z"
+                fill="#fbcc5c"
+              />
+              <path
+                data-name="Rings Overlap"
+                d="M587.39 750a274.38 274.38 0 0054.55-108.06A274.36 274.36 0 00750 587.4a373.63 373.63 0 01-29.16 133.45A373.62 373.62 0 01587.39 750zM308.06 308.06A274.36 274.36 0 00200 362.6a373.63 373.63 0 0129.16-133.45A373.62 373.62 0 01362.61 200a274.38 274.38 0 00-54.55 108.06z"
+                fill="#ecff8f"
+              />
+            </svg>
           </a>{' '}
           network.
         </div>
@@ -157,7 +227,8 @@ export default function Home() {
         <div className="mt-6">
           <div className="mb-2 text-lg">Try it out</div>
           <div className="text-gray-600 mb-4">
-            Connect to your wallet of choice and send a test transaction
+            Connect to your wallet of choice and sign something for send a test
+            transaction
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center space-x-8 mb-4">
@@ -173,21 +244,33 @@ export default function Home() {
                 ))}
               </select>
               {address ? (
-                <button
-                  onClick={destroy}
-                  className="px-4 py-2 border border-transparent text-base font-medium text-gradient bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 outline-none focus:outline-none"
-                >
-                  Disconnect
-                </button>
+                <SecondaryButton onClick={destroy}>Disconnect</SecondaryButton>
               ) : (
-                <button
-                  onClick={openModal}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-                >
-                  Connect
-                </button>
+                <SecondaryButton onClick={openModal}>Connect</SecondaryButton>
               )}
             </div>
+
+            <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
+              <PrimaryButton
+                onClick={testSendTransaction}
+                className="w-full md:w-max"
+              >
+                Test sendTransaction
+              </PrimaryButton>
+              <PrimaryButton
+                onClick={testSignTypedData}
+                className="w-full md:w-max"
+              >
+                Test signTypedData
+              </PrimaryButton>
+              <PrimaryButton
+                onClick={testSignPersonal}
+                className="w-full md:w-max"
+              >
+                Test sign_personal
+              </PrimaryButton>
+            </div>
+
             {address && (
               <div className="w-64 md:w-96 space-y-4 text-gray-700">
                 <div className="mb-4">
@@ -196,11 +279,12 @@ export default function Home() {
                   </div>
                   <div className="space-y-2">
                     <div>Name: {summary.name || 'Not set'}</div>
+                    <div className="">Address: {truncateAddress(address)}</div>
                     <div className="">
-                      Address: {truncateAddress(summary.address)}
-                    </div>
-                    <div className="">
-                      Wallet: {truncateAddress(summary.wallet)}
+                      Wallet:{' '}
+                      {summary.wallet
+                        ? truncateAddress(summary.wallet)
+                        : 'Not set'}
                     </div>
 
                     <div>
@@ -235,37 +319,6 @@ export default function Home() {
                     </div>
                     <div>cEUR: 0.00</div>
                   </div>
-                </div>
-
-                <div className="flex items-center space-x-4">
-                  <div>
-                    <div className="text-lg font-bold mb-2 text-gray-900">
-                      Send test transaction
-                    </div>
-                    <p className="text-gray-600 text-sm">
-                      Will donate 0.001 CELO to{' '}
-                      <a
-                        href="https://impactmarket.com/"
-                        className="underline"
-                        target="_blank"
-                      >
-                        Impact Market
-                      </a>
-                    </p>
-                  </div>
-
-                  {sending ? (
-                    <span>
-                      <Loader type="TailSpin" height={'24px'} width="24px" />
-                    </span>
-                  ) : (
-                    <button
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 mt-2 ml-auto"
-                      onClick={sendTestTransaction}
-                    >
-                      Send
-                    </button>
-                  )}
                 </div>
               </div>
             )}

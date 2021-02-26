@@ -1,10 +1,20 @@
 import '../styles/global.css';
 import { ContractKitProvider } from 'use-contractkit';
 import 'use-contractkit/lib/styles.css';
+import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }) {
   return (
     <ContractKitProvider dappName="use-contractkit demo">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          className: 'w-72 md:w-96',
+          style: {
+            padding: '0px',
+          },
+        }}
+      />
       <Component {...pageProps} />
     </ContractKitProvider>
   );

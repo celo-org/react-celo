@@ -35,7 +35,6 @@ if (typeof window !== 'undefined') {
 async function waitForResponse() {
   while (true) {
     const value = localStorage.getItem(localStorageKey);
-    console.log('Poll', value);
     if (value) {
       localStorage.removeItem(localStorageKey);
       return value;
@@ -139,7 +138,6 @@ export async function requestTxSig(
       };
     })
   );
-  console.log(JSON.stringify(txs));
   const request = SignTxRequest(txs, meta);
 
   Linking.openURL(serializeDappKitRequestDeeplink(request));

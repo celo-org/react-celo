@@ -5,28 +5,21 @@ class Linking {
 
   constructor() {
     this.emitter = new EventEmitter();
-
-    console.log('Initialising linking');
   }
 
   emit(event: string, value: any) {
-    console.log('emit', event, JSON.stringify(value));
-    console.log(this.emitter.listenerCount(event), 'listeners found');
     this.emitter.emit(event, value);
   }
 
   addEventListener(event: string, callback: any) {
-    console.log('addEventListener', event, callback);
     this.emitter.on(event, callback);
   }
 
   removeEventListener(event: string, callback: any) {
-    console.log('removeEventListener', event, callback);
     this.emitter.off(event, callback);
   }
 
   openURL(url: string) {
-    console.log(url);
     let ua = navigator.userAgent.toLowerCase();
     let isAndroid = ua.indexOf('android') > -1; // android check
     let isIphone = ua.indexOf('iphone') > -1; // ios check
