@@ -6,7 +6,7 @@ Now your dApp can be made available to everyone in the Celo ecosystem, from Valo
 
 #### Supported wallets
 
-- [x] Private key (for testing)
+- [x] Plaintext private key (for testing)
 - [x] [Ledger](https://www.ledger.com/)
 - [x] [WalletConnect](https://walletconnect.org/)
 - [x] [dAppKit](https://www.dappkit.io/)
