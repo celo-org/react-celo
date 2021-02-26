@@ -8,8 +8,9 @@ Now your dApp can be made available to everyone in the Celo ecosystem, from Valo
 
 - [x] Private key (for testing)
 - [x] [Ledger](https://www.ledger.com/)
-- [ ] [WalletConnect](https://walletconnect.org/)
-- [ ] [dAppKit](https://www.dappkit.io/)
+- [x] [WalletConnect](https://walletconnect.org/)
+- [x] [dAppKit](https://www.dappkit.io/)
+- [ ] Metamask
 
 ## Install
 
@@ -17,7 +18,7 @@ Now your dApp can be made available to everyone in the Celo ecosystem, from Valo
 yarn add use-contractkit
 ```
 
-## Wrap with Context provider
+## Wrap your application with ContractKitProvider
 
 ```javascript
 import { ContractKitProvider } from 'use-contractkit';
@@ -37,6 +38,8 @@ function App() {
 
 ## Prompt users to connect wallet
 
+We provide an `openModal` function that will open a modal with a list of wallets your user can connect to.
+
 ```javascript
 import { useContractKit } from 'use-contractkit';
 
@@ -47,24 +50,73 @@ function App() {
 }
 ```
 
-## Access kit
+## Access ContractKit
+
+Once connected to a wallet the `kit` object will have the `.defaultAccount` property set on it.
 
 ```javascript
 import { useContractKit } from 'use-contractkit';
 
 function App() {
-  const { kit } = useContractKit();
+  const { kit, address } = useContractKit();
 
   // lookup onchain data
-  // const accounts = await kit.contracts.getAccounts();
-  // await accounts.getAccountSummary(kit.defaultAccount);
+  const accounts = await kit.contracts.getAccounts();
+  await accounts.getAccountSummary(address);
 
   // send transaction
-  // const cUSD = await kit.contracts.getStableToken();
-  // await cUSD.transfer("0x...", 10000).sendAndWaitForReceipt();
+  const cUSD = await kit.contracts.getStableToken();
+  await cUSD.transfer("0x...", 10000).sendAndWaitForReceipt();
 
   return (
     ...
   );
 }
+```
+
+## Notes
+
+#### Last connected account
+
+use-contractkit will remember a users last connected address. This is a quality of life improvement that means when a user refreshes their page, nothing in the UI should change other than buttons being grayed out.
+
+To access the last connected or current account always access the account via the following method, not via `kit.defaultAccount`.
+
+```javascript
+import { useContractKit } from 'use-contractkit';
+
+const { address } = useContractKit();
+```
+
+#### Prompt to connect
+
+When calling `sendTransaction`, we provide a helper `send` that will open the connect modal before proceeding if the wallet is not connected. For `sign*` and other methods you should check the `kit.defaultAccount` property before trying an operation.
+
+```javascript
+import { useContractKit } from 'use-contractkit';
+
+function App() {
+  const { kit, send, openModal } = useContractKit();
+
+  // use provided send function to connect account
+  // if it doesn't exist
+  const sendTransaction = async (to, value) => {
+    const cUSD = await kit.contracts.getStableToken();
+    await send(cUSD.transfer("0x...", 10000))
+  }
+
+  // check account manually before trying to sign
+  const sign = async (data) => {
+    if (!kit.defaultAccount) {
+      openModal();
+      return;
+    }
+    await kit.signTypedData(kit.defaultAccount, data)
+  }
+
+  return (
+    ...
+  );
+}
+
 ```
