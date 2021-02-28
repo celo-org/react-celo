@@ -110,6 +110,8 @@ export function Modal({
       kit = await createKit.fromDappKit(network, dappName);
     } else if (adding === SupportedProviders.WalletConnect) {
       kit = await createKit.fromWalletConnect(network, args);
+    } else if (adding === SupportedProviders.MetaMask) {
+      kit = await createKit.fromWeb3(network, args);
     } else {
       throw new Error('Unsupported');
     }
@@ -119,8 +121,8 @@ export function Modal({
   }
 
   const list = (
-    <div className="">
-      {providers.map((p, index) =>
+    <div>
+      {providers.map((p) =>
         (renderProvider || defaultRenderProvider)({
           ...p,
           onClick: () => setAdding(p.name),

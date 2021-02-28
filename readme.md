@@ -10,7 +10,7 @@ Now your dApp can be made available to everyone in the Celo ecosystem, from Valo
 - [x] [Ledger](https://www.ledger.com/)
 - [x] [WalletConnect](https://walletconnect.org/)
 - [x] [dAppKit](https://www.dappkit.io/)
-- [ ] Metamask
+- [x] [Metamask (Celo fork)](https://github.com/dsrvlabs/celo-extension-wallet)
 
 ## Install
 
@@ -78,9 +78,7 @@ function App() {
 
 #### Last connected account
 
-use-contractkit will remember a users last connected address. This is a quality of life improvement that means when a user refreshes their page, nothing in the UI should change other than buttons being grayed out.
-
-To access the last connected or current account always access the account via the following method, not via `kit.defaultAccount`.
+use-contractkit will remember a users last connected address. You should always use this address even if the user has no `kit.defaultAccount` property set. This is a quality of life improvement that ensure than when a user refreshes their page, nothing in the UI should change other than potentially buttons being grayed out.
 
 ```javascript
 import { useContractKit } from 'use-contractkit';

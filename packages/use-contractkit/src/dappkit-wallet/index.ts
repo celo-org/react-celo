@@ -12,8 +12,6 @@ import {
 export class DappKitSigner implements Signer {
   constructor(protected account: string) {}
 
-  init = (privateKey: string, passphrase: string) => {};
-
   async signTransaction(): Promise<{ v: number; r: Buffer; s: Buffer }> {
     throw new Error('signTransaction unimplemented; use signRawTransaction');
   }
@@ -21,6 +19,7 @@ export class DappKitSigner implements Signer {
   async signTypedData(
     typedData: EIP712TypedData
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
+    throw new Error('signTypedData() not supported by DappKit wallet');
     return {
       v: 0,
       r: Buffer.from([]),
@@ -31,6 +30,7 @@ export class DappKitSigner implements Signer {
   async signPersonalMessage(
     data: string
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
+    throw new Error('signPersonalMessage() not supported by DappKit wallet');
     return {
       v: 0,
       r: Buffer.from([]),
@@ -41,11 +41,12 @@ export class DappKitSigner implements Signer {
   getNativeKey = () => this.account;
 
   async decrypt(ciphertext: Buffer) {
+    throw new Error('decrypt() not supported by DappKit wallet');
     return Buffer.from([]);
   }
 
   computeSharedSecret(_publicKey: string) {
-    throw new Error('Not implemented');
+    throw new Error('computeSharedSecret() not supported by DappKit wallet');
     return Promise.resolve(Buffer.from([]));
   }
 }

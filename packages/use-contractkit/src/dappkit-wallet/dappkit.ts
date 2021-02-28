@@ -21,7 +21,7 @@ export {
 } from '@celo/utils';
 
 const localStorageKey = 'use-contractkit/dappkit';
-// hack to get around dappkit issue where new tabs are opened
+// hack to get around deeplinking issue where new tabs are opened
 // and the url hash state is not respected (Note this implementation
 // of dappkit doesn't use URL hashes to always force the newtab experience).
 if (typeof window !== 'undefined') {
@@ -56,7 +56,6 @@ export async function waitForAccountAuth(
     return dappKitResponse;
   }
 
-  console.log('Unable to parse url', url);
   throw new Error('Unable to parse Valora response');
 }
 

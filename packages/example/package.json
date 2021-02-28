@@ -17,6 +17,6 @@
     "react-hot-toast": "^1.0.2",
     "react-loader-spinner": "^4.0.0",
     "tailwindcss": "^2.0.3",
-    "use-contractkit": "file:../use-contractkit"
+    "use-contractkit": "*"
   }
 }

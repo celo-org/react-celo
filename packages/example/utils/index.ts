@@ -20,7 +20,7 @@ export const TYPED_DATA = {
   domain: {
     name: 'Ether Mail',
     version: '1',
-    chainId: 1,
+    chainId: 42220, // Alfajores
     verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
   },
   message: {

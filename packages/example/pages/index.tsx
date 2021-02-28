@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
-import { Networks, useContractKit } from 'use-contractkit';
+import { Networks, useContractKit } from 'use-contractkit/lib';
 import { ensureLeading0x } from '@celo/utils/lib/address';
 import Web3 from 'web3';
 import { SecondaryButton, PrimaryButton, toast } from '../components';
@@ -62,36 +62,38 @@ export default function Home() {
   }, [address]);
 
   const testSendTransaction = async () => {
-    setSending(true);
-    const celo = await kit.contracts.getGoldToken();
-
     try {
-      await send(
-        celo
-          // impact market contract
-          .transfer(
-            '0x73D20479390E1acdB243570b5B739655989412f5',
-            Web3.utils.toWei('0.00000001', 'ether')
-          )
-      );
-
-      fetchSummary();
+      setSending(true);
+      const celo = await kit.contracts.getGoldToken();
+      if (
+        await send(
+          celo
+            // impact market contract
+            .transfer(
+              '0x73D20479390E1acdB243570b5B739655989412f5',
+              Web3.utils.toWei('0.00000001', 'ether')
+            )
+        )
+      ) {
+        toast.success('sendTransaction succeeded');
+        fetchSummary();
+      }
     } catch (e) {
       toast.error(e.message);
+    } finally {
+      setSending(false);
     }
-
-    setSending(false);
   };
 
   const testSignTypedData = async () => {
-    if (!kit.defaultAccount) {
+    if (!address) {
       openModal();
       return;
     }
 
     setSending(true);
     try {
-      await kit.signTypedData(kit.defaultAccount, TYPED_DATA);
+      await kit.signTypedData(address, TYPED_DATA);
       toast.success('signTypedData succeeded');
     } catch (e) {
       toast.error(e.message);
@@ -101,19 +103,17 @@ export default function Home() {
   };
 
   const testSignPersonal = async () => {
-    if (!kit.defaultAccount) {
+    if (!address) {
       openModal();
       return;
     }
 
     setSending(true);
     try {
-      await kit
-        .getWallet()
-        .signPersonalMessage(
-          kit.defaultAccount,
-          ensureLeading0x(Buffer.from('Hello').toString('hex'))
-        );
+      await kit.connection.sign(
+        ensureLeading0x(Buffer.from('Hello').toString('hex')),
+        address
+      );
       toast.success('sign_personal succeeded');
     } catch (e) {
       toast.error(e.message);
@@ -132,6 +132,12 @@ export default function Home() {
         <title>use-contractkit</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      {sending && (
+        <div className="absolute right-4 top-4">
+          <Loader type="TailSpin" color="#FBCC5C" height="36px" width="36px" />
+        </div>
+      )}
 
       <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
         <div className="font-semibold text-2xl">use-contractkit</div>
@@ -252,22 +258,25 @@ export default function Home() {
 
             <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
               <PrimaryButton
+                disabled={sending}
                 onClick={testSendTransaction}
                 className="w-full md:w-max"
               >
                 Test sendTransaction
               </PrimaryButton>
               <PrimaryButton
+                disabled={sending}
                 onClick={testSignTypedData}
                 className="w-full md:w-max"
               >
                 Test signTypedData
               </PrimaryButton>
               <PrimaryButton
+                disabled={sending}
                 onClick={testSignPersonal}
                 className="w-full md:w-max"
               >
-                Test sign_personal
+                Test signPersonal
               </PrimaryButton>
             </div>
 

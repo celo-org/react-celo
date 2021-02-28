@@ -19,6 +19,7 @@ const lastUsedAddress =
 
 function Kit() {
   const [address, setAddress] = useState(lastUsedAddress);
+  const [initialised, setInitialised] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [network, updateNetwork] = useState(lastUsedNetwork);
 
@@ -60,10 +61,12 @@ function Kit() {
     localStorage.removeItem(localStorageKeys.lastUsedAddress);
     setAddress('');
     setKit(newKit(getFornoUrl(network)));
+    setInitialised(false);
   }, [network]);
 
   const updateKit = useCallback((k: ContractKit) => {
     setKit(k);
+    setInitialised(true);
   }, []);
 
   const send = useCallback(
@@ -71,15 +74,27 @@ function Kit() {
       tx: CeloTransactionObject<any> | CeloTransactionObject<any>[],
       sendOpts?: any
     ) => {
-      if (!kit.defaultAccount) {
+      if (!initialised) {
         setModalIsOpen(true);
         return;
       }
 
+      const gasPriceMinimumContract = await kit.contracts.getGasPriceMinimum();
+      const minGasPrice = await gasPriceMinimumContract.gasPriceMinimum();
+      const gasPrice = minGasPrice.times(1.5);
+
       const txs = Array.isArray(tx) ? tx : [tx];
-      await Promise.all(txs.map((t) => t.sendAndWaitForReceipt(sendOpts)));
+      return Promise.all(
+        txs.map((t) => {
+          return t.sendAndWaitForReceipt({
+            ...sendOpts,
+            from: address,
+            gasPrice,
+          });
+        })
+      );
     },
-    [kit]
+    [kit, address, initialised]
   );
 
   return {

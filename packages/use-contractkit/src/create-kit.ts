@@ -4,8 +4,9 @@ import { Networks } from './types';
 import TransportUSB from '@ledgerhq/hw-transport-webusb';
 import { getFornoUrl, localStorageKeys } from './constants';
 import { LocalWallet } from '@celo/wallet-local';
-import { newKit } from '@celo/contractkit';
-// import { WalletConnectWallet } from 'contractkit-walletconnect';
+import { newKit, newKitFromWeb3 } from '@celo/contractkit';
+import { MetamaskWallet } from './metamask-wallet';
+import Web3 from 'web3';
 
 export const fromPrivateKey = (n: Networks, privateKey: string) => {
   localStorage.setItem(localStorageKeys.privateKey, privateKey);
@@ -55,5 +56,13 @@ export const fromWalletConnect = async (
   const [account] = w.getAccounts();
   const kit = newKit(getFornoUrl(n), w);
   kit.defaultAccount = account;
+  return kit;
+};
+
+export const fromWeb3 = async (n: Networks, w: Web3) => {
+  const [defaultAccount] = await w.eth.getAccounts();
+  // @ts-ignore
+  const kit = newKitFromWeb3(w);
+  kit.defaultAccount = defaultAccount;
   return kit;
 };
