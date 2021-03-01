@@ -4,13 +4,17 @@ The easiest way to access [ContractKit](https://www.npmjs.com/package/@celo/cont
 
 Now your dApp can be made available to everyone in the Celo ecosystem, from Valora users to self custodied Ledger users.
 
+By default use-contractkit is styled so that you can drop it into your application and go, however it's fully customisable so you can maintain a consistent UX throughout your application.
+
 #### Supported wallets
 
-- [x] Plaintext private key (for testing)
-- [x] [Ledger](https://www.ledger.com/)
-- [x] [WalletConnect](https://walletconnect.org/)
-- [x] [dAppKit](https://www.dappkit.io/)
-- [x] [Metamask (Celo fork)](https://github.com/dsrvlabs/celo-extension-wallet)
+| Wallet                                                                    |  sendTransaction   |    signTransaction | signTypedData      | signPersonal       |
+| ------------------------------------------------------------------------- | :----------------: | -----------------: | ------------------ | ------------------ |
+| Plaintext private key (for testing)                                       | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Ledger](https://www.ledger.com/)                                         | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [WalletConnect](https://walletconnect.org/)                               |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [DappKit](https://docs.celo.org/developer-guide/dappkit)                  | :white_check_mark: |                    |                    | :white_check_mark: |
+| [Metamask (Celo fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
 
 ## Install
 
@@ -20,12 +24,15 @@ yarn add use-contractkit
 
 ## Wrap your application with ContractKitProvider
 
+use-contractkit uses [unstated-next](https://github.com/jamiebuilds/unstated-next) under the hood to inject state throughout your application. This library is built on top of the Context API, so you need to make sure your application is wrapped with the provider before usage.
+
 ```javascript
 import { ContractKitProvider } from 'use-contractkit';
+import 'use-contractkit/lib/styles.css';
 
 function WrappedApp() {
   return (
-    <ContractKitProvider>
+    <ContractKitProvider dappName="My awesome dApp">
       <App />
     </ContractKitProvider>
   );
@@ -36,23 +43,9 @@ function App() {
 }
 ```
 
-## Prompt users to connect wallet
-
-We provide an `openModal` function that will open a modal with a list of wallets your user can connect to.
-
-```javascript
-import { useContractKit } from 'use-contractkit';
-
-function App() {
-  const { openModal } = useContractKit();
-
-  return <button onClick={openModal}>Connect wallet</button>;
-}
-```
-
 ## Access ContractKit
 
-Once connected to a wallet the `kit` object will have the `.defaultAccount` property set on it.
+Once connected to a wallet the `address` property will also be available for use.
 
 ```javascript
 import { useContractKit } from 'use-contractkit';
@@ -71,6 +64,36 @@ function App() {
   return (
     ...
   );
+}
+```
+
+## Prompt users to connect wallet
+
+use-contractkit provides an `openModal` function that will open a modal with a list of wallets your user can connect to.
+
+```javascript
+import { useContractKit } from 'use-contractkit';
+
+function App() {
+  const { openModal } = useContractKit();
+
+  return <button onClick={openModal}>Connect wallet</button>;
+}
+```
+
+## Network management
+
+use-contractkit provides a `network` variable and an `updateNetwork` function you can use to display the currently connected network as well as switch to a different one (ie. Alfajores, Baklava or Mainnet).
+
+Be sure to check the use-contractkit example application for a showcase of how this can work. Usually you'll want to show a dropdown to your users allowing them to select the network to connect to.
+
+```javascript
+import { useContractKit } from 'use-contractkit';
+
+function App() {
+  const { network, updateNetwork } = useContractKit();
+
+  return <div>Currently connected to {network}</div>;
 }
 ```
 
