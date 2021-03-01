@@ -134,7 +134,7 @@ export default function Home() {
       </Head>
 
       {sending && (
-        <div className="absolute right-4 top-4">
+        <div className="fixed right-4 top-4">
           <Loader type="TailSpin" color="#FBCC5C" height="36px" width="36px" />
         </div>
       )}
