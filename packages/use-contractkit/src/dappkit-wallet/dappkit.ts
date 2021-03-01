@@ -106,30 +106,22 @@ export async function requestTxSig(
   txParams: CeloTx[],
   meta: DappKitRequestMeta
 ) {
-  // TODO: For multi-tx payloads, we for now just assume the same from address for all txs. We should apply a better heuristic
-  // @ts-ignore
-  const baseNonce = await kit.connection.nonce(txParams[0].from);
+  const baseNonce = await kit.connection.nonce(txParams[0].from as string);
   const txs = await Promise.all(
-    txParams.map(async (txParam: any, index: number) => {
+    txParams.map(async (txParam: CeloTx, index: number) => {
       const feeCurrency = txParam.feeCurrency
         ? txParam.feeCurrency
         : FeeCurrency.cGLD;
-      const feeCurrencyContractAddress = await getFeeCurrencyContractAddress(
-        kit,
-        feeCurrency
-      );
+      // const feeCurrencyContractAddress = await getFeeCurrencyContractAddress(
+      //   kit,
+      //   feeCurrency as FeeCurrency
+      // );
 
       const value = txParam.value === undefined ? '0' : txParam.value;
 
-      const estimatedTxParams = {
-        feeCurrency: feeCurrencyContractAddress,
-        from: txParam.from,
-        value,
-      } as any;
-      const estimatedGas = 50000;
       return {
         txData: txParam.data, // Valora expects this
-        estimatedGas,
+        estimatedGas: txParam.gas ?? 150000,
         nonce: baseNonce + index,
         feeCurrencyAddress: undefined,
         value,
@@ -137,7 +129,8 @@ export async function requestTxSig(
       };
     })
   );
-  const request = SignTxRequest(txs, meta);
 
+  // @ts-ignore
+  const request = SignTxRequest(txs, meta);
   Linking.openURL(serializeDappKitRequestDeeplink(request));
 }
