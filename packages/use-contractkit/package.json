@@ -1,5 +1,5 @@
 {
-  "name": "use-contractkit",
+  "name": "@celo-tools/use-contractkit",
   "version": "0.0.13",
   "private": false,
   "scripts": {

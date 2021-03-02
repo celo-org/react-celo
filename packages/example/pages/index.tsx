@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
-import { Networks, useContractKit } from 'use-contractkit/lib';
+import { Networks, useContractKit } from '@celo-tools/use-contractkit';
 import { ensureLeading0x } from '@celo/utils/lib/address';
 import Web3 from 'web3';
 import { SecondaryButton, PrimaryButton, toast } from '../components';
@@ -189,7 +189,7 @@ export default function Home() {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://www.npmjs.com/package/use-contractkit"
+                href="https://www.npmjs.com/package/@celo-tools/use-contractkit"
               >
                 NPM
               </a>
@@ -216,6 +216,15 @@ export default function Home() {
                 href="https://celo-dapp.vercel.app"
               >
                 Celo Tools
+              </a>
+            </li>
+            <li>
+              <a
+                target="_blank"
+                className="text-blue-500"
+                href="https://celo-data.nambrot.com/multisig"
+              >
+                Web multi-sig interface
               </a>
             </li>
             <li>

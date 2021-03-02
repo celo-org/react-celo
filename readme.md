@@ -19,7 +19,7 @@ By default use-contractkit is styled so that you can drop it into your applicati
 ## Install
 
 ```
-yarn add use-contractkit
+yarn add @celo-tools/use-contractkit
 ```
 
 ## Wrap your application with ContractKitProvider
@@ -27,7 +27,7 @@ yarn add use-contractkit
 use-contractkit uses [unstated-next](https://github.com/jamiebuilds/unstated-next) under the hood to inject state throughout your application. This library is built on top of the Context API, so you need to make sure your application is wrapped with the provider before usage.
 
 ```javascript
-import { ContractKitProvider } from 'use-contractkit';
+import { ContractKitProvider } from '@celo-tools/use-contractkit';
 import 'use-contractkit/lib/styles.css';
 
 function WrappedApp() {
@@ -48,7 +48,7 @@ function App() {
 Once connected to a wallet the `address` property will also be available for use.
 
 ```javascript
-import { useContractKit } from 'use-contractkit';
+import { useContractKit } from '@celo-tools/use-contractkit';
 
 function App() {
   const { kit, address } = useContractKit();
@@ -72,7 +72,7 @@ function App() {
 use-contractkit provides an `openModal` function that will open a modal with a list of wallets your user can connect to.
 
 ```javascript
-import { useContractKit } from 'use-contractkit';
+import { useContractKit } from '@celo-tools/use-contractkit';
 
 function App() {
   const { openModal } = useContractKit();
@@ -88,7 +88,7 @@ use-contractkit provides a `network` variable and an `updateNetwork` function yo
 Be sure to check the use-contractkit example application for a showcase of how this can work. Usually you'll want to show a dropdown to your users allowing them to select the network to connect to.
 
 ```javascript
-import { useContractKit } from 'use-contractkit';
+import { useContractKit } from '@celo-tools/use-contractkit';
 
 function App() {
   const { network, updateNetwork } = useContractKit();
@@ -104,7 +104,7 @@ function App() {
 use-contractkit will remember a users last connected address. You should always use this address even if the user has no `kit.defaultAccount` property set. This is a quality of life improvement that ensure than when a user refreshes their page, nothing in the UI should change other than potentially buttons being grayed out.
 
 ```javascript
-import { useContractKit } from 'use-contractkit';
+import { useContractKit } from '@celo-tools/use-contractkit';
 
 const { address } = useContractKit();
 ```
@@ -114,7 +114,7 @@ const { address } = useContractKit();
 When calling `sendTransaction`, we provide a helper `send` that will open the connect modal before proceeding if the wallet is not connected. For `sign*` and other methods you should check the `kit.defaultAccount` property before trying an operation.
 
 ```javascript
-import { useContractKit } from 'use-contractkit';
+import { useContractKit } from '@celo-tools/use-contractkit';
 
 function App() {
   const { kit, send, openModal } = useContractKit();
