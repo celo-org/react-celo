@@ -198,7 +198,7 @@ export default function Home() {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://github.com/AlexBHarley/use-contractkit"
+                href="https://github.com/celo-tools/use-contractkit"
               >
                 GitHub
               </a>
