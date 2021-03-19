@@ -10,8 +10,8 @@ By default use-contractkit is styled so that you can drop it into your applicati
 
 | Wallet                                                                    |  sendTransaction   |    signTransaction | signTypedData      | signPersonal       |
 | ------------------------------------------------------------------------- | :----------------: | -----------------: | ------------------ | ------------------ |
-| Plaintext private key (for testing)                                       | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [Ledger](https://www.ledger.com/)                                         | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Plaintext private key (for testing)                                       |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Ledger](https://www.ledger.com/)                                         |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [WalletConnect](https://walletconnect.org/)                               |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [DappKit](https://docs.celo.org/developer-guide/dappkit)                  | :white_check_mark: |                    |                    | :white_check_mark: |
 | [Metamask (Celo fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
@@ -28,7 +28,7 @@ use-contractkit uses [unstated-next](https://github.com/jamiebuilds/unstated-nex
 
 ```javascript
 import { ContractKitProvider } from '@celo-tools/use-contractkit';
-import 'use-contractkit/lib/styles.css';
+import '@celo-tools/use-contractkit/lib/styles.css';
 
 function WrappedApp() {
   return (

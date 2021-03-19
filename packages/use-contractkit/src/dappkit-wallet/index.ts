@@ -94,6 +94,7 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
     }
 
     const requestId = `signTransaction-${randomString()}`;
+    // @ts-ignore
     requestTxSig(this.kit, [txParams], {
       requestId,
       dappName: this.dappName,

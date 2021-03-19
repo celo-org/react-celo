@@ -213,7 +213,7 @@ export default function Home() {
               <a
                 target="_blank"
                 className="text-blue-500"
-                href="https://celo-dapp.vercel.app"
+                href="https://celotools.com"
               >
                 Celo Tools
               </a>
@@ -224,7 +224,7 @@ export default function Home() {
                 className="text-blue-500"
                 href="https://celo-data.nambrot.com/multisig"
               >
-                Web multi-sig interface
+                Web MultiSig interface
               </a>
             </li>
             <li>

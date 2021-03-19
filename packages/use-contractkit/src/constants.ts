@@ -14,3 +14,13 @@ const fornoUrls: { [n in Networks]: string } = {
 export function getFornoUrl(n: Networks): string {
   return fornoUrls[n];
 }
+
+// can't figure out how to bundle images yet
+// so this is our workaround
+export const images = {
+  ledger: 'https://www.ledger.com/wp-content/uploads/2020/02/puce_blue.png',
+  walletconnect:
+    'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media',
+  metamask: 'https://cdn.freebiesupply.com/logos/thumbs/2x/metamask-logo.png',
+  valora: 'https://valoraapp.com/favicon.ico',
+};

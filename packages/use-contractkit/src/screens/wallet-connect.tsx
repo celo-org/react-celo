@@ -21,7 +21,8 @@ export function WalletConnect({ onSubmit }: { onSubmit: (w: any) => void }) {
           },
         },
         init: {
-          relayProvider: 'wss://bridge.walletconnect.org',
+          relayProvider: 'wss://relay.walletconnect.org',
+          logger: 'error',
         },
       });
       setUri(await wallet.getUri());

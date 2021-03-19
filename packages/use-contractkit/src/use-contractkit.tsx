@@ -17,20 +17,26 @@ const lastUsedAddress =
     localStorage.getItem(localStorageKeys.lastUsedAddress)) ||
   '';
 
-function Kit() {
+function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
   const [address, setAddress] = useState(lastUsedAddress);
   const [initialised, setInitialised] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [network, updateNetwork] = useState(lastUsedNetwork);
+  const [network, updateNetwork] = useState(lastUsedNetwork || initialNetwork);
 
-  const savedPrivateKey =
-    typeof localStorage !== 'undefined' &&
-    localStorage.getItem(localStorageKeys.privateKey);
-  const initialKit = savedPrivateKey
-    ? fromPrivateKey(network, savedPrivateKey)
-    : newKit(getFornoUrl(network));
+  const [kit, setKit] = useState(newKit(getFornoUrl(network)));
 
-  const [kit, setKit] = useState(initialKit);
+  useEffect(() => {
+    const savedPrivateKey =
+      typeof localStorage !== 'undefined' &&
+      localStorage.getItem(localStorageKeys.privateKey);
+
+    async function f() {
+      if (savedPrivateKey) {
+        setKit(await fromPrivateKey(network, savedPrivateKey));
+      }
+    }
+    f();
+  }, []);
 
   useEffect(() => {
     if (kit.defaultAccount) {
@@ -124,14 +130,16 @@ export function ContractKitProvider({
   reactModalProps,
   renderProvider,
   dappName,
+  network,
 }: {
   children: ReactNode;
   dappName: string;
+  network?: Networks;
   renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
   reactModalProps?: Partial<ReactModal.Props>;
 }) {
   return (
-    <KitState.Provider>
+    <KitState.Provider initialState={{ network }}>
       <Modal
         dappName={dappName}
         reactModalProps={reactModalProps}

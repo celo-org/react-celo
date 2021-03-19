@@ -1,26 +1,27 @@
-import { newLedgerWalletWithSetup } from '@celo/wallet-ledger';
-import { DappKitWallet } from './dappkit-wallet';
 import { Networks } from './types';
-import TransportUSB from '@ledgerhq/hw-transport-webusb';
 import { getFornoUrl, localStorageKeys } from './constants';
-import { LocalWallet } from '@celo/wallet-local';
 import { newKit, newKitFromWeb3 } from '@celo/contractkit';
-import { MetamaskWallet } from './metamask-wallet';
-import Web3 from 'web3';
 
-export const fromPrivateKey = (n: Networks, privateKey: string) => {
+export const fromPrivateKey = async (n: Networks, privateKey: string) => {
+  const { LocalWallet } = await import('@celo/wallet-local');
+
   localStorage.setItem(localStorageKeys.privateKey, privateKey);
   const wallet = new LocalWallet();
   wallet.addAccount(privateKey);
   const k = newKit(getFornoUrl(n), wallet);
   k.defaultAccount = wallet.getAccounts()[0];
+
   return k;
 };
 
-export const fromLedger = async (n: Networks) => {
-  const transport = await TransportUSB.create();
-  const wallet = await newLedgerWalletWithSetup(transport);
+export const fromLedger = async (n: Networks, index: number) => {
+  const { default: TransportUSB } = await import(
+    '@ledgerhq/hw-transport-webusb'
+  );
+  const { newLedgerWalletWithSetup } = await import('@celo/wallet-ledger');
 
+  const transport = await TransportUSB.create();
+  const wallet = await newLedgerWalletWithSetup(transport, [index ?? 0]);
   const k = newKit(getFornoUrl(n), wallet);
   k.defaultAccount = wallet.getAccounts()[0];
 
@@ -28,22 +29,14 @@ export const fromLedger = async (n: Networks) => {
 };
 
 export const fromDappKit = async (n: Networks, dappName: string) => {
+  const { DappKitWallet } = await import('./dappkit-wallet');
+
   const wallet = new DappKitWallet(dappName);
   await wallet.init();
 
   // @ts-ignore
   const k = newKit(getFornoUrl(n), wallet);
   k.defaultAccount = wallet.getAccounts()[0];
-
-  // @ts-ignore
-  k.connection.sendTransaction = (tx) => {
-    console.log('send transaction', tx);
-  };
-
-  // @ts-ignore
-  k.connection.sendSignedTransaction = (s) => {
-    console.log('sendSignedTransaction', s);
-  };
 
   wallet.setKit(k);
   return k;
@@ -59,10 +52,12 @@ export const fromWalletConnect = async (
   return kit;
 };
 
-export const fromWeb3 = async (n: Networks, w: Web3) => {
+export const fromWeb3 = async (n: Networks, w: any) => {
+  const { default: Web3 } = await import('web3');
+
   const [defaultAccount] = await w.eth.getAccounts();
-  // @ts-ignore
   const kit = newKitFromWeb3(w);
   kit.defaultAccount = defaultAccount;
+
   return kit;
 };

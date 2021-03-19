@@ -5,29 +5,34 @@ import * as createKit from './create-kit';
 import defaultScreens from './screens';
 import { Provider, SupportedProviders } from './types';
 import { useContractKit } from './use-contractkit';
+import { images } from './constants';
+
+// const Ledger = require('./images/ledger.png');
+// const Metamask = require('./images/metamask.png');
+// const WalletConnect = require('./images/walletconnect.png');
+
+// console.log(Valora, Ledger);
 
 const providers: Provider[] = [
   {
     name: SupportedProviders.WalletConnect,
     description: 'Scan a QR code to connect your wallet',
-    image:
-      'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media',
+    image: images.walletconnect,
   },
   {
     name: SupportedProviders.MetaMask,
     description: 'A crypto gateway to blockchain apps',
-    image: 'https://cdn.worldvectorlogo.com/logos/metamask.svg',
+    image: images.metamask,
   },
   {
     name: SupportedProviders.Ledger,
     description: 'Connect to your Ledger wallet',
-    image: 'https://www.ledger.com/wp-content/uploads/2020/02/puce_blue.png',
+    image: images.ledger,
   },
   {
     name: SupportedProviders.Valora,
-    disabled: true,
-    image: 'https://valoraapp.com/favicon.ico',
     description: 'A mobile payments app that works worldwide',
+    image: images.valora,
   },
   {
     name: SupportedProviders.PrivateKey,
@@ -64,7 +69,7 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
           {typeof provider.image === 'string' ? (
             <img
               src={provider.image}
-              alt=""
+              alt={`${provider.name} logo`}
               style={{ height: '48px', width: '48px' }}
             />
           ) : (
@@ -105,7 +110,7 @@ export function Modal({
     if (adding === SupportedProviders.PrivateKey) {
       kit = await createKit.fromPrivateKey(network, args);
     } else if (adding === SupportedProviders.Ledger) {
-      kit = await createKit.fromLedger(network);
+      kit = await createKit.fromLedger(network, args);
     } else if (adding === SupportedProviders.Valora) {
       kit = await createKit.fromDappKit(network, dappName);
     } else if (adding === SupportedProviders.WalletConnect) {
@@ -117,6 +122,7 @@ export function Modal({
     }
 
     updateKit(kit);
+    setAdding(null);
     closeModal();
   }
 
