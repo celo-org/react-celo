@@ -10,7 +10,9 @@ export function WalletConnect({ onSubmit }: { onSubmit: (w: any) => void }) {
 
   useEffect(() => {
     async function f() {
-      const { WalletConnectWallet } = await import('contractkit-walletconnect');
+      const { WalletConnectWallet } = await import(
+        '@celo/wallet-walletconnect'
+      );
       const wallet = new WalletConnectWallet({
         connect: {
           metadata: {
