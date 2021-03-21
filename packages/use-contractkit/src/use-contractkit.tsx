@@ -43,7 +43,7 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
   }, [kit.defaultAccount]);
 
   useEffect(() => {
-    if (localStorage.getItem(localStorageKeys.lastUsedAddress) === network) {
+    if (localStorage.getItem(localStorageKeys.lastUsedNetwork) === network) {
       return;
     }
 
