@@ -77,7 +77,11 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
 
   const send = useCallback(
     async (
-      tx: CeloTransactionObject<any> | CeloTransactionObject<any>[],
+      tx:
+        | CeloTransactionObject<any>
+        | CeloTransactionObject<any>[]
+        | Promise<CeloTransactionObject<any>>
+        | Promise<CeloTransactionObject<any>[]>,
       sendOpts?: any
     ) => {
       if (!initialised) {
@@ -89,7 +93,8 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
       const minGasPrice = await gasPriceMinimumContract.gasPriceMinimum();
       const gasPrice = minGasPrice.times(1.5);
 
-      const txs = Array.isArray(tx) ? tx : [tx];
+      const resolved = await tx;
+      const txs = Array.isArray(resolved) ? resolved : [resolved];
       return Promise.all(
         txs.map((t) => {
           return t.sendAndWaitForReceipt({
