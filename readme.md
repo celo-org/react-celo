@@ -1,5 +1,15 @@
 # use-contractkit
 
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-tools/use-contractkit/blob/master/LICENSEs)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/@celo-tools/use-contractkit/issues)
+[![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+
+[![npm version](https://badge.fury.io/js/%40celo-tools%2Fuse-contractkit.png)](https://badge.fury.io/js/%40celo-tools%2Fuse-contractkit)
+[![NPM Downloads](https://img.shields.io/npm/@celo-tools/use-contractkit.svg?style=flat)]()
+[![Dependecy Status](https://david-dm.org/@celo-tools/use-contractkit.svg)](https://david-dm.org/@celo-tools/use-contractkit)
+[![devDependencies Status](https://david-dm.org/@celo-tools/use-contractkit/dev-status.svg)](https://david-dm.org/@celo-tools/use-contractkit?type=dev)
+[![Discord Chat](https://img.shields.io/discord/308323056592486420.svg)](https://chat.celo.org/)
+
 The easiest way to access [ContractKit](https://www.npmjs.com/package/@celo/contractkit) in your React applications 🔥. `use-contractkit` is a [React hook](https://reactjs.org/docs/hooks-intro.html) for managing access to ContractKit with a built-in headless modal system for connecting to your users wallet of choice.
 
 Now your dApp can be made available to everyone in the Celo ecosystem, from Valora users to self custodied Ledger users.
