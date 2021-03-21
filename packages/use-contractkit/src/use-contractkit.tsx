@@ -17,26 +17,20 @@ const lastUsedAddress =
     localStorage.getItem(localStorageKeys.lastUsedAddress)) ||
   '';
 
+const savedPrivateKey =
+  typeof localStorage !== 'undefined' &&
+  localStorage.getItem(localStorageKeys.privateKey);
+const initialKit = savedPrivateKey
+  ? fromPrivateKey(lastUsedNetwork, savedPrivateKey)
+  : newKit(getFornoUrl(lastUsedNetwork));
+
 function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
   const [address, setAddress] = useState(lastUsedAddress);
   const [initialised, setInitialised] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [network, updateNetwork] = useState(lastUsedNetwork || initialNetwork);
 
-  const [kit, setKit] = useState(newKit(getFornoUrl(network)));
-
-  useEffect(() => {
-    const savedPrivateKey =
-      typeof localStorage !== 'undefined' &&
-      localStorage.getItem(localStorageKeys.privateKey);
-
-    async function f() {
-      if (savedPrivateKey) {
-        setKit(await fromPrivateKey(network, savedPrivateKey));
-      }
-    }
-    f();
-  }, []);
+  const [kit, setKit] = useState(initialKit);
 
   useEffect(() => {
     if (kit.defaultAccount) {
@@ -46,9 +40,13 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
         kit.defaultAccount
       );
     }
-  }, [kit]);
+  }, [kit.defaultAccount]);
 
   useEffect(() => {
+    if (localStorage.getItem(localStorageKeys.lastUsedAddress) === network) {
+      return;
+    }
+
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network);
     setKit((k) => {
       const existingWallet = k.getWallet();

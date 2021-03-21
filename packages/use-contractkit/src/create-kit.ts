@@ -1,10 +1,9 @@
 import { Networks } from './types';
 import { getFornoUrl, localStorageKeys } from './constants';
 import { newKit, newKitFromWeb3 } from '@celo/contractkit';
+import { LocalWallet } from '@celo/wallet-local';
 
-export const fromPrivateKey = async (n: Networks, privateKey: string) => {
-  const { LocalWallet } = await import('@celo/wallet-local');
-
+export const fromPrivateKey = (n: Networks, privateKey: string) => {
   localStorage.setItem(localStorageKeys.privateKey, privateKey);
   const wallet = new LocalWallet();
   wallet.addAccount(privateKey);
