@@ -2,6 +2,9 @@ import { Networks } from './types';
 import { getFornoUrl, localStorageKeys } from './constants';
 import { newKit, newKitFromWeb3 } from '@celo/contractkit';
 import { LocalWallet } from '@celo/wallet-local';
+// we can't lazy load this due to the new tab bug, it must be imported
+// so that the new tab handler fires.
+import { DappKitWallet } from './dappkit-wallet';
 
 export const fromPrivateKey = (n: Networks, privateKey: string) => {
   localStorage.setItem(localStorageKeys.privateKey, privateKey);
@@ -9,7 +12,6 @@ export const fromPrivateKey = (n: Networks, privateKey: string) => {
   wallet.addAccount(privateKey);
   const k = newKit(getFornoUrl(n), wallet);
   k.defaultAccount = wallet.getAccounts()[0];
-
   return k;
 };
 
@@ -28,8 +30,6 @@ export const fromLedger = async (n: Networks, index: number) => {
 };
 
 export const fromDappKit = async (n: Networks, dappName: string) => {
-  const { DappKitWallet } = await import('./dappkit-wallet');
-
   const wallet = new DappKitWallet(dappName);
   await wallet.init();
 
@@ -52,8 +52,6 @@ export const fromWalletConnect = async (
 };
 
 export const fromWeb3 = async (n: Networks, w: any) => {
-  const { default: Web3 } = await import('web3');
-
   const [defaultAccount] = await w.eth.getAccounts();
   const kit = newKitFromWeb3(w);
   kit.defaultAccount = defaultAccount;

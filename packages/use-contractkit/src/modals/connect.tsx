@@ -1,17 +1,11 @@
 import { ContractKit } from '@celo/contractkit';
 import React, { FunctionComponent, ReactNode, useState } from 'react';
 import ReactModal from 'react-modal';
-import * as createKit from './create-kit';
-import defaultScreens from './screens';
-import { Provider, SupportedProviders } from './types';
-import { useContractKit } from './use-contractkit';
-import { images } from './constants';
-
-// const Ledger = require('./images/ledger.png');
-// const Metamask = require('./images/metamask.png');
-// const WalletConnect = require('./images/walletconnect.png');
-
-// console.log(Valora, Ledger);
+import * as createKit from '../create-kit';
+import defaultScreens from '../screens';
+import { Provider, SupportedProviders } from '../types';
+import { useContractKit } from '../use-contractkit';
+import { images } from '../constants';
 
 const providers: Provider[] = [
   {
@@ -89,7 +83,7 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
   );
 }
 
-export function Modal({
+export function ConnectModal({
   dappName,
   reactModalProps,
   renderProvider,
@@ -146,57 +140,55 @@ export function Modal({
   }
 
   return (
-    <>
-      <ReactModal
-        isOpen={modalIsOpen}
-        onRequestClose={() => {
-          setAdding(null);
-          closeModal();
-        }}
-        {...(reactModalProps
-          ? reactModalProps
-          : {
-              style: {
-                content: {
-                  top: '50%',
-                  left: '50%',
-                  right: 'auto',
-                  bottom: 'auto',
-                  transform: 'translate(-50%, -50%)',
-                  border: 'unset',
-                  background: 'unset',
-                  padding: 'unset',
-                },
+    <ReactModal
+      isOpen={modalIsOpen}
+      onRequestClose={() => {
+        setAdding(null);
+        closeModal();
+      }}
+      {...(reactModalProps
+        ? reactModalProps
+        : {
+            style: {
+              content: {
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                transform: 'translate(-50%, -50%)',
+                border: 'unset',
+                background: 'unset',
+                padding: 'unset',
               },
-              overlayClassName:
-                'tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0',
-            })}
-      >
-        <div className="use-ck tw-max-h-screen">
-          <div className="tw-relative tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-w-80 md:tw-w-96">
-            <button
-              onClick={closeModal}
-              className="tw-absolute tw-top-4 tw-right-4 tw-text-gray-700 dark:tw-text-gray-400 hover:tw-text-gray-800 dark:hover:tw-text-gray-300 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-p-3 rounded-full"
+            },
+            overlayClassName:
+              'tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0',
+          })}
+    >
+      <div className="use-ck tw-max-h-screen">
+        <div className="tw-relative tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-w-80 md:tw-w-96">
+          <button
+            onClick={closeModal}
+            className="tw-absolute tw-top-4 tw-right-4 tw-text-gray-700 dark:tw-text-gray-400 hover:tw-text-gray-800 dark:hover:tw-text-gray-300 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-p-3 rounded-full"
+          >
+            <svg
+              className="tw-h-5 tw-w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <svg
-                className="tw-h-5 tw-w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>{' '}
-            </button>
-            <div className="tw-rounded-b-lg tw-px-5 tw-py-6">{component}</div>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>{' '}
+          </button>
+          <div className="tw-rounded-b-lg tw-px-5 tw-py-6">{component}</div>
         </div>
-      </ReactModal>
-    </>
+      </div>
+    </ReactModal>
   );
 }

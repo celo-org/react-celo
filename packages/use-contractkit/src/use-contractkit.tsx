@@ -5,7 +5,7 @@ import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
 import { getFornoUrl, localStorageKeys } from './constants';
 import { fromPrivateKey } from './create-kit';
-import { Modal } from './modal';
+import { ActionModal, ActionModalProps, ConnectModal } from './modals';
 import { Networks, Provider } from './types';
 
 const lastUsedNetwork =
@@ -29,6 +29,7 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
   const [initialised, setInitialised] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [network, updateNetwork] = useState(lastUsedNetwork || initialNetwork);
+  const [pendingActionCount, setPendingActionCount] = useState(0);
 
   const [kit, setKit] = useState(initialKit);
 
@@ -73,7 +74,46 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
     setInitialised(true);
   }, []);
 
-  const send = useCallback(
+  /**
+   * Helper function for handling any interaction with a Celo wallet. Perform action will
+   *    - open the action modal
+   *    - handle multiple transactions in order
+   */
+  const performActions = useCallback(
+    async (actions: [func: Function, args?: any][]) => {
+      if (!initialised) {
+        setModalIsOpen(true);
+        return;
+      }
+
+      const operations = Array.isArray(actions) ? actions : [actions];
+      setPendingActionCount(operations.length);
+
+      const results = [];
+      for (let i = 0; i < operations.length; i++) {
+        const [func, args] = operations[i];
+        try {
+          results.push(await func(...args));
+        } catch (e) {
+          console.error(e);
+          results.push(e);
+        }
+
+        setPendingActionCount((c) => c - 1);
+      }
+
+      return results;
+    },
+    [initialised]
+  );
+
+  /**
+   * Helper function for handling any interaction with the Celo network. `sendTransaction` will
+   *    - open the action modal
+   *    - configure the gas price minimum correctly
+   *    - pay the fee in a currency that the account has
+   */
+  const sendTransaction = useCallback(
     async (
       tx:
         | CeloTransactionObject<any>
@@ -82,28 +122,39 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
         | Promise<CeloTransactionObject<any>[]>,
       sendOpts?: any
     ) => {
-      if (!initialised) {
-        setModalIsOpen(true);
-        return;
-      }
+      const [gasPriceMinimum, celo, cusd /* ceur */] = await Promise.all([
+        kit.contracts.getGasPriceMinimum(),
+        kit.contracts.getGoldToken(),
+        kit.contracts.getStableToken(),
+      ]);
+      const [
+        minGasPrice,
+        celoBalance,
+        cusdBalance /* ceurBalance */,
+      ] = await Promise.all([
+        gasPriceMinimum.gasPriceMinimum(),
+        celo.balanceOf(address),
+        cusd.balanceOf(address),
+      ]);
 
-      const gasPriceMinimumContract = await kit.contracts.getGasPriceMinimum();
-      const minGasPrice = await gasPriceMinimumContract.gasPriceMinimum();
       const gasPrice = minGasPrice.times(1.5);
+      const feeCurrency = celoBalance.gt(0)
+        ? celo.address
+        : cusdBalance.gt(0)
+        ? cusd.address
+        : undefined;
 
       const resolved = await tx;
       const txs = Array.isArray(resolved) ? resolved : [resolved];
-      return Promise.all(
-        txs.map((t) => {
-          return t.sendAndWaitForReceipt({
-            ...sendOpts,
-            from: address,
-            gasPrice,
-          });
-        })
+
+      return performActions(
+        txs.map((tx) => [
+          tx.sendAndWaitForReceipt,
+          { from: address, gasPrice, feeCurrency, ...sendOpts },
+        ])
       );
     },
-    [kit, address, initialised]
+    [kit, address, performActions]
   );
 
   return {
@@ -115,7 +166,11 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
     kit,
     destroy,
 
-    send,
+    pendingActionCount,
+
+    send: sendTransaction,
+    sendTransaction,
+    performActions,
 
     updateKit,
 
@@ -130,24 +185,29 @@ export const useContractKit = KitState.useContainer;
 
 export function ContractKitProvider({
   children,
-  reactModalProps,
-  renderProvider,
+  connectModal,
+  actionModal,
   dappName,
   network,
 }: {
   children: ReactNode;
   dappName: string;
   network?: Networks;
-  renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
-  reactModalProps?: Partial<ReactModal.Props>;
+
+  connectModal?: {
+    renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
+    reactModalProps?: Partial<ReactModal.Props>;
+  };
+  actionModal?: {
+    reactModalProps?: Partial<ReactModal.Props>;
+    render?: (props: ActionModalProps) => ReactNode;
+  };
 }) {
   return (
     <KitState.Provider initialState={{ network }}>
-      <Modal
-        dappName={dappName}
-        reactModalProps={reactModalProps}
-        renderProvider={renderProvider}
-      />
+      <ConnectModal dappName={dappName} {...connectModal} />
+      <ActionModal dappName={dappName} {...actionModal} />
+
       {children}
     </KitState.Provider>
   );

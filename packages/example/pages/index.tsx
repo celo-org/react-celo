@@ -32,7 +32,8 @@ export default function Home() {
     updateNetwork,
     openModal,
     destroy,
-    send,
+    sendTransaction,
+    performActions,
   } = useContractKit();
 
   const [summary, setSummary] = useState(defaultSummary);
@@ -66,7 +67,7 @@ export default function Home() {
       setSending(true);
       const celo = await kit.contracts.getGoldToken();
       if (
-        await send(
+        await sendTransaction(
           celo
             // impact market contract
             .transfer(
@@ -86,14 +87,9 @@ export default function Home() {
   };
 
   const testSignTypedData = async () => {
-    if (!address) {
-      openModal();
-      return;
-    }
-
     setSending(true);
     try {
-      await kit.signTypedData(address, TYPED_DATA);
+      await performActions([[kit.signTypedData, [address, TYPED_DATA]]]);
       toast.success('signTypedData succeeded');
     } catch (e) {
       toast.error(e.message);
@@ -103,17 +99,14 @@ export default function Home() {
   };
 
   const testSignPersonal = async () => {
-    if (!address) {
-      openModal();
-      return;
-    }
-
     setSending(true);
     try {
-      await kit.connection.sign(
-        ensureLeading0x(Buffer.from('Hello').toString('hex')),
-        address
-      );
+      await performActions([
+        [
+          kit.connection.sign,
+          [ensureLeading0x(Buffer.from('Hello').toString('hex')), address],
+        ],
+      ]);
       toast.success('sign_personal succeeded');
     } catch (e) {
       toast.error(e.message);

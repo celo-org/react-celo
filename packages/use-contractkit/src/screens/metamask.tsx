@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
 import Loader from 'react-loader-spinner';
-import Web3 from 'web3';
 
 export function Metamask({ onSubmit }: { onSubmit: (x: any) => void }) {
   useEffect(() => {
     async function f() {
+      const Web3 = await import('web3');
       // @ts-ignore
       if (window.celo) {
         // @ts-ignore
         const web3 = new Web3(window.celo);
-        console.log(await web3.eth.getAccounts());
         onSubmit(web3);
+      } else {
+        console.warn('No Metamask extension installed');
       }
     }
     f();
