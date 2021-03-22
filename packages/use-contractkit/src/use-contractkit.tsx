@@ -89,9 +89,9 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
       setPendingActionCount(operations.length);
 
       const results = [];
-      for (let i = 0; i < operations.length; i++) {
+      for (const op of operations) {
         try {
-          results.push(await operations[i]);
+          results.push(await op());
         } catch (e) {
           setPendingActionCount(0);
           throw e;
@@ -118,7 +118,7 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
         | CeloTransactionObject<any>[]
         | Promise<CeloTransactionObject<any>>
         | Promise<CeloTransactionObject<any>[]>,
-      sendOpts?: any
+      sendOpts: any = {}
     ) => {
       const [gasPriceMinimum, celo, cusd /* ceur */] = await Promise.all([
         kit.contracts.getGasPriceMinimum(),
