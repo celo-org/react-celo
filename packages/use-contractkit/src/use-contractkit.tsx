@@ -137,7 +137,7 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
 
       const gasPrice = minGasPrice.times(1.5);
       const feeCurrency = celoBalance.gt(0)
-        ? celo.address
+        ? undefined // celo.address
         : cusdBalance.gt(0)
         ? cusd.address
         : undefined;
