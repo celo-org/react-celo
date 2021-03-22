@@ -21,7 +21,6 @@ export const images = {
   ledger: 'https://www.ledger.com/wp-content/uploads/2020/02/puce_blue.png',
   walletconnect:
     'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media',
-  metamask:
-    'https://brandslogos.com/wp-content/uploads/images/metamask-logo.png',
+  metamask: 'https://metamask.io/images/favicon-256.png',
   valora: 'https://valoraapp.com/favicon.ico',
 };

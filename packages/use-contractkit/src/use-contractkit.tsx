@@ -149,7 +149,7 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
         ...txs.map((tx) => () =>
           tx.sendAndWaitForReceipt({
             from: address,
-            gasPrice,
+            gasPrice: gasPrice.toString(),
             feeCurrency,
             ...sendOpts,
           })

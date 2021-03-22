@@ -21,7 +21,7 @@ export const Valora: FunctionComponent<any> = ({
       </div>
       <button
         className="tw-ml-auto tw-px-4 tw-py-2 tw-border tw-border-transparent tw-rounded-md tw-shadow-sm tw-text-base tw-font-medium tw-text-white tw-bg-gradient-to-r tw-from-purple-600 tw-to-indigo-600 hover:tw-from-purple-700 hover:tw-to-indigo-700 tw-w-full tw-mt-4"
-        onClick={() => onSubmit()}
+        onClick={onSubmit}
       >
         Connect to Valora
       </button>

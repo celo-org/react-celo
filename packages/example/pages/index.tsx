@@ -1,10 +1,9 @@
-import Head from 'next/head';
-import { useCallback, useEffect, useState } from 'react';
-import Loader from 'react-loader-spinner';
 import { Networks, useContractKit } from '@celo-tools/use-contractkit';
 import { ensureLeading0x } from '@celo/utils/lib/address';
+import Head from 'next/head';
+import { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
-import { SecondaryButton, PrimaryButton, toast } from '../components';
+import { PrimaryButton, SecondaryButton, toast } from '../components';
 import { TYPED_DATA } from '../utils';
 
 const defaultSummary = {
@@ -125,12 +124,6 @@ export default function Home() {
         <title>use-contractkit</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      {sending && (
-        <div className="fixed right-4 top-4">
-          <Loader type="TailSpin" color="#FBCC5C" height="36px" width="36px" />
-        </div>
-      )}
 
       <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
         <div className="font-semibold text-2xl">use-contractkit</div>

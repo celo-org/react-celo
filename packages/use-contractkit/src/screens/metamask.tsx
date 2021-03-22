@@ -10,7 +10,7 @@ export function Metamask({ onSubmit }: { onSubmit: (x: any) => void }) {
       const celo: any = window.celo;
       if (celo) {
         const web3 = new Web3(celo);
-        celo.enable();
+        await celo.enable();
         onSubmit(web3);
       } else {
         console.warn('No Metamask extension installed');
