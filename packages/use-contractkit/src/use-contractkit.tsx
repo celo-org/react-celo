@@ -86,17 +86,16 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
         return;
       }
 
-      const operations = Array.isArray(actions) ? actions : [actions];
-      setPendingActionCount(operations.length);
+      setPendingActionCount(actions.length);
 
       const results = [];
-      for (let i = 0; i < operations.length; i++) {
-        const [func, args] = operations[i];
+      for (let i = 0; i < actions.length; i++) {
+        const [func, args] = actions[i];
         try {
           results.push(await func(...args));
         } catch (e) {
-          console.error(e);
-          results.push(e);
+          setPendingActionCount(0);
+          throw e;
         }
 
         setPendingActionCount((c) => c - 1);
