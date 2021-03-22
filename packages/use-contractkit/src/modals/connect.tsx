@@ -1,5 +1,10 @@
 import { ContractKit } from '@celo/contractkit';
-import React, { FunctionComponent, ReactNode, useState } from 'react';
+import React, {
+  FunctionComponent,
+  ReactNode,
+  useCallback,
+  useState,
+} from 'react';
 import ReactModal from 'react-modal';
 import * as createKit from '../create-kit';
 import defaultScreens from '../screens';
@@ -99,6 +104,11 @@ export function ConnectModal({
   const { updateKit, network, closeModal, modalIsOpen } = useContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
 
+  const close = useCallback(async () => {
+    setAdding(null);
+    closeModal();
+  }, [closeModal]);
+
   async function onSubmit(args: any) {
     let kit: ContractKit;
     if (adding === SupportedProviders.PrivateKey) {
@@ -116,8 +126,7 @@ export function ConnectModal({
     }
 
     updateKit(kit);
-    setAdding(null);
-    closeModal();
+    close();
   }
 
   const list = (
@@ -142,10 +151,7 @@ export function ConnectModal({
   return (
     <ReactModal
       isOpen={modalIsOpen}
-      onRequestClose={() => {
-        setAdding(null);
-        closeModal();
-      }}
+      onRequestClose={close}
       {...(reactModalProps
         ? reactModalProps
         : {
@@ -168,7 +174,7 @@ export function ConnectModal({
       <div className="use-ck tw-max-h-screen">
         <div className="tw-relative tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-w-80 md:tw-w-96">
           <button
-            onClick={closeModal}
+            onClick={close}
             className="tw-absolute tw-top-4 tw-right-4 tw-text-gray-700 dark:tw-text-gray-400 hover:tw-text-gray-800 dark:hover:tw-text-gray-300 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-p-3 rounded-full"
           >
             <svg
