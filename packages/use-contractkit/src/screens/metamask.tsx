@@ -4,11 +4,13 @@ import Loader from 'react-loader-spinner';
 export function Metamask({ onSubmit }: { onSubmit: (x: any) => void }) {
   useEffect(() => {
     async function f() {
-      const Web3 = await import('web3');
+      const { default: Web3 } = await import('web3');
+
       // @ts-ignore
-      if (window.celo) {
-        // @ts-ignore
-        const web3 = new Web3(window.celo);
+      const celo: any = window.celo;
+      if (celo) {
+        const web3 = new Web3(celo);
+        celo.enable();
         onSubmit(web3);
       } else {
         console.warn('No Metamask extension installed');
