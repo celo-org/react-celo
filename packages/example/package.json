@@ -17,6 +17,6 @@
     "react-hot-toast": "^1.0.2",
     "react-loader-spinner": "^4.0.0",
     "tailwindcss": "^2.0.3",
-    "@celo-tools/use-contractkit": "^0.0.23"
+    "@celo-tools/use-contractkit": "*"
   }
 }
