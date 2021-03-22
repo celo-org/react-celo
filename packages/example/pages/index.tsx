@@ -89,7 +89,7 @@ export default function Home() {
   const testSignTypedData = async () => {
     setSending(true);
     try {
-      await performActions([[kit.signTypedData, [address, TYPED_DATA]]]);
+      await performActions(() => kit.signTypedData(address, TYPED_DATA));
       toast.success('signTypedData succeeded');
     } catch (e) {
       toast.error(e.message);
@@ -101,12 +101,12 @@ export default function Home() {
   const testSignPersonal = async () => {
     setSending(true);
     try {
-      await performActions([
-        [
-          kit.connection.sign,
-          [ensureLeading0x(Buffer.from('Hello').toString('hex')), address],
-        ],
-      ]);
+      await performActions(() =>
+        kit.connection.sign(
+          ensureLeading0x(Buffer.from('Hello').toString('hex')),
+          address
+        )
+      );
       toast.success('sign_personal succeeded');
     } catch (e) {
       toast.error(e.message);

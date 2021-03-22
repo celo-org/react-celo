@@ -80,19 +80,18 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
    *    - handle multiple transactions in order
    */
   const performActions = useCallback(
-    async (actions: [func: Function, args?: any][]) => {
+    async (...operations: (() => any | Promise<any>)[]) => {
       if (!initialised) {
         setModalIsOpen(true);
         return;
       }
 
-      setPendingActionCount(actions.length);
+      setPendingActionCount(operations.length);
 
       const results = [];
-      for (let i = 0; i < actions.length; i++) {
-        const [func, args] = actions[i];
+      for (let i = 0; i < operations.length; i++) {
         try {
-          results.push(await func(...args));
+          results.push(await operations[i]);
         } catch (e) {
           setPendingActionCount(0);
           throw e;
@@ -147,10 +146,14 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
       const txs = Array.isArray(resolved) ? resolved : [resolved];
 
       return performActions(
-        txs.map((tx) => [
-          tx.sendAndWaitForReceipt,
-          { from: address, gasPrice, feeCurrency, ...sendOpts },
-        ])
+        ...txs.map((tx) => () =>
+          tx.sendAndWaitForReceipt({
+            from: address,
+            gasPrice,
+            feeCurrency,
+            ...sendOpts,
+          })
+        )
       );
     },
     [kit, address, performActions]
