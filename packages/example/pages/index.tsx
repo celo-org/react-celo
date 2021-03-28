@@ -199,9 +199,9 @@ export default function Home() {
               <a
                 target="_blank"
                 className="text-blue-500"
-                href="https://celotools.com"
+                href="https://plock.fi"
               >
-                Celo Tools
+                Plock
               </a>
             </li>
             <li>
