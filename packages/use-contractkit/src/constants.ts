@@ -14,22 +14,28 @@ export const images = {
   valora: 'https://valoraapp.com/favicon.ico',
 };
 
+export enum NetworkNames {
+  Alfajores = 'Alfajores',
+  Baklava = 'Baklava',
+  Mainnet = 'Mainnet',
+}
+
 export const Alfajores = {
-  name: 'Alfajores',
+  name: NetworkNames.Alfajores,
   rpcUrl: 'https://alfajores-forno.celo-testnet.org',
   graphQl: 'https://alfajores-blockscout.celo-testnet.org/graphiql',
   explorer: 'https://alfajores-blockscout.celo-testnet.org',
 };
 
 export const Baklava = {
-  name: 'Baklava',
+  name: NetworkNames.Baklava,
   rpcUrl: 'https://baklava-forno.celo-testnet.org',
   graphQl: 'https://baklava-blockscout.celo-testnet.org/graphiql',
   explorer: 'https://baklava-blockscout.celo-testnet.org',
 };
 
 export const Mainnet = {
-  name: 'Mainnet',
+  name: NetworkNames.Mainnet,
   rpcUrl: 'https://forno.celo.org',
   graphQl: 'https://explorer.celo.org/graphiql',
   explorer: 'https://explorer.celo.org',
