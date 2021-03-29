@@ -1,3 +1,4 @@
+export * from './constants';
 export * from './use-contractkit';
 export * from './types';
 

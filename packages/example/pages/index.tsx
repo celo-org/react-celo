@@ -1,4 +1,10 @@
-import { Networks, useContractKit } from '@celo-tools/use-contractkit';
+import {
+  Network,
+  useContractKit,
+  Alfajores,
+  Baklava,
+  Mainnet,
+} from '@celo-tools/use-contractkit';
 import { ensureLeading0x } from '@celo/utils/lib/address';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
@@ -22,6 +28,8 @@ const defaultSummary = {
 function truncateAddress(address: string) {
   return `${address.slice(0, 8)}...${address.slice(36)}`;
 }
+
+const networks = [Alfajores, Baklava, Mainnet];
 
 export default function Home() {
   const {
@@ -235,12 +243,17 @@ export default function Home() {
             <div className="flex items-center justify-center space-x-8 mb-4">
               <select
                 className="border border-gray-300 rounded px-4 py-2"
-                value={network}
-                onChange={(e) => updateNetwork(e.target.value as Networks)}
+                value={network.name}
+                onChange={(e) => {
+                  const newNetwork = networks.find(
+                    (n) => n.name === e.target.value
+                  );
+                  updateNetwork(newNetwork);
+                }}
               >
-                {Object.values(Networks).map((n) => (
-                  <option key={n} value={n}>
-                    {n}
+                {Object.values(networks).map((n) => (
+                  <option key={n.name} value={n.name}>
+                    {n.name}
                   </option>
                 ))}
               </select>

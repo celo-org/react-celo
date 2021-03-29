@@ -1,9 +1,10 @@
 import { ReactNode } from 'react';
 
-export enum Networks {
-  Alfajores = 'Alfajores',
-  Baklava = 'Baklava',
-  Mainnet = 'Mainnet',
+export interface Network {
+  name: string;
+  rpcUrl: string;
+  graphQl: string;
+  explorer: string;
 }
 
 export enum SupportedProviders {

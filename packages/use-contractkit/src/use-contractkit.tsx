@@ -3,32 +3,45 @@ import { CeloTransactionObject } from '@celo/connect';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
-import { getFornoUrl, localStorageKeys } from './constants';
+import { localStorageKeys, Alfajores, Mainnet } from './constants';
 import { fromPrivateKey } from './create-kit';
 import { ActionModal, ActionModalProps, ConnectModal } from './modals';
-import { Networks, Provider } from './types';
+import { Network, Provider } from './types';
 
-const lastUsedNetwork =
-  (typeof localStorage !== 'undefined' &&
-    (localStorage.getItem(localStorageKeys.lastUsedNetwork) as Networks)) ||
-  Networks.Alfajores;
+const lastUsedNetworkName =
+  typeof localStorage !== 'undefined' &&
+  localStorage.getItem(localStorageKeys.lastUsedNetwork);
 const lastUsedAddress =
   (typeof localStorage !== 'undefined' &&
     localStorage.getItem(localStorageKeys.lastUsedAddress)) ||
   '';
+
+const defaultNetworks = [Mainnet, Alfajores];
+const lastUsedNetwork =
+  defaultNetworks.find((n) => n.name === lastUsedNetworkName) || Alfajores;
 
 const savedPrivateKey =
   typeof localStorage !== 'undefined' &&
   localStorage.getItem(localStorageKeys.privateKey);
 const initialKit = savedPrivateKey
   ? fromPrivateKey(lastUsedNetwork, savedPrivateKey)
-  : newKit(getFornoUrl(lastUsedNetwork));
+  : newKit(lastUsedNetwork?.rpcUrl);
 
-function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
+function Kit(
+  { networks }: { networks?: Network[] } = {
+    networks: defaultNetworks,
+  }
+) {
   const [address, setAddress] = useState(lastUsedAddress);
   const [initialised, setInitialised] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [network, updateNetwork] = useState(lastUsedNetwork || initialNetwork);
+
+  const initialNetwork = (networks || defaultNetworks).find(
+    (n) => n.name === lastUsedNetworkName
+  );
+  const [network, updateNetwork] = useState(
+    initialNetwork || defaultNetworks[0]
+  );
   const [pendingActionCount, setPendingActionCount] = useState(0);
 
   const [kit, setKit] = useState(initialKit);
@@ -44,18 +57,20 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
   }, [kit.defaultAccount]);
 
   useEffect(() => {
-    if (localStorage.getItem(localStorageKeys.lastUsedNetwork) === network) {
+    if (
+      localStorage.getItem(localStorageKeys.lastUsedNetwork) === network.name
+    ) {
       return;
     }
 
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network);
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
     setKit((k) => {
       const existingWallet = k.getWallet();
       if (!existingWallet) {
-        return newKit(getFornoUrl(network));
+        return newKit(network.rpcUrl);
       }
 
-      const nk = newKit(getFornoUrl(network), existingWallet);
+      const nk = newKit(network.rpcUrl, existingWallet);
       nk.defaultAccount = existingWallet.getAccounts()[0];
       return nk;
     });
@@ -65,7 +80,7 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
     localStorage.removeItem(localStorageKeys.privateKey);
     localStorage.removeItem(localStorageKeys.lastUsedAddress);
     setAddress('');
-    setKit(newKit(getFornoUrl(network)));
+    setKit(newKit(network.rpcUrl));
     setInitialised(false);
   }, [network]);
 
@@ -162,7 +177,6 @@ function Kit({ network: initialNetwork }: { network?: Networks } = {}) {
   return {
     network,
     updateNetwork,
-    fornoUrl: getFornoUrl(network),
 
     address,
     kit,
@@ -190,11 +204,11 @@ export function ContractKitProvider({
   connectModal,
   actionModal,
   dappName,
-  network,
+  networks,
 }: {
   children: ReactNode;
   dappName: string;
-  network?: Networks;
+  networks?: Network[];
 
   connectModal?: {
     renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
@@ -206,7 +220,7 @@ export function ContractKitProvider({
   };
 }) {
   return (
-    <KitState.Provider initialState={{ network }}>
+    <KitState.Provider initialState={{ networks }}>
       <ConnectModal dappName={dappName} {...connectModal} />
       <ActionModal dappName={dappName} {...actionModal} />
 
