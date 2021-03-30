@@ -2,6 +2,7 @@ import { Network } from './types';
 import { localStorageKeys } from './constants';
 import { newKit, newKitFromWeb3 } from '@celo/contractkit';
 import { LocalWallet } from '@celo/wallet-local';
+import { ReadOnlyWallet } from '@celo/connect';
 // we can't lazy load this due to the new tab bug, it must be imported
 // so that the new tab handler fires.
 import { DappKitWallet } from './dappkit-wallet';
@@ -33,8 +34,7 @@ export const fromDappKit = async (n: Network, dappName: string) => {
   const wallet = new DappKitWallet(dappName);
   await wallet.init();
 
-  // @ts-ignore
-  const k = newKit(getFornoUrl(n), wallet);
+  const k = newKit(n.rpcUrl, (wallet as any) as ReadOnlyWallet);
   k.defaultAccount = wallet.getAccounts()[0];
 
   wallet.setKit(k);
