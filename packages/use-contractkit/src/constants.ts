@@ -2,6 +2,8 @@ export const localStorageKeys = {
   privateKey: 'use-contractkit/private-key',
   lastUsedAddress: 'use-contractkit/last-used-address',
   lastUsedNetwork: 'use-contractkit/last-used-network',
+  lastUsedWalletType: 'use-contractkit/last-used-wallet',
+  lastUsedWalletArguments: 'use-contractkit/last-used-wallet-arguments',
 };
 
 // can't figure out how to bundle images yet

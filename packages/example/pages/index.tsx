@@ -37,7 +37,7 @@ export default function Home() {
     address,
     network,
     updateNetwork,
-    openModal,
+    connect,
     destroy,
     sendTransaction,
     performActions,
@@ -260,7 +260,7 @@ export default function Home() {
               {address ? (
                 <SecondaryButton onClick={destroy}>Disconnect</SecondaryButton>
               ) : (
-                <SecondaryButton onClick={openModal}>Connect</SecondaryButton>
+                <SecondaryButton onClick={connect}>Connect</SecondaryButton>
               )}
             </div>
 

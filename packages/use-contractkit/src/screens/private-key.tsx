@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
+import { Connector, PrivateKeyConnector, WalletTypes } from '../create-kit';
+import { useContractKit } from '../use-contractkit';
 
 export function PrivateKey({
   onSubmit,
 }: {
-  onSubmit: (privateKey: string) => void;
+  onSubmit: (x: { type: WalletTypes; connector: Connector }) => void;
 }) {
   const [value, setValue] = useState('');
+  const { network } = useContractKit();
+
+  const handleSubmit = () => {
+    if (!value) {
+      return;
+    }
+
+    const connector = new PrivateKeyConnector(network, value);
+    onSubmit({ type: WalletTypes.PrivateKey, connector });
+  };
 
   return (
     <div className="tw-p-2">
@@ -25,7 +37,7 @@ export function PrivateKey({
           />
           <button
             className="tw-mt-3 tw-px-4 tw-py-2 tw-border tw-border-transparent tw-rounded-md tw-shadow-sm tw-text-base tw-font-medium tw-text-white tw-bg-gradient-to-r tw-from-purple-600 tw-to-indigo-600 hover:tw-from-purple-700 hover:tw-to-indigo-700"
-            onClick={() => onSubmit(value)}
+            onClick={handleSubmit}
           >
             Submit
           </button>

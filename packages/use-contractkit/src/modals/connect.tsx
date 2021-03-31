@@ -101,32 +101,23 @@ export function ConnectModal({
   renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
   reactModalProps?: Partial<ReactModal.Props>;
 }) {
-  const { updateKit, network, closeModal, modalIsOpen } = useContractKit();
+  const { modalIsOpen } = useContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
 
-  const close = useCallback(async () => {
+  console.log('Connect Modal', modalIsOpen);
+
+  const close = async () => {
     setAdding(null);
-    closeModal();
-  }, [closeModal]);
+    console.log('onClose');
+    modalIsOpen!(false);
+  };
 
-  async function onSubmit(args: any) {
-    let kit: ContractKit;
-    if (adding === SupportedProviders.PrivateKey) {
-      kit = await createKit.fromPrivateKey(network, args);
-    } else if (adding === SupportedProviders.Ledger) {
-      kit = await createKit.fromLedger(network, args);
-    } else if (adding === SupportedProviders.Valora) {
-      kit = await createKit.fromDappKit(network, dappName);
-    } else if (adding === SupportedProviders.WalletConnect) {
-      kit = await createKit.fromWalletConnect(network, args);
-    } else if (adding === SupportedProviders.MetaMask) {
-      kit = await createKit.fromWeb3(network, args);
-    } else {
-      throw new Error('Unsupported');
-    }
-
-    updateKit(kit);
-    close();
+  async function onSubmit(args: {
+    type: createKit.WalletTypes;
+    connector: createKit.Connector;
+  }) {
+    console.log('onSubmit');
+    modalIsOpen!(args);
   }
 
   const list = (
@@ -143,6 +134,7 @@ export function ConnectModal({
   let component;
   if (adding) {
     const ProviderElement = screens?.[adding] || defaultScreens[adding];
+    // @ts-ignore
     component = <ProviderElement onSubmit={onSubmit} />;
   } else {
     component = list;
@@ -150,7 +142,7 @@ export function ConnectModal({
 
   return (
     <ReactModal
-      isOpen={modalIsOpen}
+      isOpen={!!modalIsOpen}
       onRequestClose={close}
       {...(reactModalProps
         ? reactModalProps

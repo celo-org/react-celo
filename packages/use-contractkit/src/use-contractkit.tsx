@@ -3,29 +3,88 @@ import { CeloTransactionObject } from '@celo/connect';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
-import { localStorageKeys, Alfajores, Mainnet } from './constants';
-import { fromPrivateKey } from './create-kit';
+import {
+  localStorageKeys,
+  Alfajores,
+  Mainnet,
+  NetworkNames,
+} from './constants';
+import {
+  Connector,
+  LedgerConnector,
+  PrivateKeyConnector,
+  UnauthenticatedConnector,
+  WalletTypes,
+} from './create-kit';
 import { ActionModal, ActionModalProps, ConnectModal } from './modals';
 import { Network, Provider } from './types';
 
-const lastUsedNetworkName =
-  typeof localStorage !== 'undefined' &&
-  localStorage.getItem(localStorageKeys.lastUsedNetwork);
-const lastUsedAddress =
-  (typeof localStorage !== 'undefined' &&
-    localStorage.getItem(localStorageKeys.lastUsedAddress)) ||
-  '';
+let lastUsedNetworkName = Mainnet.name;
+let lastUsedAddress = '';
+let lastUsedWalletType = WalletTypes.Unauthenticated;
+let lastUsedWalletArguments: any[] = [];
+function localStorageOperations() {
+  if (typeof localStorage === 'undefined') {
+    return;
+  }
+
+  const localLastUsedNetworkName = localStorage.getItem(
+    localStorageKeys.lastUsedNetwork
+  );
+  if (localLastUsedNetworkName) {
+    lastUsedNetworkName = localLastUsedNetworkName as NetworkNames;
+  }
+
+  const localLastUsedAddress = localStorage.getItem(
+    localStorageKeys.lastUsedAddress
+  );
+  if (localLastUsedAddress) {
+    lastUsedAddress = localLastUsedAddress;
+  }
+
+  const localLastUsedWalletType = localStorage.getItem(
+    localStorageKeys.lastUsedWalletType
+  );
+  if (localLastUsedWalletType) {
+    lastUsedWalletType = localLastUsedWalletType as WalletTypes;
+  }
+
+  const localLastUsedWalletArguments = localStorage.getItem(
+    localStorageKeys.lastUsedWalletArguments
+  );
+  if (localLastUsedWalletArguments) {
+    lastUsedWalletArguments = JSON.parse(localLastUsedWalletArguments);
+  }
+}
+localStorageOperations();
 
 const defaultNetworks = [Mainnet, Alfajores];
 const lastUsedNetwork =
   defaultNetworks.find((n) => n.name === lastUsedNetworkName) || Alfajores;
 
-const savedPrivateKey =
-  typeof localStorage !== 'undefined' &&
-  localStorage.getItem(localStorageKeys.privateKey);
-const initialKit = savedPrivateKey
-  ? fromPrivateKey(lastUsedNetwork, savedPrivateKey)
-  : newKit(lastUsedNetwork?.rpcUrl);
+const connectorTypes: { [x in WalletTypes]: any } = {
+  [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
+  [WalletTypes.PrivateKey]: PrivateKeyConnector,
+  [WalletTypes.Ledger]: LedgerConnector,
+  [WalletTypes.WalletConnect]: null,
+};
+
+let initialConnector: Connector;
+if (lastUsedWalletType) {
+  try {
+    initialConnector = new connectorTypes[lastUsedWalletType as WalletTypes](
+      lastUsedNetwork,
+      ...lastUsedWalletArguments
+    );
+  } catch (e) {
+    initialConnector = new UnauthenticatedConnector(lastUsedNetwork);
+  }
+}
+
+interface ConnectionResult {
+  type: WalletTypes;
+  connector: Connector;
+}
 
 function Kit(
   { networks }: { networks?: Network[] } = {
@@ -33,28 +92,30 @@ function Kit(
   }
 ) {
   const [address, setAddress] = useState(lastUsedAddress);
-  const [initialised, setInitialised] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState<
+    ((x: ConnectionResult | false) => void) | null
+  >(null);
 
   const initialNetwork = (networks || defaultNetworks).find(
     (n) => n.name === lastUsedNetworkName
   );
+  if (!initialNetwork) {
+    throw new Error('Unknown network');
+  }
+
+  const [connection, setConnection] = useState<Connector>(initialConnector);
   const [network, updateNetwork] = useState(
     initialNetwork || defaultNetworks[0]
   );
   const [pendingActionCount, setPendingActionCount] = useState(0);
 
-  const [kit, setKit] = useState(initialKit);
-
   useEffect(() => {
-    if (kit.defaultAccount) {
-      setAddress(kit.defaultAccount);
-      localStorage.setItem(
-        localStorageKeys.lastUsedAddress,
-        kit.defaultAccount
-      );
+    const account = connection.kit.defaultAccount;
+    if (account) {
+      setAddress(account);
+      localStorage.setItem(localStorageKeys.lastUsedAddress, account);
     }
-  }, [kit.defaultAccount]);
+  }, [connection.kit]);
 
   useEffect(() => {
     if (
@@ -62,32 +123,59 @@ function Kit(
     ) {
       return;
     }
-
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
-    setKit((k) => {
-      const existingWallet = k.getWallet();
-      if (!existingWallet) {
-        return newKit(network.rpcUrl);
-      }
 
-      const nk = newKit(network.rpcUrl, existingWallet);
-      nk.defaultAccount = existingWallet.getAccounts()[0];
-      return nk;
-    });
+    // setKit((k) => {
+    //   const existingWallet = k.getWallet();
+    //   if (!existingWallet) {
+    //     return newKit(network.rpcUrl);
+    //   }
+
+    //   const nk = newKit(network.rpcUrl, existingWallet);
+    //   nk.defaultAccount = existingWallet.getAccounts()[0];
+    //   return nk;
+    // });
   }, [network]);
 
   const destroy = useCallback(() => {
     localStorage.removeItem(localStorageKeys.privateKey);
     localStorage.removeItem(localStorageKeys.lastUsedAddress);
+    localStorage.removeItem(localStorageKeys.lastUsedWalletType);
+    localStorage.removeItem(localStorageKeys.lastUsedWalletArguments);
+
     setAddress('');
-    setKit(newKit(network.rpcUrl));
-    setInitialised(false);
+    setConnection(new UnauthenticatedConnector(network));
   }, [network]);
 
-  const updateKit = useCallback((k: ContractKit) => {
-    setKit(k);
-    setInitialised(true);
-  }, []);
+  const connect = async (): Promise<Connector> => {
+    const connectionResultPromise = new Promise((resolve, reject) => {
+      const connectionResultCallback = (
+        x:
+          | {
+              type: WalletTypes;
+              connector: Connector;
+            }
+          | false
+      ) => resolve(x);
+
+      // has to be like this and not like
+      // setModalIsOpen(connectionResultCallback)
+      // as React will try to run a function passed to set state
+      setModalIsOpen(() => connectionResultCallback);
+    });
+
+    const result = (await connectionResultPromise) as ConnectionResult | false;
+    if (result === false) {
+      // dismissed
+      setModalIsOpen(null);
+      throw new Error('Connection cancelled');
+    }
+
+    setConnection(result.connector);
+    setModalIsOpen(null);
+
+    return result.connector;
+  };
 
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will
@@ -96,9 +184,9 @@ function Kit(
    */
   const performActions = useCallback(
     async (...operations: (() => any | Promise<any>)[]) => {
-      if (!initialised) {
-        setModalIsOpen(true);
-        return;
+      let c = connection;
+      if (!c.initialised) {
+        c = await connect();
       }
 
       setPendingActionCount(operations.length);
@@ -117,7 +205,7 @@ function Kit(
 
       return results;
     },
-    [initialised]
+    [connect]
   );
 
   /**
@@ -136,9 +224,9 @@ function Kit(
       sendOpts: any = {}
     ) => {
       const [gasPriceMinimum, celo, cusd /* ceur */] = await Promise.all([
-        kit.contracts.getGasPriceMinimum(),
-        kit.contracts.getGoldToken(),
-        kit.contracts.getStableToken(),
+        connection.kit.contracts.getGasPriceMinimum(),
+        connection.kit.contracts.getGoldToken(),
+        connection.kit.contracts.getStableToken(),
       ]);
       const [
         minGasPrice,
@@ -171,7 +259,7 @@ function Kit(
         )
       );
     },
-    [kit, address, performActions]
+    [connection.kit, address, performActions]
   );
 
   return {
@@ -179,8 +267,10 @@ function Kit(
     updateNetwork,
 
     address,
-    kit,
+    kit: connection.kit,
     destroy,
+
+    connect,
 
     pendingActionCount,
 
@@ -188,11 +278,7 @@ function Kit(
     sendTransaction,
     performActions,
 
-    updateKit,
-
     modalIsOpen,
-    openModal: () => setModalIsOpen(true),
-    closeModal: () => setModalIsOpen(false),
   };
 }
 

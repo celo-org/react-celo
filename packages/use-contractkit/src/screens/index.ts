@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react';
+import { Connector, WalletTypes } from '../create-kit';
 import { SupportedProviders } from '../types';
 import { Ledger } from './ledger';
 import { Metamask } from './metamask';
@@ -8,7 +9,10 @@ import { WalletConnect } from './wallet-connect';
 
 const screens: {
   [p in SupportedProviders]: FunctionComponent<{
-    onSubmit: (args?: any) => Promise<void> | void;
+    onSubmit: (x: {
+      type: WalletTypes;
+      connector: Connector;
+    }) => Promise<void> | void;
   }>;
 } = {
   [SupportedProviders.Ledger]: Ledger,
