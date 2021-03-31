@@ -260,7 +260,11 @@ export default function Home() {
               {address ? (
                 <SecondaryButton onClick={destroy}>Disconnect</SecondaryButton>
               ) : (
-                <SecondaryButton onClick={connect}>Connect</SecondaryButton>
+                <SecondaryButton
+                  onClick={() => connect().catch((e) => toast.error(e.message))}
+                >
+                  Connect
+                </SecondaryButton>
               )}
             </div>
 

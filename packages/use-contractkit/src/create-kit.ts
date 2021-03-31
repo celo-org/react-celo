@@ -53,6 +53,10 @@ export class PrivateKeyConnector implements Connector {
       localStorageKeys.lastUsedWalletType,
       WalletTypes.PrivateKey
     );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([privateKey])
+    );
 
     const wallet = new LocalWallet();
     wallet.addAccount(privateKey);

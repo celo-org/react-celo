@@ -72,6 +72,7 @@ const connectorTypes: { [x in WalletTypes]: any } = {
 let initialConnector: Connector;
 if (lastUsedWalletType) {
   try {
+    console.log(lastUsedWalletType, lastUsedWalletArguments);
     initialConnector = new connectorTypes[lastUsedWalletType as WalletTypes](
       lastUsedNetwork,
       ...lastUsedWalletArguments
@@ -185,6 +186,7 @@ function Kit(
   const performActions = useCallback(
     async (...operations: (() => any | Promise<any>)[]) => {
       let c = connection;
+      console.log(c);
       if (!c.initialised) {
         c = await connect();
       }

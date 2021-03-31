@@ -104,11 +104,8 @@ export function ConnectModal({
   const { modalIsOpen } = useContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
 
-  console.log('Connect Modal', modalIsOpen);
-
   const close = async () => {
     setAdding(null);
-    console.log('onClose');
     modalIsOpen!(false);
   };
 
@@ -116,7 +113,6 @@ export function ConnectModal({
     type: createKit.WalletTypes;
     connector: createKit.Connector;
   }) {
-    console.log('onSubmit');
     modalIsOpen!(args);
   }
 
