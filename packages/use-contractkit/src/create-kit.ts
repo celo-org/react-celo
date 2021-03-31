@@ -26,6 +26,8 @@ export enum WalletTypes {
   PrivateKey = 'PrivateKey',
   WalletConnect = 'WalletConnect',
   Ledger = 'Ledger',
+  CeloExtensionWallet = 'CeloExtensionWallet',
+  Metamask = 'Metamask',
 }
 
 export class UnauthenticatedConnector implements Connector {
@@ -76,6 +78,15 @@ export class LedgerConnector {
   public kit: ContractKit;
 
   constructor(private network: Network, private index: number) {
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletType,
+      WalletTypes.Ledger
+    );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([index])
+    );
+
     this.kit = newKit(network.rpcUrl);
   }
 
@@ -90,6 +101,35 @@ export class LedgerConnector {
 
     this.kit = newKit(this.network.rpcUrl, wallet);
     this.kit.defaultAccount = wallet.getAccounts()[0];
+  }
+}
+
+export class CeloExtensionWalletConnector {
+  public initialised = false;
+  public type = WalletTypes.CeloExtensionWallet;
+  public kit: ContractKit;
+
+  constructor(network: Network) {
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletType,
+      WalletTypes.CeloExtensionWallet
+    );
+
+    this.kit = newKit(network.rpcUrl);
+  }
+
+  async initialise() {
+    const { default: Web3 } = await import('web3');
+
+    // @ts-ignore
+    const celo: any = window.celo;
+    if (!celo) {
+      throw new Error('Celo Extension Wallet not installed');
+    }
+    const web3 = new Web3(celo);
+    await celo.enable();
+
+    this.kit = newKitFromWeb3(web3 as any);
   }
 }
 

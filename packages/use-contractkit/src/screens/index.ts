@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import { Connector, WalletTypes } from '../create-kit';
 import { SupportedProviders } from '../types';
 import { Ledger } from './ledger';
-import { Metamask } from './metamask';
+import { Metamask } from './cew';
 import { PrivateKey } from './private-key';
 import { Valora } from './valora';
 import { WalletConnect } from './wallet-connect';

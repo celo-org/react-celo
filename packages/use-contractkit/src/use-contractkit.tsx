@@ -10,6 +10,7 @@ import {
   NetworkNames,
 } from './constants';
 import {
+  CeloExtensionWalletConnector,
   Connector,
   LedgerConnector,
   PrivateKeyConnector,
@@ -67,12 +68,13 @@ const connectorTypes: { [x in WalletTypes]: any } = {
   [WalletTypes.PrivateKey]: PrivateKeyConnector,
   [WalletTypes.Ledger]: LedgerConnector,
   [WalletTypes.WalletConnect]: null,
+  [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
+  [WalletTypes.Metamask]: null,
 };
 
 let initialConnector: Connector;
 if (lastUsedWalletType) {
   try {
-    console.log(lastUsedWalletType, lastUsedWalletArguments);
     initialConnector = new connectorTypes[lastUsedWalletType as WalletTypes](
       lastUsedNetwork,
       ...lastUsedWalletArguments
@@ -159,9 +161,8 @@ function Kit(
           | false
       ) => resolve(x);
 
-      // has to be like this and not like
-      // setModalIsOpen(connectionResultCallback)
-      // as React will try to run a function passed to set state
+      // has to be like this and not like setModalIsOpen(connectionResultCallback)
+      // as React will try to run any function passed to set state
       setModalIsOpen(() => connectionResultCallback);
     });
 
@@ -186,9 +187,10 @@ function Kit(
   const performActions = useCallback(
     async (...operations: (() => any | Promise<any>)[]) => {
       let c = connection;
-      console.log(c);
-      if (!c.initialised) {
+      if (c.type === WalletTypes.Unauthenticated) {
         c = await connect();
+      } else if (!c.initialised) {
+        await c.initialise();
       }
 
       setPendingActionCount(operations.length);
@@ -196,6 +198,7 @@ function Kit(
       const results = [];
       for (const op of operations) {
         try {
+          console.log(op);
           results.push(await op());
         } catch (e) {
           setPendingActionCount(0);
@@ -225,6 +228,7 @@ function Kit(
         | Promise<CeloTransactionObject<any>[]>,
       sendOpts: any = {}
     ) => {
+      console.log(tx, sendOpts);
       const [gasPriceMinimum, celo, cusd /* ceur */] = await Promise.all([
         connection.kit.contracts.getGasPriceMinimum(),
         connection.kit.contracts.getGoldToken(),

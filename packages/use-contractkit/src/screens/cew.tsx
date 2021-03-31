@@ -1,20 +1,16 @@
 import React, { useEffect } from 'react';
 import Loader from 'react-loader-spinner';
+import { CeloExtensionWalletConnector, WalletTypes } from '../create-kit';
+import { useContractKit } from '../use-contractkit';
 
 export function Metamask({ onSubmit }: { onSubmit: (x: any) => void }) {
+  const { network } = useContractKit();
+
   useEffect(() => {
     async function f() {
-      const { default: Web3 } = await import('web3');
-
-      // @ts-ignore
-      const celo: any = window.celo;
-      if (celo) {
-        const web3 = new Web3(celo);
-        await celo.enable();
-        onSubmit(web3);
-      } else {
-        console.warn('No Metamask extension installed');
-      }
+      const connector = new CeloExtensionWalletConnector(network);
+      await connector.initialise();
+      onSubmit({ type: WalletTypes.CeloExtensionWallet, connector });
     }
     f();
   }, []);
