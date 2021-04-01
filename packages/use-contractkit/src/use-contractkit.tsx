@@ -91,10 +91,18 @@ interface ConnectionResult {
 }
 
 function Kit(
-  { networks = defaultNetworks }: { networks?: Network[] } = {
+  {
+    networks = defaultNetworks,
+    dappName,
+  }: {
+    networks?: Network[];
+    dappName: string;
+  } = {
     networks: defaultNetworks,
+    dappName: '',
   }
 ) {
+  const [name] = useState(dappName);
   const [address, setAddress] = useState(lastUsedAddress);
   const [connectionCallback, setConnectionCallback] = useState<
     ((x: ConnectionResult | false) => void) | null
@@ -135,12 +143,7 @@ function Kit(
       const lastUsedWalletArguments = JSON.parse(
         localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
       );
-      const newConnection = new Constructor(
-        network,
-        ...lastUsedWalletArguments
-      );
-      console.log('newConnection', newConnection);
-      return newConnection;
+      return new Constructor(network, ...lastUsedWalletArguments);
     });
   }, [network]);
 
@@ -153,7 +156,7 @@ function Kit(
     setConnection(new UnauthenticatedConnector(network));
   }, [network]);
 
-  const connect = async (): Promise<Connector> => {
+  const connect = useCallback(async (): Promise<Connector> => {
     const connectionResultPromise = new Promise((resolve) => {
       const connectionResultCallback = (
         x:
@@ -187,7 +190,7 @@ function Kit(
     setConnectionCallback(null);
 
     return result.connector;
-  };
+  }, [network]);
 
   const getConnectedKit = useCallback(async () => {
     let initialisedConnection = connection;
@@ -231,6 +234,7 @@ function Kit(
     updateNetwork,
 
     address,
+    dappName: name,
     kit: connection.kit,
     walletType: connection.type,
 
@@ -270,7 +274,7 @@ export function ContractKitProvider({
   };
 }) {
   return (
-    <KitState.Provider initialState={{ networks }}>
+    <KitState.Provider initialState={{ networks, dappName }}>
       <ConnectModal dappName={dappName} {...connectModal} />
       <ActionModal dappName={dappName} {...actionModal} />
 
