@@ -71,8 +71,8 @@ export default function Home() {
     try {
       setSending(true);
 
-      await performActions(async (kit) => {
-        const celo = await kit.contracts.getGoldToken();
+      await performActions(async (k) => {
+        const celo = await k.contracts.getGoldToken();
         await celo
           .transfer(
             // impact market contract
@@ -93,7 +93,7 @@ export default function Home() {
   const testSignTypedData = async () => {
     setSending(true);
     try {
-      await performActions(() => kit.signTypedData(address, TYPED_DATA));
+      await performActions((k) => k.signTypedData(address, TYPED_DATA));
       toast.success('signTypedData succeeded');
     } catch (e) {
       toast.error(e.message);
