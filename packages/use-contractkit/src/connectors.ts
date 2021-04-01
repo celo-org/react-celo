@@ -1,5 +1,5 @@
-import { Network } from './types';
-import { localStorageKeys } from './constants';
+import { Network, Connector } from './types';
+import { localStorageKeys, WalletTypes } from './constants';
 import { ContractKit, newKit, newKitFromWeb3 } from '@celo/contractkit';
 import { LocalWallet } from '@celo/wallet-local';
 import { ReadOnlyWallet } from '@celo/connect';
@@ -13,23 +13,6 @@ import { DappKitWallet } from './dappkit-wallet';
  * them.
  */
 
-export interface Connector {
-  kit: ContractKit;
-  type: WalletTypes;
-
-  initialised: boolean;
-  initialise: () => any;
-}
-
-export enum WalletTypes {
-  Unauthenticated = 'Unauthenticated',
-  PrivateKey = 'PrivateKey',
-  WalletConnect = 'WalletConnect',
-  Ledger = 'Ledger',
-  CeloExtensionWallet = 'CeloExtensionWallet',
-  Metamask = 'Metamask',
-}
-
 export class UnauthenticatedConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.PrivateKey;
@@ -40,7 +23,7 @@ export class UnauthenticatedConnector implements Connector {
   }
 
   initialise() {
-    return;
+    return this;
   }
 }
 
@@ -50,7 +33,6 @@ export class PrivateKeyConnector implements Connector {
   public kit: ContractKit;
 
   constructor(n: Network, privateKey: string) {
-    localStorage.setItem(localStorageKeys.privateKey, privateKey);
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.PrivateKey
@@ -68,11 +50,11 @@ export class PrivateKeyConnector implements Connector {
   }
 
   initialise() {
-    return;
+    return this;
   }
 }
 
-export class LedgerConnector {
+export class LedgerConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.Ledger;
   public kit: ContractKit;
@@ -101,10 +83,14 @@ export class LedgerConnector {
 
     this.kit = newKit(this.network.rpcUrl, wallet);
     this.kit.defaultAccount = wallet.getAccounts()[0];
+
+    this.initialised = true;
+
+    return this;
   }
 }
 
-export class CeloExtensionWalletConnector {
+export class CeloExtensionWalletConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: ContractKit;
@@ -113,6 +99,10 @@ export class CeloExtensionWalletConnector {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.CeloExtensionWallet
+    );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([])
     );
 
     this.kit = newKit(network.rpcUrl);
@@ -130,34 +120,77 @@ export class CeloExtensionWalletConnector {
     await celo.enable();
 
     this.kit = newKitFromWeb3(web3 as any);
+
+    return this;
   }
 }
 
-export const fromDappKit = async (n: Network, dappName: string) => {
-  const wallet = new DappKitWallet(dappName);
-  await wallet.init();
+export class DappKitConnector implements Connector {
+  public initialised = true;
+  public type = WalletTypes.DappKit;
+  public kit: ContractKit;
 
-  const k = newKit(n.rpcUrl, (wallet as any) as ReadOnlyWallet);
-  k.defaultAccount = wallet.getAccounts()[0];
+  constructor(private network: Network, private dappName: string) {
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletType,
+      WalletTypes.DappKit
+    );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([dappName])
+    );
 
-  wallet.setKit(k);
-  return k;
-};
+    this.kit = newKit(network.rpcUrl);
+  }
 
-export const fromWalletConnect = async (
-  n: Network,
-  w: any // WalletConnectWallet
-) => {
-  const [account] = w.getAccounts();
-  const kit = newKit(n.rpcUrl, w);
-  kit.defaultAccount = account;
-  return kit;
-};
+  async initialise() {
+    const wallet = new DappKitWallet(this.dappName);
+    await wallet.init();
 
-export const fromWeb3 = async (n: Network, w: any) => {
-  const [defaultAccount] = await w.eth.getAccounts();
-  const kit = newKitFromWeb3(w);
-  kit.defaultAccount = defaultAccount;
+    this.kit = newKit(this.network.rpcUrl, (wallet as any) as ReadOnlyWallet);
+    this.kit.defaultAccount = wallet.getAccounts()[0];
+    wallet.setKit(this.kit);
 
-  return kit;
-};
+    return this;
+  }
+}
+
+export class WalletConnectConnector implements Connector {
+  public initialised = true;
+  public type = WalletTypes.DappKit;
+  public kit: ContractKit;
+
+  constructor(private network: Network, private dappName: string) {
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletType,
+      WalletTypes.WalletConnect
+    );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([dappName])
+    );
+
+    this.kit = newKit(network.rpcUrl);
+  }
+
+  async initialise() {
+    const wallet = new DappKitWallet(this.dappName);
+    await wallet.init();
+
+    this.kit = newKit(this.network.rpcUrl, (wallet as any) as ReadOnlyWallet);
+    this.kit.defaultAccount = wallet.getAccounts()[0];
+    wallet.setKit(this.kit);
+
+    return this;
+  }
+}
+
+// export const fromWalletConnect = async (
+//   n: Network,
+//   w: any // WalletConnectWallet
+// ) => {
+//   const [account] = w.getAccounts();
+//   const kit = newKit(n.rpcUrl, w);
+//   kit.defaultAccount = account;
+//   return kit;
+// };

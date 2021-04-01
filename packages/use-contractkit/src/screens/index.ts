@@ -1,14 +1,14 @@
 import { FunctionComponent } from 'react';
-import { Connector, WalletTypes } from '../create-kit';
-import { SupportedProviders } from '../types';
-import { Ledger } from './ledger';
+import { SupportedProviders, WalletTypes } from '../constants';
+import { Connector } from '../types';
 import { Metamask } from './cew';
+import { Ledger } from './ledger';
 import { PrivateKey } from './private-key';
 import { Valora } from './valora';
 import { WalletConnect } from './wallet-connect';
 
-const screens: {
-  [p in SupportedProviders]: FunctionComponent<{
+const defaultScreens: {
+  [P in SupportedProviders]?: FunctionComponent<{
     onSubmit: (x: {
       type: WalletTypes;
       connector: Connector;
@@ -17,9 +17,10 @@ const screens: {
 } = {
   [SupportedProviders.Ledger]: Ledger,
   [SupportedProviders.Valora]: Valora,
-  [SupportedProviders.PrivateKey]: PrivateKey,
   [SupportedProviders.WalletConnect]: WalletConnect,
-  [SupportedProviders.MetaMask]: Metamask,
+  // [SupportedProviders.MetaMask]: Metamask,
+  [SupportedProviders.CeloExtensionWallet]: Metamask,
+  [SupportedProviders.PrivateKey]: PrivateKey,
 };
 
-export default screens;
+export default defaultScreens;

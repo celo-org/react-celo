@@ -1,24 +1,24 @@
-import { ContractKit, newKit } from '@celo/contractkit';
 import { CeloTransactionObject } from '@celo/connect';
+import { ContractKit } from '@celo/contractkit';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
 import {
-  localStorageKeys,
   Alfajores,
+  localStorageKeys,
   Mainnet,
   NetworkNames,
+  WalletTypes,
 } from './constants';
 import {
   CeloExtensionWalletConnector,
-  Connector,
+  DappKitConnector,
   LedgerConnector,
   PrivateKeyConnector,
   UnauthenticatedConnector,
-  WalletTypes,
-} from './create-kit';
+} from './connectors';
 import { ActionModal, ActionModalProps, ConnectModal } from './modals';
-import { Network, Provider } from './types';
+import { Network, Provider, Connector } from './types';
 
 let lastUsedNetworkName = Mainnet.name;
 let lastUsedAddress = '';
@@ -70,6 +70,7 @@ const connectorTypes: { [x in WalletTypes]: any } = {
   [WalletTypes.WalletConnect]: null,
   [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
   [WalletTypes.Metamask]: null,
+  [WalletTypes.DappKit]: DappKitConnector,
 };
 
 let initialConnector: Connector;
@@ -95,7 +96,7 @@ function Kit(
   }
 ) {
   const [address, setAddress] = useState(lastUsedAddress);
-  const [modalIsOpen, setModalIsOpen] = useState<
+  const [connectionCallback, setConnectionCallback] = useState<
     ((x: ConnectionResult | false) => void) | null
   >(null);
 
@@ -141,7 +142,6 @@ function Kit(
   }, [network]);
 
   const destroy = useCallback(() => {
-    localStorage.removeItem(localStorageKeys.privateKey);
     localStorage.removeItem(localStorageKeys.lastUsedAddress);
     localStorage.removeItem(localStorageKeys.lastUsedWalletType);
     localStorage.removeItem(localStorageKeys.lastUsedWalletArguments);
@@ -161,20 +161,20 @@ function Kit(
           | false
       ) => resolve(x);
 
-      // has to be like this and not like setModalIsOpen(connectionResultCallback)
+      // has to be like this and not like setConnectionCallback(connectionResultCallback)
       // as React will try to run any function passed to set state
-      setModalIsOpen(() => connectionResultCallback);
+      setConnectionCallback(() => connectionResultCallback);
     });
 
     const result = (await connectionResultPromise) as ConnectionResult | false;
     if (result === false) {
       // dismissed
-      setModalIsOpen(null);
+      setConnectionCallback(null);
       throw new Error('Connection cancelled');
     }
 
     setConnection(result.connector);
-    setModalIsOpen(null);
+    setConnectionCallback(null);
 
     return result.connector;
   };
@@ -185,21 +185,22 @@ function Kit(
    *    - handle multiple transactions in order
    */
   const performActions = useCallback(
-    async (...operations: (() => any | Promise<any>)[]) => {
-      let c = connection;
-      if (c.type === WalletTypes.Unauthenticated) {
-        c = await connect();
-      } else if (!c.initialised) {
-        await c.initialise();
+    async (...operations: ((kit: ContractKit) => any | Promise<any>)[]) => {
+      let initialisedConnection = connection;
+      if (connection.type === WalletTypes.Unauthenticated) {
+        initialisedConnection = await connect();
+      } else if (!initialisedConnection.initialised) {
+        await initialisedConnection.initialise();
       }
+
+      console.log(initialisedConnection);
 
       setPendingActionCount(operations.length);
 
       const results = [];
       for (const op of operations) {
         try {
-          console.log(op);
-          results.push(await op());
+          results.push(await op(initialisedConnection.kit));
         } catch (e) {
           setPendingActionCount(0);
           throw e;
@@ -228,7 +229,6 @@ function Kit(
         | Promise<CeloTransactionObject<any>[]>,
       sendOpts: any = {}
     ) => {
-      console.log(tx, sendOpts);
       const [gasPriceMinimum, celo, cusd /* ceur */] = await Promise.all([
         connection.kit.contracts.getGasPriceMinimum(),
         connection.kit.contracts.getGoldToken(),
@@ -284,7 +284,7 @@ function Kit(
     sendTransaction,
     performActions,
 
-    modalIsOpen,
+    connectionCallback,
   };
 }
 

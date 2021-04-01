@@ -1,8 +1,10 @@
 import React, { FunctionComponent, useContext, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import { images } from '../constants';
-import { Connector, LedgerConnector, WalletTypes } from '../create-kit';
+import { LedgerConnector } from '../connectors';
 import { useContractKit } from '../use-contractkit';
+import { WalletTypes } from '../constants';
+import { Connector } from '../types';
 
 export const Ledger: FunctionComponent<any> = ({
   onSubmit,
@@ -34,7 +36,7 @@ export const Ledger: FunctionComponent<any> = ({
         <div className="tw-flex">
           <div className="tw-mr-4">
             <img
-              src={images.ledger}
+              src={images.Ledger}
               style={{ height: '36px', minWidth: '36px' }}
             />
           </div>

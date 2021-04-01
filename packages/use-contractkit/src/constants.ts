@@ -1,19 +1,30 @@
 export const localStorageKeys = {
-  privateKey: 'use-contractkit/private-key',
   lastUsedAddress: 'use-contractkit/last-used-address',
   lastUsedNetwork: 'use-contractkit/last-used-network',
   lastUsedWalletType: 'use-contractkit/last-used-wallet',
   lastUsedWalletArguments: 'use-contractkit/last-used-wallet-arguments',
 };
 
+export enum SupportedProviders {
+  WalletConnect = 'Wallet Connect',
+  MetaMask = 'MetaMask',
+  CeloExtensionWallet = 'Celo Extension Wallet',
+  Ledger = 'Ledger',
+  Valora = 'Valora',
+  PrivateKey = 'Private key',
+}
+
 // can't figure out how to bundle images yet
 // so this is our workaround
 export const images = {
-  ledger: 'https://www.ledger.com/wp-content/uploads/2020/02/puce_blue.png',
-  walletconnect:
+  [SupportedProviders.Ledger]:
+    'https://www.ledger.com/wp-content/uploads/2020/02/puce_blue.png',
+  [SupportedProviders.WalletConnect]:
     'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media',
-  metamask: 'https://metamask.io/images/favicon-256.png',
-  valora: 'https://valoraapp.com/favicon.ico',
+  [SupportedProviders.MetaMask]: 'https://metamask.io/images/favicon-256.png',
+  [SupportedProviders.Valora]: 'https://valoraapp.com/favicon.ico',
+  [SupportedProviders.CeloExtensionWallet]:
+    'https://lh3.googleusercontent.com/oCe1p-7wMa4KOEKLENfZmJW4MrXyPyw-3HYdVnjLlwA1Y3jujRmFRvzvkktmtF8HTuMy_62wBHkBng91YVjUPkXD=w128-h128-e365-rj-sc0x00ffffff',
 };
 
 export enum NetworkNames {
@@ -42,3 +53,13 @@ export const Mainnet = {
   graphQl: 'https://explorer.celo.org/graphiql',
   explorer: 'https://explorer.celo.org',
 };
+
+export enum WalletTypes {
+  Unauthenticated = 'Unauthenticated',
+  PrivateKey = 'PrivateKey',
+  WalletConnect = 'WalletConnect',
+  Ledger = 'Ledger',
+  CeloExtensionWallet = 'CeloExtensionWallet',
+  Metamask = 'Metamask',
+  DappKit = 'DappKit',
+}

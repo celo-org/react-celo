@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Loader from 'react-loader-spinner';
-import { CeloExtensionWalletConnector, WalletTypes } from '../create-kit';
+import { CeloExtensionWalletConnector } from '../connectors';
+import { WalletTypes } from '../constants';
 import { useContractKit } from '../use-contractkit';
 
 export function Metamask({ onSubmit }: { onSubmit: (x: any) => void }) {

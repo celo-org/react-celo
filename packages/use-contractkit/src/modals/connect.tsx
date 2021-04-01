@@ -6,32 +6,32 @@ import React, {
   useState,
 } from 'react';
 import ReactModal from 'react-modal';
-import * as createKit from '../create-kit';
+import {} from '../connectors';
 import defaultScreens from '../screens';
-import { Provider, SupportedProviders } from '../types';
+import { Connector, Provider } from '../types';
 import { useContractKit } from '../use-contractkit';
-import { images } from '../constants';
+import { images, WalletTypes, SupportedProviders } from '../constants';
 
 const providers: Provider[] = [
   {
     name: SupportedProviders.WalletConnect,
     description: 'Scan a QR code to connect your wallet',
-    image: images.walletconnect,
+    image: images['Wallet Connect'],
   },
   {
-    name: SupportedProviders.MetaMask,
+    name: SupportedProviders.CeloExtensionWallet,
     description: 'A crypto gateway to blockchain apps',
-    image: images.metamask,
+    image: images['Celo Extension Wallet'],
   },
   {
     name: SupportedProviders.Ledger,
     description: 'Connect to your Ledger wallet',
-    image: images.ledger,
+    image: images.Ledger,
   },
   {
     name: SupportedProviders.Valora,
     description: 'A mobile payments app that works worldwide',
-    image: images.valora,
+    image: images.Valora,
   },
   {
     name: SupportedProviders.PrivateKey,
@@ -96,24 +96,27 @@ export function ConnectModal({
 }: {
   dappName: string;
   screens?: {
-    [x in SupportedProviders]: FunctionComponent<{ onSubmit: () => void }>;
+    [x in SupportedProviders]: FunctionComponent<{
+      onSubmit: (x: {
+        type: WalletTypes;
+        connector: Connector;
+      }) => Promise<void> | void;
+    }>;
   };
   renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
   reactModalProps?: Partial<ReactModal.Props>;
 }) {
-  const { modalIsOpen } = useContractKit();
+  const { connectionCallback } = useContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
 
   const close = async () => {
     setAdding(null);
-    modalIsOpen!(false);
+    connectionCallback!(false);
   };
 
-  async function onSubmit(args: {
-    type: createKit.WalletTypes;
-    connector: createKit.Connector;
-  }) {
-    modalIsOpen!(args);
+  async function onSubmit(args: { type: WalletTypes; connector: Connector }) {
+    setAdding(null);
+    connectionCallback!(args);
   }
 
   const list = (
@@ -130,7 +133,9 @@ export function ConnectModal({
   let component;
   if (adding) {
     const ProviderElement = screens?.[adding] || defaultScreens[adding];
-    // @ts-ignore
+    if (!ProviderElement) {
+      return null;
+    }
     component = <ProviderElement onSubmit={onSubmit} />;
   } else {
     component = list;
@@ -138,7 +143,7 @@ export function ConnectModal({
 
   return (
     <ReactModal
-      isOpen={!!modalIsOpen}
+      isOpen={!!connectionCallback}
       onRequestClose={close}
       {...(reactModalProps
         ? reactModalProps

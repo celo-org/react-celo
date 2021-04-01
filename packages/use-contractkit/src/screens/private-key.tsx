@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Connector, PrivateKeyConnector, WalletTypes } from '../create-kit';
+import { PrivateKeyConnector } from '../connectors';
 import { useContractKit } from '../use-contractkit';
+import { WalletTypes } from '../constants';
+import { Connector } from '../types';
 
 export function PrivateKey({
   onSubmit,

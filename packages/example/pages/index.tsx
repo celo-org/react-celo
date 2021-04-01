@@ -108,8 +108,8 @@ export default function Home() {
   const testSignPersonal = async () => {
     setSending(true);
     try {
-      await performActions(() =>
-        kit.connection.sign(
+      await performActions((k) =>
+        k.connection.sign(
           ensureLeading0x(Buffer.from('Hello').toString('hex')),
           address
         )

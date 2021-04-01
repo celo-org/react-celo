@@ -1,4 +1,6 @@
+import { ContractKit } from '@celo/contractkit';
 import { ReactNode } from 'react';
+import { SupportedProviders, WalletTypes } from './constants';
 
 export interface Network {
   name: string;
@@ -7,17 +9,17 @@ export interface Network {
   explorer: string;
 }
 
-export enum SupportedProviders {
-  WalletConnect = 'Wallet Connect',
-  MetaMask = 'MetaMask',
-  Ledger = 'Ledger',
-  Valora = 'Valora',
-  PrivateKey = 'Private key',
-}
-
 export interface Provider {
   name: SupportedProviders;
   description: string;
   image: string | ReactNode;
   disabled?: boolean;
+}
+
+export interface Connector {
+  kit: ContractKit;
+  type: WalletTypes;
+
+  initialised: boolean;
+  initialise: () => Promise<this> | this;
 }
