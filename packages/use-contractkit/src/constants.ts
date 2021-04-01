@@ -24,7 +24,7 @@ export const images = {
   [SupportedProviders.MetaMask]: 'https://metamask.io/images/favicon-256.png',
   [SupportedProviders.Valora]: 'https://valoraapp.com/favicon.ico',
   [SupportedProviders.CeloExtensionWallet]:
-    'https://lh3.googleusercontent.com/oCe1p-7wMa4KOEKLENfZmJW4MrXyPyw-3HYdVnjLlwA1Y3jujRmFRvzvkktmtF8HTuMy_62wBHkBng91YVjUPkXD=w128-h128-e365-rj-sc0x00ffffff',
+    'https://metamask.io/images/favicon-256.png',
 };
 
 export enum NetworkNames {
@@ -38,6 +38,7 @@ export const Alfajores = {
   rpcUrl: 'https://alfajores-forno.celo-testnet.org',
   graphQl: 'https://alfajores-blockscout.celo-testnet.org/graphiql',
   explorer: 'https://alfajores-blockscout.celo-testnet.org',
+  chainId: 44787,
 };
 
 export const Baklava = {
@@ -45,6 +46,7 @@ export const Baklava = {
   rpcUrl: 'https://baklava-forno.celo-testnet.org',
   graphQl: 'https://baklava-blockscout.celo-testnet.org/graphiql',
   explorer: 'https://baklava-blockscout.celo-testnet.org',
+  chainId: 62320,
 };
 
 export const Mainnet = {
@@ -52,6 +54,7 @@ export const Mainnet = {
   rpcUrl: 'https://forno.celo.org',
   graphQl: 'https://explorer.celo.org/graphiql',
   explorer: 'https://explorer.celo.org',
+  chainId: 42220,
 };
 
 export enum WalletTypes {

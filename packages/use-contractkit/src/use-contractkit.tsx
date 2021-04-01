@@ -63,13 +63,13 @@ const defaultNetworks = [Mainnet, Alfajores];
 const lastUsedNetwork =
   defaultNetworks.find((n) => n.name === lastUsedNetworkName) || Alfajores;
 
-const connectorTypes: { [x in WalletTypes]: any } = {
+const connectorTypes: { [x in WalletTypes]?: any } = {
   [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
   [WalletTypes.PrivateKey]: PrivateKeyConnector,
   [WalletTypes.Ledger]: LedgerConnector,
   [WalletTypes.WalletConnect]: null,
   [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
-  [WalletTypes.Metamask]: null,
+  // [WalletTypes.Metamask]: null,
   [WalletTypes.DappKit]: DappKitConnector,
 };
 
@@ -91,7 +91,7 @@ interface ConnectionResult {
 }
 
 function Kit(
-  { networks }: { networks?: Network[] } = {
+  { networks = defaultNetworks }: { networks?: Network[] } = {
     networks: defaultNetworks,
   }
 ) {
@@ -100,17 +100,14 @@ function Kit(
     ((x: ConnectionResult | false) => void) | null
   >(null);
 
-  const initialNetwork = (networks || defaultNetworks).find(
-    (n) => n.name === lastUsedNetworkName
-  );
+  const initialNetwork =
+    networks.find((n) => n.name === lastUsedNetworkName) || defaultNetworks[0];
   if (!initialNetwork) {
     throw new Error('Unknown network');
   }
 
   const [connection, setConnection] = useState<Connector>(initialConnector);
-  const [network, updateNetwork] = useState(
-    initialNetwork || defaultNetworks[0]
-  );
+  const [network, updateNetwork] = useState(initialNetwork);
   const [pendingActionCount, setPendingActionCount] = useState(0);
 
   useEffect(() => {
@@ -129,16 +126,22 @@ function Kit(
     }
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
-    // setKit((k) => {
-    //   const existingWallet = k.getWallet();
-    //   if (!existingWallet) {
-    //     return newKit(network.rpcUrl);
-    //   }
+    setConnection((c) => {
+      const Constructor = connectorTypes[c.type];
+      if (!Constructor) {
+        return null;
+      }
 
-    //   const nk = newKit(network.rpcUrl, existingWallet);
-    //   nk.defaultAccount = existingWallet.getAccounts()[0];
-    //   return nk;
-    // });
+      const lastUsedWalletArguments = JSON.parse(
+        localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
+      );
+      const newConnection = new Constructor(
+        network,
+        ...lastUsedWalletArguments
+      );
+      console.log('newConnection', newConnection);
+      return newConnection;
+    });
   }, [network]);
 
   const destroy = useCallback(() => {
@@ -151,7 +154,7 @@ function Kit(
   }, [network]);
 
   const connect = async (): Promise<Connector> => {
-    const connectionResultPromise = new Promise((resolve, reject) => {
+    const connectionResultPromise = new Promise((resolve) => {
       const connectionResultCallback = (
         x:
           | {
@@ -173,11 +176,29 @@ function Kit(
       throw new Error('Connection cancelled');
     }
 
+    if (result.connector.onNetworkChange) {
+      result.connector.onNetworkChange((chainId) => {
+        const network = networks?.find((n) => n.chainId === chainId);
+        network && updateNetwork(network);
+      });
+    }
+
     setConnection(result.connector);
     setConnectionCallback(null);
 
     return result.connector;
   };
+
+  const getConnectedKit = useCallback(async () => {
+    let initialisedConnection = connection;
+    if (connection.type === WalletTypes.Unauthenticated) {
+      initialisedConnection = await connect();
+    } else if (!initialisedConnection.initialised) {
+      await initialisedConnection.initialise();
+    }
+
+    return initialisedConnection.kit;
+  }, [connect, connection]);
 
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will
@@ -186,21 +207,13 @@ function Kit(
    */
   const performActions = useCallback(
     async (...operations: ((kit: ContractKit) => any | Promise<any>)[]) => {
-      let initialisedConnection = connection;
-      if (connection.type === WalletTypes.Unauthenticated) {
-        initialisedConnection = await connect();
-      } else if (!initialisedConnection.initialised) {
-        await initialisedConnection.initialise();
-      }
-
-      console.log(initialisedConnection);
+      const kit = await getConnectedKit();
 
       setPendingActionCount(operations.length);
-
       const results = [];
       for (const op of operations) {
         try {
-          results.push(await op(initialisedConnection.kit));
+          results.push(await op(kit));
         } catch (e) {
           setPendingActionCount(0);
           throw e;
@@ -208,64 +221,9 @@ function Kit(
 
         setPendingActionCount((c) => c - 1);
       }
-
       return results;
     },
-    [connect]
-  );
-
-  /**
-   * Helper function for handling any interaction with the Celo network. `sendTransaction` will
-   *    - open the action modal
-   *    - configure the gas price minimum correctly
-   *    - pay the fee in a currency that the account has
-   */
-  const sendTransaction = useCallback(
-    async (
-      tx:
-        | CeloTransactionObject<any>
-        | CeloTransactionObject<any>[]
-        | Promise<CeloTransactionObject<any>>
-        | Promise<CeloTransactionObject<any>[]>,
-      sendOpts: any = {}
-    ) => {
-      const [gasPriceMinimum, celo, cusd /* ceur */] = await Promise.all([
-        connection.kit.contracts.getGasPriceMinimum(),
-        connection.kit.contracts.getGoldToken(),
-        connection.kit.contracts.getStableToken(),
-      ]);
-      const [
-        minGasPrice,
-        celoBalance,
-        cusdBalance /* ceurBalance */,
-      ] = await Promise.all([
-        gasPriceMinimum.gasPriceMinimum(),
-        celo.balanceOf(address),
-        cusd.balanceOf(address),
-      ]);
-
-      const gasPrice = minGasPrice.times(1.5);
-      const feeCurrency = celoBalance.gt(0)
-        ? undefined // celo.address
-        : cusdBalance.gt(0)
-        ? cusd.address
-        : undefined;
-
-      const resolved = await tx;
-      const txs = Array.isArray(resolved) ? resolved : [resolved];
-
-      return performActions(
-        ...txs.map((tx) => () =>
-          tx.sendAndWaitForReceipt({
-            from: address,
-            gasPrice: gasPrice.toString(),
-            feeCurrency,
-            ...sendOpts,
-          })
-        )
-      );
-    },
-    [connection.kit, address, performActions]
+    [getConnectedKit]
   );
 
   return {
@@ -274,16 +232,16 @@ function Kit(
 
     address,
     kit: connection.kit,
-    destroy,
+    walletType: connection.type,
 
-    connect,
-
-    pendingActionCount,
-
-    send: sendTransaction,
-    sendTransaction,
     performActions,
 
+    connect,
+    destroy,
+    getConnectedKit,
+
+    // private
+    pendingActionCount,
     connectionCallback,
   };
 }

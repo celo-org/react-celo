@@ -11,18 +11,15 @@ import { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import { PrimaryButton, SecondaryButton, toast } from '../components';
 import { TYPED_DATA } from '../utils';
+import { BigNumber } from 'bignumber.js';
 
 const defaultSummary = {
   name: '',
   address: '',
   wallet: '',
-  authorizedSigners: {
-    vote: '',
-    attestation: '',
-    validator: '',
-  },
-  celo: '',
-  cusd: '',
+  celo: new BigNumber(0),
+  cusd: new BigNumber(0),
+  ceur: new BigNumber(0),
 };
 
 function truncateAddress(address: string) {
@@ -39,8 +36,8 @@ export default function Home() {
     updateNetwork,
     connect,
     destroy,
-    sendTransaction,
     performActions,
+    walletType,
   } = useContractKit();
 
   const [summary, setSummary] = useState(defaultSummary);
@@ -58,34 +55,33 @@ export default function Home() {
       kit.contracts.getStableToken(),
     ]);
     const [summary, celo, cusd] = await Promise.all([
-      accounts.getAccountSummary(address).catch((e) => defaultSummary),
-      goldToken.balanceOf(address).then((x) => x.toString()),
-      stableToken.balanceOf(address).then((x) => x.toString()),
+      accounts.getAccountSummary(address).catch(() => defaultSummary),
+      goldToken.balanceOf(address),
+      stableToken.balanceOf(address),
     ]);
     setSummary({
       ...summary,
       celo,
       cusd,
     });
-  }, [address]);
+  }, [address, kit]);
 
   const testSendTransaction = async () => {
     try {
       setSending(true);
-      const celo = await kit.contracts.getGoldToken();
-      if (
-        await sendTransaction(
-          celo
+
+      await performActions(async (kit) => {
+        const celo = await kit.contracts.getGoldToken();
+        await celo
+          .transfer(
             // impact market contract
-            .transfer(
-              '0x73D20479390E1acdB243570b5B739655989412f5',
-              Web3.utils.toWei('0.00000001', 'ether')
-            )
-        )
-      ) {
-        toast.success('sendTransaction succeeded');
-        fetchSummary();
-      }
+            '0x73D20479390E1acdB243570b5B739655989412f5',
+            Web3.utils.toWei('0.00000001', 'ether')
+          )
+          .sendAndWaitForReceipt({ from: address });
+      });
+      toast.success('sendTransaction succeeded');
+      fetchSummary();
     } catch (e) {
       toast.error(e.message);
     } finally {
@@ -225,7 +221,7 @@ export default function Home() {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://github.com/AlexBHarley/use-contractkit"
+                href="https://github.com/celo-tools/use-contractkit"
               >
                 Add yours to the list...
               </a>
@@ -299,31 +295,14 @@ export default function Home() {
                     Account summary
                   </div>
                   <div className="space-y-2">
+                    <div>Wallet type: {walletType}</div>
                     <div>Name: {summary.name || 'Not set'}</div>
                     <div className="">Address: {truncateAddress(address)}</div>
                     <div className="">
-                      Wallet:{' '}
+                      Wallet address:{' '}
                       {summary.wallet
                         ? truncateAddress(summary.wallet)
                         : 'Not set'}
-                    </div>
-
-                    <div>
-                      <div className="font-medium text-gray-900">Signers</div>
-                      <div className="ml-4">
-                        {Object.keys(summary.authorizedSigners).map(
-                          (signer) => (
-                            <div className="mt-1">
-                              {signer}:{' '}
-                              {summary.authorizedSigners[signer]
-                                ? truncateAddress(
-                                    summary.authorizedSigners[signer]
-                                  )
-                                : 'Not set'}
-                            </div>
-                          )
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ export interface Network {
   rpcUrl: string;
   graphQl: string;
   explorer: string;
+  chainId: number;
 }
 
 export interface Provider {
@@ -22,4 +23,6 @@ export interface Connector {
 
   initialised: boolean;
   initialise: () => Promise<this> | this;
+
+  onNetworkChange?: (callback: (chainId: number) => void) => void;
 }

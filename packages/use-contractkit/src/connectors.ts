@@ -33,6 +33,7 @@ export class PrivateKeyConnector implements Connector {
   public kit: ContractKit;
 
   constructor(n: Network, privateKey: string) {
+    console.log(n, privateKey);
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.PrivateKey
@@ -95,6 +96,8 @@ export class CeloExtensionWalletConnector implements Connector {
   public type = WalletTypes.CeloExtensionWallet;
   public kit: ContractKit;
 
+  private onNetworkChangeCallback?: (chainId: number) => void;
+
   constructor(network: Network) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
@@ -119,9 +122,25 @@ export class CeloExtensionWalletConnector implements Connector {
     const web3 = new Web3(celo);
     await celo.enable();
 
+    // @ts-ignore
+    web3.currentProvider.publicConfigStore.on(
+      'update',
+      async ({ networkVersion }: { networkVersion: number }) => {
+        if (this.onNetworkChangeCallback) {
+          this.onNetworkChangeCallback(networkVersion);
+        }
+      }
+    );
+
     this.kit = newKitFromWeb3(web3 as any);
+    const [defaultAccount] = await this.kit.web3.eth.getAccounts();
+    this.kit.defaultAccount = defaultAccount;
 
     return this;
+  }
+
+  onNetworkChange(callback: (chainId: number) => void) {
+    this.onNetworkChangeCallback = callback;
   }
 }
 
