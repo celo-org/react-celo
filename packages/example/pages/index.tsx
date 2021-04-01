@@ -63,6 +63,7 @@ export default function Home() {
       ...summary,
       celo,
       cusd,
+      ceur: new BigNumber(0),
     });
   }, [address, kit]);
 
