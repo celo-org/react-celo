@@ -54,7 +54,11 @@ function localStorageOperations() {
     localStorageKeys.lastUsedWalletArguments
   );
   if (localLastUsedWalletArguments) {
-    lastUsedWalletArguments = JSON.parse(localLastUsedWalletArguments);
+    try {
+      lastUsedWalletArguments = JSON.parse(localLastUsedWalletArguments);
+    } catch (e) {
+      lastUsedWalletArguments = [];
+    }
   }
 }
 localStorageOperations();

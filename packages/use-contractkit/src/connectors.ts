@@ -15,7 +15,7 @@ import { DappKitWallet } from './dappkit-wallet';
 
 export class UnauthenticatedConnector implements Connector {
   public initialised = false;
-  public type = WalletTypes.PrivateKey;
+  public type = WalletTypes.Unauthenticated;
   public kit: ContractKit;
 
   constructor(n: Network) {
@@ -33,7 +33,6 @@ export class PrivateKeyConnector implements Connector {
   public kit: ContractKit;
 
   constructor(n: Network, privateKey: string) {
-    console.log(n, privateKey);
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.PrivateKey
@@ -176,7 +175,7 @@ export class DappKitConnector implements Connector {
 
 export class WalletConnectConnector implements Connector {
   public initialised = true;
-  public type = WalletTypes.DappKit;
+  public type = WalletTypes.WalletConnect;
   public kit: ContractKit;
 
   constructor(private network: Network, private dappName: string) {
@@ -193,13 +192,6 @@ export class WalletConnectConnector implements Connector {
   }
 
   async initialise() {
-    const wallet = new DappKitWallet(this.dappName);
-    await wallet.init();
-
-    this.kit = newKit(this.network.rpcUrl, (wallet as any) as ReadOnlyWallet);
-    this.kit.defaultAccount = wallet.getAccounts()[0];
-    wallet.setKit(this.kit);
-
     return this;
   }
 }
