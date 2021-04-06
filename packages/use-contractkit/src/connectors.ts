@@ -158,14 +158,16 @@ export class DappKitConnector implements Connector {
       JSON.stringify([dappName])
     );
 
-    this.kit = newKit(network.rpcUrl);
+    const wallet = new DappKitWallet(dappName);
+    this.kit = newKit(network.rpcUrl, wallet as any);
+    wallet.setKit(this.kit);
   }
 
   async initialise() {
     const wallet = new DappKitWallet(this.dappName);
     await wallet.init();
 
-    this.kit = newKit(this.network.rpcUrl, (wallet as any) as ReadOnlyWallet);
+    this.kit = newKit(this.network.rpcUrl, wallet as any);
     this.kit.defaultAccount = wallet.getAccounts()[0];
     wallet.setKit(this.kit);
 
