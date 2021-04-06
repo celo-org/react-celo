@@ -83,6 +83,12 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
   }
 
   /**
+   * Override hasAccount for the DappKit wallet as we
+   * want to always send users to Valora
+   */
+  hasAccount = () => true;
+
+  /**
    * Gets the signer based on the 'from' field in the tx body
    * @param txParams Transaction to sign
    * @dev overrides WalletBase.signTransaction

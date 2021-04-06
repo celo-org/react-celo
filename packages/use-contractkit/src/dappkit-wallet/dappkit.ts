@@ -1,5 +1,5 @@
-import { ContractSendMethod, CeloTx } from '@celo/connect';
-import { CeloContract, ContractKit } from '@celo/contractkit';
+import { CeloTx } from '@celo/connect';
+import { ContractKit } from '@celo/contractkit';
 import {
   AccountAuthRequest,
   AccountAuthResponseSuccess,
@@ -10,7 +10,6 @@ import {
   serializeDappKitRequestDeeplink,
   SignTxRequest,
   SignTxResponseSuccess,
-  TxToSignParam,
 } from '@celo/utils';
 import Linking from './linking';
 export {
@@ -82,25 +81,6 @@ export function requestAccountAddress(meta: DappKitRequestMeta) {
   Linking.openURL(deepLink);
 }
 
-export enum FeeCurrency {
-  cUSD = 'cUSD',
-  cGLD = 'cGLD',
-}
-
-async function getFeeCurrencyContractAddress(
-  kit: ContractKit,
-  feeCurrency: FeeCurrency
-): Promise<string> {
-  switch (feeCurrency) {
-    case FeeCurrency.cUSD:
-      return kit.registry.addressFor(CeloContract.StableToken);
-    case FeeCurrency.cGLD:
-      return kit.registry.addressFor(CeloContract.GoldToken);
-    default:
-      return kit.registry.addressFor(CeloContract.StableToken);
-  }
-}
-
 export async function requestTxSig(
   kit: ContractKit,
   txParams: CeloTx[],
@@ -109,14 +89,6 @@ export async function requestTxSig(
   const baseNonce = await kit.connection.nonce(txParams[0].from as string);
   const txs = await Promise.all(
     txParams.map(async (txParam: CeloTx, index: number) => {
-      const feeCurrency = txParam.feeCurrency
-        ? txParam.feeCurrency
-        : FeeCurrency.cGLD;
-      // const feeCurrencyContractAddress = await getFeeCurrencyContractAddress(
-      //   kit,
-      //   feeCurrency as FeeCurrency
-      // );
-
       const value = txParam.value === undefined ? '0' : txParam.value;
 
       return {
