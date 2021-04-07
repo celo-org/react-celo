@@ -89,12 +89,10 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
 }
 
 export function ConnectModal({
-  dappName,
   reactModalProps,
   renderProvider,
   screens,
 }: {
-  dappName: string;
   screens?: {
     [x in SupportedProviders]: FunctionComponent<{
       onSubmit: (x: {
@@ -106,7 +104,7 @@ export function ConnectModal({
   renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
   reactModalProps?: Partial<ReactModal.Props>;
 }) {
-  const { connectionCallback } = useContractKit();
+  const { connectionCallback, dappName } = useContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
 
   const close = async () => {

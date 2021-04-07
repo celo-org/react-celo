@@ -4,22 +4,23 @@ import { useEffect, useState } from 'react';
 import QrCode from 'qrcode.react';
 import Loader from 'react-loader-spinner';
 import { CopyText } from '../components';
+import { WalletConnectConnector } from '../connectors';
+import { useContractKit } from '../use-contractkit';
 
 export function WalletConnect({ onSubmit }: { onSubmit: (w: any) => void }) {
+  const { network, dapp } = useContractKit();
   const [uri, setUri] = useState('');
 
   useEffect(() => {
     async function f() {
-      const { WalletConnectWallet } = await import(
-        '@celo/wallet-walletconnect'
-      );
+      const { WalletConnectWallet } = await import('contractkit-walletconnect');
       const wallet = new WalletConnectWallet({
         connect: {
           metadata: {
-            name: 'use-contractkit demo',
-            description: 'A showcase of use-contractkit',
-            url: 'https://use-contractkit.vercel.app',
-            icons: [],
+            name: dapp.name,
+            description: dapp.description,
+            url: dapp.url,
+            icons: [dapp.icon],
           },
         },
         init: {
@@ -29,7 +30,8 @@ export function WalletConnect({ onSubmit }: { onSubmit: (w: any) => void }) {
       });
       setUri(await wallet.getUri());
       await wallet.init();
-      onSubmit(wallet);
+
+      onSubmit(new WalletConnectConnector(network, wallet));
     }
     f();
   }, []);

@@ -33,15 +33,14 @@ const defaultActionModalComponent = ({
 };
 
 export function ActionModal({
-  dappName,
   reactModalProps,
   render = defaultActionModalComponent,
 }: {
-  dappName: string;
   reactModalProps?: Partial<ReactModal.Props>;
   render?: (props: ActionModalProps) => ReactNode;
 }) {
-  const { pendingActionCount } = useContractKit();
+  const { pendingActionCount, dappName } = useContractKit();
+
   return (
     <ReactModal
       isOpen={pendingActionCount > 0}

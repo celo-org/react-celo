@@ -98,15 +98,29 @@ function Kit(
   {
     networks = defaultNetworks,
     dappName,
+    dappDescription,
+    dappIcon,
+    dappUrl,
   }: {
     networks?: Network[];
     dappName: string;
+    dappDescription?: string;
+    dappIcon?: string;
+    dappUrl?: string;
   } = {
     networks: defaultNetworks,
     dappName: '',
+    dappDescription: '',
+    dappIcon: '',
+    dappUrl: '',
   }
 ) {
-  const [name] = useState(dappName);
+  const [dapp] = useState({
+    name: dappName,
+    description: dappDescription || '',
+    icon: dappIcon || '',
+    url: dappUrl || '',
+  });
   const [address, setAddress] = useState(lastUsedAddress);
   const [connectionCallback, setConnectionCallback] = useState<
     ((x: ConnectionResult | false) => void) | null
@@ -238,7 +252,8 @@ function Kit(
     updateNetwork,
 
     address,
-    dappName: name,
+    dappName: dapp.name,
+    dapp,
     kit: connection.kit,
     walletType: connection.type,
 
@@ -262,10 +277,16 @@ export function ContractKitProvider({
   connectModal,
   actionModal,
   dappName,
+  dappDescription,
+  dappUrl,
+  dappIcon,
   networks,
 }: {
   children: ReactNode;
   dappName: string;
+  dappDescription?: string;
+  dappUrl?: string;
+  dappIcon?: string;
   networks?: Network[];
 
   connectModal?: {
@@ -278,9 +299,11 @@ export function ContractKitProvider({
   };
 }) {
   return (
-    <KitState.Provider initialState={{ networks, dappName }}>
-      <ConnectModal dappName={dappName} {...connectModal} />
-      <ActionModal dappName={dappName} {...actionModal} />
+    <KitState.Provider
+      initialState={{ networks, dappName, dappDescription, dappUrl, dappIcon }}
+    >
+      <ConnectModal {...connectModal} />
+      <ActionModal {...actionModal} />
 
       {children}
     </KitState.Provider>

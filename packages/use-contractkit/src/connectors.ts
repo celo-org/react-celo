@@ -6,6 +6,7 @@ import { ReadOnlyWallet } from '@celo/connect';
 // we can't lazy load this due to the new tab bug, it must be imported
 // so that the new tab handler fires.
 import { DappKitWallet } from './dappkit-wallet';
+import { WalletConnectWallet } from 'contractkit-walletconnect';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
@@ -180,30 +181,17 @@ export class WalletConnectConnector implements Connector {
   public type = WalletTypes.WalletConnect;
   public kit: ContractKit;
 
-  constructor(private network: Network, private dappName: string) {
+  // requires passing in an already initialied WalletConnectWallet
+  constructor(private network: Network, wc: WalletConnectWallet) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.WalletConnect
     );
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([dappName])
-    );
 
-    this.kit = newKit(network.rpcUrl);
+    this.kit = newKit(network.rpcUrl, wc);
   }
 
   async initialise() {
     return this;
   }
 }
-
-// export const fromWalletConnect = async (
-//   n: Network,
-//   w: any // WalletConnectWallet
-// ) => {
-//   const [account] = w.getAccounts();
-//   const kit = newKit(n.rpcUrl, w);
-//   kit.defaultAccount = account;
-//   return kit;
-// };
