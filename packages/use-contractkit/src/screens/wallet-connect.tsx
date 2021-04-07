@@ -24,7 +24,7 @@ export function WalletConnect({ onSubmit }: { onSubmit: (w: any) => void }) {
           },
         },
         init: {
-          relayProvider: 'wss://relay.walletconnect.org',
+          relayProvider: 'wss://walletconnect.celo-networks-dev.org',
           logger: 'error',
         },
       });
