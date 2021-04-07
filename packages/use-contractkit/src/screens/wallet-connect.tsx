@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useEffect, useState } from 'react';
 
 import QrCode from 'qrcode.react';
@@ -6,35 +6,49 @@ import Loader from 'react-loader-spinner';
 import { CopyText } from '../components';
 import { WalletConnectConnector } from '../connectors';
 import { useContractKit } from '../use-contractkit';
+import { WalletTypes } from '../constants';
+import { Connector } from '../types';
 
-export function WalletConnect({ onSubmit }: { onSubmit: (w: any) => void }) {
+export function WalletConnect({
+  onSubmit,
+}: {
+  onSubmit: (x: { type: WalletTypes; connector: Connector }) => void;
+}) {
   const { network, dapp } = useContractKit();
   const [uri, setUri] = useState('');
 
-  useEffect(() => {
-    async function f() {
-      const { WalletConnectWallet } = await import('contractkit-walletconnect');
-      const wallet = new WalletConnectWallet({
-        connect: {
-          metadata: {
-            name: dapp.name,
-            description: dapp.description,
-            url: dapp.url,
-            icons: [dapp.icon],
-          },
+  const initialiseConnection = useCallback(async () => {
+    const { WalletConnectWallet } = await import('contractkit-walletconnect');
+    const wallet = new WalletConnectWallet({
+      connect: {
+        metadata: {
+          name: dapp.name,
+          description: dapp.description,
+          url: dapp.url,
+          icons: [dapp.icon],
         },
-        init: {
-          relayProvider: 'wss://walletconnect.celo-networks-dev.org',
-          logger: 'error',
-        },
-      });
-      setUri(await wallet.getUri());
-      await wallet.init();
+      },
+      init: {
+        relayProvider: 'wss://walletconnect.celo-networks-dev.org',
+        logger: 'error',
+      },
+    });
 
-      onSubmit(new WalletConnectConnector(network, wallet));
-    }
-    f();
-  }, []);
+    setUri(await wallet.getUri());
+    await wallet.init();
+
+    const connector = new WalletConnectConnector(network, wallet);
+    await connector.initialise();
+
+    onSubmit({
+      type: WalletTypes.WalletConnect,
+      connector,
+    });
+  }, [network, dapp]);
+
+  useEffect(() => {
+    initialiseConnection();
+  }, [initialiseConnection]);
 
   return (
     <div className="tw-p-2">

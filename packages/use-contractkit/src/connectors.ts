@@ -177,7 +177,7 @@ export class DappKitConnector implements Connector {
 }
 
 export class WalletConnectConnector implements Connector {
-  public initialised = true;
+  public initialised = false;
   public type = WalletTypes.WalletConnect;
   public kit: ContractKit;
 
@@ -192,6 +192,9 @@ export class WalletConnectConnector implements Connector {
   }
 
   async initialise() {
+    const [defaultAccount] = await this.kit.getWallet()!.getAccounts();
+    this.kit.defaultAccount = defaultAccount;
+
     return this;
   }
 }

@@ -104,9 +104,9 @@ function Kit(
   }: {
     networks?: Network[];
     dappName: string;
-    dappDescription?: string;
+    dappDescription: string;
+    dappUrl: string;
     dappIcon?: string;
-    dappUrl?: string;
   } = {
     networks: defaultNetworks,
     dappName: '',
@@ -117,9 +117,9 @@ function Kit(
 ) {
   const [dapp] = useState({
     name: dappName,
-    description: dappDescription || '',
-    icon: dappIcon || '',
-    url: dappUrl || '',
+    description: dappDescription,
+    icon: dappIcon || `${dappUrl}/favicon.ico`,
+    url: dappUrl,
   });
   const [address, setAddress] = useState(lastUsedAddress);
   const [connectionCallback, setConnectionCallback] = useState<
@@ -137,12 +137,12 @@ function Kit(
   const [pendingActionCount, setPendingActionCount] = useState(0);
 
   useEffect(() => {
-    const account = connection.kit.defaultAccount;
+    const account = connection?.kit.defaultAccount;
     if (account) {
       setAddress(account);
       localStorage.setItem(localStorageKeys.lastUsedAddress, account);
     }
-  }, [connection.kit]);
+  }, [connection?.kit]);
 
   useEffect(() => {
     if (
@@ -284,8 +284,8 @@ export function ContractKitProvider({
 }: {
   children: ReactNode;
   dappName: string;
-  dappDescription?: string;
-  dappUrl?: string;
+  dappDescription: string;
+  dappUrl: string;
   dappIcon?: string;
   networks?: Network[];
 
