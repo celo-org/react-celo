@@ -1,8 +1,16 @@
-import { CeloTransactionObject } from '@celo/connect';
 import { ContractKit } from '@celo/contractkit';
+import { WalletConnectWallet } from 'contractkit-walletconnect';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
+import {
+  CeloExtensionWalletConnector,
+  DappKitConnector,
+  LedgerConnector,
+  PrivateKeyConnector,
+  UnauthenticatedConnector,
+  WalletConnectConnector,
+} from './connectors';
 import {
   Alfajores,
   localStorageKeys,
@@ -10,19 +18,12 @@ import {
   NetworkNames,
   WalletTypes,
 } from './constants';
-import {
-  CeloExtensionWalletConnector,
-  DappKitConnector,
-  LedgerConnector,
-  PrivateKeyConnector,
-  UnauthenticatedConnector,
-} from './connectors';
 import { ActionModal, ActionModalProps, ConnectModal } from './modals';
-import { Network, Provider, Connector } from './types';
+import { Connector, Network, Provider } from './types';
 
 let lastUsedNetworkName = Mainnet.name;
 let lastUsedAddress = '';
-let lastUsedWalletType = WalletTypes.Unauthenticated;
+let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
 let lastUsedWalletArguments: any[] = [];
 function localStorageOperations() {
   if (typeof localStorage === 'undefined') {
@@ -67,13 +68,13 @@ const defaultNetworks = [Mainnet, Alfajores];
 const lastUsedNetwork =
   defaultNetworks.find((n) => n.name === lastUsedNetworkName) || Alfajores;
 
-const connectorTypes: { [x in WalletTypes]?: any } = {
+const connectorTypes: { [x in WalletTypes]: any } = {
   [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
   [WalletTypes.PrivateKey]: PrivateKeyConnector,
   [WalletTypes.Ledger]: LedgerConnector,
-  [WalletTypes.WalletConnect]: null,
+  [WalletTypes.WalletConnect]: WalletConnectConnector,
   [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
-  // [WalletTypes.Metamask]: null,
+  [WalletTypes.Metamask]: null,
   [WalletTypes.DappKit]: DappKitConnector,
 };
 

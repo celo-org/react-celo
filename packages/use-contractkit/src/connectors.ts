@@ -181,12 +181,42 @@ export class WalletConnectConnector implements Connector {
   public type = WalletTypes.WalletConnect;
   public kit: ContractKit;
 
-  // requires passing in an already initialied WalletConnectWallet
-  constructor(private network: Network, wc: WalletConnectWallet) {
+  // requires passing in an already initialised WalletConnectWallet
+  constructor(private network: Network, wc?: WalletConnectWallet) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.WalletConnect
     );
+
+    if (!wc) {
+      console.log('hier', wc);
+      const wallet = new WalletConnectWallet({
+        connect: {
+          metadata: {
+            name: 'dapp.name',
+            description: 'dapp.description',
+            url: 'dapp.url',
+            icons: ['dapp.icon'],
+          },
+        },
+        init: {
+          relayProvider: 'wss://walletconnect.celo-networks-dev.org',
+          logger: 'error',
+        },
+      });
+      wallet.getUri().then(() => {
+        // @ts-ignore
+        console.log(wallet.client);
+      });
+      wallet
+        .init()
+        .then(() => {
+          console.log('initialised');
+        })
+        .catch((e) => {
+          console.log('failed');
+        });
+    }
 
     this.kit = newKit(network.rpcUrl, wc);
   }
