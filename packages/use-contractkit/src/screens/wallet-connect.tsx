@@ -6,20 +6,18 @@ import Loader from 'react-loader-spinner';
 import { CopyText } from '../components';
 import { WalletConnectConnector } from '../connectors';
 import { useContractKit } from '../use-contractkit';
-import { WalletTypes } from '../constants';
 import { Connector } from '../types';
 
 export function WalletConnect({
   onSubmit,
 }: {
-  onSubmit: (x: { type: WalletTypes; connector: Connector }) => void;
+  onSubmit: (connector: Connector) => void;
 }) {
   const { network, dapp } = useContractKit();
   const [uri, setUri] = useState('');
 
   const initialiseConnection = useCallback(async () => {
-    const { WalletConnectWallet } = await import('contractkit-walletconnect');
-    const wallet = new WalletConnectWallet({
+    const connector = new WalletConnectConnector(network, {
       connect: {
         metadata: {
           name: dapp.name,
@@ -34,16 +32,10 @@ export function WalletConnect({
       },
     });
 
-    setUri(await wallet.getUri());
-    await wallet.init();
-
-    const connector = new WalletConnectConnector(network, wallet);
+    connector.onUri((newUri) => setUri(newUri));
     await connector.initialise();
 
-    onSubmit({
-      type: WalletTypes.WalletConnect,
-      connector,
-    });
+    onSubmit(connector);
   }, [network, dapp]);
 
   useEffect(() => {

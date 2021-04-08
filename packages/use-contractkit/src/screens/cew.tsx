@@ -1,20 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
 import { CeloExtensionWalletConnector } from '../connectors';
-import { WalletTypes } from '../constants';
 import { useContractKit } from '../use-contractkit';
 
-export function Metamask({ onSubmit }: { onSubmit: (x: any) => void }) {
+export function Metamask({
+  onSubmit,
+}: {
+  onSubmit: (connector: CeloExtensionWalletConnector) => void;
+}) {
   const { network } = useContractKit();
 
+  const initialiseConnection = useCallback(async () => {
+    const connector = new CeloExtensionWalletConnector(network);
+    await connector.initialise();
+    onSubmit(connector);
+  }, [onSubmit]);
+
   useEffect(() => {
-    async function f() {
-      const connector = new CeloExtensionWalletConnector(network);
-      await connector.initialise();
-      onSubmit({ type: WalletTypes.CeloExtensionWallet, connector });
-    }
-    f();
-  }, []);
+    initialiseConnection();
+  }, [initialiseConnection]);
 
   return (
     <div className="tw-flex tw-items-center tw-justify-center">

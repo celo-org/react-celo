@@ -1,5 +1,5 @@
 import { ContractKit } from '@celo/contractkit';
-import { WalletConnectWallet } from 'contractkit-walletconnect';
+import { WalletConnectWallet } from '@celo/wallet-walletconnect';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
@@ -90,11 +90,6 @@ if (lastUsedWalletType) {
   }
 }
 
-interface ConnectionResult {
-  type: WalletTypes;
-  connector: Connector;
-}
-
 function Kit(
   {
     networks = defaultNetworks,
@@ -124,7 +119,7 @@ function Kit(
   });
   const [address, setAddress] = useState(lastUsedAddress);
   const [connectionCallback, setConnectionCallback] = useState<
-    ((x: ConnectionResult | false) => void) | null
+    ((x: Connector | false) => void) | null
   >(null);
 
   const initialNetwork =
@@ -166,49 +161,46 @@ function Kit(
     });
   }, [network]);
 
-  const destroy = useCallback(() => {
+  const destroy = useCallback(async () => {
+    await connection.close();
+
     localStorage.removeItem(localStorageKeys.lastUsedAddress);
     localStorage.removeItem(localStorageKeys.lastUsedWalletType);
     localStorage.removeItem(localStorageKeys.lastUsedWalletArguments);
 
     setAddress('');
     setConnection(new UnauthenticatedConnector(network));
-  }, [network]);
+  }, [network, connection]);
 
   const connect = useCallback(async (): Promise<Connector> => {
-    const connectionResultPromise = new Promise((resolve) => {
-      const connectionResultCallback = (
-        x:
-          | {
-              type: WalletTypes;
-              connector: Connector;
-            }
-          | false
-      ) => resolve(x);
+    const connectionResultPromise: Promise<Connector | false> = new Promise(
+      (resolve) => {
+        const connectionResultCallback = (x: Connector | false) => resolve(x);
 
-      // has to be like this and not like setConnectionCallback(connectionResultCallback)
-      // as React will try to run any function passed to set state
-      setConnectionCallback(() => connectionResultCallback);
-    });
+        // has to be like this and not like setConnectionCallback(connectionResultCallback)
+        // as React will try to run any function passed to set state
+        setConnectionCallback(() => connectionResultCallback);
+      }
+    );
 
-    const result = (await connectionResultPromise) as ConnectionResult | false;
-    if (result === false) {
+    const connector = await connectionResultPromise;
+    if (connector === false) {
       // dismissed
       setConnectionCallback(null);
       throw new Error('Connection cancelled');
     }
 
-    if (result.connector.onNetworkChange) {
-      result.connector.onNetworkChange((chainId) => {
+    if (connector.onNetworkChange) {
+      connector.onNetworkChange((chainId) => {
         const network = networks?.find((n) => n.chainId === chainId);
         network && updateNetwork(network);
       });
     }
 
-    setConnection(result.connector);
+    setConnection(connector);
     setConnectionCallback(null);
 
-    return result.connector;
+    return connector;
   }, [network]);
 
   const getConnectedKit = useCallback(async () => {

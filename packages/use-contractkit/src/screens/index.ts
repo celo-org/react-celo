@@ -9,10 +9,7 @@ import { WalletConnect } from './wallet-connect';
 
 const defaultScreens: {
   [P in SupportedProviders]?: FunctionComponent<{
-    onSubmit: (x: {
-      type: WalletTypes;
-      connector: Connector;
-    }) => Promise<void> | void;
+    onSubmit: (connector: Connector) => Promise<void> | void;
   }>;
 } = {
   [SupportedProviders.Ledger]: Ledger,

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
 import { DappKitConnector } from '../connectors';
 import { WalletTypes } from '../constants';
@@ -8,18 +8,20 @@ import { useContractKit } from '../use-contractkit';
 export const Valora: FunctionComponent<any> = ({
   onSubmit,
 }: {
-  onSubmit: (x: { type: WalletTypes; connector: Connector }) => void;
+  onSubmit: (connector: DappKitConnector) => void;
 }) => {
   const { network, dappName } = useContractKit();
 
-  useEffect(() => {
-    async function f() {
-      const connector = new DappKitConnector(network, dappName);
-      await connector.initialise();
-      onSubmit({ type: WalletTypes.DappKit, connector });
-    }
-    f();
+  const initialiseConnection = useCallback(async () => {
+    const connector = new DappKitConnector(network, dappName);
+    await connector.initialise();
+
+    onSubmit(connector);
   }, [onSubmit]);
+
+  useEffect(() => {
+    initialiseConnection();
+  }, [initialiseConnection]);
 
   return (
     <div className="tw-flex tw-items-center tw-justify-center">

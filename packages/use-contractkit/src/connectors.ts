@@ -2,20 +2,19 @@ import { Network, Connector } from './types';
 import { localStorageKeys, WalletTypes } from './constants';
 import { ContractKit, newKit, newKitFromWeb3 } from '@celo/contractkit';
 import { LocalWallet } from '@celo/wallet-local';
-import { ReadOnlyWallet } from '@celo/connect';
 // we can't lazy load this due to the new tab bug, it must be imported
 // so that the new tab handler fires.
 import { DappKitWallet } from './dappkit-wallet';
-import { WalletConnectWallet } from 'contractkit-walletconnect';
+import { WalletConnectWallet, WalletConnectWalletOptions } from './wc';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
- * wallet has different semantics and these classes attempt to outline
- * them.
+ * wallet has different semantics and these classes attempt to unify
+ * them and present a workable API.
  */
 
 export class UnauthenticatedConnector implements Connector {
-  public initialised = false;
+  public initialised = true;
   public type = WalletTypes.Unauthenticated;
   public kit: ContractKit;
 
@@ -25,6 +24,10 @@ export class UnauthenticatedConnector implements Connector {
 
   initialise() {
     return this;
+  }
+
+  close() {
+    return;
   }
 }
 
@@ -52,6 +55,10 @@ export class PrivateKeyConnector implements Connector {
 
   initialise() {
     return this;
+  }
+
+  close() {
+    return;
   }
 }
 
@@ -81,13 +88,15 @@ export class LedgerConnector implements Connector {
 
     const transport = await TransportUSB.create();
     const wallet = await newLedgerWalletWithSetup(transport, [this.index]);
-
     this.kit = newKit(this.network.rpcUrl, wallet);
     this.kit.defaultAccount = wallet.getAccounts()[0];
 
     this.initialised = true;
-
     return this;
+  }
+
+  close() {
+    return;
   }
 }
 
@@ -95,7 +104,6 @@ export class CeloExtensionWalletConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: ContractKit;
-
   private onNetworkChangeCallback?: (chainId: number) => void;
 
   constructor(network: Network) {
@@ -142,6 +150,10 @@ export class CeloExtensionWalletConnector implements Connector {
   onNetworkChange(callback: (chainId: number) => void) {
     this.onNetworkChangeCallback = callback;
   }
+
+  close() {
+    return;
+  }
 }
 
 export class DappKitConnector implements Connector {
@@ -174,6 +186,10 @@ export class DappKitConnector implements Connector {
 
     return this;
   }
+
+  close() {
+    return;
+  }
 }
 
 export class WalletConnectConnector implements Connector {
@@ -181,50 +197,43 @@ export class WalletConnectConnector implements Connector {
   public type = WalletTypes.WalletConnect;
   public kit: ContractKit;
 
-  // requires passing in an already initialised WalletConnectWallet
-  constructor(private network: Network, wc?: WalletConnectWallet) {
+  private onUriCallback?: (uri: string) => void;
+
+  constructor(private network: Network, options: WalletConnectWalletOptions) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.WalletConnect
     );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify(options)
+    );
 
-    if (!wc) {
-      console.log('hier', wc);
-      const wallet = new WalletConnectWallet({
-        connect: {
-          metadata: {
-            name: 'dapp.name',
-            description: 'dapp.description',
-            url: 'dapp.url',
-            icons: ['dapp.icon'],
-          },
-        },
-        init: {
-          relayProvider: 'wss://walletconnect.celo-networks-dev.org',
-          logger: 'error',
-        },
-      });
-      wallet.getUri().then(() => {
-        // @ts-ignore
-        console.log(wallet.client);
-      });
-      wallet
-        .init()
-        .then(() => {
-          console.log('initialised');
-        })
-        .catch((e) => {
-          console.log('failed');
-        });
-    }
+    const wallet = new WalletConnectWallet(options);
+    this.kit = newKit(network.rpcUrl, wallet);
+  }
 
-    this.kit = newKit(network.rpcUrl, wc);
+  onUri(callback: (uri: string) => void) {
+    this.onUriCallback = callback;
   }
 
   async initialise() {
-    const [defaultAccount] = await this.kit.getWallet()!.getAccounts();
+    const wallet = this.kit.getWallet() as WalletConnectWallet;
+
+    const uri = await wallet.getUri();
+    if (uri && this.onUriCallback) {
+      this.onUriCallback(uri);
+    }
+
+    await wallet.init();
+    const [defaultAccount] = await wallet.getAccounts();
     this.kit.defaultAccount = defaultAccount;
 
     return this;
+  }
+
+  async close() {
+    const wallet = this.kit.getWallet() as WalletConnectWallet;
+    return wallet.close();
   }
 }

@@ -1,15 +1,13 @@
-import React, { FunctionComponent, useContext, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import Loader from 'react-loader-spinner';
-import { images } from '../constants';
 import { LedgerConnector } from '../connectors';
+import { images } from '../constants';
 import { useContractKit } from '../use-contractkit';
-import { WalletTypes } from '../constants';
-import { Connector } from '../types';
 
 export const Ledger: FunctionComponent<any> = ({
   onSubmit,
 }: {
-  onSubmit: (x: { type: WalletTypes; connector: Connector }) => Promise<void>;
+  onSubmit: (connector: LedgerConnector) => Promise<void>;
 }) => {
   const { network } = useContractKit();
   const [error, setError] = useState('');
@@ -21,7 +19,7 @@ export const Ledger: FunctionComponent<any> = ({
     try {
       const connector = new LedgerConnector(network, parseInt(index, 10));
       await connector.initialise();
-      onSubmit({ type: WalletTypes.Ledger, connector });
+      onSubmit(connector);
       setError('');
     } catch (e) {
       setError(e.message);

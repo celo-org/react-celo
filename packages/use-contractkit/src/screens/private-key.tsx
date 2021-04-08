@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { PrivateKeyConnector } from '../connectors';
-import { useContractKit } from '../use-contractkit';
 import { WalletTypes } from '../constants';
-import { Connector } from '../types';
+import { useContractKit } from '../use-contractkit';
 
 export function PrivateKey({
   onSubmit,
 }: {
-  onSubmit: (x: { type: WalletTypes; connector: Connector }) => void;
+  onSubmit: (connector: PrivateKeyConnector) => void;
 }) {
   const [value, setValue] = useState('');
   const { network } = useContractKit();
@@ -18,7 +17,7 @@ export function PrivateKey({
     }
 
     const connector = new PrivateKeyConnector(network, value);
-    onSubmit({ type: WalletTypes.PrivateKey, connector });
+    onSubmit(connector);
   };
 
   return (

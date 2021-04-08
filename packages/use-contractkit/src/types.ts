@@ -23,6 +23,7 @@ export interface Connector {
 
   initialised: boolean;
   initialise: () => Promise<this> | this;
+  close: () => Promise<void> | void;
 
   onNetworkChange?: (callback: (chainId: number) => void) => void;
 }
