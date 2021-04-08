@@ -5,10 +5,7 @@ import { LocalWallet } from '@celo/wallet-local';
 // we can't lazy load this due to the new tab bug, it must be imported
 // so that the new tab handler fires.
 import { DappKitWallet } from './dappkit-wallet';
-import {
-  WalletConnectWallet,
-  WalletConnectWalletOptions,
-} from 'contractkit-walletconnect';
+import { WalletConnectWalletOptions } from 'contractkit-walletconnect/lib/types';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
@@ -212,6 +209,7 @@ export class WalletConnectConnector implements Connector {
       JSON.stringify(options)
     );
 
+    const { WalletConnectWallet } = require('contractkit-walletconnect');
     const wallet = new WalletConnectWallet(options);
     this.kit = newKit(network.rpcUrl, wallet);
   }
@@ -221,7 +219,8 @@ export class WalletConnectConnector implements Connector {
   }
 
   async initialise() {
-    const wallet = this.kit.getWallet() as WalletConnectWallet;
+    const { WalletConnectWallet } = require('contractkit-walletconnect');
+    const wallet = this.kit.getWallet() as typeof WalletConnectWallet;
 
     const uri = await wallet.getUri();
     if (uri && this.onUriCallback) {
@@ -236,7 +235,8 @@ export class WalletConnectConnector implements Connector {
   }
 
   async close() {
-    const wallet = this.kit.getWallet() as WalletConnectWallet;
+    const { WalletConnectWallet } = require('contractkit-walletconnect');
+    const wallet = this.kit.getWallet() as typeof WalletConnectWallet;
     return wallet.close();
   }
 }

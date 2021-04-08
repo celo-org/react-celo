@@ -1,5 +1,4 @@
 import { ContractKit } from '@celo/contractkit';
-import { WalletConnectWallet } from '@celo/wallet-walletconnect';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
