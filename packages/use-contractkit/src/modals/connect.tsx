@@ -95,16 +95,13 @@ export function ConnectModal({
 }: {
   screens?: {
     [x in SupportedProviders]: FunctionComponent<{
-      onSubmit: (x: {
-        type: WalletTypes;
-        connector: Connector;
-      }) => Promise<void> | void;
+      onSubmit: (connector: Connector) => Promise<void> | void;
     }>;
   };
   renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
   reactModalProps?: Partial<ReactModal.Props>;
 }) {
-  const { connectionCallback, dappName } = useContractKit();
+  const { connectionCallback } = useContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
 
   const close = async () => {
@@ -112,9 +109,9 @@ export function ConnectModal({
     connectionCallback!(false);
   };
 
-  async function onSubmit(args: { type: WalletTypes; connector: Connector }) {
+  async function onSubmit(connector: Connector) {
     setAdding(null);
-    connectionCallback!(args);
+    connectionCallback!(connector);
   }
 
   const list = (

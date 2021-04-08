@@ -3000,6 +3000,19 @@ content-type@~1.0.4:
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
   integrity sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
 
+contractkit-walletconnect@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/contractkit-walletconnect/-/contractkit-walletconnect-0.0.10.tgz#647fe1f7ff39bf6aa4f71f83e977b347d5a6d633"
+  integrity sha512-7l+re2ttOsDPNid7IIzl63kHpyE7fPDbv0qkU4OSif3H07TmePe9nf2ENsUnQTHw5KdfPVEYNt/dOGbs5C/Puw==
+  dependencies:
+    "@celo/connect" "1.1.0"
+    "@celo/utils" "1.1.0"
+    "@celo/wallet-base" "1.1.0"
+    "@celo/wallet-remote" "1.1.0"
+    "@walletconnect/client" "2.0.0-alpha.35"
+    debug "^4.1.1"
+    ethereumjs-util "^7.0.8"
+
 conventional-changelog-angular@^5.0.3:
   version "5.0.12"
   resolved "https://registry.yarnpkg.com/conventional-changelog-angular/-/conventional-changelog-angular-5.0.12.tgz#c979b8b921cbfe26402eb3da5bbfda02d865a2b9"

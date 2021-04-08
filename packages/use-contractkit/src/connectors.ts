@@ -5,7 +5,10 @@ import { LocalWallet } from '@celo/wallet-local';
 // we can't lazy load this due to the new tab bug, it must be imported
 // so that the new tab handler fires.
 import { DappKitWallet } from './dappkit-wallet';
-import { WalletConnectWallet, WalletConnectWalletOptions } from './wc';
+import {
+  WalletConnectWallet,
+  WalletConnectWalletOptions,
+} from 'contractkit-walletconnect';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
