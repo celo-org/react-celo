@@ -1,16 +1,9 @@
-import { ContractKit } from '@celo/contractkit';
-import React, {
-  FunctionComponent,
-  ReactNode,
-  useCallback,
-  useState,
-} from 'react';
+import React, { FunctionComponent, ReactNode, useState } from 'react';
 import ReactModal from 'react-modal';
-import {} from '../connectors';
+import { images, SupportedProviders } from '../constants';
 import defaultScreens from '../screens';
 import { Connector, Provider } from '../types';
 import { useContractKit } from '../use-contractkit';
-import { images, WalletTypes, SupportedProviders } from '../constants';
 
 const providers: Provider[] = [
   {

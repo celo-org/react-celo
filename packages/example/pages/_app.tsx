@@ -19,7 +19,9 @@ function MyApp({ Component, pageProps }) {
           },
         }}
       />
-      <Component {...pageProps} />
+      <div suppressHydrationWarning>
+        {typeof window === 'undefined' ? null : <Component {...pageProps} />}
+      </div>
     </ContractKitProvider>
   );
 }
