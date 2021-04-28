@@ -27,13 +27,13 @@ yarn add @celo-tools/use-contractkit
 
 ## Supported wallets
 
-| Wallet                                                                    |  sendTransaction   |    signTransaction | signTypedData      | signPersonal       |
-| ------------------------------------------------------------------------- | :----------------: | -----------------: | ------------------ | ------------------ |
-| Plaintext private key                                                     |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [Ledger](https://www.ledger.com/)                                         |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [WalletConnect](https://walletconnect.org/)                               |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [DappKit](https://docs.celo.org/developer-guide/dappkit)                  | :white_check_mark: |                    |                    | :white_check_mark: |
-| [Metamask (Celo fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
+| Wallet                                                                                     |  sendTransaction   |    signTransaction | signTypedData      | signPersonal       |
+| ------------------------------------------------------------------------------------------ | :----------------: | -----------------: | ------------------ | ------------------ |
+| Plaintext private key                                                                      |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Ledger](https://www.ledger.com/)                                                          |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [WalletConnect](https://walletconnect.org/)                                                |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [DappKit](https://docs.celo.org/developer-guide/dappkit)                                   | :white_check_mark: |                    |                    | :white_check_mark: |
+| [Celo Extension Wallet (Metamask fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
 
 ## Basic Usage
 
@@ -70,11 +70,21 @@ use-contractkit provides a `connect` function that will open a modal with a list
 import { useContractKit } from '@celo-tools/use-contractkit';
 
 function App() {
-  const { connect } = useContractKit();
+  const { connect, address } = useContractKit();
 
-  return <button onClick={connect}>Connect wallet</button>;
+  return (
+    <>
+      {account ? (
+        <div>Connected to {address}</div>
+      ) : (
+        <button onClick={connect}>Connect wallet</button>
+      )}
+    </>
+  );
 }
 ```
+
+After connecting to an account the `address` property will be set.
 
 ### Use ContractKit to read chain data
 
@@ -105,7 +115,7 @@ Initially connecting to a users account is one thing, handled via the `connect` 
 
 #### Last connected account
 
-use-contractkit will remember a users last connected address when they navigate back to your DApp. This is a quality of life improvement that ensures than when a user refreshes their page, nothing in the UI should change other than potentially buttons being grayed out.
+use-contractkit will remember a users last connected address when they navigate back to or refresh your DApp. Ensure that when developing your DApp nothing changes nothing in the UI whether or not the user has a `kit.defaultAccount` property set.
 
 ```javascript
 import { useContractKit } from '@celo-tools/use-contractkit';
@@ -115,9 +125,9 @@ const { address } = useContractKit();
 
 #### Get a connected account
 
-When a user refreshes or navigates back to your page, they may not necessarily have a connected account any longer, however we shouldn't need to prompt them to login again just to view the page, that can be done when doing an action.
+When a user refreshes or navigates back to your page, they may not necessarily have a connected account any longer, however we shouldn't need to prompt them to login again just to view the page, that can be done only when doing an action.
 
-For that functionality we have the `performActions` and `getConnectedKit` method. Usage looks a little like for `getConnectedKit`:
+For that functionality we have the `performActions` and `getConnectedKit` methods. Usage looks a little like this for `getConnectedKit`:
 
 ```javascript
 import { useContractKit } from '@celo-tools/use-contractkit';
