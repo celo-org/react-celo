@@ -79,7 +79,7 @@ export default function Home() {
             '0x73D20479390E1acdB243570b5B739655989412f5',
             Web3.utils.toWei('0.00000001', 'ether')
           )
-          .sendAndWaitForReceipt({ from: address });
+          .sendAndWaitForReceipt({ from: k.defaultAccount });
       });
       toast.success('sendTransaction succeeded');
       fetchSummary();
@@ -93,7 +93,9 @@ export default function Home() {
   const testSignTypedData = async () => {
     setSending(true);
     try {
-      await performActions((k) => k.signTypedData(address, TYPED_DATA));
+      await performActions((k) =>
+        k.signTypedData(k.defaultAccount, TYPED_DATA)
+      );
       toast.success('signTypedData succeeded');
     } catch (e) {
       toast.error(e.message);
@@ -108,7 +110,7 @@ export default function Home() {
       await performActions((k) =>
         k.connection.sign(
           ensureLeading0x(Buffer.from('Hello').toString('hex')),
-          address
+          k.defaultAccount
         )
       );
       toast.success('sign_personal succeeded');
