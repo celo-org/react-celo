@@ -84,10 +84,10 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
 export function ConnectModal({
   reactModalProps,
   renderProvider,
-  screens,
+  screens = defaultScreens,
 }: {
   screens?: {
-    [x in SupportedProviders]: FunctionComponent<{
+    [x in SupportedProviders]?: FunctionComponent<{
       onSubmit: (connector: Connector) => Promise<void> | void;
     }>;
   };
@@ -120,7 +120,7 @@ export function ConnectModal({
 
   let component;
   if (adding) {
-    const ProviderElement = screens?.[adding] || defaultScreens[adding];
+    const ProviderElement = screens?.[adding];
     if (!ProviderElement) {
       return null;
     }
