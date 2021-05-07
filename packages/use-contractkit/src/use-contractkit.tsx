@@ -1,5 +1,11 @@
 import { ContractKit } from '@celo/contractkit';
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, {
+  FunctionComponent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
 import {
@@ -15,6 +21,7 @@ import {
   localStorageKeys,
   Mainnet,
   NetworkNames,
+  SupportedProviders,
   WalletTypes,
 } from './constants';
 import { ActionModal, ActionModalProps, ConnectModal } from './modals';
@@ -122,7 +129,7 @@ function Kit(
   >(null);
 
   const initialNetwork =
-    networks.find((n) => n.name === lastUsedNetworkName) || defaultNetworks[0];
+    networks.find((n) => n.name === lastUsedNetworkName) || networks[0];
   if (!initialNetwork) {
     throw new Error('Unknown network');
   }
@@ -284,6 +291,11 @@ export function ContractKitProvider({
   connectModal?: {
     renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
     reactModalProps?: Partial<ReactModal.Props>;
+    screens?: {
+      [x in SupportedProviders]: FunctionComponent<{
+        onSubmit: (connector: Connector) => Promise<void> | void;
+      }>;
+    };
   };
   actionModal?: {
     reactModalProps?: Partial<ReactModal.Props>;
