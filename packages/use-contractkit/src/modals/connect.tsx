@@ -1,7 +1,7 @@
 import React, { FunctionComponent, ReactNode, useState } from 'react';
 import ReactModal from 'react-modal';
 import { images, SupportedProviders } from '../constants';
-import defaultScreens from '../screens';
+import { defaultScreens } from '../screens';
 import { Connector, Provider } from '../types';
 import { useContractKit } from '../use-contractkit';
 
@@ -83,7 +83,7 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
 
 export function ConnectModal({
   reactModalProps,
-  renderProvider,
+  renderProvider = defaultRenderProvider,
   screens = defaultScreens,
 }: {
   screens?: {
@@ -109,12 +109,17 @@ export function ConnectModal({
 
   const list = (
     <div>
-      {providers.map((p) =>
-        (renderProvider || defaultRenderProvider)({
-          ...p,
-          onClick: () => setAdding(p.name),
-        })
-      )}
+      {Object.keys(screens).map((screen) => {
+        const provider = providers.find((p) => p.name === screen);
+        if (!provider) {
+          throw new Error('Misconfigured use-contractkit configuration');
+        }
+
+        return renderProvider({
+          ...provider,
+          onClick: () => setAdding(provider.name),
+        });
+      })}
     </div>
   );
 

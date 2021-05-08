@@ -292,7 +292,7 @@ export function ContractKitProvider({
     renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
     reactModalProps?: Partial<ReactModal.Props>;
     screens?: {
-      [x in SupportedProviders]: FunctionComponent<{
+      [x in SupportedProviders]?: FunctionComponent<{
         onSubmit: (connector: Connector) => Promise<void> | void;
       }>;
     };
