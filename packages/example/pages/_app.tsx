@@ -9,11 +9,6 @@ function MyApp({ Component, pageProps }) {
       dappName="use-contractkit demo"
       dappDescription="A demo DApp to showcase functionality"
       dappUrl="https://use-contractkit.vercel.app"
-      connectModal={{
-        screens: {
-          'Private key': Screens['Private key'],
-        },
-      }}
     >
       <Toaster
         position="top-right"
