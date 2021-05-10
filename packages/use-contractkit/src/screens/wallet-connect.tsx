@@ -27,7 +27,7 @@ export function WalletConnect({
         },
       },
       init: {
-        relayProvider: 'wss://walletconnect.celo-networks-dev.org',
+        relayProvider: 'wss://walletconnect.celo.org',
         logger: 'error',
       },
     });
