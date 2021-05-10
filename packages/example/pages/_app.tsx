@@ -1,5 +1,5 @@
 import '../styles/global.css';
-import { ContractKitProvider, Screens } from '@celo-tools/use-contractkit';
+import { ContractKitProvider } from '@celo-tools/use-contractkit';
 import '@celo-tools/use-contractkit/lib/styles.css';
 import { Toaster } from 'react-hot-toast';
 
