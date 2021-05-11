@@ -160,10 +160,14 @@ function Kit(
         return null;
       }
 
-      const lastUsedWalletArguments = JSON.parse(
-        localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
-      );
-      return new Constructor(network, ...lastUsedWalletArguments);
+      try {
+        const lastUsedWalletArguments = JSON.parse(
+          localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
+        );
+        return new Constructor(network, ...lastUsedWalletArguments);
+      } catch (e) {
+        return new Constructor(network);
+      }
     });
   }, [network]);
 
