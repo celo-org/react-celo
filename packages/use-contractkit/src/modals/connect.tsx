@@ -55,6 +55,7 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
     <div
       className="tw-flex tw-cursor-pointer tw-py-5 tw-px-4 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-transition tw-rounded-md"
       onClick={provider.onClick}
+      key={provider.name.trim()}
     >
       <div className="tw-flex tw-w-1/4">
         <span className="tw-my-auto">
