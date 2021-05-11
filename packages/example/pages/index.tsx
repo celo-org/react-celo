@@ -5,6 +5,7 @@ import {
   Baklava,
   Mainnet,
 } from '@celo-tools/use-contractkit';
+import { StableToken } from '@celo/contractkit';
 import { ensureLeading0x } from '@celo/utils/lib/address';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
@@ -49,21 +50,23 @@ export default function Home() {
       return;
     }
 
-    const [accounts, goldToken, stableToken] = await Promise.all([
+    const [accounts, goldToken, cUSD, cEUR] = await Promise.all([
       kit.contracts.getAccounts(),
       kit.contracts.getGoldToken(),
-      kit.contracts.getStableToken(),
+      kit.contracts.getStableToken(StableToken.cUSD),
+      kit.contracts.getStableToken(StableToken.cEUR),
     ]);
-    const [summary, celo, cusd] = await Promise.all([
+    const [summary, celo, cusd, ceur] = await Promise.all([
       accounts.getAccountSummary(address).catch(() => defaultSummary),
       goldToken.balanceOf(address),
-      stableToken.balanceOf(address),
+      cUSD.balanceOf(address),
+      cEUR.balanceOf(address),
     ]);
     setSummary({
       ...summary,
       celo,
       cusd,
-      ceur: new BigNumber(0),
+      ceur,
     });
   }, [address, kit]);
 
@@ -315,10 +318,10 @@ export default function Home() {
                   </div>
                   <div className="space-y-2">
                     <div>
-                      CELO: {Web3.utils.fromWei(summary.celo.toString())}
+                      CELO: {Web3.utils.fromWei(summary.celo.toFixed())}
                     </div>
                     <div>
-                      cUSD: {Web3.utils.fromWei(summary.cusd.toString())}
+                      cUSD: {Web3.utils.fromWei(summary.cusd.toFixed())}
                     </div>
                     <div>cEUR: 0.00</div>
                   </div>
