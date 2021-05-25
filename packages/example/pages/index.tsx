@@ -225,6 +225,15 @@ export default function Home() {
             </li>
             <li>
               <a
+                target="_blank"
+                className="text-blue-500"
+                href="https://poof.cash"
+              >
+                Poof.cash
+              </a>
+            </li>
+            <li>
+              <a
                 className="text-blue-500"
                 target="_blank"
                 href="https://github.com/celo-tools/use-contractkit"
