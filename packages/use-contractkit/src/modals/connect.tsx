@@ -4,29 +4,37 @@ import { images, SupportedProviders } from '../constants';
 import { defaultScreens } from '../screens';
 import { Connector, Provider } from '../types';
 import { useContractKit } from '../use-contractkit';
+import { isMobile } from '../utils';
 
 const providers: Provider[] = [
-  {
-    name: SupportedProviders.WalletConnect,
-    description: 'Scan a QR code to connect your wallet',
-    image: images['Wallet Connect'],
-  },
-  {
-    name: SupportedProviders.CeloExtensionWallet,
-    description: 'A crypto gateway to blockchain apps',
-    image: images['Celo Extension Wallet'],
-  },
-  {
-    name: SupportedProviders.Ledger,
-    description: 'Connect to your Ledger wallet',
-    image: images.Ledger,
-  },
   {
     name: SupportedProviders.Valora,
     description: 'A mobile payments app that works worldwide',
     image: images.Valora,
   },
   {
+    name: SupportedProviders.WalletConnect,
+    description: 'Scan a QR code to connect your wallet',
+    image: images['Wallet Connect'],
+  },
+];
+
+!isMobile &&
+  providers.push(
+    {
+      name: SupportedProviders.CeloExtensionWallet,
+      description: 'A crypto gateway to blockchain apps',
+      image: images['Celo Extension Wallet'],
+    },
+    {
+      name: SupportedProviders.Ledger,
+      description: 'Connect to your Ledger wallet',
+      image: images.Ledger,
+    }
+  );
+
+process.env.NODE_ENV !== 'production' &&
+  providers.push({
     name: SupportedProviders.PrivateKey,
     description: 'Enter a plaintext private key to load your account',
     image: (
@@ -47,8 +55,7 @@ const providers: Provider[] = [
         ></path>
       </svg>
     ),
-  },
-];
+  });
 
 function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
   return (

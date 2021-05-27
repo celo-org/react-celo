@@ -3,7 +3,7 @@ import Loader from 'react-loader-spinner';
 import { CeloExtensionWalletConnector } from '../connectors';
 import { useContractKit } from '../use-contractkit';
 
-export function Metamask({
+export function CeloExtensionWallet({
   onSubmit,
 }: {
   onSubmit: (connector: CeloExtensionWalletConnector) => void;

@@ -1,10 +1,9 @@
 import { FunctionComponent } from 'react';
-import { SupportedProviders, WalletTypes } from '../constants';
+import { SupportedProviders } from '../constants';
 import { Connector } from '../types';
-import { Metamask } from './cew';
+import { CeloExtensionWallet } from './cew';
 import { Ledger } from './ledger';
 import { PrivateKey } from './private-key';
-import { Valora } from './valora';
 import { WalletConnect } from './wallet-connect';
 
 export const defaultScreens: {
@@ -12,10 +11,9 @@ export const defaultScreens: {
     onSubmit: (connector: Connector) => Promise<void> | void;
   }>;
 } = {
-  [SupportedProviders.Ledger]: Ledger,
-  [SupportedProviders.Valora]: Valora,
+  [SupportedProviders.Valora]: WalletConnect,
   [SupportedProviders.WalletConnect]: WalletConnect,
-  // [SupportedProviders.MetaMask]: Metamask,
-  [SupportedProviders.CeloExtensionWallet]: Metamask,
+  [SupportedProviders.Ledger]: Ledger,
+  [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.PrivateKey]: PrivateKey,
 };
