@@ -6,6 +6,7 @@ import { LocalWallet } from '@celo/wallet-local';
 // so that the new tab handler fires.
 import { DappKitWallet } from './dappkit-wallet';
 import { WalletConnectWalletOptions } from 'contractkit-walletconnect';
+import { isMobile } from './utils';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
@@ -235,6 +236,10 @@ export class WalletConnectConnector implements Connector {
     const uri = await wallet.getUri();
     if (uri && this.onUriCallback) {
       this.onUriCallback(uri);
+    }
+
+    if (isMobile) {
+      window.open(`wc:${uri}`);
     }
 
     await wallet.init();

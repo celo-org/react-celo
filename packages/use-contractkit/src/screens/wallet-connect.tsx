@@ -1,13 +1,11 @@
-import React, { useCallback } from 'react';
-import { useEffect, useState } from 'react';
-
 import QrCode from 'qrcode.react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import { CopyText } from '../components';
 import { WalletConnectConnector } from '../connectors';
-import { useContractKit } from '../use-contractkit';
-import { Connector } from '../types';
 import { Alfajores } from '../constants';
+import { Connector } from '../types';
+import { useContractKit } from '../use-contractkit';
 
 export function WalletConnect({
   onSubmit,
