@@ -198,6 +198,7 @@ export class WalletConnectConnector implements Connector {
   public kit: ContractKit;
 
   private onUriCallback?: (uri: string) => void;
+  private onCloseCallback?: () => void;
 
   constructor(private network: Network, options: WalletConnectWalletOptions) {
     localStorage.setItem(
@@ -218,9 +219,18 @@ export class WalletConnectConnector implements Connector {
     this.onUriCallback = callback;
   }
 
+  onClose(callback: () => void) {
+    this.onCloseCallback = callback;
+  }
+
   async initialise() {
     const { WalletConnectWallet } = require('contractkit-walletconnect');
     const wallet = this.kit.getWallet() as typeof WalletConnectWallet;
+
+    if (this.onCloseCallback) {
+      wallet.onPairingDeleted = () => this.onCloseCallback?.();
+      wallet.onSessionDeleted = () => this.onCloseCallback?.();
+    }
 
     const uri = await wallet.getUri();
     if (uri && this.onUriCallback) {

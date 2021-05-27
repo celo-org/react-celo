@@ -7,16 +7,21 @@ import { CopyText } from '../components';
 import { WalletConnectConnector } from '../connectors';
 import { useContractKit } from '../use-contractkit';
 import { Connector } from '../types';
+import { Alfajores } from '../constants';
 
 export function WalletConnect({
   onSubmit,
 }: {
   onSubmit: (connector: Connector) => void;
 }) {
-  const { network, dapp } = useContractKit();
+  const { network, dapp, destroy } = useContractKit();
   const [uri, setUri] = useState('');
 
   const initialiseConnection = useCallback(async () => {
+    const relayProvider =
+      network.name === Alfajores.name
+        ? 'wss://walletconnect.celo-networks-dev.org'
+        : 'wss://walletconnect.celo.org';
     const connector = new WalletConnectConnector(network, {
       connect: {
         metadata: {
@@ -27,12 +32,14 @@ export function WalletConnect({
         },
       },
       init: {
-        relayProvider: 'wss://walletconnect.celo.org',
+        relayProvider,
         logger: 'error',
       },
     });
 
     connector.onUri((newUri) => setUri(newUri));
+    connector.onClose(destroy);
+
     await connector.initialise();
 
     onSubmit(connector);
