@@ -12,5 +12,6 @@ if (typeof navigator !== 'undefined' || typeof window !== 'undefined') {
       )
     )
       isMobile = true;
+    // @ts-ignore
   })(navigator.userAgent || navigator.vendor || window.opera);
 }
