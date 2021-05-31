@@ -1,6 +1,6 @@
 {
   "name": "@ubeswap/use-contractkit",
-  "version": "1.0.0-ube.5",
+  "version": "1.0.0-ube.6",
   "private": false,
   "scripts": {
     "build": "tsc -b && yarn run build-styles",
