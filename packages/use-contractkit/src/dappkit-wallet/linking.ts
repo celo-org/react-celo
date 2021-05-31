@@ -20,7 +20,7 @@ class Linking {
   }
 
   openURL(url: string) {
-    window.location.href = url
+    window.location.href = url;
   }
 }
 

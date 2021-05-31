@@ -108,6 +108,6 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
     const dappkitResponse = await waitForSignedTxs(requestId);
     const raw = dappkitResponse.rawTxs[0];
 
-    return ({ raw, tx: txParams } as unknown) as EncodedTransaction;
+    return { raw, tx: txParams } as unknown as EncodedTransaction;
   }
 }

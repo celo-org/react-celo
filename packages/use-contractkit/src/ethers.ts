@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const useProvider = (): Web3Provider => {
   const { kit } = useContractKit();
-  const provider = (kit.web3.currentProvider as unknown) as ExternalProvider;
+  const provider = kit.web3.currentProvider as unknown as ExternalProvider;
   return useMemo(() => {
     return new Web3Provider(provider);
   }, [provider]);
@@ -29,8 +29,8 @@ export const useGetConnectedSigner = (): (() => Promise<JsonRpcSigner>) => {
       return signer as JsonRpcSigner;
     }
     const nextKit = await getConnectedKit();
-    const nextProvider = (nextKit.web3
-      .currentProvider as unknown) as ExternalProvider;
+    const nextProvider = nextKit.web3
+      .currentProvider as unknown as ExternalProvider;
     return new Web3Provider(nextProvider).getSigner(nextKit.defaultAccount);
   }, [signer, kit, connect]);
 };

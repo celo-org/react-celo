@@ -6,9 +6,16 @@
   ],
   "scripts": {
     "build": "lerna run build",
-    "postinstall": "lerna bootstrap"
+    "postinstall": "lerna bootstrap",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "husky": ">=6",
+    "lerna": "^3.22.1",
+    "lint-staged": ">=10",
+    "prettier": "^2.3.0"
+  },
+  "lint-staged": {
+    "*.{js,css,md,ts,tsx,json,yaml,yml}": "prettier --write"
   }
 }

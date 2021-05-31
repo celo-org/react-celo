@@ -103,6 +103,6 @@ export async function requestTxSig(
     })
   );
 
-  const request = SignTxRequest((txs as unknown) as TxToSignParam[], meta);
+  const request = SignTxRequest(txs as unknown as TxToSignParam[], meta);
   Linking.openURL(serializeDappKitRequestDeeplink(request));
 }

@@ -156,9 +156,8 @@ function Kit(
     url: dappUrl,
   });
   const [address, setAddress] = useState<string | null>(lastUsedAddress);
-  const [connectionCallback, setConnectionCallback] = useState<
-    ((x: Connector | false) => void) | null
-  >(null);
+  const [connectionCallback, setConnectionCallback] =
+    useState<((x: Connector | false) => void) | null>(null);
 
   const initialNetwork =
     networks.find((n) => n.name === lastUsedNetworkName) || networks[0];
