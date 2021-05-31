@@ -3,7 +3,7 @@ import ReactModal from 'react-modal';
 import { images, SupportedProviders } from '../constants';
 import { defaultScreens } from '../screens';
 import { Connector, Provider } from '../types';
-import { useContractKit } from '../use-contractkit';
+import { useContractKit, useInternalContractKit } from '../use-contractkit';
 import { isMobile } from '../utils';
 
 const providers: Provider[] = [
@@ -90,7 +90,7 @@ export function ConnectModal({
   renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
   reactModalProps?: Partial<ReactModal.Props>;
 }) {
-  const { connectionCallback } = useContractKit();
+  const { connectionCallback } = useInternalContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
 
   const close = async () => {

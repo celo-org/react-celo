@@ -5,14 +5,14 @@ import { CopyText } from '../components';
 import { WalletConnectConnector } from '../connectors';
 import { Alfajores } from '../constants';
 import { Connector } from '../types';
-import { useContractKit } from '../use-contractkit';
+import { useContractKit, useInternalContractKit } from '../use-contractkit';
 
 export function WalletConnect({
   onSubmit,
 }: {
   onSubmit: (connector: Connector) => void;
 }) {
-  const { network, dapp, destroy } = useContractKit();
+  const { network, dapp, destroy, initConnector } = useInternalContractKit();
   const [uri, setUri] = useState('');
 
   const initialiseConnection = useCallback(async () => {
@@ -38,7 +38,7 @@ export function WalletConnect({
     connector.onUri((newUri) => setUri(newUri));
     connector.onClose(destroy);
 
-    await connector.initialise();
+    await initConnector(connector);
 
     onSubmit(connector);
   }, [network, dapp]);

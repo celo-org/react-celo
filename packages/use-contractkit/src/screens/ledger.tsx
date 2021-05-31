@@ -2,14 +2,14 @@ import React, { FunctionComponent, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import { LedgerConnector } from '../connectors';
 import { images } from '../constants';
-import { useContractKit } from '../use-contractkit';
+import { useContractKit, useInternalContractKit } from '../use-contractkit';
 
 export const Ledger: FunctionComponent<any> = ({
   onSubmit,
 }: {
   onSubmit: (connector: LedgerConnector) => Promise<void>;
 }) => {
-  const { network } = useContractKit();
+  const { network, initConnector } = useInternalContractKit();
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
@@ -18,7 +18,7 @@ export const Ledger: FunctionComponent<any> = ({
     setSubmitting(true);
     try {
       const connector = new LedgerConnector(network, parseInt(index, 10));
-      await connector.initialise();
+      await initConnector(connector);
       onSubmit(connector);
       setError('');
     } catch (e) {

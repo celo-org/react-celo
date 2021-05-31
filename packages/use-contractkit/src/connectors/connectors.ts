@@ -1,12 +1,11 @@
-import { Network, Connector } from './types';
-import { localStorageKeys, WalletTypes } from './constants';
 import { ContractKit, newKit, newKitFromWeb3 } from '@celo/contractkit';
 import { LocalWallet } from '@celo/wallet-local';
 // we can't lazy load this due to the new tab bug, it must be imported
 // so that the new tab handler fires.
-import { DappKitWallet } from './dappkit-wallet';
 import { WalletConnectWalletOptions } from 'contractkit-walletconnect';
-import { isMobile } from './utils';
+import { Connector, WalletTypes, Network, localStorageKeys } from '..';
+import { DappKitWallet } from '../dappkit-wallet';
+import { isMobile } from '../utils';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each

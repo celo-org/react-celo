@@ -8,16 +8,8 @@ import React, {
 } from 'react';
 import ReactModal from 'react-modal';
 import { Container, createContainer } from 'unstated-next';
-import {
-  CeloExtensionWalletConnector,
-  DappKitConnector,
-  InjectedConnector,
-  LedgerConnector,
-  MetaMaskConnector,
-  PrivateKeyConnector,
-  UnauthenticatedConnector,
-  WalletConnectConnector,
-} from './connectors';
+import { CONNECTOR_TYPES } from './connectors';
+import { UnauthenticatedConnector } from './connectors/connectors';
 import {
   Alfajores,
   localStorageKeys,
@@ -76,23 +68,10 @@ const defaultNetworks = [Mainnet, Alfajores];
 const lastUsedNetwork =
   defaultNetworks.find((n) => n.name === lastUsedNetworkName) ?? Alfajores;
 
-const connectorTypes: {
-  [x in WalletTypes]: new (n: Network, ...args: any[]) => Connector;
-} = {
-  [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
-  [WalletTypes.PrivateKey]: PrivateKeyConnector,
-  [WalletTypes.Ledger]: LedgerConnector,
-  [WalletTypes.WalletConnect]: WalletConnectConnector,
-  [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
-  [WalletTypes.MetaMask]: MetaMaskConnector,
-  [WalletTypes.Injected]: InjectedConnector,
-  [WalletTypes.DappKit]: DappKitConnector,
-};
-
 let initialConnector: Connector;
 if (lastUsedWalletType) {
   try {
-    initialConnector = new connectorTypes[lastUsedWalletType as WalletTypes](
+    initialConnector = new CONNECTOR_TYPES[lastUsedWalletType as WalletTypes](
       lastUsedNetwork,
       ...lastUsedWalletArguments
     );
@@ -101,29 +80,46 @@ if (lastUsedWalletType) {
   }
 }
 
+/**
+ * Exports for ContractKit.
+ */
 interface UseContractKit {
   network: Network;
   updateNetwork: (network: Network) => void;
+  /**
+   * The address connected.
+   */
   address: string | null;
-  dappName: string;
-  dapp: {
-    name: string;
-    description: string;
-    icon: string;
-    url: string;
-  };
+  dapp: Dapp;
   kit: ContractKit;
   walletType: WalletTypes;
   accountName: string | null;
 
+  /**
+   * Helper function for handling any interaction with a Celo wallet. Perform action will
+   * - open the action modal
+   * - handle multiple transactions in order
+   */
   performActions: (
     ...operations: ((kit: ContractKit) => any | Promise<any>)[]
   ) => Promise<any[]>;
 
+  /**
+   * Whether or not the connector has been fully loaded.
+   */
+  initialised: boolean;
+  /**
+   * Initialisation error, if applicable.
+   */
+  initError: Error | null;
+
   connect: () => Promise<Connector>;
   destroy: () => Promise<void>;
   getConnectedKit: () => Promise<ContractKit>;
+}
 
+interface UseContractKitInternal extends UseContractKit {
+  initConnector: (connector: Connector) => Promise<void>;
   pendingActionCount: number;
   connectionCallback: ((x: Connector | false) => void) | null;
 }
@@ -132,7 +128,7 @@ interface Dapp {
   name: string;
   description: string;
   url: string;
-  icon?: string;
+  icon: string;
 }
 
 interface KitState {
@@ -140,17 +136,19 @@ interface KitState {
   dapp: Dapp;
 }
 
+const defaultDapp: Dapp = {
+  name: '',
+  description: '',
+  icon: '',
+  url: '',
+};
+
 function Kit(
   { networks = defaultNetworks, dapp: dappInput }: KitState = {
     networks: defaultNetworks,
-    dapp: {
-      name: '',
-      description: '',
-      icon: '',
-      url: '',
-    },
+    dapp: defaultDapp,
   }
-): UseContractKit {
+): UseContractKitInternal {
   const [dapp] = useState<Required<Dapp>>({
     name: dappInput.name,
     description: dappInput.description,
@@ -187,7 +185,7 @@ function Kit(
     }
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
-    const Constructor = connectorTypes[connection.type];
+    const Constructor = CONNECTOR_TYPES[connection.type];
     if (!Constructor) {
       return;
     }
@@ -246,22 +244,32 @@ function Kit(
     return connector;
   }, [network]);
 
+  // Initialisation error state management
+  const [initError, setInitError] = useState<Error | null>(null);
+  const initConnector = useCallback(async (connector: Connector) => {
+    try {
+      await connector.initialise();
+    } catch (e) {
+      console.error(
+        '[use-contractkit] Error initializing connector',
+        connector.type,
+        e
+      );
+      setInitError(e);
+    }
+  }, []);
+
   const getConnectedKit = useCallback(async () => {
     let initialisedConnection = connection;
     if (connection.type === WalletTypes.Unauthenticated) {
       initialisedConnection = await connect();
     } else if (!initialisedConnection.initialised) {
-      await initialisedConnection.initialise();
+      await initConnector(initialisedConnection);
     }
 
     return initialisedConnection.kit;
-  }, [connect, connection]);
+  }, [connect, connection, initConnector]);
 
-  /**
-   * Helper function for handling any interaction with a Celo wallet. Perform action will
-   *    - open the action modal
-   *    - handle multiple transactions in order
-   */
   const performActions = useCallback(
     async (...operations: ((kit: ContractKit) => any | Promise<any>)[]) => {
       const kit = await getConnectedKit();
@@ -288,7 +296,6 @@ function Kit(
     updateNetwork,
 
     address,
-    dappName: dapp.name,
     dapp,
     kit: connection.kit,
     walletType: connection.type,
@@ -300,15 +307,28 @@ function Kit(
     destroy,
     getConnectedKit,
 
+    initialised: connection.initialised,
+    initError,
+
     // private
+    initConnector,
     pendingActionCount,
     connectionCallback,
   };
 }
 
-const KitState = createContainer<UseContractKit, KitState>(Kit);
+const KitState = createContainer<UseContractKitInternal, KitState>(Kit);
+
 export const useContractKit: Container<
   UseContractKit,
+  KitState
+>['useContainer'] = KitState.useContainer;
+
+/**
+ * UseContractKit with internal methods exposed. Package use only.
+ */
+export const useInternalContractKit: Container<
+  UseContractKitInternal,
   KitState
 >['useContainer'] = KitState.useContainer;
 
