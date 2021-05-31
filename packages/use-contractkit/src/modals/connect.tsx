@@ -61,7 +61,7 @@ function defaultRenderProvider(provider: Provider & { onClick: () => void }) {
               style={{ height: '48px', width: '48px' }}
             />
           ) : (
-            provider.image
+            <provider.image style={{ height: '48px', width: '48px' }} />
           )}
         </span>
       </div>
