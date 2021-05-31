@@ -1,6 +1,12 @@
 import React from 'react';
 import { ChainId } from './types';
-import { LEDGER, METAMASK, PRIVATE_KEY, WALLETCONNECT } from './walletIcons';
+import {
+  CELO,
+  LEDGER,
+  METAMASK,
+  PRIVATE_KEY,
+  WALLETCONNECT,
+} from './walletIcons';
 
 export const localStorageKeys = {
   lastUsedAddress: 'use-contractkit/last-used-address',
@@ -26,8 +32,7 @@ export const images = {
   [SupportedProviders.WalletConnect]: WALLETCONNECT,
   [SupportedProviders.MetaMask]: METAMASK,
   [SupportedProviders.Valora]: 'https://valoraapp.com/favicon.ico',
-  [SupportedProviders.CeloExtensionWallet]:
-    'https://dl.airtable.com/.attachmentThumbnails/765f7478015a0aa7f823d1350c6181c1/9ea0f8db',
+  [SupportedProviders.CeloExtensionWallet]: CELO,
   [SupportedProviders.PrivateKey]: PRIVATE_KEY,
 } as const;
 
