@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@celo-tools/use-contractkit": "^1.0.0-beta.2",
+    "@ubeswap/use-contractkit": "^1.0.0-ube.6",
     "autoprefixer": "^10.2.4",
     "next": "10.0.7",
     "postcss": "^8.2.6",
