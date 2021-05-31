@@ -116,7 +116,7 @@ export class InjectedConnector implements Connector {
   constructor(network: Network) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
-      WalletTypes.Metamask
+      WalletTypes.MetaMask
     );
     localStorage.setItem(
       localStorageKeys.lastUsedWalletArguments,
@@ -134,7 +134,7 @@ export class InjectedConnector implements Connector {
       throw new Error('Ethereum wallet not installed');
     }
     this.type = window.ethereum?.isMetaMask
-      ? WalletTypes.Metamask
+      ? WalletTypes.MetaMask
       : WalletTypes.Injected;
     const web3 = new Web3(ethereum as any);
     await ethereum.enable();

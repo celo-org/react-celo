@@ -73,15 +73,17 @@ localStorageOperations();
 
 const defaultNetworks = [Mainnet, Alfajores];
 const lastUsedNetwork =
-  defaultNetworks.find((n) => n.name === lastUsedNetworkName) || Alfajores;
+  defaultNetworks.find((n) => n.name === lastUsedNetworkName) ?? Alfajores;
 
-const connectorTypes: { [x in WalletTypes]: any } = {
+const connectorTypes: {
+  [x in WalletTypes]: new (n: Network, ...args: any[]) => Connector;
+} = {
   [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
   [WalletTypes.PrivateKey]: PrivateKeyConnector,
   [WalletTypes.Ledger]: LedgerConnector,
   [WalletTypes.WalletConnect]: WalletConnectConnector,
   [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
-  [WalletTypes.Metamask]: InjectedConnector,
+  [WalletTypes.MetaMask]: InjectedConnector,
   [WalletTypes.Injected]: InjectedConnector,
   [WalletTypes.DappKit]: DappKitConnector,
 };
@@ -156,12 +158,12 @@ function Kit(
     }
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
-    setConnection((c) => {
-      const Constructor = connectorTypes[c.type];
-      if (!Constructor) {
-        return null;
-      }
+    const Constructor = connectorTypes[connection.type];
+    if (!Constructor) {
+      return;
+    }
 
+    setConnection(() => {
       try {
         const lastUsedWalletArguments = JSON.parse(
           localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
@@ -171,7 +173,7 @@ function Kit(
         return new Constructor(network);
       }
     });
-  }, [network]);
+  }, [connection, network]);
 
   const destroy = useCallback(async () => {
     await connection.close();

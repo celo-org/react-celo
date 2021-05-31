@@ -12,10 +12,11 @@ export const defaultScreens: {
     onSubmit: (connector: Connector) => Promise<void> | void;
   }>;
 } = {
-  [SupportedProviders.Valora]: WalletConnect,
-  [SupportedProviders.WalletConnect]: WalletConnect,
+  [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.Ledger]: Ledger,
   [SupportedProviders.MetaMask]: MetaMaskWallet,
-  [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
+  [SupportedProviders.Injected]: MetaMaskWallet,
   [SupportedProviders.PrivateKey]: PrivateKey,
+  [SupportedProviders.Valora]: WalletConnect,
+  [SupportedProviders.WalletConnect]: WalletConnect,
 };

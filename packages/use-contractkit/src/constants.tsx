@@ -8,12 +8,13 @@ export const localStorageKeys = {
 };
 
 export enum SupportedProviders {
-  WalletConnect = 'Wallet Connect',
-  MetaMask = 'MetaMask',
   CeloExtensionWallet = 'Celo Extension Wallet',
+  Injected = 'Injected',
   Ledger = 'Ledger',
-  Valora = 'Valora',
+  MetaMask = 'MetaMask',
   PrivateKey = 'Private key',
+  Valora = 'Valora',
+  WalletConnect = 'Wallet Connect',
 }
 
 // can't figure out how to bundle images yet
@@ -79,12 +80,21 @@ export const Mainnet = {
 };
 
 export enum WalletTypes {
-  Unauthenticated = 'Unauthenticated',
-  PrivateKey = 'PrivateKey',
-  WalletConnect = 'WalletConnect',
-  Ledger = 'Ledger',
   CeloExtensionWallet = 'CeloExtensionWallet',
-  Metamask = 'Metamask',
-  Injected = 'Injected',
   DappKit = 'DappKit',
+  Injected = 'Injected',
+  Ledger = 'Ledger',
+  MetaMask = 'MetaMask',
+  PrivateKey = 'PrivateKey',
+  Unauthenticated = 'Unauthenticated',
+  WalletConnect = 'WalletConnect',
 }
+
+export const getProviderForWallet = (
+  wallet: WalletTypes
+): SupportedProviders | null =>
+  wallet === WalletTypes.DappKit
+    ? SupportedProviders.Valora
+    : wallet === WalletTypes.Unauthenticated
+    ? null
+    : SupportedProviders[wallet];
