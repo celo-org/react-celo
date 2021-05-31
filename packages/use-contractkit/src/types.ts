@@ -1,13 +1,22 @@
 import { ContractKit } from '@celo/contractkit';
 import { ReactNode } from 'react';
-import { SupportedProviders, WalletTypes } from './constants';
+import { NetworkNames, SupportedProviders, WalletTypes } from './constants';
+
+/**
+ * ID of a Celo chain.
+ */
+export enum ChainId {
+  Alfajores = 44787,
+  Baklava = 62320,
+  Mainnet = 42220,
+}
 
 export interface Network {
-  name: string;
+  name: NetworkNames;
   rpcUrl: string;
   graphQl: string;
   explorer: string;
-  chainId: number;
+  chainId: ChainId;
 }
 
 export interface Provider {

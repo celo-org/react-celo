@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChainId } from './types';
 
 export const localStorageKeys = {
   lastUsedAddress: 'use-contractkit/last-used-address',
@@ -59,24 +60,24 @@ export const Alfajores = {
   rpcUrl: 'https://alfajores-forno.celo-testnet.org',
   graphQl: 'https://alfajores-blockscout.celo-testnet.org/graphiql',
   explorer: 'https://alfajores-blockscout.celo-testnet.org',
-  chainId: 44787,
-};
+  chainId: ChainId.Alfajores,
+} as const;
 
 export const Baklava = {
   name: NetworkNames.Baklava,
   rpcUrl: 'https://baklava-forno.celo-testnet.org',
   graphQl: 'https://baklava-blockscout.celo-testnet.org/graphiql',
   explorer: 'https://baklava-blockscout.celo-testnet.org',
-  chainId: 62320,
-};
+  chainId: ChainId.Baklava,
+} as const;
 
 export const Mainnet = {
   name: NetworkNames.Mainnet,
   rpcUrl: 'https://forno.celo.org',
   graphQl: 'https://explorer.celo.org/graphiql',
   explorer: 'https://explorer.celo.org',
-  chainId: 42220,
-};
+  chainId: ChainId.Mainnet,
+} as const;
 
 export enum WalletTypes {
   CeloExtensionWallet = 'CeloExtensionWallet',
@@ -89,6 +90,11 @@ export enum WalletTypes {
   WalletConnect = 'WalletConnect',
 }
 
+/**
+ * Gets the provider associated with a wallet type.
+ * @param wallet
+ * @returns
+ */
 export const getProviderForWallet = (
   wallet: WalletTypes
 ): SupportedProviders | null =>

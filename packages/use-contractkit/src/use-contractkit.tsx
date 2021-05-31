@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import ReactModal from 'react-modal';
-import { createContainer } from 'unstated-next';
+import { Container, createContainer } from 'unstated-next';
 import {
   CeloExtensionWalletConnector,
   DappKitConnector,
@@ -29,7 +29,7 @@ import {
 import { ActionModal, ActionModalProps, ConnectModal } from './modals';
 import { Connector, Network, Provider } from './types';
 
-let lastUsedNetworkName = Mainnet.name;
+let lastUsedNetworkName: NetworkNames = Mainnet.name;
 let lastUsedAddress: string | null = null;
 let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
 let lastUsedWalletArguments: any[] = [];
@@ -128,32 +128,34 @@ interface UseContractKit {
   connectionCallback: ((x: Connector | false) => void) | null;
 }
 
+interface Dapp {
+  name: string;
+  description: string;
+  url: string;
+  icon?: string;
+}
+
+interface KitState {
+  networks?: Network[];
+  dapp: Dapp;
+}
+
 function Kit(
-  {
-    networks = defaultNetworks,
-    dappName,
-    dappDescription,
-    dappIcon,
-    dappUrl,
-  }: {
-    networks?: Network[];
-    dappName: string;
-    dappDescription: string;
-    dappUrl: string;
-    dappIcon?: string;
-  } = {
+  { networks = defaultNetworks, dapp: dappInput }: KitState = {
     networks: defaultNetworks,
-    dappName: '',
-    dappDescription: '',
-    dappIcon: '',
-    dappUrl: '',
+    dapp: {
+      name: '',
+      description: '',
+      icon: '',
+      url: '',
+    },
   }
-) {
-  const [dapp] = useState({
-    name: dappName,
-    description: dappDescription,
-    icon: dappIcon || `${dappUrl}/favicon.ico`,
-    url: dappUrl,
+): UseContractKit {
+  const [dapp] = useState<Required<Dapp>>({
+    name: dappInput.name,
+    description: dappInput.description,
+    icon: dappInput.icon ?? `${dappInput.url}/favicon.ico`,
+    url: dappInput.url,
   });
   const [address, setAddress] = useState<string | null>(lastUsedAddress);
   const [connectionCallback, setConnectionCallback] =
@@ -304,24 +306,15 @@ function Kit(
   };
 }
 
-const KitState = createContainer(Kit);
-export const useContractKit: () => UseContractKit = KitState.useContainer;
+const KitState = createContainer<UseContractKit, KitState>(Kit);
+export const useContractKit: Container<
+  UseContractKit,
+  KitState
+>['useContainer'] = KitState.useContainer;
 
-export function ContractKitProvider({
-  children,
-  connectModal,
-  actionModal,
-  dappName,
-  dappDescription,
-  dappUrl,
-  dappIcon,
-  networks,
-}: {
+interface ContractKitProviderProps {
   children: ReactNode;
-  dappName: string;
-  dappDescription: string;
-  dappUrl: string;
-  dappIcon?: string;
+  dapp: Dapp;
   networks?: Network[];
 
   connectModal?: {
@@ -337,11 +330,17 @@ export function ContractKitProvider({
     reactModalProps?: Partial<ReactModal.Props>;
     render?: (props: ActionModalProps) => ReactNode;
   };
-}) {
+}
+
+export function ContractKitProvider({
+  children,
+  connectModal,
+  actionModal,
+  dapp,
+  networks,
+}: ContractKitProviderProps) {
   return (
-    <KitState.Provider
-      initialState={{ networks, dappName, dappDescription, dappUrl, dappIcon }}
-    >
+    <KitState.Provider initialState={{ networks, dapp }}>
       <ConnectModal {...connectModal} />
       <ActionModal {...actionModal} />
 

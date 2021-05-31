@@ -6,9 +6,11 @@ import { Toaster } from 'react-hot-toast';
 function MyApp({ Component, pageProps }) {
   return (
     <ContractKitProvider
-      dappName="use-contractkit demo"
-      dappDescription="A demo DApp to showcase functionality"
-      dappUrl="https://use-contractkit.vercel.app"
+      dapp={{
+        name: 'use-contractkit demo',
+        description: 'A demo DApp to showcase functionality',
+        url: 'https://use-contractkit.vercel.app',
+      }}
     >
       <Toaster
         position="top-right"
