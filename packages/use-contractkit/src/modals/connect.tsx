@@ -146,24 +146,20 @@ export function ConnectModal({
     <ReactModal
       isOpen={!!connectionCallback}
       onRequestClose={close}
-      {...(reactModalProps
-        ? reactModalProps
-        : {
-            style: {
-              content: {
-                top: '50%',
-                left: '50%',
-                right: 'auto',
-                bottom: 'auto',
-                transform: 'translate(-50%, -50%)',
-                border: 'unset',
-                background: 'unset',
-                padding: 'unset',
-              },
-            },
-            overlayClassName:
-              'tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0',
-          })}
+      style={{
+        content: {
+          top: '50%',
+          left: '50%',
+          right: 'auto',
+          bottom: 'auto',
+          transform: 'translate(-50%, -50%)',
+          border: 'unset',
+          background: 'unset',
+          padding: 'unset',
+        },
+      }}
+      overlayClassName="tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0"
+      {...reactModalProps}
     >
       <div className="use-ck tw-max-h-screen">
         <div className="tw-relative tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-w-80 md:tw-w-96">
