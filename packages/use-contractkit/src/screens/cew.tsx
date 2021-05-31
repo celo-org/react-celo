@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
 import { CeloExtensionWalletConnector } from '../connectors';
-import { useContractKit, useInternalContractKit } from '../use-contractkit';
+import { useInternalContractKit } from '../use-contractkit';
 
 export function CeloExtensionWallet({
   onSubmit,

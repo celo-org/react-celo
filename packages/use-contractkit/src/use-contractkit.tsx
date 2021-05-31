@@ -8,7 +8,12 @@ import React, {
 import ReactModal from 'react-modal';
 import { Container, createContainer } from 'unstated-next';
 import { DEFAULT_NETWORKS, SupportedProviders, WalletTypes } from './constants';
-import { ActionModal, ActionModalProps, ConnectModal } from './modals';
+import {
+  ActionModal,
+  ActionModalProps,
+  ConnectModal,
+  ConnectModalProps,
+} from './modals';
 import { Connector, Dapp, Network, Provider } from './types';
 import {
   UseConnectorConfig,
@@ -190,15 +195,7 @@ interface ContractKitProviderProps {
   dapp: DappInput;
   networks?: Network[];
 
-  connectModal?: {
-    renderProvider?: (p: Provider & { onClick: () => void }) => ReactNode;
-    reactModalProps?: Partial<ReactModal.Props>;
-    screens?: {
-      [x in SupportedProviders]?: FunctionComponent<{
-        onSubmit: (connector: Connector) => Promise<void> | void;
-      }>;
-    };
-  };
+  connectModal?: ConnectModalProps;
   actionModal?: {
     reactModalProps?: Partial<ReactModal.Props>;
     render?: (props: ActionModalProps) => ReactNode;

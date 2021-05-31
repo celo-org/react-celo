@@ -32,6 +32,7 @@
     "contractkit-walletconnect": "0.0.15",
     "postcss": "^8.3.0",
     "qrcode.react": "^1.0.1",
+    "react-device-detect": "^1.17.0",
     "react-loader-spinner": "^4.0.0",
     "react-modal": "^3.13.1",
     "tailwindcss": "^2.1.2",

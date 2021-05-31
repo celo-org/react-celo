@@ -26,10 +26,12 @@ export interface Network {
  * Information about a provider to use for the dApp.
  */
 export interface Provider {
-  name: SupportedProviders;
+  name: string;
   description: string;
-  image: string | React.FC<React.SVGProps<SVGSVGElement>>;
-  disabled?: boolean;
+  icon: string | React.FC<React.SVGProps<SVGSVGElement>>;
+  canConnect: () => boolean;
+  showInList: () => boolean;
+  installURL?: string;
 }
 
 /**
