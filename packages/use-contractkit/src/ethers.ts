@@ -22,17 +22,16 @@ export const useProviderOrSigner = (): Web3Provider | JsonRpcSigner => {
 };
 
 export const useGetConnectedSigner = (): (() => Promise<JsonRpcSigner>) => {
-  const { kit, connect } = useContractKit();
+  const { kit, connect, getConnectedKit } = useContractKit();
   const signer = useProviderOrSigner();
   return useCallback(async () => {
     if (kit.defaultAccount) {
       return signer as JsonRpcSigner;
     }
-    const connector = await connect();
-    const nextKit = await connector.initialise();
-    const nextProvider = (nextKit.kit.web3
+    const nextKit = await getConnectedKit();
+    const nextProvider = (nextKit.web3
       .currentProvider as unknown) as ExternalProvider;
-    return new Web3Provider(nextProvider).getSigner(nextKit.kit.defaultAccount);
+    return new Web3Provider(nextProvider).getSigner(nextKit.defaultAccount);
   }, [signer, kit, connect]);
 };
 
