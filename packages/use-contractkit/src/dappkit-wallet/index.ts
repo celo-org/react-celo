@@ -1,4 +1,4 @@
-import { CeloTx, Signer } from '@celo/connect';
+import { CeloTx, Signer, EncodedTransaction } from '@celo/connect';
 import { ContractKit } from '@celo/contractkit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import { RemoteWallet } from '@celo/wallet-remote';
@@ -40,14 +40,12 @@ export class DappKitSigner implements Signer {
 
   getNativeKey = () => this.account;
 
-  async decrypt(ciphertext: Buffer) {
+  async decrypt(ciphertext: Buffer): Promise<Buffer> {
     throw new Error('decrypt() not supported by DappKit wallet');
-    return Buffer.from([]);
   }
 
-  computeSharedSecret(_publicKey: string) {
+  computeSharedSecret(_publicKey: string): Promise<Buffer> {
     throw new Error('computeSharedSecret() not supported by DappKit wallet');
-    return Promise.resolve(Buffer.from([]));
   }
 }
 
@@ -95,14 +93,12 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
    * @param txParams Transaction to sign
    * @dev overrides WalletBase.signTransaction
    */
-  // @ts-ignore
   async signTransaction(txParams: CeloTx) {
     if (!this.kit) {
       throw new Error('Must call setKit before using dappKit wallet');
     }
 
     const requestId = `signTransaction-${randomString()}`;
-    // @ts-ignore
     requestTxSig(this.kit, [txParams], {
       requestId,
       dappName: this.dappName,
@@ -112,6 +108,6 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
     const dappkitResponse = await waitForSignedTxs(requestId);
     const raw = dappkitResponse.rawTxs[0];
 
-    return { raw };
+    return ({ raw, tx: txParams } as unknown) as EncodedTransaction;
   }
 }

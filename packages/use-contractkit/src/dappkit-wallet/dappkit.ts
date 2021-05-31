@@ -10,6 +10,7 @@ import {
   serializeDappKitRequestDeeplink,
   SignTxRequest,
   SignTxResponseSuccess,
+  TxToSignParam,
 } from '@celo/utils';
 import Linking from './linking';
 export {
@@ -92,7 +93,7 @@ export async function requestTxSig(
       const value = txParam.value === undefined ? '0' : txParam.value;
 
       return {
-        txData: txParam.data, // Valora expects this
+        txData: txParam.data as string, // Valora expects this
         estimatedGas: txParam.gas ?? 150000,
         nonce: baseNonce + index,
         feeCurrencyAddress: undefined,
@@ -102,7 +103,6 @@ export async function requestTxSig(
     })
   );
 
-  // @ts-ignore
-  const request = SignTxRequest(txs, meta);
+  const request = SignTxRequest((txs as unknown) as TxToSignParam[], meta);
   Linking.openURL(serializeDappKitRequestDeeplink(request));
 }

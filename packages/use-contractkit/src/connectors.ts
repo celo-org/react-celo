@@ -113,11 +113,12 @@ export class InjectedConnector implements Connector {
   public accountName: string | null = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
 
-  constructor(network: Network) {
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletType,
-      WalletTypes.MetaMask
-    );
+  constructor(
+    network: Network,
+    defaultType: WalletTypes = WalletTypes.Injected
+  ) {
+    this.type = defaultType;
+    localStorage.setItem(localStorageKeys.lastUsedWalletType, defaultType);
     localStorage.setItem(
       localStorageKeys.lastUsedWalletArguments,
       JSON.stringify([])
@@ -139,15 +140,11 @@ export class InjectedConnector implements Connector {
     const web3 = new Web3(ethereum as any);
     await ethereum.enable();
 
-    // @ts-ignore
-    web3.currentProvider.publicConfigStore.on(
-      'update',
-      async ({ networkVersion }: { networkVersion: number }) => {
-        if (this.onNetworkChangeCallback) {
-          this.onNetworkChangeCallback(networkVersion);
-        }
+    ethereum.on('chainChanged', (chainId) => {
+      if (this.onNetworkChangeCallback) {
+        this.onNetworkChangeCallback(chainId);
       }
-    );
+    });
 
     this.kit = newKitFromWeb3(web3 as any);
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
@@ -163,6 +160,12 @@ export class InjectedConnector implements Connector {
 
   close() {
     return;
+  }
+}
+
+export class MetaMaskConnector extends InjectedConnector {
+  constructor(network: Network) {
+    super(network, WalletTypes.MetaMask);
   }
 }
 
@@ -189,12 +192,11 @@ export class CeloExtensionWalletConnector implements Connector {
   async initialise() {
     const { default: Web3 } = await import('web3');
 
-    // @ts-ignore
-    const celo: any = window.celo;
+    const celo = window.celo;
     if (!celo) {
       throw new Error('Celo Extension Wallet not installed');
     }
-    const web3 = new Web3(celo);
+    const web3 = new Web3(celo as any);
     await celo.enable();
 
     // @ts-ignore
