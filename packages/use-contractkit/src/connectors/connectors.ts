@@ -4,7 +4,6 @@ import { LocalWallet } from '@celo/wallet-local';
 // so that the new tab handler fires.
 import { WalletConnectWalletOptions } from 'contractkit-walletconnect';
 import { localStorageKeys, WalletTypes } from '../constants';
-import { DappKitWallet } from '../dappkit-wallet';
 import { ChainId, Connector, Network } from '../types';
 import { isMobile } from '../utils';
 
@@ -233,44 +232,6 @@ export class CeloExtensionWalletConnector implements Connector {
 
   onNetworkChange(callback: (chainId: number) => void) {
     this.onNetworkChangeCallback = callback;
-  }
-
-  close() {
-    return;
-  }
-}
-
-export class DappKitConnector implements Connector {
-  public initialised = true;
-  public type = WalletTypes.DappKit;
-  public kit: ContractKit;
-  public account: string | null = null;
-
-  constructor(private network: Network, private dappName: string) {
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletType,
-      WalletTypes.DappKit
-    );
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([dappName])
-    );
-
-    const wallet = new DappKitWallet(dappName);
-    this.kit = newKit(network.rpcUrl, wallet as any);
-    wallet.setKit(this.kit);
-  }
-
-  async initialise() {
-    const wallet = new DappKitWallet(this.dappName);
-    await wallet.init();
-
-    this.kit = newKit(this.network.rpcUrl, wallet as any);
-    this.kit.defaultAccount = wallet.getAccounts()[0];
-    wallet.setKit(this.kit);
-    this.account = wallet.phoneNumber ?? wallet.getAccounts()[0] ?? null;
-
-    return this;
   }
 
   close() {
