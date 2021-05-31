@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 import {
-  Alfajores,
   DEFAULT_NETWORKS,
   localStorageKeys,
   Mainnet,
@@ -9,64 +7,76 @@ import {
   WalletTypes,
 } from '../constants';
 import { Connector, Network } from '../types';
+import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 
-let lastUsedNetworkName: NetworkNames = Mainnet.name;
-let lastUsedAddress: string | null = null;
-let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
-let lastUsedWalletArguments: any[] = [];
-function localStorageOperations() {
-  if (typeof localStorage === 'undefined') {
-    return;
-  }
+/**
+ * Loads previous user configuration from local storage.
+ */
+const loadPreviousConfig = () => {
+  let lastUsedNetworkName: NetworkNames = Mainnet.name;
+  let lastUsedAddress: string | null = null;
+  let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
+  let lastUsedWalletArguments: any[] = [];
+  if (typeof localStorage !== 'undefined') {
+    const localLastUsedNetworkName = localStorage.getItem(
+      localStorageKeys.lastUsedNetwork
+    );
+    if (localLastUsedNetworkName) {
+      lastUsedNetworkName = localLastUsedNetworkName as NetworkNames;
+    }
 
-  const localLastUsedNetworkName = localStorage.getItem(
-    localStorageKeys.lastUsedNetwork
-  );
-  if (localLastUsedNetworkName) {
-    lastUsedNetworkName = localLastUsedNetworkName as NetworkNames;
-  }
+    const localLastUsedAddress = localStorage.getItem(
+      localStorageKeys.lastUsedAddress
+    );
+    if (localLastUsedAddress) {
+      lastUsedAddress = localLastUsedAddress;
+    }
 
-  const localLastUsedAddress = localStorage.getItem(
-    localStorageKeys.lastUsedAddress
-  );
-  if (localLastUsedAddress) {
-    lastUsedAddress = localLastUsedAddress;
-  }
+    const localLastUsedWalletType = localStorage.getItem(
+      localStorageKeys.lastUsedWalletType
+    );
+    if (localLastUsedWalletType) {
+      lastUsedWalletType = localLastUsedWalletType as WalletTypes;
+    }
 
-  const localLastUsedWalletType = localStorage.getItem(
-    localStorageKeys.lastUsedWalletType
-  );
-  if (localLastUsedWalletType) {
-    lastUsedWalletType = localLastUsedWalletType as WalletTypes;
-  }
-
-  const localLastUsedWalletArguments = localStorage.getItem(
-    localStorageKeys.lastUsedWalletArguments
-  );
-  if (localLastUsedWalletArguments) {
-    try {
-      lastUsedWalletArguments = JSON.parse(localLastUsedWalletArguments);
-    } catch (e) {
-      lastUsedWalletArguments = [];
+    const localLastUsedWalletArguments = localStorage.getItem(
+      localStorageKeys.lastUsedWalletArguments
+    );
+    if (localLastUsedWalletArguments) {
+      try {
+        lastUsedWalletArguments = JSON.parse(localLastUsedWalletArguments);
+      } catch (e) {
+        lastUsedWalletArguments = [];
+      }
     }
   }
-}
-localStorageOperations();
 
-const lastUsedNetwork =
-  DEFAULT_NETWORKS.find((n) => n.name === lastUsedNetworkName) ?? Alfajores;
+  const lastUsedNetwork =
+    DEFAULT_NETWORKS.find((n) => n.name === lastUsedNetworkName) ?? Mainnet;
 
-let initialConnector: Connector;
-if (lastUsedWalletType) {
-  try {
-    initialConnector = new CONNECTOR_TYPES[lastUsedWalletType as WalletTypes](
-      lastUsedNetwork,
-      ...lastUsedWalletArguments
-    );
-  } catch (e) {
+  let initialConnector: Connector;
+  if (lastUsedWalletType) {
+    try {
+      initialConnector = new CONNECTOR_TYPES[lastUsedWalletType as WalletTypes](
+        lastUsedNetwork,
+        ...lastUsedWalletArguments
+      );
+    } catch (e) {
+      initialConnector = new UnauthenticatedConnector(lastUsedNetwork);
+    }
+  } else {
     initialConnector = new UnauthenticatedConnector(lastUsedNetwork);
   }
-}
+
+  return {
+    lastUsedNetworkName,
+    lastUsedAddress,
+    lastUsedWalletType,
+    lastUsedWalletArguments,
+    lastUsedNetwork,
+    initialConnector,
+  };
+};
 
 /**
  * Connector-related configuration.
@@ -91,10 +101,17 @@ export const useConnectorConfig = ({
 }: {
   networks: readonly Network[];
 }): UseConnectorConfig => {
+  const [{ lastUsedAddress, lastUsedNetworkName, initialConnector }] = useState(
+    loadPreviousConfig()
+  );
   const [address, setAddress] = useState<string | null>(lastUsedAddress);
   const initialNetwork =
     networks.find((n) => n.name === lastUsedNetworkName) ?? networks[0];
+  if (!initialNetwork) {
+    throw new Error('Invalid network configuration');
+  }
   const [network, updateNetwork] = useState<Network>(initialNetwork);
+
   const [connector, setConnector] = useState<Connector>(initialConnector);
   const [connectionCallback, setConnectionCallback] =
     useState<((x: Connector | false) => void) | null>(null);

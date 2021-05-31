@@ -14,7 +14,8 @@
     "noEmit": false,
     "outDir": "lib",
     "declaration": true,
-    "jsx": "react"
+    "jsx": "react",
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src"]
 }

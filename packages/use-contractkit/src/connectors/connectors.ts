@@ -3,8 +3,9 @@ import { LocalWallet } from '@celo/wallet-local';
 // we can't lazy load this due to the new tab bug, it must be imported
 // so that the new tab handler fires.
 import { WalletConnectWalletOptions } from 'contractkit-walletconnect';
-import { Connector, WalletTypes, Network, localStorageKeys } from '..';
+import { localStorageKeys, WalletTypes } from '../constants';
 import { DappKitWallet } from '../dappkit-wallet';
+import { Connector, Network } from '../types';
 import { isMobile } from '../utils';
 
 /**
@@ -53,7 +54,7 @@ export class PrivateKeyConnector implements Connector {
 
     this.kit = newKit(n.rpcUrl, wallet);
     this.kit.defaultAccount = wallet.getAccounts()[0];
-    this.account = this.kit.defaultAccount;
+    this.account = this.kit.defaultAccount ?? null;
   }
 
   initialise() {
@@ -96,7 +97,7 @@ export class LedgerConnector implements Connector {
     this.kit.defaultAccount = wallet.getAccounts()[0];
 
     this.initialised = true;
-    this.account = this.kit.defaultAccount;
+    this.account = this.kit.defaultAccount ?? null;
     return this;
   }
 
@@ -148,7 +149,7 @@ export class InjectedConnector implements Connector {
     this.kit = newKitFromWeb3(web3 as any);
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
-    this.account = defaultAccount;
+    this.account = defaultAccount ?? null;
 
     return this;
   }
@@ -211,7 +212,7 @@ export class CeloExtensionWalletConnector implements Connector {
     this.kit = newKitFromWeb3(web3 as any);
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
-    this.account = defaultAccount;
+    this.account = defaultAccount ?? null;
 
     return this;
   }
@@ -253,7 +254,7 @@ export class DappKitConnector implements Connector {
     this.kit = newKit(this.network.rpcUrl, wallet as any);
     this.kit.defaultAccount = wallet.getAccounts()[0];
     wallet.setKit(this.kit);
-    this.account = wallet.phoneNumber ?? wallet.getAccounts()[0];
+    this.account = wallet.phoneNumber ?? wallet.getAccounts()[0] ?? null;
 
     return this;
   }

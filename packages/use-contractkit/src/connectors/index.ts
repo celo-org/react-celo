@@ -1,4 +1,5 @@
-import { Connector, Network, WalletTypes } from '..';
+import { WalletTypes } from '../constants';
+import { Connector, Network } from '../types';
 import {
   CeloExtensionWalletConnector,
   DappKitConnector,

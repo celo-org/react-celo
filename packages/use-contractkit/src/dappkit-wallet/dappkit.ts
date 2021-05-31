@@ -87,7 +87,7 @@ export async function requestTxSig(
   txParams: CeloTx[],
   meta: DappKitRequestMeta
 ) {
-  const baseNonce = await kit.connection.nonce(txParams[0].from as string);
+  const baseNonce = await kit.connection.nonce(txParams[0]?.from as string);
   const txs = await Promise.all(
     txParams.map(async (txParam: CeloTx, index: number) => {
       const value = txParam.value === undefined ? '0' : txParam.value;
