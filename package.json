@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "husky": ">=6",
-    "lerna": "^3.22.1",
+    "lerna": "^4.0.0",
     "lint-staged": ">=10",
     "prettier": "^2.3.0"
   },
