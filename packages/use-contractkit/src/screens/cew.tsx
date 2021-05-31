@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import { CeloExtensionWalletConnector } from '../connectors';
 import { useContractKit } from '../use-contractkit';
@@ -9,11 +9,18 @@ export function CeloExtensionWallet({
   onSubmit: (connector: CeloExtensionWalletConnector) => void;
 }) {
   const { network } = useContractKit();
+  const [error, setError] = useState('');
 
   const initialiseConnection = useCallback(async () => {
     const connector = new CeloExtensionWalletConnector(network);
-    await connector.initialise();
-    onSubmit(connector);
+    try {
+      await connector.initialise();
+      setError('');
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      onSubmit(connector);
+    }
   }, [onSubmit]);
 
   useEffect(() => {
@@ -22,7 +29,20 @@ export function CeloExtensionWallet({
 
   return (
     <div className="tw-flex tw-items-center tw-justify-center">
-      <Loader type="TailSpin" color="white" height="36px" width="36px" />
+      {error ? (
+        <p
+          style={{
+            paddingBottom: '0.25em',
+            paddingTop: '0.75em',
+            fontSize: '0.7em',
+            color: 'red',
+          }}
+        >
+          {error}
+        </p>
+      ) : (
+        <Loader type="TailSpin" color="white" height="36px" width="36px" />
+      )}
     </div>
   );
 }
