@@ -117,19 +117,15 @@ export function ConnectModal({
 
   const list = (
     <div>
-      {Object.keys(screens).map((screen) => {
-        const provider = providers.find((p) => p.name === screen);
-        if (!provider) {
-          throw new Error(
-            `Misconfigured use-contractkit configuration, no ${screen} configuration given`
-          );
-        }
-
-        return renderProvider({
-          ...provider,
-          onClick: () => setAdding(provider.name),
-        });
-      })}
+      {Object.keys(screens)
+        .map((screen) => providers.find((p) => p.name === screen))
+        .filter(Boolean)
+        .map((provider) => {
+          return renderProvider({
+            ...provider!,
+            onClick: () => setAdding(provider!.name),
+          });
+        })}
     </div>
   );
 

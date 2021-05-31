@@ -63,6 +63,4 @@ export enum WalletTypes {
   WalletConnect = 'WalletConnect',
   Ledger = 'Ledger',
   CeloExtensionWallet = 'CeloExtensionWallet',
-  Metamask = 'Metamask',
-  DappKit = 'DappKit',
 }

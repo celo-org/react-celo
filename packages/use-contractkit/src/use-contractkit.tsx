@@ -10,7 +10,6 @@ import ReactModal from 'react-modal';
 import { createContainer } from 'unstated-next';
 import {
   CeloExtensionWalletConnector,
-  DappKitConnector,
   LedgerConnector,
   PrivateKeyConnector,
   UnauthenticatedConnector,
@@ -80,8 +79,6 @@ const connectorTypes: { [x in WalletTypes]: any } = {
   [WalletTypes.Ledger]: LedgerConnector,
   [WalletTypes.WalletConnect]: WalletConnectConnector,
   [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
-  [WalletTypes.Metamask]: null,
-  [WalletTypes.DappKit]: DappKitConnector,
 };
 
 let initialConnector: Connector;
@@ -124,9 +121,8 @@ function Kit(
     url: dappUrl,
   });
   const [address, setAddress] = useState(lastUsedAddress);
-  const [connectionCallback, setConnectionCallback] = useState<
-    ((x: Connector | false) => void) | null
-  >(null);
+  const [connectionCallback, setConnectionCallback] =
+    useState<((x: Connector | false) => void) | null>(null);
 
   const initialNetwork =
     networks.find((n) => n.name === lastUsedNetworkName) || networks[0];
