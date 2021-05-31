@@ -1,5 +1,5 @@
 import { ContractKit } from '@celo/contractkit';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { NetworkNames, SupportedProviders, WalletTypes } from './constants';
 
 /**
@@ -22,7 +22,7 @@ export interface Network {
 export interface Provider {
   name: SupportedProviders;
   description: string;
-  image: string | ReactNode;
+  image: string | React.FC<React.SVGProps<SVGSVGElement>>;
   disabled?: boolean;
 }
 

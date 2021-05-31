@@ -33,10 +33,7 @@ export const Ledger: FunctionComponent<any> = ({
       <div>
         <div className="tw-flex">
           <div className="tw-mr-4">
-            <img
-              src={images.Ledger}
-              style={{ height: '36px', minWidth: '36px' }}
-            />
+            <images.Ledger style={{ height: '36px', minWidth: '36px' }} />
           </div>
 
           <div className="tw-flex tw-flex-col">
