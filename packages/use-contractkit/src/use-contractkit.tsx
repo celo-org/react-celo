@@ -29,7 +29,7 @@ import { ActionModal, ActionModalProps, ConnectModal } from './modals';
 import { Connector, Network, Provider } from './types';
 
 let lastUsedNetworkName = Mainnet.name;
-let lastUsedAddress = '';
+let lastUsedAddress: string | null = null;
 let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
 let lastUsedWalletArguments: any[] = [];
 function localStorageOperations() {
@@ -100,6 +100,33 @@ if (lastUsedWalletType) {
   }
 }
 
+interface UseContractKit {
+  network: Network;
+  updateNetwork: (network: Network) => void;
+  address: string | null;
+  dappName: string;
+  dapp: {
+    name: string;
+    description: string;
+    icon: string;
+    url: string;
+  };
+  kit: ContractKit;
+  walletType: WalletTypes;
+  accountName: string | null;
+
+  performActions: (
+    ...operations: ((kit: ContractKit) => any | Promise<any>)[]
+  ) => Promise<any[]>;
+
+  connect: () => Promise<Connector>;
+  destroy: () => Promise<void>;
+  getConnectedKit: () => Promise<ContractKit>;
+
+  pendingActionCount: number;
+  connectionCallback: ((x: Connector | false) => void) | null;
+}
+
 function Kit(
   {
     networks = defaultNetworks,
@@ -127,7 +154,7 @@ function Kit(
     icon: dappIcon || `${dappUrl}/favicon.ico`,
     url: dappUrl,
   });
-  const [address, setAddress] = useState(lastUsedAddress);
+  const [address, setAddress] = useState<string | null>(lastUsedAddress);
   const [connectionCallback, setConnectionCallback] = useState<
     ((x: Connector | false) => void) | null
   >(null);
@@ -278,7 +305,7 @@ function Kit(
 }
 
 const KitState = createContainer(Kit);
-export const useContractKit = KitState.useContainer;
+export const useContractKit: () => UseContractKit = KitState.useContainer;
 
 export function ContractKitProvider({
   children,
