@@ -9,14 +9,16 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@ethersproject/providers": "^5.2.0",
     "@ubeswap/use-contractkit": "^1.0.0-ube.6",
     "autoprefixer": "^10.2.4",
     "next": "10.2.3",
     "postcss": "^8.2.6",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-hot-toast": "^2.0.0",
     "react-loader-spinner": "^4.0.0",
-    "tailwindcss": "^2.0.3"
+    "tailwindcss": "^2.0.3",
+    "web3": "^1.3.6"
   }
 }
