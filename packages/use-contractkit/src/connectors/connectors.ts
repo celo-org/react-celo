@@ -5,7 +5,7 @@ import { LocalWallet } from '@celo/wallet-local';
 import { WalletConnectWalletOptions } from 'contractkit-walletconnect';
 import { localStorageKeys, WalletTypes } from '../constants';
 import { DappKitWallet } from '../dappkit-wallet';
-import { Connector, Network } from '../types';
+import { ChainId, Connector, Network } from '../types';
 import { isMobile } from '../utils';
 
 /**
@@ -106,6 +106,14 @@ export class LedgerConnector implements Connector {
   }
 }
 
+export class UnsupportedChainIdError extends Error {
+  public static readonly NAME: string = 'UnsupportedChainIdError';
+  constructor(public readonly chainID: number) {
+    super(`Unsupported chain ID: ${chainID}`);
+    this.name = UnsupportedChainIdError.NAME;
+  }
+}
+
 export class InjectedConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
@@ -137,11 +145,17 @@ export class InjectedConnector implements Connector {
     this.type = window.ethereum?.isMetaMask
       ? WalletTypes.MetaMask
       : WalletTypes.Injected;
-    const web3 = new Web3(ethereum as any);
+    const web3 = new Web3(ethereum);
     await ethereum.enable();
 
-    ethereum.on('chainChanged', (chainId) => {
+    const chainId = await web3.eth.getChainId();
+    if (!Object.values(ChainId).includes(chainId)) {
+      throw new UnsupportedChainIdError(chainId);
+    }
+
+    ethereum.on('chainChanged', (chainIdHex: string) => {
       if (this.onNetworkChangeCallback) {
+        const chainId = parseInt(chainIdHex, 16);
         this.onNetworkChangeCallback(chainId);
       }
     });
@@ -196,7 +210,7 @@ export class CeloExtensionWalletConnector implements Connector {
     if (!celo) {
       throw new Error('Celo Extension Wallet not installed');
     }
-    const web3 = new Web3(celo as any);
+    const web3 = new Web3(celo);
     await celo.enable();
 
     // @ts-ignore

@@ -118,7 +118,7 @@ export function ConnectModal({
             provider: Provider;
           } => ret.provider !== undefined
         )
-        .map(({ screen, provider }) => {
+        .map(({ provider }) => {
           return renderProvider({
             ...provider,
             onClick: () => setAdding(provider.name),

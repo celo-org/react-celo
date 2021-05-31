@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
-import { MetaMaskConnector } from '../connectors';
-import { useContractKit, useInternalContractKit } from '../use-contractkit';
+import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
+import { MetaMaskConnector, UnsupportedChainIdError } from '../connectors';
+import { useInternalContractKit } from '../use-contractkit';
 
 export function MetaMaskWallet({
   onSubmit,
@@ -12,27 +13,34 @@ export function MetaMaskWallet({
 
   const initialiseConnection = useCallback(async () => {
     const connector = new MetaMaskConnector(network);
-    await initConnector(connector);
-    onSubmit(connector);
+    const { error } = await initConnector(connector);
+    if (!error) {
+      console.log('no error', { error });
+      onSubmit(connector);
+    } else {
+      console.log('error', { error });
+    }
   }, [onSubmit]);
 
   useEffect(() => {
     initialiseConnection();
   }, [initialiseConnection]);
 
+  if (error?.name === UnsupportedChainIdError.NAME) {
+    return (
+      <div className="tw-flex tw-items-center tw-justify-center tw-flex-col">
+        <p className="tw-text-red-500 tw-pb-4">
+          Please connect to the Celo network to continue.
+        </p>
+        <AddCeloNetworkButton chainId={network.chainId} />
+      </div>
+    );
+  }
+
   return (
     <div className="tw-flex tw-items-center tw-justify-center">
       {error ? (
-        <p
-          style={{
-            paddingBottom: '0.25em',
-            paddingTop: '0.75em',
-            fontSize: '0.7em',
-            color: 'red',
-          }}
-        >
-          {error.message}
-        </p>
+        <p className="tw-text-red-500 tw-pb-4">{error.message}</p>
       ) : (
         <Loader type="TailSpin" color="white" height="36px" width="36px" />
       )}

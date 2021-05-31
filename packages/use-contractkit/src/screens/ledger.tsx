@@ -2,30 +2,25 @@ import React, { FunctionComponent, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import { LedgerConnector } from '../connectors';
 import { images } from '../constants';
-import { useContractKit, useInternalContractKit } from '../use-contractkit';
+import { useInternalContractKit } from '../use-contractkit';
 
 export const Ledger: FunctionComponent<any> = ({
   onSubmit,
 }: {
   onSubmit: (connector: LedgerConnector) => Promise<void>;
 }) => {
-  const { network, initConnector } = useInternalContractKit();
-  const [error, setError] = useState('');
+  const { network, initConnector, initError: error } = useInternalContractKit();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
 
   const submit = async () => {
     setSubmitting(true);
-    try {
-      const connector = new LedgerConnector(network, parseInt(index, 10));
-      await initConnector(connector);
+    const connector = new LedgerConnector(network, parseInt(index, 10));
+    const { error } = await initConnector(connector);
+    if (!error) {
       onSubmit(connector);
-      setError('');
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setSubmitting(false);
     }
+    setSubmitting(false);
   };
 
   return (
@@ -66,7 +61,7 @@ export const Ledger: FunctionComponent<any> = ({
                   color: 'red',
                 }}
               >
-                {error}
+                {error.message}
               </p>
             )}
 

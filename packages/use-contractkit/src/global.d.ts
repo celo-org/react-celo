@@ -1,16 +1,19 @@
-interface Window {
-  ethereum?: {
-    on: (ev: 'chainChanged', cb: (chainId: number) => void) => void;
-    on: (...args: any[]) => void;
-    isMetaMask?: boolean;
-    request: (args: { method: string; params: unknown[] }) => Promise<void>;
-    enable: () => Promise<void>;
-  };
-  celo?: {
-    on?: (...args: any[]) => void;
-    removeListener?: (...args: any[]) => void;
-    autoRefreshOnNetworkChange?: boolean;
-    enable: () => Promise<void>;
-  };
-  web3?: unknown;
+import { AbstractProvider } from 'web3-core';
+
+declare global {
+  interface Window {
+    ethereum?: AbstractProvider & {
+      on: (ev: 'chainChanged', cb: (chainIdHex: string) => void) => void;
+      isMetaMask?: boolean;
+      request: (args: { method: string; params: unknown[] }) => Promise<void>;
+      enable: () => Promise<void>;
+    };
+    celo?: AbstractProvider & {
+      on?: (...args: any[]) => void;
+      removeListener?: (...args: any[]) => void;
+      autoRefreshOnNetworkChange?: boolean;
+      enable: () => Promise<void>;
+    };
+    web3?: unknown;
+  }
 }

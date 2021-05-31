@@ -3,22 +3,11 @@ import React, {
   FunctionComponent,
   ReactNode,
   useCallback,
-  useEffect,
   useState,
 } from 'react';
 import ReactModal from 'react-modal';
 import { Container, createContainer } from 'unstated-next';
-import { CONNECTOR_TYPES } from './connectors';
-import { UnauthenticatedConnector } from './connectors/connectors';
-import {
-  Alfajores,
-  DEFAULT_NETWORKS,
-  localStorageKeys,
-  Mainnet,
-  NetworkNames,
-  SupportedProviders,
-  WalletTypes,
-} from './constants';
+import { DEFAULT_NETWORKS, SupportedProviders, WalletTypes } from './constants';
 import { ActionModal, ActionModalProps, ConnectModal } from './modals';
 import { Connector, Dapp, Network, Provider } from './types';
 import {
@@ -68,7 +57,10 @@ export interface UseContractKit
 interface UseContractKitInternal
   extends UseContractKit,
     Pick<UseConnectorConfig, 'connectionCallback'> {
-  initConnector: (connector: Connector) => Promise<void>;
+  initConnector: (connector: Connector) => Promise<{
+    connector: Connector | null;
+    error: Error | null;
+  }>;
   pendingActionCount: number;
 }
 
@@ -107,9 +99,13 @@ const useKit = ({
 
   // Initialisation error state management
   const [initError, setInitError] = useState<Error | null>(null);
-  const initConnector = useCallback(async (nextConnector: Connector) => {
+  const initConnector = useCallback(async (nextConnector: Connector): Promise<{
+    connector: Connector | null;
+    error: Error | null;
+  }> => {
     try {
-      await nextConnector.initialise();
+      const connector = await nextConnector.initialise();
+      return { connector, error: null };
     } catch (e) {
       console.error(
         '[use-contractkit] Error initializing connector',
@@ -117,6 +113,7 @@ const useKit = ({
         e
       );
       setInitError(e);
+      return { connector: null, error: e };
     }
   }, []);
 
