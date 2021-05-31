@@ -13,6 +13,7 @@ import {
   DappKitConnector,
   InjectedConnector,
   LedgerConnector,
+  MetaMaskConnector,
   PrivateKeyConnector,
   UnauthenticatedConnector,
   WalletConnectConnector,
@@ -83,7 +84,7 @@ const connectorTypes: {
   [WalletTypes.Ledger]: LedgerConnector,
   [WalletTypes.WalletConnect]: WalletConnectConnector,
   [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
-  [WalletTypes.MetaMask]: InjectedConnector,
+  [WalletTypes.MetaMask]: MetaMaskConnector,
   [WalletTypes.Injected]: InjectedConnector,
   [WalletTypes.DappKit]: DappKitConnector,
 };
