@@ -4,7 +4,7 @@ import {
   Alfajores,
   Baklava,
   Mainnet,
-} from '@celo-tools/use-contractkit';
+} from '@ubeswap/use-contractkit';
 import { StableToken } from '@celo/contractkit';
 import { ensureLeading0x } from '@celo/utils/lib/address';
 import Head from 'next/head';

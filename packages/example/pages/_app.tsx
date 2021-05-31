@@ -1,6 +1,6 @@
 import '../styles/global.css';
-import { ContractKitProvider } from '@celo-tools/use-contractkit';
-import '@celo-tools/use-contractkit/lib/styles.css';
+import { ContractKitProvider } from '@ubeswap/use-contractkit';
+import '@ubeswap/use-contractkit/lib/styles.css';
 import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }) {
