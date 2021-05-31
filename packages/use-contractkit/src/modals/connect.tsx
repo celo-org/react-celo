@@ -120,7 +120,9 @@ export function ConnectModal({
       {Object.keys(screens).map((screen) => {
         const provider = providers.find((p) => p.name === screen);
         if (!provider) {
-          throw new Error('Misconfigured use-contractkit configuration');
+          throw new Error(
+            `Misconfigured use-contractkit configuration, no ${screen} configuration given`
+          );
         }
 
         return renderProvider({
