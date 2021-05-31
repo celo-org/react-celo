@@ -11,6 +11,7 @@ import { createContainer } from 'unstated-next';
 import {
   CeloExtensionWalletConnector,
   DappKitConnector,
+  InjectedConnector,
   LedgerConnector,
   PrivateKeyConnector,
   UnauthenticatedConnector,
@@ -80,7 +81,8 @@ const connectorTypes: { [x in WalletTypes]: any } = {
   [WalletTypes.Ledger]: LedgerConnector,
   [WalletTypes.WalletConnect]: WalletConnectConnector,
   [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,
-  [WalletTypes.Metamask]: null,
+  [WalletTypes.Metamask]: InjectedConnector,
+  [WalletTypes.Injected]: InjectedConnector,
   [WalletTypes.DappKit]: DappKitConnector,
 };
 

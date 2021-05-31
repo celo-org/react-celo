@@ -106,6 +106,66 @@ export class LedgerConnector implements Connector {
   }
 }
 
+export class InjectedConnector implements Connector {
+  public initialised = false;
+  public type = WalletTypes.CeloExtensionWallet;
+  public kit: ContractKit;
+  public accountName: string | null = null;
+  private onNetworkChangeCallback?: (chainId: number) => void;
+
+  constructor(network: Network) {
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletType,
+      WalletTypes.Metamask
+    );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([])
+    );
+
+    this.kit = newKit(network.rpcUrl);
+  }
+
+  async initialise() {
+    const { default: Web3 } = await import('web3');
+
+    const ethereum = window.ethereum;
+    if (!ethereum) {
+      throw new Error('Ethereum wallet not installed');
+    }
+    this.type = window.ethereum?.isMetaMask
+      ? WalletTypes.Metamask
+      : WalletTypes.Injected;
+    const web3 = new Web3(ethereum as any);
+    await ethereum.enable();
+
+    // @ts-ignore
+    web3.currentProvider.publicConfigStore.on(
+      'update',
+      async ({ networkVersion }: { networkVersion: number }) => {
+        if (this.onNetworkChangeCallback) {
+          this.onNetworkChangeCallback(networkVersion);
+        }
+      }
+    );
+
+    this.kit = newKitFromWeb3(web3 as any);
+    const [defaultAccount] = await this.kit.web3.eth.getAccounts();
+    this.kit.defaultAccount = defaultAccount;
+    this.accountName = defaultAccount;
+
+    return this;
+  }
+
+  onNetworkChange(callback: (chainId: number) => void) {
+    this.onNetworkChangeCallback = callback;
+  }
+
+  close() {
+    return;
+  }
+}
+
 export class CeloExtensionWalletConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;

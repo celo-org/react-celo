@@ -24,7 +24,7 @@ export const images = {
   [SupportedProviders.MetaMask]: 'https://metamask.io/images/favicon-256.png',
   [SupportedProviders.Valora]: 'https://valoraapp.com/favicon.ico',
   [SupportedProviders.CeloExtensionWallet]:
-    'https://metamask.io/images/favicon-256.png',
+    'https://dl.airtable.com/.attachmentThumbnails/765f7478015a0aa7f823d1350c6181c1/9ea0f8db',
 };
 
 export enum NetworkNames {
@@ -64,5 +64,6 @@ export enum WalletTypes {
   Ledger = 'Ledger',
   CeloExtensionWallet = 'CeloExtensionWallet',
   Metamask = 'Metamask',
+  Injected = 'Injected',
   DappKit = 'DappKit',
 }

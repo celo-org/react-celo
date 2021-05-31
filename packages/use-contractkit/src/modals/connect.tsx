@@ -22,8 +22,13 @@ const providers: Provider[] = [
 !isMobile &&
   providers.push(
     {
-      name: SupportedProviders.CeloExtensionWallet,
+      name: SupportedProviders.MetaMask,
       description: 'A crypto gateway to blockchain apps',
+      image: images['MetaMask'],
+    },
+    {
+      name: SupportedProviders.CeloExtensionWallet,
+      description: 'Legacy Celo wallet compatible with Valora',
       image: images['Celo Extension Wallet'],
     },
     {
@@ -117,17 +122,25 @@ export function ConnectModal({
 
   const list = (
     <div>
-      {Object.keys(screens).map((screen) => {
-        const provider = providers.find((p) => p.name === screen);
-        if (!provider) {
-          throw new Error('Misconfigured use-contractkit configuration');
-        }
-
-        return renderProvider({
-          ...provider,
-          onClick: () => setAdding(provider.name),
-        });
-      })}
+      {Object.keys(screens)
+        .map((screen) => ({
+          screen,
+          provider: providers.find((p) => p.name === screen),
+        }))
+        .filter(
+          (
+            ret
+          ): ret is {
+            screen: string;
+            provider: Provider;
+          } => ret.provider !== undefined
+        )
+        .map(({ screen, provider }) => {
+          return renderProvider({
+            ...provider,
+            onClick: () => setAdding(provider.name),
+          });
+        })}
     </div>
   );
 
