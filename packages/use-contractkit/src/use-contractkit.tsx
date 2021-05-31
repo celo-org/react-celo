@@ -131,9 +131,11 @@ interface Dapp {
   icon: string;
 }
 
+export type DappInput = Omit<Dapp, 'icon'> & Partial<Pick<Dapp, 'icon'>>;
+
 interface KitState {
   networks?: Network[];
-  dapp: Dapp;
+  dapp: DappInput;
 }
 
 const defaultDapp: Dapp = {
@@ -334,7 +336,7 @@ export const useInternalContractKit: Container<
 
 interface ContractKitProviderProps {
   children: ReactNode;
-  dapp: Dapp;
+  dapp: DappInput;
   networks?: Network[];
 
   connectModal?: {
