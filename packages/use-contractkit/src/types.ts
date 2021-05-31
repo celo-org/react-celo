@@ -20,6 +20,7 @@ export interface Provider {
 export interface Connector {
   kit: ContractKit;
   type: WalletTypes;
+  accountName: string | null;
 
   initialised: boolean;
   initialise: () => Promise<this> | this;

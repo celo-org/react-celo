@@ -55,6 +55,7 @@ const randomString = () => (Math.random() * 100).toString().slice(0, 6);
 
 export class DappKitWallet extends RemoteWallet<DappKitSigner> {
   private kit?: ContractKit;
+  public phoneNumber: string | null = null;
 
   constructor(protected dappName: string) {
     super();
@@ -75,6 +76,7 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
       dappkitResponse.address,
       new DappKitSigner(dappkitResponse.address)
     );
+    this.phoneNumber = dappkitResponse.phoneNumber;
     return addressToSigner;
   }
 

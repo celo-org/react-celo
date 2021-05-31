@@ -259,6 +259,7 @@ function Kit(
     dapp,
     kit: connection.kit,
     walletType: connection.type,
+    accountName: connection.accountName,
 
     performActions,
 
