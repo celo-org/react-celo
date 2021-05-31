@@ -17,7 +17,7 @@ export class UnauthenticatedConnector implements Connector {
   public initialised = true;
   public type = WalletTypes.Unauthenticated;
   public kit: ContractKit;
-  public accountName: string | null = null;
+  public account: string | null = null;
 
   constructor(n: Network) {
     this.kit = newKit(n.rpcUrl);
@@ -36,7 +36,7 @@ export class PrivateKeyConnector implements Connector {
   public initialised = true;
   public type = WalletTypes.PrivateKey;
   public kit: ContractKit;
-  public accountName: string | null = null;
+  public account: string | null = null;
 
   constructor(n: Network, privateKey: string) {
     localStorage.setItem(
@@ -53,7 +53,7 @@ export class PrivateKeyConnector implements Connector {
 
     this.kit = newKit(n.rpcUrl, wallet);
     this.kit.defaultAccount = wallet.getAccounts()[0];
-    this.accountName = this.kit.defaultAccount;
+    this.account = this.kit.defaultAccount;
   }
 
   initialise() {
@@ -69,7 +69,7 @@ export class LedgerConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.Ledger;
   public kit: ContractKit;
-  public accountName: string | null = null;
+  public account: string | null = null;
 
   constructor(private network: Network, private index: number) {
     localStorage.setItem(
@@ -96,7 +96,7 @@ export class LedgerConnector implements Connector {
     this.kit.defaultAccount = wallet.getAccounts()[0];
 
     this.initialised = true;
-    this.accountName = this.kit.defaultAccount;
+    this.account = this.kit.defaultAccount;
     return this;
   }
 
@@ -109,7 +109,7 @@ export class InjectedConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: ContractKit;
-  public accountName: string | null = null;
+  public account: string | null = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
 
   constructor(
@@ -148,7 +148,7 @@ export class InjectedConnector implements Connector {
     this.kit = newKitFromWeb3(web3 as any);
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
-    this.accountName = defaultAccount;
+    this.account = defaultAccount;
 
     return this;
   }
@@ -172,7 +172,7 @@ export class CeloExtensionWalletConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: ContractKit;
-  public accountName: string | null = null;
+  public account: string | null = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
 
   constructor(network: Network) {
@@ -211,7 +211,7 @@ export class CeloExtensionWalletConnector implements Connector {
     this.kit = newKitFromWeb3(web3 as any);
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
-    this.accountName = defaultAccount;
+    this.account = defaultAccount;
 
     return this;
   }
@@ -229,7 +229,7 @@ export class DappKitConnector implements Connector {
   public initialised = true;
   public type = WalletTypes.DappKit;
   public kit: ContractKit;
-  public accountName: string | null = null;
+  public account: string | null = null;
 
   constructor(private network: Network, private dappName: string) {
     localStorage.setItem(
@@ -253,7 +253,7 @@ export class DappKitConnector implements Connector {
     this.kit = newKit(this.network.rpcUrl, wallet as any);
     this.kit.defaultAccount = wallet.getAccounts()[0];
     wallet.setKit(this.kit);
-    this.accountName = wallet.phoneNumber ?? wallet.getAccounts()[0];
+    this.account = wallet.phoneNumber ?? wallet.getAccounts()[0];
 
     return this;
   }
@@ -267,7 +267,7 @@ export class WalletConnectConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.WalletConnect;
   public kit: ContractKit;
-  public accountName: string | null = null;
+  public account: string | null = null;
 
   private onUriCallback?: (uri: string) => void;
   private onCloseCallback?: () => void;
@@ -316,7 +316,7 @@ export class WalletConnectConnector implements Connector {
     await wallet.init();
     const [defaultAccount] = await wallet.getAccounts();
     this.kit.defaultAccount = defaultAccount;
-    this.accountName = defaultAccount;
+    this.account = defaultAccount;
 
     return this;
   }

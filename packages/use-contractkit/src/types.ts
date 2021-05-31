@@ -11,6 +11,9 @@ export enum ChainId {
   Mainnet = 42220,
 }
 
+/**
+ * Network connection information.
+ */
 export interface Network {
   name: NetworkNames;
   rpcUrl: string;
@@ -19,6 +22,9 @@ export interface Network {
   chainId: ChainId;
 }
 
+/**
+ * Information about a provider to use for the dApp.
+ */
 export interface Provider {
   name: SupportedProviders;
   description: string;
@@ -26,14 +32,27 @@ export interface Provider {
   disabled?: boolean;
 }
 
+/**
+ * Connects to the blockchain.
+ */
 export interface Connector {
   kit: ContractKit;
   type: WalletTypes;
-  accountName: string | null;
+  account: string | null;
 
   initialised: boolean;
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
 
   onNetworkChange?: (callback: (chainId: number) => void) => void;
+}
+
+/**
+ * Dapp information.
+ */
+export interface Dapp {
+  name: string;
+  description: string;
+  url: string;
+  icon: string;
 }

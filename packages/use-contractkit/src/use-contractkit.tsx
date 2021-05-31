@@ -12,6 +12,7 @@ import { CONNECTOR_TYPES } from './connectors';
 import { UnauthenticatedConnector } from './connectors/connectors';
 import {
   Alfajores,
+  DEFAULT_NETWORKS,
   localStorageKeys,
   Mainnet,
   NetworkNames,
@@ -19,81 +20,25 @@ import {
   WalletTypes,
 } from './constants';
 import { ActionModal, ActionModalProps, ConnectModal } from './modals';
-import { Connector, Network, Provider } from './types';
-
-let lastUsedNetworkName: NetworkNames = Mainnet.name;
-let lastUsedAddress: string | null = null;
-let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
-let lastUsedWalletArguments: any[] = [];
-function localStorageOperations() {
-  if (typeof localStorage === 'undefined') {
-    return;
-  }
-
-  const localLastUsedNetworkName = localStorage.getItem(
-    localStorageKeys.lastUsedNetwork
-  );
-  if (localLastUsedNetworkName) {
-    lastUsedNetworkName = localLastUsedNetworkName as NetworkNames;
-  }
-
-  const localLastUsedAddress = localStorage.getItem(
-    localStorageKeys.lastUsedAddress
-  );
-  if (localLastUsedAddress) {
-    lastUsedAddress = localLastUsedAddress;
-  }
-
-  const localLastUsedWalletType = localStorage.getItem(
-    localStorageKeys.lastUsedWalletType
-  );
-  if (localLastUsedWalletType) {
-    lastUsedWalletType = localLastUsedWalletType as WalletTypes;
-  }
-
-  const localLastUsedWalletArguments = localStorage.getItem(
-    localStorageKeys.lastUsedWalletArguments
-  );
-  if (localLastUsedWalletArguments) {
-    try {
-      lastUsedWalletArguments = JSON.parse(localLastUsedWalletArguments);
-    } catch (e) {
-      lastUsedWalletArguments = [];
-    }
-  }
-}
-localStorageOperations();
-
-const defaultNetworks = [Mainnet, Alfajores];
-const lastUsedNetwork =
-  defaultNetworks.find((n) => n.name === lastUsedNetworkName) ?? Alfajores;
-
-let initialConnector: Connector;
-if (lastUsedWalletType) {
-  try {
-    initialConnector = new CONNECTOR_TYPES[lastUsedWalletType as WalletTypes](
-      lastUsedNetwork,
-      ...lastUsedWalletArguments
-    );
-  } catch (e) {
-    initialConnector = new UnauthenticatedConnector(lastUsedNetwork);
-  }
-}
+import { Connector, Dapp, Network, Provider } from './types';
+import {
+  UseConnectorConfig,
+  useConnectorConfig,
+} from './utils/useConnectorConfig';
 
 /**
  * Exports for ContractKit.
  */
-interface UseContractKit {
-  network: Network;
-  updateNetwork: (network: Network) => void;
-  /**
-   * The address connected.
-   */
-  address: string | null;
+export interface UseContractKit
+  extends Omit<UseConnectorConfig, 'connector' | 'connectionCallback'> {
   dapp: Dapp;
   kit: ContractKit;
   walletType: WalletTypes;
-  accountName: string | null;
+
+  /**
+   * Name of the account.
+   */
+  account: string | null;
 
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will
@@ -113,144 +58,58 @@ interface UseContractKit {
    */
   initError: Error | null;
 
-  connect: () => Promise<Connector>;
-  destroy: () => Promise<void>;
+  /**
+   * Gets the connected instance of ContractKit.
+   * If the user is not connected, this opens up the connection modal.
+   */
   getConnectedKit: () => Promise<ContractKit>;
 }
 
-interface UseContractKitInternal extends UseContractKit {
+interface UseContractKitInternal
+  extends UseContractKit,
+    Pick<UseConnectorConfig, 'connectionCallback'> {
   initConnector: (connector: Connector) => Promise<void>;
   pendingActionCount: number;
-  connectionCallback: ((x: Connector | false) => void) | null;
 }
 
-interface Dapp {
-  name: string;
-  description: string;
-  url: string;
-  icon: string;
-}
+type DappInput = Omit<Dapp, 'icon'> & Partial<Pick<Dapp, 'icon'>>;
 
-export type DappInput = Omit<Dapp, 'icon'> & Partial<Pick<Dapp, 'icon'>>;
-
-interface KitState {
+/**
+ * State of useKit.
+ */
+interface UseKitState {
   networks?: Network[];
   dapp: DappInput;
 }
 
-const defaultDapp: Dapp = {
-  name: '',
-  description: '',
-  icon: '',
-  url: '',
+const DEFAULT_KIT_STATE = {
+  networks: DEFAULT_NETWORKS,
+  dapp: {
+    name: 'Celo dApp',
+    description: 'Celo dApp',
+    url: 'https://celo.org',
+  },
 };
 
-function Kit(
-  { networks = defaultNetworks, dapp: dappInput }: KitState = {
-    networks: defaultNetworks,
-    dapp: defaultDapp,
-  }
-): UseContractKitInternal {
+const useKit = ({
+  networks = DEFAULT_NETWORKS,
+  dapp: dappInput,
+}: UseKitState = DEFAULT_KIT_STATE): UseContractKitInternal => {
   const [dapp] = useState<Required<Dapp>>({
     name: dappInput.name,
     description: dappInput.description,
     icon: dappInput.icon ?? `${dappInput.url}/favicon.ico`,
     url: dappInput.url,
   });
-  const [address, setAddress] = useState<string | null>(lastUsedAddress);
-  const [connectionCallback, setConnectionCallback] =
-    useState<((x: Connector | false) => void) | null>(null);
+  const connectorConfig = useConnectorConfig({ networks });
 
-  const initialNetwork =
-    networks.find((n) => n.name === lastUsedNetworkName) || networks[0];
-  if (!initialNetwork) {
-    throw new Error('Unknown network');
-  }
-
-  const [connection, setConnection] = useState<Connector>(initialConnector);
-  const [network, updateNetwork] = useState(initialNetwork);
   const [pendingActionCount, setPendingActionCount] = useState(0);
-
-  useEffect(() => {
-    const account = connection?.kit.defaultAccount;
-    if (account) {
-      setAddress(account);
-      localStorage.setItem(localStorageKeys.lastUsedAddress, account);
-    }
-  }, [connection?.kit]);
-
-  useEffect(() => {
-    if (
-      localStorage.getItem(localStorageKeys.lastUsedNetwork) === network.name
-    ) {
-      return;
-    }
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
-
-    const Constructor = CONNECTOR_TYPES[connection.type];
-    if (!Constructor) {
-      return;
-    }
-
-    setConnection(() => {
-      try {
-        const lastUsedWalletArguments = JSON.parse(
-          localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
-        );
-        return new Constructor(network, ...lastUsedWalletArguments);
-      } catch (e) {
-        return new Constructor(network);
-      }
-    });
-  }, [connection, network]);
-
-  const destroy = useCallback(async () => {
-    await connection.close();
-
-    localStorage.removeItem(localStorageKeys.lastUsedAddress);
-    localStorage.removeItem(localStorageKeys.lastUsedWalletType);
-    localStorage.removeItem(localStorageKeys.lastUsedWalletArguments);
-
-    setAddress('');
-    setConnection(new UnauthenticatedConnector(network));
-  }, [network, connection]);
-
-  const connect = useCallback(async (): Promise<Connector> => {
-    const connectionResultPromise: Promise<Connector | false> = new Promise(
-      (resolve) => {
-        const connectionResultCallback = (x: Connector | false) => resolve(x);
-
-        // has to be like this and not like setConnectionCallback(connectionResultCallback)
-        // as React will try to run any function passed to set state
-        setConnectionCallback(() => connectionResultCallback);
-      }
-    );
-
-    const connector = await connectionResultPromise;
-    if (connector === false) {
-      // dismissed
-      setConnectionCallback(null);
-      throw new Error('Connection cancelled');
-    }
-
-    if (connector.onNetworkChange) {
-      connector.onNetworkChange((chainId) => {
-        const network = networks?.find((n) => n.chainId === chainId);
-        network && updateNetwork(network);
-      });
-    }
-
-    setConnection(connector);
-    setConnectionCallback(null);
-
-    return connector;
-  }, [network]);
 
   // Initialisation error state management
   const [initError, setInitError] = useState<Error | null>(null);
-  const initConnector = useCallback(async (connector: Connector) => {
+  const initConnector = useCallback(async (nextConnector: Connector) => {
     try {
-      await connector.initialise();
+      await nextConnector.initialise();
     } catch (e) {
       console.error(
         '[use-contractkit] Error initializing connector',
@@ -261,16 +120,17 @@ function Kit(
     }
   }, []);
 
+  const { connector, connect } = connectorConfig;
   const getConnectedKit = useCallback(async () => {
-    let initialisedConnection = connection;
-    if (connection.type === WalletTypes.Unauthenticated) {
+    let initialisedConnection = connector;
+    if (connector.type === WalletTypes.Unauthenticated) {
       initialisedConnection = await connect();
     } else if (!initialisedConnection.initialised) {
       await initConnector(initialisedConnection);
     }
 
     return initialisedConnection.kit;
-  }, [connect, connection, initConnector]);
+  }, [connect, connector, initConnector]);
 
   const performActions = useCallback(
     async (...operations: ((kit: ContractKit) => any | Promise<any>)[]) => {
@@ -294,36 +154,30 @@ function Kit(
   );
 
   return {
-    network,
-    updateNetwork,
-
-    address,
+    ...connectorConfig,
     dapp,
-    kit: connection.kit,
-    walletType: connection.type,
-    accountName: connection.accountName,
+
+    kit: connector.kit,
+    walletType: connector.type,
+    account: connector.account,
+    initialised: connector.initialised,
 
     performActions,
-
-    connect,
-    destroy,
     getConnectedKit,
 
-    initialised: connection.initialised,
     initError,
 
     // private
     initConnector,
     pendingActionCount,
-    connectionCallback,
   };
-}
+};
 
-const KitState = createContainer<UseContractKitInternal, KitState>(Kit);
+const KitState = createContainer<UseContractKitInternal, UseKitState>(useKit);
 
 export const useContractKit: Container<
   UseContractKit,
-  KitState
+  UseKitState
 >['useContainer'] = KitState.useContainer;
 
 /**
@@ -331,7 +185,7 @@ export const useContractKit: Container<
  */
 export const useInternalContractKit: Container<
   UseContractKitInternal,
-  KitState
+  UseKitState
 >['useContainer'] = KitState.useContainer;
 
 interface ContractKitProviderProps {

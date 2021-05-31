@@ -85,3 +85,13 @@ export const getProviderForWallet = (
     : wallet === WalletTypes.Unauthenticated
     ? null
     : SupportedProviders[wallet];
+
+/**
+ * Default networks to connect to.
+ */
+export const DEFAULT_NETWORKS = [Mainnet, Alfajores];
+
+/**
+ * Chain ID of a default network.
+ */
+export type DefaultChainId = ChainId.Mainnet | ChainId.Alfajores;
