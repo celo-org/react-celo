@@ -110,11 +110,12 @@ const useKit = ({
   }> => {
     try {
       const connector = await nextConnector.initialise();
+      setInitError(null);
       return { connector, error: null };
     } catch (e) {
       console.error(
         '[use-contractkit] Error initializing connector',
-        connector.type,
+        nextConnector.type,
         e
       );
       setInitError(e);
