@@ -32,7 +32,6 @@ yarn add @celo-tools/use-contractkit
 | Plaintext private key                                                                      |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Ledger](https://www.ledger.com/)                                                          |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [WalletConnect](https://walletconnect.org/)                                                |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [DappKit](https://docs.celo.org/developer-guide/dappkit)                                   | :white_check_mark: |                    |                    | :white_check_mark: |
 | [Celo Extension Wallet (Metamask fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
 
 ## Basic Usage

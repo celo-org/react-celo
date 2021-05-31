@@ -68,13 +68,13 @@ export const Mainnet = {
 
 export enum WalletTypes {
   CeloExtensionWallet = 'CeloExtensionWallet',
-  DappKit = 'DappKit',
   Injected = 'Injected',
   Ledger = 'Ledger',
   MetaMask = 'MetaMask',
   PrivateKey = 'PrivateKey',
   Unauthenticated = 'Unauthenticated',
   WalletConnect = 'WalletConnect',
+  Valora = 'Valora',
 }
 
 /**
@@ -85,11 +85,7 @@ export enum WalletTypes {
 export const getProviderForWallet = (
   wallet: WalletTypes
 ): SupportedProviders | null =>
-  wallet === WalletTypes.DappKit
-    ? SupportedProviders.Valora
-    : wallet === WalletTypes.Unauthenticated
-    ? null
-    : SupportedProviders[wallet];
+  wallet === WalletTypes.Unauthenticated ? null : SupportedProviders[wallet];
 
 /**
  * Default networks to connect to.
