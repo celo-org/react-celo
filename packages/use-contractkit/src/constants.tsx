@@ -28,7 +28,6 @@ export const images = {
   [SupportedProviders.Valora]: 'https://valoraapp.com/favicon.ico',
   [SupportedProviders.CeloExtensionWallet]:
     'https://dl.airtable.com/.attachmentThumbnails/765f7478015a0aa7f823d1350c6181c1/9ea0f8db',
-  [SupportedProviders.CeloExtensionWallet]: { test: 1 },
   [SupportedProviders.PrivateKey]: (
     <svg
       className="dark:tw-text-gray-300"
