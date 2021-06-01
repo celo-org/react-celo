@@ -43,10 +43,7 @@ export const PROVIDERS: {
     description: 'Connect any Ethereum wallet to Celo',
     icon: ETHEREUM,
     canConnect: () => !!window.ethereum,
-    showInList: () =>
-      typeof window !== 'undefined' &&
-      !!window.ethereum &&
-      !window.ethereum.isMetaMask,
+    showInList: () => !!window.ethereum && !window.ethereum.isMetaMask,
   },
   [SupportedProviders.Ledger]: {
     name: 'Ledger',
@@ -60,8 +57,8 @@ export const PROVIDERS: {
     description: 'A crypto gateway to blockchain apps',
     icon: METAMASK,
     canConnect: () => !!window.ethereum?.isMetaMask,
-    showInList: () => !!window.ethereum?.isMetaMask,
-    installURL: 'https://metamask.io/',
+    showInList: () => true,
+    installURL: 'https://metamask.app.link/',
   },
   [SupportedProviders.PrivateKey]: {
     name: 'Private Key',
