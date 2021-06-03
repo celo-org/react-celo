@@ -4,6 +4,7 @@ import { LocalWallet } from '@celo/wallet-local';
 // so that the new tab handler fires.
 import { WalletConnectWalletOptions } from 'contractkit-walletconnect';
 import { localStorageKeys, WalletTypes } from '../constants';
+import { DappKitWallet } from '../dappkit-wallet';
 import { ChainId, Connector, Network } from '../types';
 import { isMobile } from '../utils';
 
@@ -301,5 +302,44 @@ export class WalletConnectConnector implements Connector {
     const { WalletConnectWallet } = require('contractkit-walletconnect');
     const wallet = this.kit.getWallet() as typeof WalletConnectWallet;
     return wallet.close();
+  }
+}
+export class ValoraConnector implements Connector {
+  public initialised = true;
+  public type = WalletTypes.Valora;
+  public kit: ContractKit;
+  public wallet: DappKitWallet;
+
+  get account(): string | null {
+    return this.wallet.account;
+  }
+
+  constructor(private network: Network, private dappName: string) {
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletType,
+      WalletTypes.Valora
+    );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([dappName])
+    );
+
+    this.wallet = new DappKitWallet(dappName);
+    this.kit = newKit(network.rpcUrl, this.wallet as any);
+    this.wallet.setKit(this.kit);
+  }
+
+  async initialise() {
+    await this.wallet.init();
+
+    this.kit = newKit(this.network.rpcUrl, this.wallet as any);
+    this.kit.defaultAccount = this.wallet.getAccounts()[0];
+    this.wallet.setKit(this.kit);
+
+    return this;
+  }
+
+  close() {
+    return;
   }
 }

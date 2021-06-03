@@ -7,6 +7,7 @@ import {
   MetaMaskConnector,
   PrivateKeyConnector,
   UnauthenticatedConnector,
+  ValoraConnector,
   WalletConnectConnector,
 } from './connectors';
 
@@ -24,6 +25,6 @@ export const CONNECTOR_TYPES: {
   [WalletTypes.MetaMask]: MetaMaskConnector,
   [WalletTypes.PrivateKey]: PrivateKeyConnector,
   [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
-  [WalletTypes.Valora]: WalletConnectConnector,
+  [WalletTypes.Valora]: ValoraConnector,
   [WalletTypes.WalletConnect]: WalletConnectConnector,
 };
