@@ -27,7 +27,7 @@ jobs:
       - name: Lerna bootstrap
         run: yarn lerna bootstrap
       - name: Run build
-        run: yarn build
+        run: yarn lerna run build --scope '*/use-contractkit'
 
   lint:
     runs-on: ubuntu-latest
