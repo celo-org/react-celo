@@ -1,6 +1,8 @@
 import { ButtonHTMLAttributes } from 'react';
 
-export function PrimaryButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
+export function PrimaryButton(
+  props: ButtonHTMLAttributes<HTMLButtonElement>
+): React.ReactElement {
   return (
     <button
       {...props}
@@ -8,14 +10,14 @@ export function PrimaryButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
         props.disabled
           ? 'cursor-not-allowed'
           : 'hover:from-purple-700 hover:to-indigo-700'
-      } mt-2 ml-auto ${props.className}`}
+      } mt-2 ml-auto ${props.className ?? ''}`}
     />
   );
 }
 
 export function SecondaryButton(
   props: ButtonHTMLAttributes<HTMLButtonElement>
-) {
+): React.ReactElement {
   return (
     <button
       {...props}

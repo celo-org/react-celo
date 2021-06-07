@@ -7,7 +7,7 @@
   "scripts": {
     "build": "lerna link && lerna run build",
     "postinstall": "lerna bootstrap",
-    "lint": "eslint packages/use-contractkit/src",
+    "lint": "lerna run lint",
     "prepare": "husky install",
     "start": "lerna exec --scope example --stream npm run start"
   },

@@ -1,9 +1,14 @@
 import '../styles/global.css';
-import { ContractKitProvider } from '@ubeswap/use-contractkit';
 import '@ubeswap/use-contractkit/lib/styles.css';
+
+import { ContractKitProvider } from '@ubeswap/use-contractkit';
+import {
+  AppComponent,
+  AppProps,
+} from 'next/dist/next-server/lib/router/router';
 import { Toaster } from 'react-hot-toast';
 
-function MyApp({ Component, pageProps }) {
+const MyApp: AppComponent = ({ Component, pageProps }: AppProps) => {
   return (
     <ContractKitProvider
       dapp={{
@@ -26,6 +31,6 @@ function MyApp({ Component, pageProps }) {
       </div>
     </ContractKitProvider>
   );
-}
+};
 
 export default MyApp;

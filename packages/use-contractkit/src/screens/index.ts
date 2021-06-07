@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import React from 'react';
 
 import { SupportedProviders } from '../constants';
 import { Connector } from '../types';
@@ -9,9 +9,7 @@ import { PrivateKey } from './private-key';
 import { WalletConnect } from './wallet-connect';
 
 export const defaultScreens: {
-  [P in SupportedProviders]: FunctionComponent<{
-    onSubmit: (connector: Connector) => Promise<void> | void;
-  }>;
+  [P in SupportedProviders]: React.FC<ConnectorProps>;
 } = {
   [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.Ledger]: Ledger,
@@ -20,4 +18,8 @@ export const defaultScreens: {
   [SupportedProviders.PrivateKey]: PrivateKey,
   [SupportedProviders.Valora]: WalletConnect,
   [SupportedProviders.WalletConnect]: WalletConnect,
+};
+
+export type ConnectorProps = {
+  onSubmit: (connector: Connector) => Promise<void> | void;
 };

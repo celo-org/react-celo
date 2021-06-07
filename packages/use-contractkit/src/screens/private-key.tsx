@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 
 import { PrivateKeyConnector } from '../connectors';
 import { useContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
 
-interface Props {
-  onSubmit: (connector: PrivateKeyConnector) => void;
-}
-
-export const PrivateKey: React.FC<Props> = ({ onSubmit }: Props) => {
+export const PrivateKey: React.FC<ConnectorProps> = ({
+  onSubmit,
+}: ConnectorProps) => {
   const [value, setValue] = useState('');
   const { network } = useContractKit();
 
@@ -17,7 +16,7 @@ export const PrivateKey: React.FC<Props> = ({ onSubmit }: Props) => {
     }
 
     const connector = new PrivateKeyConnector(network, value);
-    onSubmit(connector);
+    void onSubmit(connector);
   };
 
   return (

@@ -4,12 +4,11 @@ import Loader from 'react-loader-spinner';
 import { LedgerConnector } from '../connectors';
 import { images } from '../constants';
 import { useInternalContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
 
-interface Props {
-  onSubmit: (connector: LedgerConnector) => Promise<void>;
-}
-
-export const Ledger: React.FC<Props> = ({ onSubmit }: Props) => {
+export const Ledger: React.FC<ConnectorProps> = ({
+  onSubmit,
+}: ConnectorProps) => {
   const { network, initConnector, initError: error } = useInternalContractKit();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');

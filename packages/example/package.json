@@ -2,8 +2,10 @@
   "name": "example",
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev --port 3000",
     "build": "next build",
+    "dev": "next dev --port 3000",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "start": "next start",
     "export": "next export"
   },

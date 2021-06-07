@@ -4,12 +4,11 @@ import Loader from 'react-loader-spinner';
 import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
 import { MetaMaskConnector, UnsupportedChainIdError } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
 
-interface Props {
-  onSubmit: (connector: MetaMaskConnector) => void;
-}
-
-export const MetaMaskWallet: React.FC<Props> = ({ onSubmit }: Props) => {
+export const MetaMaskWallet: React.FC<ConnectorProps> = ({
+  onSubmit,
+}: ConnectorProps) => {
   const { network, initConnector, initError: error } = useInternalContractKit();
 
   const initialiseConnection = useCallback(async () => {
@@ -17,7 +16,7 @@ export const MetaMaskWallet: React.FC<Props> = ({ onSubmit }: Props) => {
     const { error } = await initConnector(connector);
     if (!error) {
       console.log('no error', { error });
-      onSubmit(connector);
+      await onSubmit(connector);
     } else {
       console.log('error', { error });
     }

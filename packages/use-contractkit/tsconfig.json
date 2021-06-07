@@ -1,21 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "module": "CommonJS",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "noEmit": false,
-    "outDir": "lib",
-    "declaration": true,
-    "jsx": "react",
-    "noUncheckedIndexedAccess": true
-  },
+  "extends": "../../tsconfig.json",
   "include": ["src"]
 }

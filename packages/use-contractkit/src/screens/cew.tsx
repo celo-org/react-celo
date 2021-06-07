@@ -3,18 +3,17 @@ import Loader from 'react-loader-spinner';
 
 import { CeloExtensionWalletConnector } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
 
-interface Props {
-  onSubmit: (connector: CeloExtensionWalletConnector) => void;
-}
-
-export const CeloExtensionWallet: React.FC<Props> = ({ onSubmit }: Props) => {
+export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
+  onSubmit,
+}: ConnectorProps) => {
   const { network, initConnector, initError: error } = useInternalContractKit();
 
   const initialiseConnection = useCallback(async () => {
     const connector = new CeloExtensionWalletConnector(network);
     await initConnector(connector);
-    onSubmit(connector);
+    void onSubmit(connector);
   }, [initConnector, network, onSubmit]);
 
   useEffect(() => {
