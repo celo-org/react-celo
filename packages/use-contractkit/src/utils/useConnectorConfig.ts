@@ -113,8 +113,9 @@ export const useConnectorConfig = ({
   const [network, updateNetwork] = useState<Network>(initialNetwork);
 
   const [connector, setConnector] = useState<Connector>(initialConnector);
-  const [connectionCallback, setConnectionCallback] =
-    useState<((x: Connector | false) => void) | null>(null);
+  const [connectionCallback, setConnectionCallback] = useState<
+    ((x: Connector | false) => void) | null
+  >(null);
 
   // Update address whenever connector kit account changes
   useEffect(() => {

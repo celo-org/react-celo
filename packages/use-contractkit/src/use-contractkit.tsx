@@ -104,24 +104,29 @@ const useKit = ({
 
   // Initialisation error state management
   const [initError, setInitError] = useState<Error | null>(null);
-  const initConnector = useCallback(async (nextConnector: Connector): Promise<{
-    connector: Connector | null;
-    error: Error | null;
-  }> => {
-    try {
-      const connector = await nextConnector.initialise();
-      setInitError(null);
-      return { connector, error: null };
-    } catch (e) {
-      console.error(
-        '[use-contractkit] Error initializing connector',
-        nextConnector.type,
-        e
-      );
-      setInitError(e);
-      return { connector: null, error: e };
-    }
-  }, []);
+  const initConnector = useCallback(
+    async (
+      nextConnector: Connector
+    ): Promise<{
+      connector: Connector | null;
+      error: Error | null;
+    }> => {
+      try {
+        const connector = await nextConnector.initialise();
+        setInitError(null);
+        return { connector, error: null };
+      } catch (e) {
+        console.error(
+          '[use-contractkit] Error initializing connector',
+          nextConnector.type,
+          e
+        );
+        setInitError(e);
+        return { connector: null, error: e };
+      }
+    },
+    []
+  );
 
   const { connector, connect } = connectorConfig;
   const getConnectedKit = useCallback(async () => {
