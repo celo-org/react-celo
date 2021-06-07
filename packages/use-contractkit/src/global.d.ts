@@ -9,8 +9,8 @@ declare global {
       enable: () => Promise<void>;
     };
     celo?: AbstractProvider & {
-      on?: (...args: any[]) => void;
-      removeListener?: (...args: any[]) => void;
+      on?: (...args: unknown[]) => void;
+      removeListener?: (...args: unknown[]) => void;
       autoRefreshOnNetworkChange?: boolean;
       enable: () => Promise<void>;
     };

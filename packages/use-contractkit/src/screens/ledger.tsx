@@ -1,14 +1,15 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { useState } from 'react';
 import Loader from 'react-loader-spinner';
+
 import { LedgerConnector } from '../connectors';
 import { images } from '../constants';
 import { useInternalContractKit } from '../use-contractkit';
 
-export const Ledger: FunctionComponent<any> = ({
-  onSubmit,
-}: {
+interface Props {
   onSubmit: (connector: LedgerConnector) => Promise<void>;
-}) => {
+}
+
+export const Ledger: React.FC<Props> = ({ onSubmit }: Props) => {
   const { network, initConnector, initError: error } = useInternalContractKit();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
@@ -18,7 +19,7 @@ export const Ledger: FunctionComponent<any> = ({
     const connector = new LedgerConnector(network, parseInt(index, 10));
     const { error } = await initConnector(connector);
     if (!error) {
-      onSubmit(connector);
+      await onSubmit(connector);
     }
     setSubmitting(false);
   };
@@ -46,6 +47,7 @@ export const Ledger: FunctionComponent<any> = ({
                   <a
                     href="https://docs.celo.org/celo-owner-guide/ledger"
                     target="_blank"
+                    rel="noreferrer"
                   >
                     Celo application
                   </a>{' '}

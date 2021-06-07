@@ -1,17 +1,19 @@
 import QrCode from 'qrcode.react';
 import React, { useCallback, useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import Loader from 'react-loader-spinner';
+
 import { CopyText } from '../components';
 import { WalletConnectConnector } from '../connectors';
 import { Alfajores } from '../constants';
 import { Connector } from '../types';
-import { useContractKit, useInternalContractKit } from '../use-contractkit';
+import { useInternalContractKit } from '../use-contractkit';
 
-export function WalletConnect({
-  onSubmit,
-}: {
+interface Props {
   onSubmit: (connector: Connector) => void;
-}) {
+}
+
+export const WalletConnect: React.FC<Props> = ({ onSubmit }: Props) => {
   const { network, dapp, destroy, initConnector } = useInternalContractKit();
   const [uri, setUri] = useState('');
 
@@ -36,15 +38,24 @@ export function WalletConnect({
     });
 
     connector.onUri((newUri) => setUri(newUri));
-    connector.onClose(destroy);
+    connector.onClose(() => void destroy());
 
     await initConnector(connector);
 
     onSubmit(connector);
-  }, [network, dapp]);
+  }, [
+    network,
+    dapp.name,
+    dapp.description,
+    dapp.url,
+    dapp.icon,
+    initConnector,
+    onSubmit,
+    destroy,
+  ]);
 
   useEffect(() => {
-    initialiseConnection();
+    void initialiseConnection();
   }, [initialiseConnection]);
 
   return (
@@ -60,7 +71,7 @@ export function WalletConnect({
       <div className="tw-w-full mt-4">
         {uri ? (
           <>
-            {false /* mobile */ ? (
+            {isMobile ? (
               <button className="tw-mt-3 tw-px-4 tw-py-2 tw-border tw-border-transparent tw-rounded-md tw-shadow-sm tw-text-base tw-font-medium tw-text-white tw-bg-gradient-to-r tw-from-purple-600 tw-to-indigo-600 hover:tw-from-purple-700 hover:tw-to-indigo-700">
                 Connect with WalletConnect
               </button>
@@ -87,4 +98,4 @@ export function WalletConnect({
       </div>
     </div>
   );
-}
+};

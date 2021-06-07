@@ -1,6 +1,7 @@
 import { ContractKit } from '@celo/contractkit';
-import React, { ReactNode } from 'react';
-import { NetworkNames, SupportedProviders, WalletTypes } from './constants';
+import React from 'react';
+
+import { NetworkNames, WalletTypes } from './constants';
 
 /**
  * ID of a Celo chain.

@@ -17,6 +17,7 @@ export * from './connectors';
  * Connectors for each wallet.
  */
 export const CONNECTOR_TYPES: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [x in WalletTypes]: new (n: Network, ...args: any[]) => Connector;
 } = {
   [WalletTypes.CeloExtensionWallet]: CeloExtensionWalletConnector,

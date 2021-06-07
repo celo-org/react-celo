@@ -1,20 +1,16 @@
 import { ContractKit } from '@celo/contractkit';
-import React, {
-  FunctionComponent,
-  ReactNode,
-  useCallback,
-  useState,
-} from 'react';
+import React, { ReactNode, useCallback, useState } from 'react';
 import ReactModal from 'react-modal';
 import { Container, createContainer } from 'unstated-next';
-import { DEFAULT_NETWORKS, SupportedProviders, WalletTypes } from './constants';
+
+import { DEFAULT_NETWORKS, WalletTypes } from './constants';
 import {
   ActionModal,
   ActionModalProps,
   ConnectModal,
   ConnectModalProps,
 } from './modals';
-import { Connector, Dapp, Network, Provider } from './types';
+import { Connector, Dapp, Network } from './types';
 import {
   UseConnectorConfig,
   useConnectorConfig,
@@ -40,8 +36,8 @@ export interface UseContractKit
    * - handle multiple transactions in order
    */
   performActions: (
-    ...operations: ((kit: ContractKit) => any | Promise<any>)[]
-  ) => Promise<any[]>;
+    ...operations: ((kit: ContractKit) => unknown | Promise<unknown>)[]
+  ) => Promise<unknown[]>;
 
   /**
    * Whether or not the connector has been fully loaded.
@@ -122,7 +118,7 @@ const useKit = ({
           e
         );
         setInitError(e);
-        return { connector: null, error: e };
+        return { connector: null, error: e as Error };
       }
     },
     []
@@ -141,11 +137,13 @@ const useKit = ({
   }, [connect, connector, initConnector]);
 
   const performActions = useCallback(
-    async (...operations: ((kit: ContractKit) => any | Promise<any>)[]) => {
+    async (
+      ...operations: ((kit: ContractKit) => unknown | Promise<unknown>)[]
+    ) => {
       const kit = await getConnectedKit();
 
       setPendingActionCount(operations.length);
-      const results = [];
+      const results: unknown[] = [];
       for (const op of operations) {
         try {
           results.push(await op(kit));
@@ -208,13 +206,13 @@ interface ContractKitProviderProps {
   };
 }
 
-export function ContractKitProvider({
+export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   children,
   connectModal,
   actionModal,
   dapp,
   networks,
-}: ContractKitProviderProps) {
+}: ContractKitProviderProps) => {
   return (
     <KitState.Provider initialState={{ networks, dapp }}>
       <ConnectModal {...connectModal} />
@@ -223,4 +221,4 @@ export function ContractKitProvider({
       {children}
     </KitState.Provider>
   );
-}
+};

@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
 import Loader from 'react-loader-spinner';
 import ReactModal from 'react-modal';
-import { useContractKit, useInternalContractKit } from '../use-contractkit';
+
+import { useInternalContractKit } from '../use-contractkit';
 
 export interface ActionModalProps {
   dappName: string;
@@ -32,13 +33,15 @@ const defaultActionModalComponent = ({
   );
 };
 
-export function ActionModal({
-  reactModalProps,
-  render = defaultActionModalComponent,
-}: {
+interface Props {
   reactModalProps?: Partial<ReactModal.Props>;
   render?: (props: ActionModalProps) => ReactNode;
-}) {
+}
+
+export const ActionModal: React.FC<Props> = ({
+  reactModalProps,
+  render = defaultActionModalComponent,
+}: Props) => {
   const { pendingActionCount, dapp } = useInternalContractKit();
 
   return (
@@ -74,4 +77,4 @@ export function ActionModal({
       </div>
     </ReactModal>
   );
-}
+};

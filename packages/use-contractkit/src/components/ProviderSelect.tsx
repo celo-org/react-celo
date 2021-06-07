@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Provider } from '../types';
 
 interface Props {
@@ -6,7 +7,10 @@ interface Props {
   onClick: () => void;
 }
 
-export const ProviderSelect: React.FC<Props> = ({ provider, onClick }) => {
+export const ProviderSelect: React.FC<Props> = ({
+  provider,
+  onClick,
+}: Props) => {
   return (
     <div
       className="tw-flex tw-cursor-pointer tw-py-5 tw-px-4 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-transition tw-rounded-md"

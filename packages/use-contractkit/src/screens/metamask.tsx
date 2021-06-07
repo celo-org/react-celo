@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
+
 import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
 import { MetaMaskConnector, UnsupportedChainIdError } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
 
-export function MetaMaskWallet({
-  onSubmit,
-}: {
+interface Props {
   onSubmit: (connector: MetaMaskConnector) => void;
-}) {
+}
+
+export const MetaMaskWallet: React.FC<Props> = ({ onSubmit }: Props) => {
   const { network, initConnector, initError: error } = useInternalContractKit();
 
   const initialiseConnection = useCallback(async () => {
@@ -20,10 +21,10 @@ export function MetaMaskWallet({
     } else {
       console.log('error', { error });
     }
-  }, [onSubmit]);
+  }, [initConnector, network, onSubmit]);
 
   useEffect(() => {
-    initialiseConnection();
+    void initialiseConnection();
   }, [initialiseConnection]);
 
   if (error?.name === UnsupportedChainIdError.NAME) {
@@ -46,4 +47,4 @@ export function MetaMaskWallet({
       )}
     </div>
   );
-}
+};

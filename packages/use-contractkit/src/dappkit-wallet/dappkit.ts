@@ -10,8 +10,11 @@ import {
   serializeDappKitRequestDeeplink,
   SignTxRequest,
   SignTxResponseSuccess,
+  TxToSignParam,
 } from '@celo/utils';
+
 import Linking from './linking';
+
 export {
   AccountAuthRequest,
   DappKitRequestMeta,
@@ -32,7 +35,7 @@ if (typeof window !== 'undefined') {
 }
 
 async function waitForResponse() {
-  while (true) {
+  for (;;) {
     const value = localStorage.getItem(localStorageKey);
     if (value) {
       localStorage.removeItem(localStorageKey);
@@ -76,7 +79,7 @@ export async function waitForSignedTxs(
   throw new Error('Unable to parse Valora response');
 }
 
-export function requestAccountAddress(meta: DappKitRequestMeta) {
+export function requestAccountAddress(meta: DappKitRequestMeta): void {
   const deepLink = serializeDappKitRequestDeeplink(AccountAuthRequest(meta));
   Linking.openURL(deepLink);
 }
@@ -85,24 +88,20 @@ export async function requestTxSig(
   kit: ContractKit,
   txParams: CeloTx[],
   meta: DappKitRequestMeta
-) {
+): Promise<void> {
   const baseNonce = await kit.connection.nonce(txParams[0]?.from as string);
-  const txs = await Promise.all(
-    txParams.map(async (txParam: CeloTx, index: number) => {
-      const value = txParam.value === undefined ? '0' : txParam.value;
+  const txs = txParams.map((txParam: CeloTx, index: number) => {
+    const value = txParam.value === undefined ? '0' : txParam.value;
+    return {
+      txData: txParam.data,
+      estimatedGas: txParam.gas ?? 150000,
+      nonce: baseNonce + index,
+      feeCurrencyAddress: undefined,
+      value,
+      ...txParam,
+    } as unknown as TxToSignParam;
+  });
 
-      return {
-        txData: txParam.data, // Valora expects this
-        estimatedGas: txParam.gas ?? 150000,
-        nonce: baseNonce + index,
-        feeCurrencyAddress: undefined,
-        value,
-        ...txParam,
-      };
-    })
-  );
-
-  // @ts-ignore
   const request = SignTxRequest(txs, meta);
   Linking.openURL(serializeDappKitRequestDeeplink(request));
 }

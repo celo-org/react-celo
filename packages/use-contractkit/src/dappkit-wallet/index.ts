@@ -1,7 +1,8 @@
-import { CeloTx, Signer } from '@celo/connect';
+import { CeloTx, EncodedTransaction, Signer } from '@celo/connect';
 import { ContractKit } from '@celo/contractkit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import { RemoteWallet } from '@celo/wallet-remote';
+
 import {
   requestAccountAddress,
   requestTxSig,
@@ -12,42 +13,34 @@ import {
 export class DappKitSigner implements Signer {
   constructor(protected account: string) {}
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async signTransaction(): Promise<{ v: number; r: Buffer; s: Buffer }> {
     throw new Error('signTransaction unimplemented; use signRawTransaction');
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async signTypedData(
-    typedData: EIP712TypedData
+    _: EIP712TypedData
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
     throw new Error('signTypedData() not supported by DappKit wallet');
-    return {
-      v: 0,
-      r: Buffer.from([]),
-      s: Buffer.from([]),
-    };
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async signPersonalMessage(
-    data: string
+    _data: string
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
     throw new Error('signPersonalMessage() not supported by DappKit wallet');
-    return {
-      v: 0,
-      r: Buffer.from([]),
-      s: Buffer.from([]),
-    };
   }
 
-  getNativeKey = () => this.account;
+  getNativeKey = (): string => this.account;
 
-  async decrypt(ciphertext: Buffer) {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async decrypt(_ciphertext: Buffer): Promise<Buffer> {
     throw new Error('decrypt() not supported by DappKit wallet');
-    return Buffer.from([]);
   }
 
-  computeSharedSecret(_publicKey: string) {
+  computeSharedSecret(_publicKey: string): Promise<Buffer> {
     throw new Error('computeSharedSecret() not supported by DappKit wallet');
-    return Promise.resolve(Buffer.from([]));
   }
 }
 
@@ -80,7 +73,7 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
     return addressToSigner;
   }
 
-  setKit(kit: ContractKit) {
+  setKit(kit: ContractKit): void {
     this.kit = kit;
   }
 
@@ -88,22 +81,22 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
    * Override hasAccount for the DappKit wallet as we
    * want to always send users to Valora
    */
-  hasAccount = () => true;
+  hasAccount = (): boolean => true;
 
   /**
    * Gets the signer based on the 'from' field in the tx body
    * @param txParams Transaction to sign
    * @dev overrides WalletBase.signTransaction
    */
-  // @ts-ignore
-  async signTransaction(txParams: CeloTx) {
+  override async signTransaction(
+    txParams: CeloTx
+  ): Promise<EncodedTransaction> {
     if (!this.kit) {
       throw new Error('Must call setKit before using dappKit wallet');
     }
 
     const requestId = `signTransaction-${randomString()}`;
-    // @ts-ignore
-    requestTxSig(this.kit, [txParams], {
+    await requestTxSig(this.kit, [txParams], {
       requestId,
       dappName: this.dappName,
       callback: window.location.href,
@@ -111,7 +104,10 @@ export class DappKitWallet extends RemoteWallet<DappKitSigner> {
 
     const dappkitResponse = await waitForSignedTxs(requestId);
     const raw = dappkitResponse.rawTxs[0];
+    if (!raw) {
+      throw new Error('Raw TX not present');
+    }
 
-    return { raw };
+    return { raw, tx: undefined as unknown as EncodedTransaction['tx'] };
   }
 }

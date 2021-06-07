@@ -2,11 +2,17 @@ import { ContractKit, newKit, newKitFromWeb3 } from '@celo/contractkit';
 import { LocalWallet } from '@celo/wallet-local';
 // we can't lazy load this due to the new tab bug, it must be imported
 // so that the new tab handler fires.
-import { WalletConnectWalletOptions } from 'contractkit-walletconnect';
+import {
+  WalletConnectWallet,
+  WalletConnectWalletOptions,
+} from 'contractkit-walletconnect';
+import { isMobile } from 'react-device-detect';
+
 import { localStorageKeys, WalletTypes } from '../constants';
 import { DappKitWallet } from '../dappkit-wallet';
 import { ChainId, Connector, Network } from '../types';
-import { isMobile } from '../utils';
+
+type Web3Type = Parameters<typeof newKitFromWeb3>[0];
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
@@ -24,11 +30,11 @@ export class UnauthenticatedConnector implements Connector {
     this.kit = newKit(n.rpcUrl);
   }
 
-  initialise() {
+  initialise(): this {
     return this;
   }
 
-  close() {
+  close(): void {
     return;
   }
 }
@@ -57,11 +63,11 @@ export class PrivateKeyConnector implements Connector {
     this.account = this.kit.defaultAccount ?? null;
   }
 
-  initialise() {
+  initialise(): this {
     return this;
   }
 
-  close() {
+  close(): void {
     return;
   }
 }
@@ -85,7 +91,7 @@ export class LedgerConnector implements Connector {
     this.kit = newKit(network.rpcUrl);
   }
 
-  async initialise() {
+  async initialise(): Promise<this> {
     const { default: TransportUSB } = await import(
       '@ledgerhq/hw-transport-webusb'
     );
@@ -101,7 +107,7 @@ export class LedgerConnector implements Connector {
     return this;
   }
 
-  close() {
+  close(): void {
     return;
   }
 }
@@ -135,7 +141,7 @@ export class InjectedConnector implements Connector {
     this.kit = newKit(network.rpcUrl);
   }
 
-  async initialise() {
+  async initialise(): Promise<this> {
     const { default: Web3 } = await import('web3');
 
     const ethereum = window.ethereum;
@@ -160,7 +166,7 @@ export class InjectedConnector implements Connector {
       }
     });
 
-    this.kit = newKitFromWeb3(web3 as any);
+    this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
@@ -168,11 +174,11 @@ export class InjectedConnector implements Connector {
     return this;
   }
 
-  onNetworkChange(callback: (chainId: number) => void) {
+  onNetworkChange(callback: (chainId: number) => void): void {
     this.onNetworkChangeCallback = callback;
   }
 
-  close() {
+  close(): void {
     return;
   }
 }
@@ -203,7 +209,7 @@ export class CeloExtensionWalletConnector implements Connector {
     this.kit = newKit(network.rpcUrl);
   }
 
-  async initialise() {
+  async initialise(): Promise<this> {
     const { default: Web3 } = await import('web3');
 
     const celo = window.celo;
@@ -213,17 +219,22 @@ export class CeloExtensionWalletConnector implements Connector {
     const web3 = new Web3(celo);
     await celo.enable();
 
-    // @ts-ignore
-    web3.currentProvider.publicConfigStore.on(
-      'update',
-      async ({ networkVersion }: { networkVersion: number }) => {
-        if (this.onNetworkChangeCallback) {
-          this.onNetworkChangeCallback(networkVersion);
-        }
+    (
+      web3.currentProvider as unknown as {
+        publicConfigStore: {
+          on: (
+            event: string,
+            cb: (args: { networkVersion: number }) => void
+          ) => void;
+        };
       }
-    );
+    ).publicConfigStore.on('update', ({ networkVersion }) => {
+      if (this.onNetworkChangeCallback) {
+        this.onNetworkChangeCallback(networkVersion);
+      }
+    });
 
-    this.kit = newKitFromWeb3(web3 as any);
+    this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
@@ -231,11 +242,11 @@ export class CeloExtensionWalletConnector implements Connector {
     return this;
   }
 
-  onNetworkChange(callback: (chainId: number) => void) {
+  onNetworkChange(callback: (chainId: number) => void): void {
     this.onNetworkChangeCallback = callback;
   }
 
-  close() {
+  close(): void {
     return;
   }
 }
@@ -259,22 +270,20 @@ export class WalletConnectConnector implements Connector {
       JSON.stringify(options)
     );
 
-    const { WalletConnectWallet } = require('contractkit-walletconnect');
     const wallet = new WalletConnectWallet(options);
     this.kit = newKit(network.rpcUrl, wallet);
   }
 
-  onUri(callback: (uri: string) => void) {
+  onUri(callback: (uri: string) => void): void {
     this.onUriCallback = callback;
   }
 
-  onClose(callback: () => void) {
+  onClose(callback: () => void): void {
     this.onCloseCallback = callback;
   }
 
-  async initialise() {
-    const { WalletConnectWallet } = require('contractkit-walletconnect');
-    const wallet = this.kit.getWallet() as typeof WalletConnectWallet;
+  async initialise(): Promise<this> {
+    const wallet = this.kit.getWallet() as WalletConnectWallet;
 
     if (this.onCloseCallback) {
       wallet.onPairingDeleted = () => this.onCloseCallback?.();
@@ -286,21 +295,20 @@ export class WalletConnectConnector implements Connector {
       this.onUriCallback(uri);
     }
 
-    if (isMobile) {
+    if (isMobile && uri) {
       window.open(`wc:${uri}`);
     }
 
     await wallet.init();
-    const [defaultAccount] = await wallet.getAccounts();
+    const [defaultAccount] = wallet.getAccounts();
     this.kit.defaultAccount = defaultAccount;
-    this.account = defaultAccount;
+    this.account = defaultAccount ?? null;
 
     return this;
   }
 
-  async close() {
-    const { WalletConnectWallet } = require('contractkit-walletconnect');
-    const wallet = this.kit.getWallet() as typeof WalletConnectWallet;
+  close(): Promise<void> {
+    const wallet = this.kit.getWallet() as WalletConnectWallet;
     return wallet.close();
   }
 }
@@ -325,21 +333,21 @@ export class ValoraConnector implements Connector {
     );
 
     this.wallet = new DappKitWallet(dappName);
-    this.kit = newKit(network.rpcUrl, this.wallet as any);
+    this.kit = newKit(network.rpcUrl, this.wallet);
     this.wallet.setKit(this.kit);
   }
 
-  async initialise() {
+  async initialise(): Promise<this> {
     await this.wallet.init();
 
-    this.kit = newKit(this.network.rpcUrl, this.wallet as any);
+    this.kit = newKit(this.network.rpcUrl, this.wallet);
     this.kit.defaultAccount = this.wallet.getAccounts()[0];
     this.wallet.setKit(this.kit);
 
     return this;
   }
 
-  close() {
+  close(): void {
     return;
   }
 }

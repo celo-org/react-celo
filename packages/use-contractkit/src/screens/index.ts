@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react';
+
 import { SupportedProviders } from '../constants';
 import { Connector } from '../types';
 import { CeloExtensionWallet } from './cew';

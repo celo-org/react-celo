@@ -7,15 +7,18 @@ class Linking {
     this.emitter = new EventEmitter();
   }
 
-  emit(event: string, value: any) {
+  emit(event: string, value: unknown) {
     this.emitter.emit(event, value);
   }
 
-  addEventListener(event: string, callback: any) {
+  addEventListener(event: string, callback: Parameters<EventEmitter['on']>[1]) {
     this.emitter.on(event, callback);
   }
 
-  removeEventListener(event: string, callback: any) {
+  removeEventListener(
+    event: string,
+    callback: Parameters<EventEmitter['on']>[1]
+  ) {
     this.emitter.off(event, callback);
   }
 

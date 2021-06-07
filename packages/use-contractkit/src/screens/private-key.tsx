@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
+
 import { PrivateKeyConnector } from '../connectors';
-import { WalletTypes } from '../constants';
 import { useContractKit } from '../use-contractkit';
 
-export function PrivateKey({
-  onSubmit,
-}: {
+interface Props {
   onSubmit: (connector: PrivateKeyConnector) => void;
-}) {
+}
+
+export const PrivateKey: React.FC<Props> = ({ onSubmit }: Props) => {
   const [value, setValue] = useState('');
   const { network } = useContractKit();
 
@@ -46,4 +46,4 @@ export function PrivateKey({
       </div>
     </div>
   );
-}
+};

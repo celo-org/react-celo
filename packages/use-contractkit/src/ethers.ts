@@ -1,7 +1,8 @@
-import { useContractKit } from './use-contractkit';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { ExternalProvider } from '@ethersproject/providers/lib/web3-provider';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useContractKit } from './use-contractkit';
 
 export const useProvider = (): Web3Provider => {
   const { kit } = useContractKit();
@@ -22,7 +23,7 @@ export const useProviderOrSigner = (): Web3Provider | JsonRpcSigner => {
 };
 
 export const useGetConnectedSigner = (): (() => Promise<JsonRpcSigner>) => {
-  const { kit, connect, getConnectedKit } = useContractKit();
+  const { kit, getConnectedKit } = useContractKit();
   const signer = useProviderOrSigner();
   return useCallback(async () => {
     if (kit.defaultAccount) {
@@ -32,7 +33,7 @@ export const useGetConnectedSigner = (): (() => Promise<JsonRpcSigner>) => {
     const nextProvider = nextKit.web3
       .currentProvider as unknown as ExternalProvider;
     return new Web3Provider(nextProvider).getSigner(nextKit.defaultAccount);
-  }, [signer, kit, connect]);
+  }, [kit.defaultAccount, getConnectedKit, signer]);
 };
 
 export const useLazyConnectedSigner = (): {

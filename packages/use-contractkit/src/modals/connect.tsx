@@ -1,5 +1,6 @@
-import React, { FunctionComponent, ReactNode, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import ReactModal from 'react-modal';
+
 import { ProviderSelect } from '../components/ProviderSelect';
 import { PROVIDERS, SupportedProviders } from '../constants';
 import { defaultScreens } from '../screens';
@@ -16,22 +17,22 @@ export interface ConnectModalProps {
   reactModalProps?: Partial<ReactModal.Props>;
 }
 
-export function ConnectModal({
+export const ConnectModal: React.FC<ConnectModalProps> = ({
   reactModalProps,
   RenderProvider = ProviderSelect,
   screens = defaultScreens,
-}: ConnectModalProps) {
+}: ConnectModalProps) => {
   const { connectionCallback } = useInternalContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
 
-  const close = async () => {
+  const close = () => {
     setAdding(null);
-    connectionCallback!(false);
+    connectionCallback?.(false);
   };
 
-  async function onSubmit(connector: Connector) {
+  function onSubmit(connector: Connector) {
     setAdding(null);
-    connectionCallback!(connector);
+    connectionCallback?.(connector);
   }
 
   const providers = Object.entries(PROVIDERS).filter(
@@ -121,4 +122,4 @@ export function ConnectModal({
       </div>
     </ReactModal>
   );
-}
+};

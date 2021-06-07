@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+
+import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 import {
   DEFAULT_NETWORKS,
   localStorageKeys,
@@ -7,7 +9,6 @@ import {
   WalletTypes,
 } from '../constants';
 import { Connector, Network } from '../types';
-import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 
 /**
  * Loads previous user configuration from local storage.
@@ -16,7 +17,7 @@ const loadPreviousConfig = () => {
   let lastUsedNetworkName: NetworkNames = Mainnet.name;
   let lastUsedAddress: string | null = null;
   let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
-  let lastUsedWalletArguments: any[] = [];
+  let lastUsedWalletArguments: unknown[] = [];
   if (typeof localStorage !== 'undefined') {
     const localLastUsedNetworkName = localStorage.getItem(
       localStorageKeys.lastUsedNetwork
@@ -44,7 +45,9 @@ const loadPreviousConfig = () => {
     );
     if (localLastUsedWalletArguments) {
       try {
-        lastUsedWalletArguments = JSON.parse(localLastUsedWalletArguments);
+        lastUsedWalletArguments = JSON.parse(
+          localLastUsedWalletArguments
+        ) as unknown[];
       } catch (e) {
         lastUsedWalletArguments = [];
       }
@@ -57,7 +60,7 @@ const loadPreviousConfig = () => {
   let initialConnector: Connector;
   if (lastUsedWalletType) {
     try {
-      initialConnector = new CONNECTOR_TYPES[lastUsedWalletType as WalletTypes](
+      initialConnector = new CONNECTOR_TYPES[lastUsedWalletType](
         lastUsedNetwork,
         ...lastUsedWalletArguments
       );
@@ -155,7 +158,7 @@ export const useConnectorConfig = ({
       try {
         const lastUsedWalletArguments = JSON.parse(
           localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
-        );
+        ) as unknown[];
         return new ConnectorConstructor(network, ...lastUsedWalletArguments);
       } catch (e) {
         return new ConnectorConstructor(network);
@@ -192,7 +195,7 @@ export const useConnectorConfig = ({
     setConnectionCallback(null);
 
     return connector;
-  }, [network]);
+  }, [networks]);
 
   return {
     address,
