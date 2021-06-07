@@ -13,7 +13,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "homepage": "https://use-contractkit.vercel.app",
   "readme": "../../readme.md",

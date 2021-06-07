@@ -11,9 +11,6 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noEmit": false,
-    "outDir": "lib",
-    "declaration": true,
     "jsx": "react",
     "noUncheckedIndexedAccess": true
   },
