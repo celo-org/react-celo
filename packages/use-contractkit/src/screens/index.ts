@@ -7,6 +7,7 @@ import { Ledger } from './ledger';
 import { MetaMaskWallet } from './metamask';
 import { PrivateKey } from './private-key';
 import { WalletConnect } from './wallet-connect';
+import { ValoraWallet } from './valora';
 
 export const defaultScreens: {
   [P in SupportedProviders]: React.FC<ConnectorProps>;
@@ -16,7 +17,7 @@ export const defaultScreens: {
   [SupportedProviders.MetaMask]: MetaMaskWallet,
   [SupportedProviders.Injected]: MetaMaskWallet,
   [SupportedProviders.PrivateKey]: PrivateKey,
-  [SupportedProviders.Valora]: WalletConnect,
+  [SupportedProviders.Valora]: ValoraWallet,
   [SupportedProviders.WalletConnect]: WalletConnect,
 };
 
