@@ -22,7 +22,7 @@
     "@celo/wallet-ledger": "^1.2.0",
     "@celo/wallet-local": "^1.2.0",
     "@celo/wallet-remote": "^1.2.0",
-    "contractkit-walletconnect": "0.0.15",
+    "contractkit-walletconnect": "0.0.16",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "@types/qrcode.react": "^1.0.1",
     "@types/react-modal": "^3.12.0",
