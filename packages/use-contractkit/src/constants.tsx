@@ -58,7 +58,7 @@ export const PROVIDERS: {
     description: 'A crypto gateway to blockchain apps',
     icon: METAMASK,
     canConnect: () => !!window.ethereum?.isMetaMask,
-    showInList: () => true,
+    showInList: () => !isMobile,
     installURL: 'https://metamask.app.link/',
   },
   [SupportedProviders.PrivateKey]: {
