@@ -1,7 +1,7 @@
 import '../styles/global.css';
-import '@ubeswap/use-contractkit/lib/styles.css';
+import { ContractKitProvider } from '@celo-tools/use-contractkit';
+import '@celo-tools/use-contractkit/lib/styles.css';
 
-import { ContractKitProvider } from '@ubeswap/use-contractkit';
 import {
   AppComponent,
   AppProps,

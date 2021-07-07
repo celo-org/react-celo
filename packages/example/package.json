@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@ethersproject/providers": "^5.3.0",
-    "@ubeswap/use-contractkit": "^1.0.0-ube.6",
+    "@celo-tools/use-contractkit": "^1.0.0-beta.2",
     "autoprefixer": "^10.2.4",
     "next": "10.2.3",
     "postcss": "^8.2.6",

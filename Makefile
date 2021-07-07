@@ -4,7 +4,7 @@ dev:
 	yarn lerna run dev --stream --parallel
 
 build-demo:
-	yarn lerna run build --scope @ubeswap/use-contractkit --stream
+	yarn lerna run build --scope @celo-tools/use-contractkit --stream
 	yarn lerna run build --scope example --stream
 
 publish:
