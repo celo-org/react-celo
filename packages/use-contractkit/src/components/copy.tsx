@@ -1,7 +1,11 @@
-import React from 'react';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
-export function CopyText({ text, payload }: { text: string; payload: string }) {
+interface Props {
+  text: string;
+  payload: string;
+}
+
+export const CopyText: React.FC<Props> = ({ text, payload }: Props) => {
   const [copied, setCopied] = useState(false);
 
   const onClick = useCallback(async () => {
@@ -11,7 +15,7 @@ export function CopyText({ text, payload }: { text: string; payload: string }) {
     setTimeout(() => {
       setCopied(false);
     }, 4000);
-  }, []);
+  }, [payload]);
 
   return (
     <button
@@ -52,4 +56,4 @@ export function CopyText({ text, payload }: { text: string; payload: string }) {
       )}
     </button>
   );
-}
+};

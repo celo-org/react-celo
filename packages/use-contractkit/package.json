@@ -4,13 +4,17 @@
   "private": false,
   "scripts": {
     "build": "tsc -b && yarn run build-styles",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -r lib/",
     "dev": "yarn run build && tsc-watch --onSuccess \"yarn run build-styles\"",
     "build-styles": "NODE_ENV=production yarn tailwind build ./src/styles.css -o ./lib/styles.css -c ./tailwind.config.js"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "homepage": "https://use-contractkit.vercel.app",
   "readme": "../../readme.md",
@@ -22,26 +26,38 @@
     "@celo/wallet-ledger": "^1.2.0",
     "@celo/wallet-local": "^1.2.0",
     "@celo/wallet-remote": "^1.2.0",
+    "@ledgerhq/hw-transport-webusb": "^5.53.1",
+    "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
     "contractkit-walletconnect": "0.0.16",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "@types/qrcode.react": "^1.0.1",
     "@types/react-modal": "^3.12.0",
     "@walletconnect/client": "2.0.0-beta.0",
     "@walletconnect/types": "2.0.0-beta.0",
-    "autoprefixer": "^10.2.4",
-    "postcss": "^8.2.6",
+    "autoprefixer": "^10.2.6",
+    "contractkit-walletconnect": "0.0.15",
+    "postcss": "^8.3.0",
     "qrcode.react": "^1.0.1",
+    "react-device-detect": "^1.17.0",
     "react-loader-spinner": "^4.0.0",
-    "react-modal": "^3.12.1",
-    "tailwindcss": "^2.0.3",
-    "unstated-next": "^1.1.0",
-    "web3": "^1.3.4"
+    "react-modal": "^3.14.2",
+    "tailwindcss": "^2.1.4",
+    "unstated-next": "^1.1.0"
   },
   "devDependencies": {
-    "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
+    "@ethersproject/providers": "^5.3.0",
     "@types/node": "^14.14.28",
-    "@types/react": "^17.0.1",
+    "@types/react": "^17.0.9",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "tsc-watch": "^4.2.9",
-    "typescript": "^4.1.5"
+    "typescript": "^4.1.5",
+    "web3": "^1.3.6"
+  },
+  "peerDependencies": {
+    "@ethersproject/providers": "^5.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "web3": "^1.3.6"
   }
 }

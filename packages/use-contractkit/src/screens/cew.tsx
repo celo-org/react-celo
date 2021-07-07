@@ -1,28 +1,41 @@
 import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
-import { CeloExtensionWalletConnector } from '../connectors';
-import { useContractKit } from '../use-contractkit';
 
-export function CeloExtensionWallet({
+import { CeloExtensionWalletConnector } from '../connectors';
+import { useInternalContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
+
+export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
   onSubmit,
-}: {
-  onSubmit: (connector: CeloExtensionWalletConnector) => void;
-}) {
-  const { network } = useContractKit();
+}: ConnectorProps) => {
+  const { network, initConnector, initError: error } = useInternalContractKit();
 
   const initialiseConnection = useCallback(async () => {
     const connector = new CeloExtensionWalletConnector(network);
-    await connector.initialise();
-    onSubmit(connector);
-  }, [onSubmit]);
+    await initConnector(connector);
+    void onSubmit(connector);
+  }, [initConnector, network, onSubmit]);
 
   useEffect(() => {
-    initialiseConnection();
+    void initialiseConnection();
   }, [initialiseConnection]);
 
   return (
     <div className="tw-flex tw-items-center tw-justify-center">
-      <Loader type="TailSpin" color="white" height="36px" width="36px" />
+      {error ? (
+        <p
+          style={{
+            paddingBottom: '0.25em',
+            paddingTop: '0.75em',
+            fontSize: '0.7em',
+            color: 'red',
+          }}
+        >
+          {error.message}
+        </p>
+      ) : (
+        <Loader type="TailSpin" color="white" height="36px" width="36px" />
+      )}
     </div>
   );
-}
+};

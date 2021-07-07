@@ -1,31 +1,26 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { useState } from 'react';
 import Loader from 'react-loader-spinner';
+
 import { LedgerConnector } from '../connectors';
 import { images } from '../constants';
-import { useContractKit } from '../use-contractkit';
+import { useInternalContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
 
-export const Ledger: FunctionComponent<any> = ({
+export const Ledger: React.FC<ConnectorProps> = ({
   onSubmit,
-}: {
-  onSubmit: (connector: LedgerConnector) => Promise<void>;
-}) => {
-  const { network } = useContractKit();
-  const [error, setError] = useState('');
+}: ConnectorProps) => {
+  const { network, initConnector, initError: error } = useInternalContractKit();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
 
   const submit = async () => {
     setSubmitting(true);
-    try {
-      const connector = new LedgerConnector(network, parseInt(index, 10));
-      await connector.initialise();
-      onSubmit(connector);
-      setError('');
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setSubmitting(false);
+    const connector = new LedgerConnector(network, parseInt(index, 10));
+    const { error } = await initConnector(connector);
+    if (!error) {
+      await onSubmit(connector);
     }
+    setSubmitting(false);
   };
 
   return (
@@ -33,10 +28,7 @@ export const Ledger: FunctionComponent<any> = ({
       <div>
         <div className="tw-flex">
           <div className="tw-mr-4">
-            <img
-              src={images.Ledger}
-              style={{ height: '36px', minWidth: '36px' }}
-            />
+            <images.Ledger style={{ height: '36px', minWidth: '36px' }} />
           </div>
 
           <div className="tw-flex tw-flex-col">
@@ -54,6 +46,7 @@ export const Ledger: FunctionComponent<any> = ({
                   <a
                     href="https://docs.celo.org/celo-owner-guide/ledger"
                     target="_blank"
+                    rel="noreferrer"
                   >
                     Celo application
                   </a>{' '}
@@ -69,7 +62,7 @@ export const Ledger: FunctionComponent<any> = ({
                   color: 'red',
                 }}
               >
-                {error}
+                {error.message}
               </p>
             )}
 

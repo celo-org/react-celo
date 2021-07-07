@@ -1,18 +1,18 @@
+import { StableToken } from '@celo/contractkit';
+import { ensureLeading0x } from '@celo/utils/lib/address';
 import {
-  Network,
-  useContractKit,
   Alfajores,
   Baklava,
   Mainnet,
+  useContractKit,
 } from '@celo-tools/use-contractkit';
-import { StableToken } from '@celo/contractkit';
-import { ensureLeading0x } from '@celo/utils/lib/address';
+import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
+
 import { PrimaryButton, SecondaryButton, toast } from '../components';
 import { TYPED_DATA } from '../utils';
-import { BigNumber } from 'bignumber.js';
 
 const defaultSummary = {
   name: '',
@@ -29,7 +29,7 @@ function truncateAddress(address: string) {
 
 const networks = [Alfajores, Baklava, Mainnet];
 
-export default function Home() {
+export default function Home(): React.ReactElement {
   const {
     kit,
     address,
@@ -85,9 +85,9 @@ export default function Home() {
           .sendAndWaitForReceipt({ from: k.defaultAccount });
       });
       toast.success('sendTransaction succeeded');
-      fetchSummary();
+      await fetchSummary();
     } catch (e) {
-      toast.error(e.message);
+      toast.error((e as Error).message);
     } finally {
       setSending(false);
     }
@@ -96,12 +96,16 @@ export default function Home() {
   const testSignTypedData = async () => {
     setSending(true);
     try {
-      await performActions((k) =>
-        k.signTypedData(k.defaultAccount, TYPED_DATA)
-      );
+      await performActions(async (k) => {
+        if (k.defaultAccount) {
+          return await k.signTypedData(k.defaultAccount, TYPED_DATA);
+        } else {
+          throw new Error('No default account');
+        }
+      });
       toast.success('signTypedData succeeded');
     } catch (e) {
-      toast.error(e.message);
+      toast.error((e as Error).message);
     }
 
     setSending(false);
@@ -110,22 +114,25 @@ export default function Home() {
   const testSignPersonal = async () => {
     setSending(true);
     try {
-      await performActions((k) =>
-        k.connection.sign(
+      await performActions(async (k) => {
+        if (!k.defaultAccount) {
+          throw new Error('No default account');
+        }
+        return await k.connection.sign(
           ensureLeading0x(Buffer.from('Hello').toString('hex')),
           k.defaultAccount
-        )
-      );
+        );
+      });
       toast.success('sign_personal succeeded');
     } catch (e) {
-      toast.error(e.message);
+      toast.error((e as Error).message);
     }
 
     setSending(false);
   };
 
   useEffect(() => {
-    fetchSummary();
+    void fetchSummary();
   }, [fetchSummary]);
 
   return (
@@ -143,6 +150,7 @@ export default function Home() {
             className="underline"
             href="https://reactjs.org/docs/hooks-intro.html"
             target="_blank"
+            rel="noreferrer"
           >
             React hook
           </a>{' '}
@@ -151,6 +159,7 @@ export default function Home() {
             href="https://celo.org/"
             target="_blank"
             style={{ color: 'rgba(53,208,127,1.00)' }}
+            rel="noreferrer"
           >
             Celo{' '}
             <svg
@@ -186,6 +195,7 @@ export default function Home() {
                 className="text-blue-500"
                 target="_blank"
                 href="https://www.npmjs.com/package/@celo-tools/use-contractkit"
+                rel="noreferrer"
               >
                 NPM
               </a>
@@ -195,6 +205,7 @@ export default function Home() {
                 className="text-blue-500"
                 target="_blank"
                 href="https://github.com/celo-tools/use-contractkit"
+                rel="noreferrer"
               >
                 GitHub
               </a>
@@ -210,6 +221,7 @@ export default function Home() {
                 target="_blank"
                 className="text-blue-500"
                 href="https://plock.fi"
+                rel="noreferrer"
               >
                 Plock
               </a>
@@ -219,6 +231,7 @@ export default function Home() {
                 target="_blank"
                 className="text-blue-500"
                 href="https://celo-data.nambrot.com/multisig"
+                rel="noreferrer"
               >
                 Web MultiSig interface
               </a>
@@ -228,6 +241,7 @@ export default function Home() {
                 target="_blank"
                 className="text-blue-500"
                 href="https://poof.cash"
+                rel="noreferrer"
               >
                 Poof.cash
               </a>
@@ -237,6 +251,7 @@ export default function Home() {
                 className="text-blue-500"
                 target="_blank"
                 href="https://github.com/celo-tools/use-contractkit"
+                rel="noreferrer"
               >
                 Add yours to the list...
               </a>
@@ -259,7 +274,9 @@ export default function Home() {
                   const newNetwork = networks.find(
                     (n) => n.name === e.target.value
                   );
-                  updateNetwork(newNetwork);
+                  if (newNetwork) {
+                    updateNetwork(newNetwork);
+                  }
                 }}
               >
                 {Object.values(networks).map((n) => (
@@ -272,7 +289,9 @@ export default function Home() {
                 <SecondaryButton onClick={destroy}>Disconnect</SecondaryButton>
               ) : (
                 <SecondaryButton
-                  onClick={() => connect().catch((e) => toast.error(e.message))}
+                  onClick={() =>
+                    connect().catch((e) => toast.error((e as Error).message))
+                  }
                 >
                   Connect
                 </SecondaryButton>

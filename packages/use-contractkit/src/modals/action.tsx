@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
 import Loader from 'react-loader-spinner';
 import ReactModal from 'react-modal';
-import { useContractKit } from '../use-contractkit';
+
+import { useInternalContractKit } from '../use-contractkit';
 
 export interface ActionModalProps {
   dappName: string;
@@ -32,14 +33,16 @@ const defaultActionModalComponent = ({
   );
 };
 
-export function ActionModal({
-  reactModalProps,
-  render = defaultActionModalComponent,
-}: {
+interface Props {
   reactModalProps?: Partial<ReactModal.Props>;
   render?: (props: ActionModalProps) => ReactNode;
-}) {
-  const { pendingActionCount, dappName } = useContractKit();
+}
+
+export const ActionModal: React.FC<Props> = ({
+  reactModalProps,
+  render = defaultActionModalComponent,
+}: Props) => {
+  const { pendingActionCount, dapp } = useInternalContractKit();
 
   return (
     <ReactModal
@@ -69,9 +72,9 @@ export function ActionModal({
     >
       <div className="use-ck tw-max-h-screen">
         <div className="tw-relative tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-w-80 md:tw-w-96">
-          {render({ dappName, pendingActionCount })}
+          {render({ dappName: dapp.name, pendingActionCount })}
         </div>
       </div>
     </ReactModal>
   );
-}
+};

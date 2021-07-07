@@ -34,18 +34,20 @@ function parsePersonalSign(req: any): { from: string; payload: string } {
   const [payload, from] = req.payload.params;
   return { from, payload };
 }
-function parseSignTypedData(
-  req: any
-): { from: string; payload: EIP712TypedData } {
+function parseSignTypedData(req: any): {
+  from: string;
+  payload: EIP712TypedData;
+} {
   const [from, payload] = req.payload.params;
   return { from, payload: JSON.parse(payload) };
 }
 function parseSignTransaction(req: any): CeloTx {
   return req.payload.params;
 }
-function parseComputeSharedSecret(
-  req: any
-): { from: Address; publicKey: string } {
+function parseComputeSharedSecret(req: any): {
+  from: Address;
+  publicKey: string;
+} {
   const [from, publicKey] = req.payload.params;
   return { from, publicKey };
 }

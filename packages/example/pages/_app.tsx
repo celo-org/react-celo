@@ -1,14 +1,21 @@
 import '../styles/global.css';
 import { ContractKitProvider } from '@celo-tools/use-contractkit';
 import '@celo-tools/use-contractkit/lib/styles.css';
+
+import {
+  AppComponent,
+  AppProps,
+} from 'next/dist/next-server/lib/router/router';
 import { Toaster } from 'react-hot-toast';
 
-function MyApp({ Component, pageProps }) {
+const MyApp: AppComponent = ({ Component, pageProps }: AppProps) => {
   return (
     <ContractKitProvider
-      dappName="use-contractkit demo"
-      dappDescription="A demo DApp to showcase functionality"
-      dappUrl="https://use-contractkit.vercel.app"
+      dapp={{
+        name: 'use-contractkit demo',
+        description: 'A demo DApp to showcase functionality',
+        url: 'https://use-contractkit.vercel.app',
+      }}
     >
       <Toaster
         position="top-right"
@@ -24,6 +31,6 @@ function MyApp({ Component, pageProps }) {
       </div>
     </ContractKitProvider>
   );
-}
+};
 
 export default MyApp;
