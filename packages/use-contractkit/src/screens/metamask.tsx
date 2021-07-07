@@ -15,7 +15,6 @@ export const MetaMaskWallet: React.FC<ConnectorProps> = ({
     const connector = new MetaMaskConnector(network);
     const { error } = await initConnector(connector);
     if (!error) {
-      console.log('no error', { error });
       await onSubmit(connector);
     } else {
       console.log('error', { error });

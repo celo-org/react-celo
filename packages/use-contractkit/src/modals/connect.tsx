@@ -55,7 +55,6 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           } => ret.provider !== undefined
         )
         .map(({ provider: [providerKey, provider] }) => {
-          console.log(providerKey);
           return (
             <RenderProvider
               key={providerKey}
