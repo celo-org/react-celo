@@ -10,4 +10,4 @@ build-demo:
 publish:
 	cd packages/use-contractkit && yarn build && npm version patch && npm publish --public
 
-.PHONY: dev
+.PHONY: dev build-demo publish

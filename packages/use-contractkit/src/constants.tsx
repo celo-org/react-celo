@@ -7,6 +7,7 @@ import {
   LEDGER,
   METAMASK,
   PRIVATE_KEY,
+  VALORA,
   WALLETCONNECT,
 } from './walletIcons';
 
@@ -30,6 +31,36 @@ export enum SupportedProviders {
 export const PROVIDERS: {
   [K in SupportedProviders]: Provider;
 } = {
+  [SupportedProviders.Valora]: {
+    name: 'Valora',
+    description: 'A mobile payments app that works worldwide',
+    icon: 'https://valoraapp.com/favicon.ico',
+    canConnect: () => true,
+    showInList: () => true,
+    installURL: 'https://valoraapp.com/',
+  },
+  [SupportedProviders.MetaMask]: {
+    name: 'MetaMask',
+    description: 'A crypto gateway to blockchain apps',
+    icon: METAMASK,
+    canConnect: () => !!window.ethereum?.isMetaMask,
+    showInList: () => !isMobile,
+    installURL: 'https://metamask.app.link/',
+  },
+  [SupportedProviders.WalletConnect]: {
+    name: 'WalletConnect',
+    description: 'Scan a QR code to connect your wallet',
+    icon: WALLETCONNECT,
+    canConnect: () => true,
+    showInList: () => true,
+  },
+  [SupportedProviders.Ledger]: {
+    name: 'Ledger',
+    description: 'Connect to your Ledger wallet',
+    icon: LEDGER,
+    canConnect: () => true,
+    showInList: () => !isMobile,
+  },
   [SupportedProviders.CeloExtensionWallet]: {
     name: 'Celo Extension Wallet',
     description: 'Celo desktop wallet compatible with Valora',
@@ -46,21 +77,6 @@ export const PROVIDERS: {
     canConnect: () => !!window.ethereum,
     showInList: () => !!window.ethereum && !window.ethereum.isMetaMask,
   },
-  [SupportedProviders.Ledger]: {
-    name: 'Ledger',
-    description: 'Connect to your Ledger wallet',
-    icon: LEDGER,
-    canConnect: () => true,
-    showInList: () => !isMobile,
-  },
-  [SupportedProviders.MetaMask]: {
-    name: 'MetaMask',
-    description: 'A crypto gateway to blockchain apps',
-    icon: METAMASK,
-    canConnect: () => !!window.ethereum?.isMetaMask,
-    showInList: () => !isMobile,
-    installURL: 'https://metamask.app.link/',
-  },
   [SupportedProviders.PrivateKey]: {
     name: 'Private Key',
     description:
@@ -69,32 +85,15 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => process.env.NODE_ENV !== 'production',
   },
-  [SupportedProviders.Valora]: {
-    name: 'Valora',
-    description: 'A mobile payments app that works worldwide',
-    icon: 'https://valoraapp.com/favicon.ico',
-    canConnect: () => true,
-    showInList: () => isMobile,
-    installURL: 'https://valoraapp.com/',
-  },
-  [SupportedProviders.WalletConnect]: {
-    name: 'WalletConnect',
-    description: 'Scan a QR code to connect your wallet',
-    icon: WALLETCONNECT,
-    canConnect: () => true,
-    showInList: () => true,
-  },
 };
 
-// can't figure out how to bundle images yet
-// so this is our workaround
 export const images = {
-  [SupportedProviders.CeloExtensionWallet]: CELO,
-  [SupportedProviders.Ledger]: LEDGER,
+  [SupportedProviders.Valora]: VALORA,
   [SupportedProviders.MetaMask]: METAMASK,
-  [SupportedProviders.PrivateKey]: PRIVATE_KEY,
-  [SupportedProviders.Valora]: 'https://valoraapp.com/favicon.ico',
   [SupportedProviders.WalletConnect]: WALLETCONNECT,
+  [SupportedProviders.Ledger]: LEDGER,
+  [SupportedProviders.CeloExtensionWallet]: CELO,
+  [SupportedProviders.PrivateKey]: PRIVATE_KEY,
 } as const;
 
 export enum NetworkNames {
@@ -128,14 +127,14 @@ export const Mainnet = {
 } as const;
 
 export enum WalletTypes {
-  CeloExtensionWallet = 'CeloExtensionWallet',
-  Injected = 'Injected',
-  Ledger = 'Ledger',
+  Valora = 'Valora',
   MetaMask = 'MetaMask',
+  WalletConnect = 'WalletConnect',
+  CeloExtensionWallet = 'CeloExtensionWallet',
+  Ledger = 'Ledger',
+  Injected = 'Injected',
   PrivateKey = 'PrivateKey',
   Unauthenticated = 'Unauthenticated',
-  WalletConnect = 'WalletConnect',
-  Valora = 'Valora',
 }
 
 /**
