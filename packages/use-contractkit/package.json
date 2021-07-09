@@ -8,7 +8,7 @@
     "lint:fix": "eslint . --fix",
     "clean": "rm -r lib/",
     "dev": "yarn run build && tsc-watch --onSuccess \"yarn run build-styles\"",
-    "build-styles": "NODE_ENV=production yarn tailwind build ./src/styles.css -o ./lib/styles.css -c ./tailwind.config.js"
+    "build-styles": "NODE_ENV=production yarn tailwind build -i ./src/styles.css -o ./lib/styles.css -c ./tailwind.config.js"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
