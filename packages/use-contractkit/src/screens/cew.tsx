@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
-
+import { ConnectorProps } from '.';
 import { CeloExtensionWalletConnector } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
-import { ConnectorProps } from '.';
 
 export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
   onSubmit,
@@ -34,7 +33,9 @@ export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
           {error.message}
         </p>
       ) : (
-        <Loader type="TailSpin" color="white" height="36px" width="36px" />
+        <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
+          <Loader type="TailSpin" color="#666666" height="60px" width="60px" />
+        </div>
       )}
     </div>
   );

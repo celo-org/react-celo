@@ -27,4 +27,6 @@ export const CONNECTOR_TYPES: {
   [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
   [WalletTypes.Valora]: WalletConnectConnector,
   [WalletTypes.WalletConnect]: WalletConnectConnector,
+  [WalletTypes.CeloTerminal]: WalletConnectConnector,
+  [WalletTypes.CeloWallet]: WalletConnectConnector,
 };

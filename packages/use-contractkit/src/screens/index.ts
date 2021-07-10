@@ -1,7 +1,7 @@
 import React from 'react';
-
 import { SupportedProviders } from '../constants';
 import { Connector } from '../types';
+import { CeloWallet } from './celo-wallet';
 import { CeloExtensionWallet } from './cew';
 import { Ledger } from './ledger';
 import { MetaMaskWallet } from './metamask';
@@ -15,6 +15,8 @@ export const defaultScreens: {
   [SupportedProviders.MetaMask]: MetaMaskWallet,
   [SupportedProviders.WalletConnect]: WalletConnect,
   [SupportedProviders.Ledger]: Ledger,
+  [SupportedProviders.CeloWallet]: CeloWallet,
+  [SupportedProviders.CeloTerminal]: WalletConnect,
   [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.Injected]: MetaMaskWallet,
   [SupportedProviders.PrivateKey]: PrivateKey,

@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Provider } from '../types';
 
 interface Props {
@@ -12,8 +11,8 @@ export const ProviderSelect: React.FC<Props> = ({
   onClick,
 }: Props) => {
   return (
-    <div
-      className="tw-flex tw-cursor-pointer tw-py-5 tw-px-4 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-transition tw-rounded-md"
+    <button
+      className="tw-flex tw-flex-row tw-items-center tw-text-left tw-py-4 tw-px-3 tw-w-80 md:tw-w-96 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-transition tw-rounded-md  focus:tw-outline-none"
       onClick={
         provider.canConnect()
           ? onClick
@@ -23,27 +22,27 @@ export const ProviderSelect: React.FC<Props> = ({
           : undefined
       }
     >
-      <div className="tw-flex tw-w-1/4">
+      <div className="tw-flex tw-flex-shrink-0 tw-mr-4 md:tw-mr-5 ">
         <span className="tw-my-auto">
           {typeof provider.icon === 'string' ? (
             <img
               src={provider.icon}
               alt={`${provider.name} logo`}
-              style={{ height: '48px', width: '48px' }}
+              style={{ height: '42px', width: '42px' }}
             />
           ) : (
-            <provider.icon style={{ height: '48px', width: '48px' }} />
+            <provider.icon style={{ height: '42px', width: '42px' }} />
           )}
         </span>
       </div>
-      <div className="tw-w-3/4">
-        <div className="tw-text-lg tw-pb-1 tw-font-medium dark:tw-text-gray-300">
+      <div>
+        <div className="tw-pb-1 tw-font-medium dark:tw-text-gray-300">
           {provider.canConnect() ? provider.name : `Install ${provider.name}`}
         </div>
         <div className="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400">
           {provider.description}
         </div>
       </div>
-    </div>
+    </button>
   );
 };

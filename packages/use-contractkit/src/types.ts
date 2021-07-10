@@ -1,6 +1,5 @@
 import { ContractKit } from '@celo/contractkit';
 import React from 'react';
-
 import { NetworkNames, WalletTypes } from './constants';
 
 /**
@@ -32,6 +31,7 @@ export interface Provider {
   icon: string | React.FC<React.SVGProps<SVGSVGElement>>;
   canConnect: () => boolean;
   showInList: () => boolean;
+  listPriority: () => number;
   installURL?: string;
 }
 

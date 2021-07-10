@@ -1,11 +1,11 @@
 import React, { FunctionComponent, useState } from 'react';
 import ReactModal from 'react-modal';
-
 import { ProviderSelect } from '../components/ProviderSelect';
 import { PROVIDERS, SupportedProviders } from '../constants';
 import { defaultScreens } from '../screens';
 import { Connector, Provider } from '../types';
 import { useInternalContractKit } from '../use-contractkit';
+import { defaultModalStyles } from './styles';
 
 export interface ConnectModalProps {
   screens?: {
@@ -24,37 +24,41 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
 }: ConnectModalProps) => {
   const { connectionCallback } = useInternalContractKit();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
+  const [showMore, setShowMore] = useState(false);
 
   const close = () => {
     setAdding(null);
+    setShowMore(false);
     connectionCallback?.(false);
   };
 
-  function onSubmit(connector: Connector) {
+  const onSubmit = (connector: Connector) => {
     setAdding(null);
     connectionCallback?.(connector);
-  }
+  };
 
-  const providers = Object.entries(PROVIDERS).filter(
-    ([, provider]) => typeof window !== 'undefined' && provider.showInList()
-  );
+  const onClickShowMore = () => {
+    setShowMore(true);
+  };
 
-  const list = (
-    <div>
-      {Object.keys(screens)
-        .map((screen) => ({
-          screen,
-          provider: providers.find(([name]) => name === screen),
-        }))
-        .filter(
-          (
-            ret
-          ): ret is {
-            screen: string;
-            provider: [string, Provider];
-          } => ret.provider !== undefined
-        )
-        .map(({ provider: [providerKey, provider] }) => {
+  let modalContent;
+  if (!adding) {
+    const providers = Object.entries(PROVIDERS).filter(
+      ([, provider]) =>
+        typeof window !== 'undefined' &&
+        provider.showInList() &&
+        Object.keys(screens).find((screen) => screen === provider.name)
+    );
+    const prioritizedProviders = providers.filter(
+      ([, provider]) => provider.listPriority() === 0
+    );
+    const providersToDisplay = showMore ? providers : prioritizedProviders;
+    modalContent = (
+      <div className="tw-flex tw-flex-col tw-items-stretch">
+        <h1 className="tw-pl-3 tw-pb-2 tw-text-lg tw-font-medium">
+          Connect a wallet
+        </h1>
+        {providersToDisplay.map(([providerKey, provider]) => {
           return (
             <RenderProvider
               key={providerKey}
@@ -63,44 +67,37 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
             />
           );
         })}
-    </div>
-  );
-
-  let component;
-  if (adding) {
+        {!showMore && (
+          <button
+            onClick={onClickShowMore}
+            className="tw-font-medium tw-text-md tw-w-32 tw-self-center tw-mt-4 tw-text-blue-800 hover:tw-text-blue-600 focus:tw-outline-none"
+          >
+            Show More
+          </button>
+        )}
+      </div>
+    );
+  } else {
     const ProviderElement = screens?.[adding];
     if (!ProviderElement) {
       return null;
     }
-    component = <ProviderElement onSubmit={onSubmit} />;
-  } else {
-    component = list;
+    modalContent = <ProviderElement onSubmit={onSubmit} />;
   }
 
   return (
     <ReactModal
       isOpen={!!connectionCallback}
       onRequestClose={close}
-      style={{
-        content: {
-          top: '50%',
-          left: '50%',
-          right: 'auto',
-          bottom: 'auto',
-          transform: 'translate(-50%, -50%)',
-          border: 'unset',
-          background: 'unset',
-          padding: 'unset',
-        },
-      }}
+      style={defaultModalStyles}
       overlayClassName="tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0"
       {...reactModalProps}
     >
-      <div className="use-ck tw-max-h-screen">
-        <div className="tw-relative tw-bg-white dark:tw-bg-gray-800 tw-border tw-border-gray-300 dark:tw-border-gray-900 tw-w-80 md:tw-w-96">
+      <div className="use-ck tw-bg-white dark:tw-bg-gray-800 tw-p-2">
+        <div className="tw-relative use-ck-connect-container">
           <button
             onClick={close}
-            className="tw-absolute tw-top-4 tw-right-4 tw-text-gray-700 dark:tw-text-gray-400 hover:tw-text-gray-800 dark:hover:tw-text-gray-300 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-p-3 rounded-full"
+            className="tw-absolute tw-top-3 tw-right-2 tw-text-gray-700 dark:tw-text-gray-400 hover:tw-text-gray-800 dark:hover:tw-text-gray-300 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-p-1 tw-rounded"
           >
             <svg
               className="tw-h-5 tw-w-5"
@@ -117,7 +114,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
               />
             </svg>{' '}
           </button>
-          <div className="tw-rounded-b-lg tw-px-5 tw-py-6">{component}</div>
+          <div className="tw-px-4 tw-py-4">{modalContent}</div>
         </div>
       </div>
     </ReactModal>

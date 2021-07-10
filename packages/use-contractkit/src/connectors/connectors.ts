@@ -7,9 +7,7 @@ import {
   WalletConnectWalletOptions,
 } from 'contractkit-walletconnect';
 import { isMobile } from 'react-device-detect';
-
 import { localStorageKeys, WalletTypes } from '../constants';
-import { DappKitWallet } from '../dappkit-wallet';
 import { ChainId, Connector, Network } from '../types';
 
 type Web3Type = Parameters<typeof newKitFromWeb3>[0];
@@ -260,7 +258,11 @@ export class WalletConnectConnector implements Connector {
   private onUriCallback?: (uri: string) => void;
   private onCloseCallback?: () => void;
 
-  constructor(private network: Network, options: WalletConnectWalletOptions) {
+  constructor(
+    private network: Network,
+    options: WalletConnectWalletOptions,
+    readonly autoOpenOnMobile = true
+  ) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.WalletConnect
@@ -295,7 +297,7 @@ export class WalletConnectConnector implements Connector {
       this.onUriCallback(uri);
     }
 
-    if (isMobile && uri) {
+    if (isMobile && uri && this.autoOpenOnMobile) {
       window.open(`wc:${uri}`);
     }
 

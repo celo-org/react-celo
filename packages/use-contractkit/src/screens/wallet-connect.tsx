@@ -1,98 +1,45 @@
 import QrCode from 'qrcode.react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { isMobile } from 'react-device-detect';
 import Loader from 'react-loader-spinner';
-
 import { CopyText } from '../components';
-import { WalletConnectConnector } from '../connectors';
-import { Alfajores } from '../constants';
+import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { Connector } from '../types';
-import { useInternalContractKit } from '../use-contractkit';
 
 interface Props {
   onSubmit: (connector: Connector) => void;
 }
 
 export const WalletConnect: React.FC<Props> = ({ onSubmit }: Props) => {
-  const { network, dapp, destroy, initConnector } = useInternalContractKit();
-  const [uri, setUri] = useState('');
-
-  const initialiseConnection = useCallback(async () => {
-    const relayProvider =
-      network.name === Alfajores.name
-        ? 'wss://walletconnect.celo-networks-dev.org'
-        : 'wss://walletconnect.celo.org';
-    const connector = new WalletConnectConnector(network, {
-      connect: {
-        metadata: {
-          name: dapp.name,
-          description: dapp.description,
-          url: dapp.url,
-          icons: [dapp.icon],
-        },
-      },
-      init: {
-        relayProvider,
-        logger: 'error',
-      },
-    });
-
-    connector.onUri((newUri) => setUri(newUri));
-    connector.onClose(() => void destroy());
-
-    await initConnector(connector);
-
-    onSubmit(connector);
-  }, [
-    network,
-    dapp.name,
-    dapp.description,
-    dapp.url,
-    dapp.icon,
-    initConnector,
-    onSubmit,
-    destroy,
-  ]);
-
-  useEffect(() => {
-    void initialiseConnection();
-  }, [initialiseConnection]);
+  const uri = useWalletConnectConnector(onSubmit);
 
   return (
-    <div className="tw-p-2">
-      <div className="tw-text-lg dark:tw-text-gray-200 tw-font-medium">
+    <div className="tw-flex tw-flex-col tw-items-center">
+      <h1 className="tw-text-lg dark:tw-text-gray-200 tw-font-medium">
         WalletConnect
-      </div>
-      <div className="tw-text-gray-600 dark:tw-text-gray-400 tw-text-sm tw-mt-2">
-        By connecting with WalletConnect you'll need to scan the below QR code
-        with the camera on your mobile device.
+      </h1>
+      <div className="tw-max-w-prose tw-text-gray-600 dark:tw-text-gray-400 tw-text-sm tw-mt-2 tw-text-center">
+        Scan the QR code below or copy-paste the information into your wallet.
       </div>
 
-      <div className="tw-w-full mt-4">
+      <div className="mt-6">
         {uri ? (
           <>
-            {isMobile ? (
-              <button className="tw-mt-3 tw-px-4 tw-py-2 tw-border tw-border-transparent tw-rounded-md tw-shadow-sm tw-text-base tw-font-medium tw-text-white tw-bg-gradient-to-r tw-from-purple-600 tw-to-indigo-600 hover:tw-from-purple-700 hover:tw-to-indigo-700">
-                Connect with WalletConnect
-              </button>
-            ) : (
-              <div>
-                <QrCode value={uri} className="tw-w-full tw-h-full" />
-                <div className="tw-mt-4 tw-flex tw-items-center tw-justify-center">
-                  <CopyText text="Copy to clipboard" payload={uri} />
-                </div>
+            <div>
+              <QrCode value={uri} size={isMobile ? 180 : 240} />
+              <div className="tw-mt-6 tw-flex tw-items-center tw-justify-center">
+                <CopyText text="Copy to clipboard" payload={uri} />
               </div>
-            )}
+            </div>
           </>
         ) : (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Loader type="TailSpin" color="white" height="36px" width="36px" />
+          <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
+            <Loader
+              type="TailSpin"
+              color="#666666"
+              height="60px"
+              width="60px"
+            />
           </div>
         )}
       </div>

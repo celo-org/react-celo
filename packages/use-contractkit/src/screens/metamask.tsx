@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
-
+import { ConnectorProps } from '.';
 import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
 import { MetaMaskConnector, UnsupportedChainIdError } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
-import { ConnectorProps } from '.';
 
 export const MetaMaskWallet: React.FC<ConnectorProps> = ({
   onSubmit,
@@ -41,7 +40,9 @@ export const MetaMaskWallet: React.FC<ConnectorProps> = ({
       {error ? (
         <p className="tw-text-red-500 tw-pb-4">{error.message}</p>
       ) : (
-        <Loader type="TailSpin" color="white" height="36px" width="36px" />
+        <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
+          <Loader type="TailSpin" color="#666666" height="60px" width="60px" />
+        </div>
       )}
     </div>
   );
