@@ -12,7 +12,7 @@ export const ProviderSelect: React.FC<Props> = ({
 }: Props) => {
   return (
     <button
-      className="tw-flex tw-flex-row tw-items-center tw-text-left tw-py-4 tw-px-3 tw-w-80 md:tw-w-96 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-transition tw-rounded-md  focus:tw-outline-none"
+      className="tw-flex tw-flex-row tw-items-center tw-text-left tw-py-4 tw-pl-3 tw-pr-2 tw-w-80 md:tw-w-96 hover:tw-bg-gray-100 dark:hover:tw-bg-gray-700 tw-transition tw-rounded-md  focus:tw-outline-none"
       onClick={
         provider.canConnect()
           ? onClick

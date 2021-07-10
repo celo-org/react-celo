@@ -27,7 +27,10 @@ export const CeloWallet: React.FC<Props> = ({ onSubmit }: Props) => {
       <h1 className="tw-text-lg dark:tw-text-gray-200 tw-font-medium">
         Celo Wallet
       </h1>
-      <div className="tw-max-w-prose tw-text-gray-600 dark:tw-text-gray-400 tw-text-sm tw-mt-2 tw-text-center">
+      <div
+        style={{ minWidth: '16rem', maxWidth: '22rem' }}
+        className="tw-text-gray-600 dark:tw-text-gray-400 tw-text-sm tw-mt-2 tw-text-center"
+      >
         Use WalletConnect to sync with Celo Wallet. Choose your platform or
         copy-paste manually.
       </div>

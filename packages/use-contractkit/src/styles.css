@@ -585,7 +585,7 @@ Connect Modal
 */
 
 .use-ck-connect-container {
-  max-width: calc(min(90vw, 25rem));
+  max-width: calc(min(90vw, 28rem));
   max-height: calc(min(80vh, 35rem));
   overflow: auto;
 }

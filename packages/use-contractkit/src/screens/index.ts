@@ -6,12 +6,13 @@ import { CeloExtensionWallet } from './cew';
 import { Ledger } from './ledger';
 import { MetaMaskWallet } from './metamask';
 import { PrivateKey } from './private-key';
+import { Valora } from './valora';
 import { WalletConnect } from './wallet-connect';
 
 export const defaultScreens: {
   [P in SupportedProviders]: React.FC<ConnectorProps>;
 } = {
-  [SupportedProviders.Valora]: WalletConnect,
+  [SupportedProviders.Valora]: Valora,
   [SupportedProviders.MetaMask]: MetaMaskWallet,
   [SupportedProviders.WalletConnect]: WalletConnect,
   [SupportedProviders.Ledger]: Ledger,
