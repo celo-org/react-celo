@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import ReactModal from 'react-modal';
+
 import { ProviderSelect } from '../components/ProviderSelect';
 import { PROVIDERS, SupportedProviders } from '../constants';
 import { defaultScreens } from '../screens';

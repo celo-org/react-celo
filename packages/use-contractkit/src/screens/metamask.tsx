@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
-import { ConnectorProps } from '.';
+
 import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
 import { MetaMaskConnector, UnsupportedChainIdError } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
 
 export const MetaMaskWallet: React.FC<ConnectorProps> = ({
   onSubmit,

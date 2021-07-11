@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import Loader from 'react-loader-spinner';
-import { ConnectorProps } from '.';
+
 import { CeloExtensionWalletConnector } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
 
 export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
   onSubmit,

@@ -6,6 +6,7 @@ import {
   WalletConnectWallet,
   WalletConnectWalletOptions,
 } from 'contractkit-walletconnect';
+
 import { localStorageKeys, WalletTypes } from '../constants';
 import { ChainId, Connector, Network } from '../types';
 

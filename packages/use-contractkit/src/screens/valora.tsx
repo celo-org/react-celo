@@ -1,6 +1,7 @@
 import QrCode from 'qrcode.react';
 import React from 'react';
 import Loader from 'react-loader-spinner';
+
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { Connector } from '../types';
 

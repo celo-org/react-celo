@@ -1,5 +1,6 @@
 import { ContractKit } from '@celo/contractkit';
 import React from 'react';
+
 import { NetworkNames, WalletTypes } from './constants';
 
 /**

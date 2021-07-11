@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { SupportedProviders } from '../constants';
 import { Connector } from '../types';
 import { CeloWallet } from './celo-wallet';

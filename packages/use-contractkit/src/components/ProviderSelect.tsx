@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Provider } from '../types';
 
 interface Props {

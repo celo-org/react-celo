@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import Loader from 'react-loader-spinner';
 import ReactModal from 'react-modal';
+
 import { useInternalContractKit } from '../use-contractkit';
 import { defaultModalStyles } from './styles';
 

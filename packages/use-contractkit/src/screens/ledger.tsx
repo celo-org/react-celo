@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Loader from 'react-loader-spinner';
-import { ConnectorProps } from '.';
+
 import { LedgerConnector } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
+import { ConnectorProps } from '.';
 
 export const Ledger: React.FC<ConnectorProps> = ({
   onSubmit,
