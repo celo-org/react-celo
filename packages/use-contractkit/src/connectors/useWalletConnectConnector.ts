@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 import { WalletConnectConnector } from '../connectors';
 import { Mainnet } from '../constants';
 import { Connector } from '../types';
@@ -46,6 +45,7 @@ export function useWalletConnectConnector(
 
     initialiseConnection()
       .then(() => console.info('WalletConnect connection initialised'))
+      // TODO surface error to user here
       .catch((reason) =>
         console.error('Failed to initialise WalletConnect connection', reason)
       );
