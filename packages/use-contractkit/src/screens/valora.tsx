@@ -1,7 +1,7 @@
 import QrCode from 'qrcode.react';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { isIOS, isMobile } from 'react-device-detect';
 import Loader from 'react-loader-spinner';
-
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { Connector } from '../types';
 
@@ -10,8 +10,10 @@ interface Props {
 }
 
 export const Valora: React.FC<Props> = ({ onSubmit }: Props) => {
-  const getDeepLink = (uri: string) => `https://valoraapp.com/wc?uri=${uri}`;
-  const uri = useWalletConnectConnector(onSubmit, true, getDeepLink);
+  const getDeepLink = useCallback((uri: string) => {
+    return isIOS ? `https://valoraapp.com/wc?uri=${uri}` : `wc:${uri}`;
+  }, []);
+  const uri = useWalletConnectConnector(onSubmit, isMobile, getDeepLink);
 
   return (
     <div className="tw-flex tw-flex-col tw-items-center">

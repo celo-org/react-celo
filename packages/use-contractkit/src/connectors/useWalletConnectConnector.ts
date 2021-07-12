@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
-
+import { useEffect, useState } from 'react';
 import { WalletConnectConnector } from '../connectors';
 import { Mainnet } from '../constants';
 import { Connector } from '../types';
@@ -13,55 +12,44 @@ export function useWalletConnectConnector(
   const { network, dapp, destroy, initConnector } = useInternalContractKit();
   const [uri, setUri] = useState('');
 
-  const initialiseConnection = useCallback(async () => {
-    const isMainnet = network.name === Mainnet.name;
-    const relayProvider = isMainnet
-      ? 'wss://walletconnect.celo.org'
-      : 'wss://walletconnect.celo-networks-dev.org';
-    const connector = new WalletConnectConnector(
-      network,
-      {
-        connect: {
-          metadata: {
-            name: dapp.name,
-            description: dapp.description,
-            url: dapp.url,
-            icons: [dapp.icon],
+  useEffect(() => {
+    const initialiseConnection = async () => {
+      const isMainnet = network.name === Mainnet.name;
+      const relayProvider = isMainnet
+        ? 'wss://walletconnect.celo.org'
+        : 'wss://walletconnect.celo-networks-dev.org';
+      const connector = new WalletConnectConnector(
+        network,
+        {
+          connect: {
+            metadata: {
+              name: dapp.name,
+              description: dapp.description,
+              url: dapp.url,
+              icons: [dapp.icon],
+            },
+          },
+          init: {
+            relayProvider,
+            logger: 'error',
           },
         },
-        init: {
-          relayProvider,
-          logger: 'error',
-        },
-      },
-      autoOpen && isMainnet,
-      getDeeplinkUrl
-    );
+        autoOpen && isMainnet,
+        getDeeplinkUrl
+      );
+      connector.onUri((newUri) => setUri(newUri));
+      connector.onClose(() => void destroy());
+      await initConnector(connector);
+      onSubmit(connector);
+    };
 
-    connector.onUri((newUri) => setUri(newUri));
-    connector.onClose(() => void destroy());
-
-    await initConnector(connector);
-
-    onSubmit(connector);
-  }, [
-    network,
-    dapp.name,
-    dapp.description,
-    dapp.url,
-    dapp.icon,
-    initConnector,
-    onSubmit,
-    destroy,
-    autoOpen,
-    getDeeplinkUrl,
-  ]);
-
-  useEffect(() => {
-    initialiseConnection().catch((reason) =>
-      console.error('Failed to initialise WalletConnect connection', reason)
-    );
-  }, [initialiseConnection]);
+    initialiseConnection()
+      .then(() => console.info('WalletConnect connection initialised'))
+      .catch((reason) =>
+        console.error('Failed to initialise WalletConnect connection', reason)
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return uri;
 }

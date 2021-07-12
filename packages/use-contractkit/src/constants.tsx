@@ -1,5 +1,4 @@
 import { isMobile } from 'react-device-detect';
-
 import { ChainId, Provider } from './types';
 import {
   CELO,
@@ -38,8 +37,7 @@ export const PROVIDERS: {
     name: 'Valora',
     description:
       'Connect to Valora, a mobile payments app that works worldwide',
-    // TODO get SVG icon
-    icon: 'https://valoraapp.com/favicon.ico',
+    icon: VALORA,
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => 0,
