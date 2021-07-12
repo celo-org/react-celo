@@ -1,4 +1,5 @@
 import { isMobile } from 'react-device-detect';
+
 import { ChainId, Provider } from './types';
 import {
   CELO,

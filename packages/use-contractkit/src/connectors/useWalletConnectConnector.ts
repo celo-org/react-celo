@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+
 import { WalletConnectConnector } from '../connectors';
 import { Mainnet } from '../constants';
 import { Connector } from '../types';
