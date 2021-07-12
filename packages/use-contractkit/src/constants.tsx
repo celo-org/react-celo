@@ -41,7 +41,7 @@ export const PROVIDERS: {
     // TODO get SVG icon
     icon: 'https://valoraapp.com/favicon.ico',
     canConnect: () => true,
-    showInList: () => isMobile,
+    showInList: () => true,
     listPriority: () => 0,
     installURL: 'https://valoraapp.com/',
   },
