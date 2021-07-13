@@ -1,6 +1,6 @@
 {
   "name": "@celo-tools/use-contractkit",
-  "version": "1.0.0-beta.14-dev",
+  "version": "1.0.1",
   "private": false,
   "scripts": {
     "build": "tsc -b && yarn run build-styles",
