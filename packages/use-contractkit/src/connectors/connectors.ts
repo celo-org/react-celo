@@ -298,8 +298,11 @@ export class WalletConnectConnector implements Connector {
       this.onUriCallback(uri);
     }
 
+    alert(`Auto Open ${this.autoOpen}`);
+    alert(`URI ${uri}`);
     if (uri && this.autoOpen) {
       const deepLink = this.getDeeplinkUrl ? this.getDeeplinkUrl(uri) : uri;
+      alert(`deepLink ${deepLink}`);
       window.open(deepLink);
     }
 
