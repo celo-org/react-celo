@@ -3,6 +3,7 @@ import { isMobile } from 'react-device-detect';
 import { ChainId, Provider } from './types';
 import {
   CELO,
+  CHROME_EXTENSION_STORE,
   ETHEREUM,
   LEDGER,
   METAMASK,
@@ -20,12 +21,14 @@ export const localStorageKeys = {
 
 export enum SupportedProviders {
   CeloExtensionWallet = 'Celo Extension Wallet',
+  CeloTerminal = 'Celo Terminal',
+  CeloWallet = 'Celo Wallet',
   Injected = 'Injected',
   Ledger = 'Ledger',
   MetaMask = 'MetaMask',
   PrivateKey = 'Private key',
   Valora = 'Valora',
-  WalletConnect = 'Wallet Connect',
+  WalletConnect = 'WalletConnect',
 }
 
 export const PROVIDERS: {
@@ -33,19 +36,13 @@ export const PROVIDERS: {
 } = {
   [SupportedProviders.Valora]: {
     name: 'Valora',
-    description: 'A mobile payments app that works worldwide',
-    icon: 'https://valoraapp.com/favicon.ico',
+    description:
+      'Connect to Valora, a mobile payments app that works worldwide',
+    icon: VALORA,
     canConnect: () => true,
     showInList: () => true,
+    listPriority: () => 0,
     installURL: 'https://valoraapp.com/',
-  },
-  [SupportedProviders.MetaMask]: {
-    name: 'MetaMask',
-    description: 'A crypto gateway to blockchain apps',
-    icon: METAMASK,
-    canConnect: () => !!window.ethereum?.isMetaMask,
-    showInList: () => !isMobile,
-    installURL: 'https://metamask.app.link/',
   },
   [SupportedProviders.WalletConnect]: {
     name: 'WalletConnect',
@@ -53,20 +50,49 @@ export const PROVIDERS: {
     icon: WALLETCONNECT,
     canConnect: () => true,
     showInList: () => true,
+    listPriority: () => 0,
   },
   [SupportedProviders.Ledger]: {
     name: 'Ledger',
-    description: 'Connect to your Ledger wallet',
+    description: 'Sync with your Ledger hardware wallet',
     icon: LEDGER,
     canConnect: () => true,
     showInList: () => !isMobile,
+    listPriority: () => 0,
+  },
+  [SupportedProviders.CeloWallet]: {
+    name: 'Celo Wallet',
+    description: 'Connect to Celo Wallet for web or deskop',
+    icon: CELO,
+    canConnect: () => true,
+    showInList: () => true,
+    listPriority: () => (!isMobile ? 0 : 1),
+  },
+  [SupportedProviders.CeloTerminal]: {
+    name: 'Celo Terminal',
+    description: 'Connect to the Celo Terminal desktop app',
+    // TODO get SVG icon
+    icon: 'https://raw.githubusercontent.com/zviadm/celoterminal/main/static/icon.png',
+    canConnect: () => true,
+    showInList: () => !isMobile,
+    listPriority: () => 1,
+  },
+  [SupportedProviders.MetaMask]: {
+    name: 'MetaMask',
+    description: 'Use the Metamask browser extension. Celo support is limited.',
+    icon: METAMASK,
+    canConnect: () => !!window.ethereum?.isMetaMask,
+    showInList: () => !isMobile,
+    listPriority: () => 0,
+    installURL: 'https://metamask.app.link/',
   },
   [SupportedProviders.CeloExtensionWallet]: {
     name: 'Celo Extension Wallet',
-    description: 'Celo desktop wallet compatible with Valora',
-    icon: CELO,
+    description: 'Use a wallet from the the Celo chrome extension',
+    icon: CHROME_EXTENSION_STORE,
     canConnect: () => !!window.celo,
     showInList: () => !isMobile,
+    listPriority: () => 1,
     installURL:
       'https://chrome.google.com/webstore/detail/celoextensionwallet/kkilomkmpmkbdnfelcpgckmpcaemjcdh/related',
   },
@@ -76,6 +102,7 @@ export const PROVIDERS: {
     icon: ETHEREUM,
     canConnect: () => !!window.ethereum,
     showInList: () => !!window.ethereum && !window.ethereum.isMetaMask,
+    listPriority: () => 1,
   },
   [SupportedProviders.PrivateKey]: {
     name: 'Private Key',
@@ -84,6 +111,7 @@ export const PROVIDERS: {
     icon: PRIVATE_KEY,
     canConnect: () => true,
     showInList: () => process.env.NODE_ENV !== 'production',
+    listPriority: () => 1,
   },
 };
 
@@ -92,7 +120,9 @@ export const images = {
   [SupportedProviders.MetaMask]: METAMASK,
   [SupportedProviders.WalletConnect]: WALLETCONNECT,
   [SupportedProviders.Ledger]: LEDGER,
-  [SupportedProviders.CeloExtensionWallet]: CELO,
+  [SupportedProviders.CeloWallet]: CELO,
+  [SupportedProviders.CeloTerminal]: CELO,
+  [SupportedProviders.CeloExtensionWallet]: CHROME_EXTENSION_STORE,
   [SupportedProviders.PrivateKey]: PRIVATE_KEY,
 } as const;
 
@@ -130,6 +160,8 @@ export enum WalletTypes {
   Valora = 'Valora',
   MetaMask = 'MetaMask',
   WalletConnect = 'WalletConnect',
+  CeloWallet = 'CeloWallet',
+  CeloTerminal = 'CeloTerminal',
   CeloExtensionWallet = 'CeloExtensionWallet',
   Ledger = 'Ledger',
   Injected = 'Injected',

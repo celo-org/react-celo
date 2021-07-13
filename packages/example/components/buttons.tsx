@@ -10,7 +10,7 @@ export function PrimaryButton(
         props.disabled
           ? 'cursor-not-allowed'
           : 'hover:from-purple-700 hover:to-indigo-700'
-      } mt-2 ml-auto ${props.className ?? ''}`}
+      } mt-2 ml-auto ${props.className || ''}`}
     />
   );
 }
@@ -21,7 +21,9 @@ export function SecondaryButton(
   return (
     <button
       {...props}
-      className={`px-4 py-2 border border-transparent rounded-md text-base font-medium text-gradient bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 outline-none focus:outline-none ${props.className}`}
+      className={`px-4 py-2 border border-transparent rounded-md text-base font-medium text-gradient bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 outline-none focus:outline-none ${
+        props.className || ''
+      }`}
     />
   );
 }

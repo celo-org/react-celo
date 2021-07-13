@@ -531,5 +531,64 @@ Add the correct display in Chrome and Safari.
   height: auto;
 }
 
+/* 
+Scrollbar overrides
+===================
+*/
+
+.use-ck {
+  --scrollbarBG: rgba(255, 255, 255, 0);
+  --thumbBG: #dddddd;
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+
+.use-ck ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: var(--scrollbarBG);
+}
+.use-ck ::-webkit-scrollbar-track {
+  background-color: var(--scrollbarBG);
+}
+.use-ck ::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius: 6px;
+  border: 3px solid var(--scrollbarBG);
+}
+/* phones */
+@media only screen and (max-width: 767px) {
+  .use-ck ::-webkit-scrollbar {
+    width: 0;
+  }
+}
+
+/*
+Number Input spinner overrides
+===============================
+*/
+/* Chrome, Safari, Edge, Opera */
+.use-ck input::-webkit-outer-spin-button,
+.use-ck input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.use-ck input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/*
+Connect Modal
+===========
+*/
+
+.use-ck-connect-container {
+  max-width: calc(min(90vw, 28rem));
+  max-height: calc(min(80vh, 35rem));
+  overflow: auto;
+}
+
 @tailwind components;
 @tailwind utilities;

@@ -1,12 +1,12 @@
-import '../styles/global.css';
 import { ContractKitProvider } from '@celo-tools/use-contractkit';
-import '@celo-tools/use-contractkit/lib/styles.css';
-
 import {
   AppComponent,
   AppProps,
 } from 'next/dist/next-server/lib/router/router';
 import { Toaster } from 'react-hot-toast';
+
+import '../styles/global.css';
+import '@celo-tools/use-contractkit/lib/styles.css';
 
 const MyApp: AppComponent = ({ Component, pageProps }: AppProps) => {
   return (

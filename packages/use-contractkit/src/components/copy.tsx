@@ -20,7 +20,7 @@ export const CopyText: React.FC<Props> = ({ text, payload }: Props) => {
   return (
     <button
       onClick={onClick}
-      className="tw-flex tw-items-center tw-text-gray-700 dark:tw-text-gray-400"
+      className="tw-flex tw-items-center tw-text-gray-700 dark:tw-text-gray-400 hover:tw-text-gray-500 focus:tw-outline-none"
     >
       <span className="tw-mr-2">{text}</span>
       {copied ? (

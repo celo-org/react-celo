@@ -32,6 +32,7 @@ export interface Provider {
   icon: string | React.FC<React.SVGProps<SVGSVGElement>>;
   canConnect: () => boolean;
   showInList: () => boolean;
+  listPriority: () => number;
   installURL?: string;
 }
 
