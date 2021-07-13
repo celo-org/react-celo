@@ -10,12 +10,13 @@ interface Props {
   onSubmit: (connector: Connector) => void;
 }
 
+const getDeepLink = (uri: string) => {
+  return isIOS
+    ? `celo://wallet/wc?uri=${encodeURIComponent(uri)}`
+    : encodeURIComponent(uri);
+};
+
 export const Valora: React.FC<Props> = ({ onSubmit }: Props) => {
-  const getDeepLink = useCallback((uri: string) => {
-    return isIOS
-      ? `celo://wallet/wc?uri=${encodeURIComponent(uri)}`
-      : `wc:${encodeURIComponent(uri)}`;
-  }, []);
   const uri = useWalletConnectConnector(onSubmit, isMobile, getDeepLink);
 
   return (

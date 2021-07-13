@@ -299,9 +299,7 @@ export class WalletConnectConnector implements Connector {
     }
 
     if (uri && this.autoOpen) {
-      const deepLink = this.getDeeplinkUrl
-        ? this.getDeeplinkUrl(uri)
-        : `wc:${uri}`;
+      const deepLink = this.getDeeplinkUrl ? this.getDeeplinkUrl(uri) : uri;
       window.open(deepLink);
     }
 

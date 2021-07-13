@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { WalletConnectConnector } from '../connectors';
+import { WalletConnectConnector } from './connectors';
 import { Mainnet } from '../constants';
 import { Connector } from '../types';
 import { useInternalContractKit } from '../use-contractkit';
@@ -38,7 +38,9 @@ export function useWalletConnectConnector(
         autoOpen && isMainnet,
         getDeeplinkUrl
       );
-      connector.onUri((newUri) => setUri(newUri));
+      connector.onUri((newUri) => {
+        setUri(newUri);
+      });
       connector.onClose(() => void destroy());
       await initConnector(connector);
       onSubmit(connector);
