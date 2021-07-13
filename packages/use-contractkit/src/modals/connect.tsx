@@ -56,7 +56,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     const providersToDisplay = showMore ? providers : prioritizedProviders;
     modalContent = (
       <div className="tw-flex tw-flex-col tw-items-stretch">
-        <h1 className="tw-pl-3 tw-pb-2 tw-text-lg tw-font-medium">
+        <h1 className="tw-pl-3 tw-pb-2 tw-text-lg tw-font-medium dark:tw-text-gray-300">
           Connect a wallet
         </h1>
         {providersToDisplay.map(([providerKey, provider]) => {

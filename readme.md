@@ -202,6 +202,10 @@ function App() {
 }
 ```
 
+### Dark mode
+
+use-contrackit uses Tailwind for styling, to use the modal in dark mode simply add the class `tw-dark` to the root `<html />` tag of the web page.
+
 ## Support
 
 Struggling with anything use-contractkit related? Jump into the [celo-org discord channel](https://chat.celo.org) and ask for help any time.

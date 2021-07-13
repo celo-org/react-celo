@@ -1,7 +1,14 @@
 module.exports = {
   prefix: 'tw-',
   important: true,
-  purge: ['./src/**/*.{js,jsx,tsx}'],
+  purge: {
+    enabled: true,
+    preserveHtmlElements: false,
+    content: ['./src/**/*.{js,jsx,tsx}'],
+    options: {
+      safelist: ['dark', 'tw-dark'],
+    },
+  },
   darkMode: 'class',
   theme: {
     extend: {},
