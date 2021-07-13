@@ -11,7 +11,7 @@ interface Props {
 }
 
 const getDeepLink = (uri: string) => {
-  return isIOS ? `celo://wallet/wc?uri=${encodeURIComponent(uri)}` : uri;
+  return `celo://wallet/wc?uri=${encodeURIComponent(uri)}`;
 };
 
 export const Valora: React.FC<Props> = ({ onSubmit }: Props) => {
