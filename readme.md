@@ -206,6 +206,15 @@ function App() {
 
 use-contrackit uses Tailwind for styling, to use the modal in dark mode simply add the class `tw-dark` to the root `<html />` tag of the web page.
 
+## Development
+
+To run use-contractkit locally, simply clone this repository and run:
+
+- `yarn`
+- `make dev`
+
+A hot reloading server should come up on `localhost:3000`, it's the exact same as what's at [use-contractkit.vercel.app](https://use-contractkit.vercel.app).
+
 ## Support
 
 Struggling with anything use-contractkit related? Jump into the [celo-org discord channel](https://chat.celo.org) and ask for help any time.
