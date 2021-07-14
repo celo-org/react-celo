@@ -5,7 +5,7 @@ import { LocalWallet } from '@celo/wallet-local';
 import {
   WalletConnectWallet,
   WalletConnectWalletOptions,
-} from 'contractkit-walletconnect';
+} from '@celo/wallet-walletconnect';
 
 import { localStorageKeys, WalletTypes } from '../constants';
 import { ChainId, Connector, Network } from '../types';
