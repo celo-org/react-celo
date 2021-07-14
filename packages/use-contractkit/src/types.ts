@@ -28,7 +28,7 @@ export interface Network {
  */
 export interface Provider {
   name: string;
-  description: string;
+  description: string | JSX.Element;
   icon: string | React.FC<React.SVGProps<SVGSVGElement>>;
   canConnect: () => boolean;
   showInList: () => boolean;

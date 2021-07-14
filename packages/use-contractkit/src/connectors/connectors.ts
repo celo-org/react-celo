@@ -1,7 +1,5 @@
 import { ContractKit, newKit, newKitFromWeb3 } from '@celo/contractkit';
 import { LocalWallet } from '@celo/wallet-local';
-// we can't lazy load this due to the new tab bug, it must be imported
-// so that the new tab handler fires.
 import {
   WalletConnectWallet,
   WalletConnectWalletOptions,

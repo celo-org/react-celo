@@ -1,3 +1,4 @@
+import React from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { ChainId, Provider } from './types';
@@ -79,7 +80,22 @@ export const PROVIDERS: {
   },
   [SupportedProviders.MetaMask]: {
     name: 'MetaMask',
-    description: 'Use the Metamask browser extension. Celo support is limited.',
+    description: (
+      <>
+        Use the Metamask browser extension. Celo support is limited.{' '}
+        <a
+          href="https://docs.celo.org/getting-started/wallets/using-metamask-with-celo"
+          target="_blank"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.nativeEvent.stopPropagation();
+          }}
+          className="tw-underline tw-text-gray-900 dark:tw-text-gray-200 tw-font-medium"
+        >
+          Learn more
+        </a>
+      </>
+    ),
     icon: METAMASK,
     canConnect: () => !!window.ethereum?.isMetaMask,
     showInList: () => !isMobile,
