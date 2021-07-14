@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from 'react';
 
+import { useIsMounted } from '../utils/useIsMounted';
+
 interface Props {
   text: string;
   payload: string;
@@ -7,15 +9,18 @@ interface Props {
 
 export const CopyText: React.FC<Props> = ({ text, payload }: Props) => {
   const [copied, setCopied] = useState(false);
+  const isMountedRef = useIsMounted();
 
   const onClick = useCallback(async () => {
     await navigator.clipboard.writeText(payload);
     setCopied(true);
 
     setTimeout(() => {
-      setCopied(false);
+      if (isMountedRef.current) {
+        setCopied(false);
+      }
     }, 4000);
-  }, [payload]);
+  }, [payload, isMountedRef]);
 
   return (
     <button

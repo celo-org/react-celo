@@ -25,5 +25,5 @@ export const defaultScreens: {
 };
 
 export type ConnectorProps = {
-  onSubmit: (connector: Connector) => Promise<void> | void;
+  onSubmit: (connector: Connector) => void;
 };

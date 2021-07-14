@@ -1,6 +1,6 @@
 import QrCode from 'qrcode.react';
-import React, { useCallback } from 'react';
-import { isIOS, isMobile } from 'react-device-detect';
+import React from 'react';
+import { isMobile } from 'react-device-detect';
 import Loader from 'react-loader-spinner';
 
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';

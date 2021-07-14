@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { WalletConnectConnector } from './connectors';
 import { Mainnet } from '../constants';
 import { Connector } from '../types';
 import { useInternalContractKit } from '../use-contractkit';
+import { WalletConnectConnector } from './connectors';
 
 export function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
@@ -14,6 +14,7 @@ export function useWalletConnectConnector(
   const [uri, setUri] = useState('');
 
   useEffect(() => {
+    let mounted = true;
     const initialiseConnection = async () => {
       const isMainnet = network.name === Mainnet.name;
       const relayProvider = isMainnet
@@ -39,7 +40,9 @@ export function useWalletConnectConnector(
         getDeeplinkUrl
       );
       connector.onUri((newUri) => {
-        setUri(newUri);
+        if (mounted) {
+          setUri(newUri);
+        }
       });
       connector.onClose(() => void destroy());
       await initConnector(connector);
@@ -52,6 +55,10 @@ export function useWalletConnectConnector(
       .catch((reason) =>
         console.error('Failed to initialise WalletConnect connection', reason)
       );
+
+    return () => {
+      mounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

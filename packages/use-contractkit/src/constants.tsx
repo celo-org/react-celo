@@ -91,6 +91,7 @@ export const PROVIDERS: {
             e.nativeEvent.stopPropagation();
           }}
           className="tw-underline tw-text-gray-900 dark:tw-text-gray-200 tw-font-medium"
+          rel="noopener noreferrer"
         >
           Learn more
         </a>

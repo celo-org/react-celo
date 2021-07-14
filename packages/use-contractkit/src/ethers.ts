@@ -3,6 +3,7 @@ import { ExternalProvider } from '@ethersproject/providers/lib/web3-provider';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useContractKit } from './use-contractkit';
+import { useIsMounted } from './utils/useIsMounted';
 
 export const useProvider = (): Web3Provider => {
   const { kit } = useContractKit();
@@ -41,13 +42,16 @@ export const useLazyConnectedSigner = (): {
   address: string | null;
   getConnectedSigner: () => Promise<JsonRpcSigner>;
 } => {
+  const isMountedRef = useIsMounted();
   const getConnectedSigner = useGetConnectedSigner();
   const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
   const getConnectedSignerCb = useCallback(async () => {
     const theSigner = await getConnectedSigner();
-    setSigner(theSigner);
+    if (isMountedRef.current) {
+      setSigner(theSigner);
+    }
     return theSigner;
-  }, [getConnectedSigner, setSigner]);
+  }, [getConnectedSigner, setSigner, isMountedRef]);
   return {
     signer,
     getConnectedSigner: getConnectedSignerCb,
@@ -59,9 +63,18 @@ export const useConnectedSigner = (): JsonRpcSigner | null => {
   const getConnectedSigner = useGetConnectedSigner();
   const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
   useEffect(() => {
+    let stale;
     void (async () => {
+      const theSigner = await getConnectedSigner();
+      if (!stale) {
+        setSigner(theSigner);
+      }
       setSigner(await getConnectedSigner());
     })();
-  }, [getConnectedSigner, setSigner]);
+
+    return () => {
+      stale = true;
+    };
+  }, [getConnectedSigner]);
   return signer;
 };
