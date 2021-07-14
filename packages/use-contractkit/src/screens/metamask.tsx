@@ -33,8 +33,10 @@ export const MetaMaskWallet: React.FC<ConnectorProps> = ({
   if (error?.name === UnsupportedChainIdError.NAME) {
     return (
       <div className="tw-space-y-6">
-        <p className="tw-text-xl font-medium">Switch to the Celo Network</p>
-        <p className="">
+        <p className="tw-text-xl font-medium dark:tw-text-gray-300">
+          Switch to the Celo Network
+        </p>
+        <p className="dark:tw-text-gray-400">
           In order to use {dapp.name} you must be connected to the Celo network.{' '}
           <a
             className="tw-underline tw-font-medium"

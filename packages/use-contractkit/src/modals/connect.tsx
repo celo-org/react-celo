@@ -71,7 +71,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
         {!showMore && (
           <button
             onClick={onClickShowMore}
-            className="tw-font-medium tw-text-md tw-w-32 tw-self-center tw-mt-4 tw-text-blue-800 hover:tw-text-blue-600 focus:tw-outline-none"
+            className="tw-font-medium tw-text-md tw-w-32 tw-self-center tw-mt-4 tw-text-blue-800 dark:tw-text-blue-400 hover:tw-text-blue-600 focus:tw-outline-none"
           >
             Show More
           </button>
