@@ -75,9 +75,9 @@ export const AddCeloNetworkButton: React.FC<Props> = ({ chainId }: Props) => {
           params: [makeNetworkParams(NETWORKS[chainId])],
         });
       }}
-      className="tw-flex tw-items-center tw-text-gray-700 dark:tw-text-gray-400"
+      className="tw-flex tw-items-center tw-font-semibold tw-text-blue-500 dark:tw-text-blue-400 focus:tw-outline-none"
     >
-      Switch to the {chainParams.chainName} network
+      Switch to the {chainParams.chainName} Network
     </button>
   );
 };
