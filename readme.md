@@ -73,7 +73,7 @@ function App() {
 
   return (
     <>
-      {account ? (
+      {address ? (
         <div>Connected to {address}</div>
       ) : (
         <button onClick={connect}>Connect wallet</button>
