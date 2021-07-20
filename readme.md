@@ -47,9 +47,11 @@ import '@celo-tools/use-contractkit/lib/styles.css';
 function WrappedApp() {
   return (
     <ContractKitProvider
-      dappName="My awesome dApp"
-      dappDescription="My awesome description"
-      dappUrl="https://example.com"
+      dapp={{
+          name: "My awesome dApp",
+          description: "My awesome description",
+          url: "https://example.com",
+        }}
     >
       <App />
     </ContractKitProvider>
@@ -73,7 +75,7 @@ function App() {
 
   return (
     <>
-      {account ? (
+      {address ? (
         <div>Connected to {address}</div>
       ) : (
         <button onClick={connect}>Connect wallet</button>
