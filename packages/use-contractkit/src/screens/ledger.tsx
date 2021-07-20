@@ -3,6 +3,7 @@ import Loader from 'react-loader-spinner';
 
 import { LedgerConnector } from '../connectors';
 import { useInternalContractKit } from '../use-contractkit';
+import { useIsMounted } from '../utils/useIsMounted';
 import { ConnectorProps } from '.';
 
 export const Ledger: React.FC<ConnectorProps> = ({
@@ -11,15 +12,18 @@ export const Ledger: React.FC<ConnectorProps> = ({
   const { network, initConnector, initError: error } = useInternalContractKit();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
+  const isMountedRef = useIsMounted();
 
   const submit = async () => {
     setSubmitting(true);
     const connector = new LedgerConnector(network, parseInt(index, 10));
     const { error } = await initConnector(connector);
     if (!error) {
-      await onSubmit(connector);
+      onSubmit(connector);
     }
-    setSubmitting(false);
+    if (isMountedRef.current) {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -33,21 +37,21 @@ export const Ledger: React.FC<ConnectorProps> = ({
             <p className="tw-mt-3 tw-text-sm tw-text-gray-600 dark:tw-text-gray-400">
               Securely connect to your ledger device. Before proceeding, please
               ensure you have:
-              <ul className="tw-list-disc tw-list-inside tw-mt-4">
-                <li>Connected your Ledger (via USB)</li>
-                <li>Unlocked your Ledger</li>
-                <li>
-                  Opened the{' '}
-                  <a
-                    href="https://docs.celo.org/celo-owner-guide/ledger"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Celo application
-                  </a>{' '}
-                </li>
-              </ul>
             </p>
+            <ul className="tw-list-disc tw-text-sm tw-text-gray-600 tw-list-inside tw-mt-4">
+              <li>Connected your Ledger (via USB)</li>
+              <li>Unlocked your Ledger</li>
+              <li>
+                Opened the{' '}
+                <a
+                  href="https://docs.celo.org/celo-owner-guide/ledger"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Celo application
+                </a>{' '}
+              </li>
+            </ul>
 
             <p className="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400 tw-mt-4">
               Connect to account at index{' '}
@@ -57,6 +61,7 @@ export const Ledger: React.FC<ConnectorProps> = ({
                 style={{ width: '40px', background: 'unset' }}
                 value={index}
                 onChange={(e) => setIndex(e.target.value)}
+                disabled={submitting}
               />
             </p>
 
@@ -69,14 +74,15 @@ export const Ledger: React.FC<ConnectorProps> = ({
             <button
               className="tw-mt-6 tw-px-4 tw-py-2 tw-border tw-border-transparent tw-rounded-md tw-shadow-sm tw-text-base tw-font-medium tw-text-white tw-bg-gradient-to-r tw-from-purple-600 tw-to-indigo-600 hover:tw-from-purple-700 hover:tw-to-indigo-700"
               onClick={submit}
+              disabled={submitting}
             >
               {submitting ? (
-                <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
+                <div className="tw-flex tw-items-center tw-justify-center">
                   <Loader
                     type="TailSpin"
                     color="white"
-                    height={18}
-                    width={18}
+                    height={24}
+                    width={24}
                   />
                 </div>
               ) : (

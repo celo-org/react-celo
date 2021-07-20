@@ -1,34 +1,15 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import Loader from 'react-loader-spinner';
 
 import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
-import { MetaMaskConnector, UnsupportedChainIdError } from '../connectors';
-import { useInternalContractKit } from '../use-contractkit';
+import { UnsupportedChainIdError } from '../connectors';
+import { useMetaMaskConnector } from '../connectors/useMetaMaskConnector';
 import { ConnectorProps } from '.';
 
 export const MetaMaskWallet: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
-  const {
-    network,
-    initConnector,
-    initError: error,
-    dapp,
-  } = useInternalContractKit();
-
-  const initialiseConnection = useCallback(async () => {
-    const connector = new MetaMaskConnector(network);
-    const { error } = await initConnector(connector);
-    if (!error) {
-      await onSubmit(connector);
-    } else {
-      console.log('error', { error });
-    }
-  }, [initConnector, network, onSubmit]);
-
-  useEffect(() => {
-    void initialiseConnection();
-  }, [initialiseConnection]);
+  const { error, dapp, network } = useMetaMaskConnector(onSubmit);
 
   if (error?.name === UnsupportedChainIdError.NAME) {
     return (
@@ -41,6 +22,7 @@ export const MetaMaskWallet: React.FC<ConnectorProps> = ({
           <a
             className="tw-underline tw-font-medium"
             target="_blank"
+            rel="noreferrer"
             href="https://docs.celo.org/getting-started/wallets/using-metamask-with-celo"
           >
             What does this mean?

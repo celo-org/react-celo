@@ -44,5 +44,9 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install
+      - name: Lerna bootstrap
+        run: yarn lerna bootstrap
+      - name: Run build
+        run: yarn lerna run build --scope '*/use-contractkit'
       - name: Lint
         run: yarn lint

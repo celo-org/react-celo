@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import ReactModal from 'react-modal';
 
 import { ProviderSelect } from '../components/ProviderSelect';
@@ -11,7 +16,7 @@ import { defaultModalStyles } from './styles';
 export interface ConnectModalProps {
   screens?: {
     [x in SupportedProviders]?: FunctionComponent<{
-      onSubmit: (connector: Connector) => Promise<void> | void;
+      onSubmit: (connector: Connector) => void;
     }>;
   };
   RenderProvider?: React.FC<{ provider: Provider; onClick: () => void }>;
@@ -27,32 +32,43 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
   const [showMore, setShowMore] = useState(false);
 
-  const close = () => {
+  const close = useCallback((): void => {
     setAdding(null);
     setShowMore(false);
     connectionCallback?.(false);
-  };
+  }, [connectionCallback]);
 
-  const onSubmit = (connector: Connector) => {
-    setAdding(null);
-    connectionCallback?.(connector);
-  };
+  const onSubmit = useCallback(
+    (connector: Connector): void => {
+      setAdding(null);
+      connectionCallback?.(connector);
+    },
+    [connectionCallback]
+  );
 
-  const onClickShowMore = () => {
+  const onClickShowMore = useCallback(() => {
     setShowMore(true);
-  };
+  }, []);
+
+  const providers = useMemo<[providerKey: string, provider: Provider][]>(
+    () =>
+      Object.entries(PROVIDERS).filter(
+        ([, provider]) =>
+          typeof window !== 'undefined' &&
+          provider.showInList() &&
+          Object.keys(screens).find((screen) => screen === provider.name)
+      ),
+    [screens]
+  );
+  const prioritizedProviders = useMemo<
+    [providerKey: string, provider: Provider][]
+  >(
+    () => providers.filter(([, provider]) => provider.listPriority() === 0),
+    [providers]
+  );
 
   let modalContent;
   if (!adding) {
-    const providers = Object.entries(PROVIDERS).filter(
-      ([, provider]) =>
-        typeof window !== 'undefined' &&
-        provider.showInList() &&
-        Object.keys(screens).find((screen) => screen === provider.name)
-    );
-    const prioritizedProviders = providers.filter(
-      ([, provider]) => provider.listPriority() === 0
-    );
     const providersToDisplay = showMore ? providers : prioritizedProviders;
     modalContent = (
       <div className="tw-flex tw-flex-col tw-items-stretch">

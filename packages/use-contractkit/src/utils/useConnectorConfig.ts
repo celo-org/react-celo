@@ -9,6 +9,7 @@ import {
   WalletTypes,
 } from '../constants';
 import { Connector, Network } from '../types';
+import { useIsMounted } from '../utils/useIsMounted';
 
 /**
  * Loads previous user configuration from local storage.
@@ -104,6 +105,7 @@ export const useConnectorConfig = ({
 }: {
   networks: readonly Network[];
 }): UseConnectorConfig => {
+  const isMountedRef = useIsMounted();
   const [{ lastUsedAddress, lastUsedNetworkName, initialConnector }] = useState(
     loadPreviousConfig()
   );
@@ -137,9 +139,11 @@ export const useConnectorConfig = ({
     localStorage.removeItem(localStorageKeys.lastUsedWalletType);
     localStorage.removeItem(localStorageKeys.lastUsedWalletArguments);
 
-    setAddress(null);
-    setConnector(new UnauthenticatedConnector(network));
-  }, [network, connector]);
+    if (isMountedRef.current) {
+      setAddress(null);
+      setConnector(new UnauthenticatedConnector(network));
+    }
+  }, [network, connector, isMountedRef]);
 
   useEffect(() => {
     if (
@@ -180,7 +184,9 @@ export const useConnectorConfig = ({
     const connector = await connectionResultPromise;
     if (connector === false) {
       // dismissed
-      setConnectionCallback(null);
+      if (isMountedRef.current) {
+        setConnectionCallback(null);
+      }
       throw new Error('Connection cancelled');
     }
 
@@ -191,11 +197,13 @@ export const useConnectorConfig = ({
       });
     }
 
-    setConnector(connector);
-    setConnectionCallback(null);
+    if (isMountedRef.current) {
+      setConnector(connector);
+      setConnectionCallback(null);
+    }
 
     return connector;
-  }, [networks]);
+  }, [networks, isMountedRef]);
 
   return {
     address,
