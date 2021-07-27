@@ -10,7 +10,7 @@ import { ProviderSelect } from '../components/ProviderSelect';
 import { PROVIDERS, SupportedProviders } from '../constants';
 import { defaultScreens } from '../screens';
 import { Connector, Provider } from '../types';
-import { useInternalContractKit } from '../use-contractkit';
+import { useContractKitInternal } from '../use-contractkit';
 import { defaultModalStyles } from './styles';
 
 export interface ConnectModalProps {
@@ -28,7 +28,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   RenderProvider = ProviderSelect,
   screens = defaultScreens,
 }: ConnectModalProps) => {
-  const { connectionCallback } = useInternalContractKit();
+  const { connectionCallback } = useContractKitInternal();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
   const [showMore, setShowMore] = useState(false);
 

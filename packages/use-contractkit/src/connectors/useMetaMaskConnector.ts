@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { Connector, Dapp, Network } from '../types';
-import { useInternalContractKit } from '../use-contractkit';
+import { useContractKitInternal } from '../use-contractkit';
 import { MetaMaskConnector } from './connectors';
 
 export function useMetaMaskConnector(
@@ -12,16 +12,19 @@ export function useMetaMaskConnector(
     initConnector,
     initError: error,
     dapp,
-  } = useInternalContractKit();
+  } = useContractKitInternal();
 
   useEffect(() => {
     let stale;
     void (async () => {
       const connector = new MetaMaskConnector(network);
-      const { error } = await initConnector(connector);
-      if (error) console.log('got an error');
-      if (!error && !stale) {
-        onSubmit(connector);
+      try {
+        await initConnector(connector);
+        if (!stale) {
+          onSubmit(connector);
+        }
+      } catch (e) {
+        console.error(e);
       }
     })();
 

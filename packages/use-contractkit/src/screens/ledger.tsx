@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import Loader from 'react-loader-spinner';
 
 import { LedgerConnector } from '../connectors';
-import { useInternalContractKit } from '../use-contractkit';
+import { useContractKitInternal } from '../use-contractkit';
 import { useIsMounted } from '../utils/useIsMounted';
 import { ConnectorProps } from '.';
 
 export const Ledger: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
-  const { network, initConnector, initError: error } = useInternalContractKit();
+  const { network, initConnector, initError: error } = useContractKitInternal();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
   const isMountedRef = useIsMounted();
@@ -17,12 +17,13 @@ export const Ledger: React.FC<ConnectorProps> = ({
   const submit = async () => {
     setSubmitting(true);
     const connector = new LedgerConnector(network, parseInt(index, 10));
-    const { error } = await initConnector(connector);
-    if (!error) {
+    try {
+      await initConnector(connector);
       onSubmit(connector);
-    }
-    if (isMountedRef.current) {
-      setSubmitting(false);
+    } catch (e) {
+      if (isMountedRef.current) {
+        setSubmitting(false);
+      }
     }
   };
 
