@@ -23,6 +23,9 @@ export function useContractKitMethods(): ContractKitMethods {
           // TODO: We should probably throw an error if we can't find the new chainId
           network && dispatch('setNetwork', network);
         });
+        initialisedConnector.onAddressChange?.((address) => {
+          dispatch('setAddress', address);
+        });
         return initialisedConnector;
       } catch (e) {
         console.error(
