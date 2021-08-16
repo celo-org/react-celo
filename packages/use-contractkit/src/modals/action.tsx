@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import Loader from 'react-loader-spinner';
 import ReactModal from 'react-modal';
 
-import { useInternalContractKit } from '../use-contractkit';
+import { useContractKitInternal } from '../use-contractkit';
 import { defaultModalStyles } from './styles';
 
 export interface ActionModalProps {
@@ -42,7 +42,7 @@ export const ActionModal: React.FC<Props> = ({
   reactModalProps,
   render = defaultActionModalComponent,
 }: Props) => {
-  const { pendingActionCount, dapp } = useInternalContractKit();
+  const { pendingActionCount, dapp } = useContractKitInternal();
 
   return (
     <ReactModal

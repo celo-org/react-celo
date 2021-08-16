@@ -1,26 +1,15 @@
 import { ContractKit } from '@celo/contractkit';
-import React, { ReactNode, useCallback, useState } from 'react';
-import ReactModal from 'react-modal';
-import { Container, createContainer } from 'unstated-next';
+import { useContext } from 'react';
 
-import { DEFAULT_NETWORKS, WalletTypes } from './constants';
-import {
-  ActionModal,
-  ActionModalProps,
-  ConnectModal,
-  ConnectModalProps,
-} from './modals';
+import { WalletTypes } from './constants';
+import { ContractKitContext } from './contract-kit-provider';
 import { Connector, Dapp, Network } from './types';
-import {
-  UseConnectorConfig,
-  useConnectorConfig,
-} from './utils/useConnectorConfig';
+import { useContractKitMethods } from './use-contract-kit-methods';
 
 /**
  * Exports for ContractKit.
  */
-export interface UseContractKit
-  extends Omit<UseConnectorConfig, 'connector' | 'connectionCallback'> {
+export interface UseContractKit {
   dapp: Dapp;
   kit: ContractKit;
   walletType: WalletTypes;
@@ -29,6 +18,12 @@ export interface UseContractKit
    * Name of the account.
    */
   account: string | null;
+
+  address: string | null;
+  connect: () => Promise<Connector>;
+  destroy: () => Promise<void>;
+  network: Network;
+  updateNetwork: (network: Network) => void;
 
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will
@@ -55,114 +50,17 @@ export interface UseContractKit
   getConnectedKit: () => Promise<ContractKit>;
 }
 
-interface UseContractKitInternal
-  extends UseContractKit,
-    Pick<UseConnectorConfig, 'connectionCallback'> {
-  initConnector: (connector: Connector) => Promise<{
-    connector: Connector | null;
-    error: Error | null;
-  }>;
-  pendingActionCount: number;
-}
-
-type DappInput = Omit<Dapp, 'icon'> & Partial<Pick<Dapp, 'icon'>>;
-
-/**
- * State of useKit.
- */
-interface UseKitState {
-  networks?: Network[];
-  dapp: DappInput;
-}
-
-const DEFAULT_KIT_STATE = {
-  networks: DEFAULT_NETWORKS,
-  dapp: {
-    name: 'Celo dApp',
-    description: 'Celo dApp',
-    url: 'https://celo.org',
-  },
-};
-
-const useKit = ({
-  networks = DEFAULT_NETWORKS,
-  dapp: dappInput,
-}: UseKitState = DEFAULT_KIT_STATE): UseContractKitInternal => {
-  const [dapp] = useState<Required<Dapp>>({
-    name: dappInput.name,
-    description: dappInput.description,
-    icon: dappInput.icon ?? `${dappInput.url}/favicon.ico`,
-    url: dappInput.url,
-  });
-  const connectorConfig = useConnectorConfig({ networks });
-
-  const [pendingActionCount, setPendingActionCount] = useState(0);
-
-  // Initialisation error state management
-  const [initError, setInitError] = useState<Error | null>(null);
-  const initConnector = useCallback(
-    async (
-      nextConnector: Connector
-    ): Promise<{
-      connector: Connector | null;
-      error: Error | null;
-    }> => {
-      try {
-        const connector = await nextConnector.initialise();
-        setInitError(null);
-        return { connector, error: null };
-      } catch (e) {
-        console.error(
-          '[use-contractkit] Error initializing connector',
-          nextConnector.type,
-          e
-        );
-        setInitError(e);
-        return { connector: null, error: e as Error };
-      }
-    },
-    []
-  );
-
-  const { connector, connect } = connectorConfig;
-  const getConnectedKit = useCallback(async () => {
-    let initialisedConnection = connector;
-    if (connector.type === WalletTypes.Unauthenticated) {
-      initialisedConnection = await connect();
-    } else if (!initialisedConnection.initialised) {
-      await initConnector(initialisedConnection);
-    }
-
-    return initialisedConnection.kit;
-  }, [connect, connector, initConnector]);
-
-  const performActions = useCallback(
-    async (
-      ...operations: ((kit: ContractKit) => unknown | Promise<unknown>)[]
-    ) => {
-      const kit = await getConnectedKit();
-
-      setPendingActionCount(operations.length);
-      const results: unknown[] = [];
-      for (const op of operations) {
-        try {
-          results.push(await op(kit));
-        } catch (e) {
-          setPendingActionCount(0);
-          throw e;
-        }
-
-        setPendingActionCount((c) => c - 1);
-      }
-      return results;
-    },
-    [getConnectedKit]
-  );
+export const useContractKit = (): UseContractKit => {
+  const [{ dapp, connector, connectorInitError, address, network }] =
+    useContext(ContractKitContext);
+  const { destroy, updateNetwork, connect, getConnectedKit, performActions } =
+    useContractKitMethods();
 
   return {
-    ...connectorConfig,
+    address,
     dapp,
-
+    network,
+    updateNetwork,
     kit: connector.kit,
     walletType: connector.type,
     account: connector.account,
@@ -170,55 +68,31 @@ const useKit = ({
 
     performActions,
     getConnectedKit,
+    connect,
+    destroy,
 
-    initError,
-
-    // private
-    initConnector,
-    pendingActionCount,
+    initError: connectorInitError,
   };
 };
 
-const KitState = createContainer<UseContractKitInternal, UseKitState>(useKit);
-
-export const useContractKit: Container<
-  UseContractKit,
-  UseKitState
->['useContainer'] = KitState.useContainer;
-
-/**
- * UseContractKit with internal methods exposed. Package use only.
- */
-export const useInternalContractKit: Container<
-  UseContractKitInternal,
-  UseKitState
->['useContainer'] = KitState.useContainer;
-
-interface ContractKitProviderProps {
-  children: ReactNode;
-  dapp: DappInput;
-  networks?: Network[];
-
-  connectModal?: ConnectModalProps;
-  actionModal?: {
-    reactModalProps?: Partial<ReactModal.Props>;
-    render?: (props: ActionModalProps) => ReactNode;
-  };
+interface UseContractKitInternal extends UseContractKit {
+  connectionCallback: ((connector: Connector | false) => void) | null;
+  initConnector: (connector: Connector) => Promise<Connector>;
+  pendingActionCount: number;
 }
 
-export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
-  children,
-  connectModal,
-  actionModal,
-  dapp,
-  networks,
-}: ContractKitProviderProps) => {
-  return (
-    <KitState.Provider initialState={{ networks, dapp }}>
-      <ConnectModal {...connectModal} />
-      <ActionModal {...actionModal} />
+/**
+ * useContractKit with internal methods exposed. Package use only.
+ */
+export const useContractKitInternal = (): UseContractKitInternal => {
+  const { initConnector } = useContractKitMethods();
+  const [{ pendingActionCount, connectionCallback }] =
+    useContext(ContractKitContext);
 
-      {children}
-    </KitState.Provider>
-  );
+  return {
+    ...useContractKit(),
+    connectionCallback,
+    initConnector,
+    pendingActionCount,
+  };
 };

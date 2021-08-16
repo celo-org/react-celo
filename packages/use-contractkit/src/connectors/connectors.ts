@@ -175,6 +175,7 @@ export class InjectedConnector implements Connector {
   }
 
   close(): void {
+    this.onNetworkChangeCallback = undefined;
     return;
   }
 }

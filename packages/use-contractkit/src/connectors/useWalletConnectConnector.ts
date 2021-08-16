@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { Mainnet } from '../constants';
 import { Connector } from '../types';
-import { useInternalContractKit } from '../use-contractkit';
+import { useContractKitInternal } from '../use-contractkit';
 import { WalletConnectConnector } from './connectors';
 
 export function useWalletConnectConnector(
@@ -10,7 +10,7 @@ export function useWalletConnectConnector(
   autoOpen: boolean,
   getDeeplinkUrl?: (uri: string) => string
 ): string {
-  const { network, dapp, destroy, initConnector } = useInternalContractKit();
+  const { network, dapp, destroy, initConnector } = useContractKitInternal();
   const [uri, setUri] = useState('');
 
   useEffect(() => {
