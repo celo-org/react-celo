@@ -351,7 +351,9 @@ export default function Home(): React.ReactElement {
                     <div>
                       cUSD: {Web3.utils.fromWei(summary.cusd.toFixed())}
                     </div>
-                    <div>cEUR: 0.00</div>
+                    <div>
+                      cEUR: {Web3.utils.fromWei(summary.ceur.toFixed())}
+                    </div>
                   </div>
                 </div>
               </div>
