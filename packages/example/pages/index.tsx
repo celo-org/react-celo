@@ -242,7 +242,7 @@ export default function Home(): React.ReactElement {
                 url: 'https://github.com/celo-tools/use-contractkit',
               },
             ].map(({ name, url }) => (
-              <li>
+              <li key={name}>
                 <a
                   target="_blank"
                   className="text-blue-500"
