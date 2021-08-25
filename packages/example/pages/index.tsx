@@ -216,46 +216,43 @@ export default function Home(): React.ReactElement {
         <div className="mt-6">
           <div className="mb-2 text-lg">Used by:</div>
           <ul className="list-disc list-inside">
-            <li>
-              <a
-                target="_blank"
-                className="text-blue-500"
-                href="https://plock.fi"
-                rel="noreferrer"
-              >
-                Plock
-              </a>
-            </li>
-            <li>
-              <a
-                target="_blank"
-                className="text-blue-500"
-                href="https://celo-data.nambrot.com/multisig"
-                rel="noreferrer"
-              >
-                Web MultiSig interface
-              </a>
-            </li>
-            <li>
-              <a
-                target="_blank"
-                className="text-blue-500"
-                href="https://poof.cash"
-                rel="noreferrer"
-              >
-                Poof.cash
-              </a>
-            </li>
-            <li>
-              <a
-                className="text-blue-500"
-                target="_blank"
-                href="https://github.com/celo-tools/use-contractkit"
-                rel="noreferrer"
-              >
-                Add yours to the list...
-              </a>
-            </li>
+            {[
+              {
+                name: 'Plock',
+                url: 'https://plock.fi',
+              },
+              {
+                name: 'Web multi sig interface',
+                url: 'https://celo-data.nambrot.com/multisig',
+              },
+              {
+                name: 'Poof Cash',
+                url: 'https://poof.cash',
+              },
+              {
+                name: 'Nomspace',
+                url: 'https://www.nom.space/',
+              },
+              {
+                name: 'Romulus',
+                url: 'https://romulus.page/',
+              },
+              {
+                name: 'Add yours to the list...',
+                url: 'https://github.com/celo-tools/use-contractkit',
+              },
+            ].map(({ name, url }) => (
+              <li>
+                <a
+                  target="_blank"
+                  className="text-blue-500"
+                  href={url}
+                  rel="noreferrer"
+                >
+                  {name}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
 
