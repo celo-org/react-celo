@@ -57,7 +57,10 @@ export default function Home(): React.ReactElement {
       kit.contracts.getStableToken(StableToken.cEUR),
     ]);
     const [summary, celo, cusd, ceur] = await Promise.all([
-      accounts.getAccountSummary(address).catch(() => defaultSummary),
+      accounts.getAccountSummary(address).catch((e) => {
+        console.error(e);
+        return defaultSummary;
+      }),
       goldToken.balanceOf(address),
       cUSD.balanceOf(address),
       cEUR.balanceOf(address),

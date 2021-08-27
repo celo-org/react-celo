@@ -71,3 +71,9 @@ export const loadPreviousConfig = (): {
     connector: initialConnector,
   };
 };
+
+export function clearPreviousConfig(): void {
+  Object.values(localStorageKeys).forEach((val) =>
+    localStorage.removeItem(val)
+  );
+}
