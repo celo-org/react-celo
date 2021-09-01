@@ -122,6 +122,7 @@ export class InjectedConnector implements Connector {
   public kit: ContractKit;
   public account: string | null = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
+  private onAddressChangeCallback?: (address: string | null) => void;
 
   constructor(
     network: Network,
@@ -144,11 +145,11 @@ export class InjectedConnector implements Connector {
     if (!ethereum) {
       throw new Error('Ethereum wallet not installed');
     }
-    this.type = window.ethereum?.isMetaMask
+    this.type = ethereum.isMetaMask
       ? WalletTypes.MetaMask
       : WalletTypes.Injected;
     const web3 = new Web3(ethereum);
-    await ethereum.enable();
+    void (await ethereum.request({ method: 'eth_requestAccounts' }));
 
     const chainId = await web3.eth.getChainId();
     if (!Object.values(ChainId).includes(chainId)) {
@@ -159,6 +160,13 @@ export class InjectedConnector implements Connector {
       if (this.onNetworkChangeCallback) {
         const chainId = parseInt(chainIdHex, 16);
         this.onNetworkChangeCallback(chainId);
+      }
+    });
+
+    ethereum.on('accountsChanged', (accounts) => {
+      if (this.onAddressChangeCallback) {
+        this.kit.defaultAccount = accounts[0];
+        this.onAddressChangeCallback(accounts[0] ?? null);
       }
     });
 
@@ -174,8 +182,13 @@ export class InjectedConnector implements Connector {
     this.onNetworkChangeCallback = callback;
   }
 
+  onAddressChange(callback: (address: string | null) => void): void {
+    this.onAddressChangeCallback = callback;
+  }
+
   close(): void {
     this.onNetworkChangeCallback = undefined;
+    this.onAddressChangeCallback = undefined;
     return;
   }
 }

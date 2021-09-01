@@ -49,6 +49,7 @@ export interface Connector {
   close: () => Promise<void> | void;
 
   onNetworkChange?: (callback: (chainId: number) => void) => void;
+  onAddressChange?: (callback: (address: string | null) => void) => void;
 }
 
 /**

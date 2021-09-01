@@ -1,6 +1,6 @@
-import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
-import { localStorageKeys } from './constants';
 import { Connector, Dapp, Network } from './types';
+import { localStorageKeys } from './constants';
+import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
 
 export function contractKitReducer(
   state: ReducerState,
