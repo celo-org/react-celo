@@ -33,7 +33,9 @@ export function useContractKitMethods(): ContractKitMethods {
           nextConnector.type,
           e
         );
-        dispatch('setConnectorInitError', e);
+        const error =
+          e instanceof Error ? e : new Error('Failed to initialise connector');
+        dispatch('setConnectorInitError', error);
         throw e;
       }
     },
