@@ -28,8 +28,11 @@ export function contractKitReducer(
       if (action.payload.name !== state.network.name) {
         const ConnectorConstructor = CONNECTOR_TYPES[state.connector.type];
 
+        const lastArgs = localStorage.getItem(
+          localStorageKeys.lastUsedWalletArguments
+        );
         const connectorArgs = JSON.parse(
-          localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
+          lastArgs && lastArgs !== 'undefined' ? lastArgs : '[]'
         ) as unknown[];
         const connector = new ConnectorConstructor(
           action.payload,

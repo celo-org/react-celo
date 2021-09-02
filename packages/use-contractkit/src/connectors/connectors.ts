@@ -299,15 +299,25 @@ export class WalletConnectConnector implements Connector {
 
     if (uri && this.autoOpen) {
       const deepLink = this.getDeeplinkUrl ? this.getDeeplinkUrl(uri) : uri;
-      window.open(deepLink);
+      location.href = deepLink;
     }
 
     await wallet.init();
-    const [defaultAccount] = wallet.getAccounts();
+    const [address] = wallet.getAccounts();
+    const defaultAccount =
+      (await this.fetchWalletAddressForAccount(address)) ?? address;
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
 
     return this;
+  }
+
+  private async fetchWalletAddressForAccount(address?: string) {
+    if (!address) {
+      return undefined;
+    }
+    const accounts = await this.kit.contracts.getAccounts();
+    return accounts.getWalletAddress(address);
   }
 
   close(): Promise<void> {
