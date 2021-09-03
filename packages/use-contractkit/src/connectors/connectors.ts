@@ -7,6 +7,7 @@ import {
 
 import { localStorageKeys, WalletTypes } from '../constants';
 import { ChainId, Connector, Network } from '../types';
+import { clearPreviousConfig } from '../utils/helpers';
 
 type Web3Type = Parameters<typeof newKitFromWeb3>[0];
 
@@ -27,10 +28,12 @@ export class UnauthenticatedConnector implements Connector {
   }
 
   initialise(): this {
+    this.initialised = true;
     return this;
   }
 
   close(): void {
+    clearPreviousConfig();
     return;
   }
 }
@@ -50,6 +53,7 @@ export class PrivateKeyConnector implements Connector {
       localStorageKeys.lastUsedWalletArguments,
       JSON.stringify([privateKey])
     );
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, n.name);
 
     const wallet = new LocalWallet();
     wallet.addAccount(privateKey);
@@ -60,10 +64,12 @@ export class PrivateKeyConnector implements Connector {
   }
 
   initialise(): this {
+    this.initialised = true;
     return this;
   }
 
   close(): void {
+    clearPreviousConfig();
     return;
   }
 }
@@ -83,6 +89,7 @@ export class LedgerConnector implements Connector {
       localStorageKeys.lastUsedWalletArguments,
       JSON.stringify([index])
     );
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
     this.kit = newKit(network.rpcUrl);
   }
@@ -104,6 +111,7 @@ export class LedgerConnector implements Connector {
   }
 
   close(): void {
+    clearPreviousConfig();
     return;
   }
 }
@@ -134,6 +142,7 @@ export class InjectedConnector implements Connector {
       localStorageKeys.lastUsedWalletArguments,
       JSON.stringify([])
     );
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
     this.kit = newKit(network.rpcUrl);
   }
@@ -174,6 +183,7 @@ export class InjectedConnector implements Connector {
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
+    this.initialised = true;
 
     return this;
   }
@@ -187,6 +197,7 @@ export class InjectedConnector implements Connector {
   }
 
   close(): void {
+    clearPreviousConfig();
     this.onNetworkChangeCallback = undefined;
     this.onAddressChangeCallback = undefined;
     return;
@@ -215,6 +226,7 @@ export class CeloExtensionWalletConnector implements Connector {
       localStorageKeys.lastUsedWalletArguments,
       JSON.stringify([])
     );
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
     this.kit = newKit(network.rpcUrl);
   }
@@ -248,6 +260,7 @@ export class CeloExtensionWalletConnector implements Connector {
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
+    this.initialised = true;
 
     return this;
   }
@@ -257,6 +270,7 @@ export class CeloExtensionWalletConnector implements Connector {
   }
 
   close(): void {
+    clearPreviousConfig();
     return;
   }
 }
@@ -282,8 +296,9 @@ export class WalletConnectConnector implements Connector {
     );
     localStorage.setItem(
       localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify(options)
+      JSON.stringify([options])
     );
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
     const wallet = new WalletConnectWallet(options);
     this.kit = newKit(network.rpcUrl, wallet);
@@ -321,6 +336,7 @@ export class WalletConnectConnector implements Connector {
       (await this.fetchWalletAddressForAccount(address)) ?? address;
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
+    this.initialised = true;
 
     return this;
   }
@@ -334,6 +350,7 @@ export class WalletConnectConnector implements Connector {
   }
 
   close(): Promise<void> {
+    clearPreviousConfig();
     const wallet = this.kit.getWallet() as WalletConnectWallet;
     return wallet.close();
   }

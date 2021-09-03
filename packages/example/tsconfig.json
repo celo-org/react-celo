@@ -4,7 +4,8 @@
     "noEmit": true,
     "module": "esnext",
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "sourceMap": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

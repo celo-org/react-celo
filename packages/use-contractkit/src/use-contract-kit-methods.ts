@@ -1,13 +1,23 @@
 import { ContractKit } from '@celo/contractkit';
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 
-import { WalletTypes } from './constants';
-import { ContractKitContext } from './contract-kit-provider';
+import { CONNECTOR_TYPES } from './connectors';
+import {
+  localStorageKeys,
+  STATIC_NETWORK_WALLETS,
+  WalletTypes,
+} from './constants';
+import { Dispatcher } from './contract-kit-provider';
 import { Connector, Network } from './types';
 
-export function useContractKitMethods(): ContractKitMethods {
-  const [{ connector, networks }, dispatch] = useContext(ContractKitContext);
-
+export function useContractKitMethods(
+  {
+    connector,
+    networks,
+    network,
+  }: { connector: Connector; networks: Network[]; network: Network },
+  dispatch: Dispatcher
+): ContractKitMethods {
   const destroy = useCallback(async () => {
     await connector.close();
     dispatch('destroy');
@@ -18,9 +28,21 @@ export function useContractKitMethods(): ContractKitMethods {
       try {
         const initialisedConnector = await nextConnector.initialise();
         dispatch('initialisedConnector', initialisedConnector);
+
+        // If the new wallet already has a specific network it's
+        // using then we should go with that one.
+        const netId = await initialisedConnector.kit.web3.eth.net.getId();
+        const newNetwork = networks.find((n) => netId === n.chainId);
+        if (newNetwork !== network) {
+          dispatch('setNetwork', network);
+        }
+
+        // This happens if the network changes on the wallet side
+        // and we need to update what network we're storing
+        // accordingly.
         initialisedConnector.onNetworkChange?.((chainId) => {
-          const network = networks.find((n) => n.chainId === chainId);
           // TODO: We should probably throw an error if we can't find the new chainId
+          const network = networks.find((n) => n.chainId === chainId);
           network && dispatch('setNetwork', network);
         });
         initialisedConnector.onAddressChange?.((address) => {
@@ -39,14 +61,35 @@ export function useContractKitMethods(): ContractKitMethods {
         throw e;
       }
     },
-    [dispatch, networks]
+    [dispatch, network, networks]
   );
 
+  // This is just to be used to for users to explicitly change
+  // the network. It doesn't work for all wallets.
   const updateNetwork = useCallback(
-    (network: Network) => {
-      dispatch('setNetwork', network);
+    async (newNetwork: Network) => {
+      if (STATIC_NETWORK_WALLETS.includes(connector.type)) {
+        return console.error(
+          "The connected wallet's network must be changed from the wallet."
+        );
+      }
+      if (network === newNetwork) return;
+      if (connector.initialised) {
+        const connectorArgs = JSON.parse(
+          localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
+        ) as unknown[];
+        await connector.close();
+        const ConnectorConstructor = CONNECTOR_TYPES[connector.type];
+        const newConnector = new ConnectorConstructor(
+          newNetwork,
+          ...connectorArgs
+        );
+        await initConnector(newConnector);
+      }
+
+      dispatch('setNetwork', newNetwork);
     },
-    [dispatch]
+    [dispatch, connector, network, initConnector]
   );
 
   const connect = useCallback(async (): Promise<Connector> => {
@@ -107,10 +150,10 @@ export function useContractKitMethods(): ContractKitMethods {
   };
 }
 
-interface ContractKitMethods {
+export interface ContractKitMethods {
   destroy: () => Promise<void>;
   initConnector: (connector: Connector) => Promise<Connector>;
-  updateNetwork: (network: Network) => void;
+  updateNetwork: (network: Network) => Promise<void>;
   connect: () => Promise<Connector>;
   getConnectedKit: () => Promise<ContractKit>;
   performActions: (

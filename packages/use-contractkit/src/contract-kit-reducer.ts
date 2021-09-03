@@ -1,6 +1,7 @@
-import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
+import { UnauthenticatedConnector } from './connectors';
 import { localStorageKeys } from './constants';
 import { Connector, Dapp, Network } from './types';
+import { clearPreviousConfig } from './utils/helpers';
 
 export function contractKitReducer(
   state: ReducerState,
@@ -23,30 +24,15 @@ export function contractKitReducer(
         ...state,
         address: action.payload,
       };
-
     case 'setNetwork':
-      if (action.payload.name !== state.network.name) {
-        const ConnectorConstructor = CONNECTOR_TYPES[state.connector.type];
-
-        const lastArgs = localStorage.getItem(
-          localStorageKeys.lastUsedWalletArguments
-        );
-        const connectorArgs = JSON.parse(
-          lastArgs && lastArgs !== 'undefined' ? lastArgs : '[]'
-        ) as unknown[];
-        const connector = new ConnectorConstructor(
-          action.payload,
-          ...connectorArgs
-        );
-
-        return {
-          ...state,
-          network: action.payload,
-          connector,
-        };
-      } else {
-        return state;
-      }
+      localStorage.setItem(
+        localStorageKeys.lastUsedNetwork,
+        action.payload.name
+      );
+      return {
+        ...state,
+        network: action.payload,
+      };
 
     case 'setConnector':
       localStorage.removeItem(localStorageKeys.lastUsedAddress);
@@ -58,7 +44,8 @@ export function contractKitReducer(
       };
 
     case 'initialisedConnector': {
-      const address = action.payload.kit.defaultAccount ?? null;
+      const newConnector = action.payload;
+      const address = newConnector.kit.defaultAccount ?? null;
       if (address) {
         localStorage.setItem(localStorageKeys.lastUsedAddress, address);
       }
@@ -70,9 +57,7 @@ export function contractKitReducer(
     }
 
     case 'destroy':
-      localStorage.removeItem(localStorageKeys.lastUsedAddress);
-      localStorage.removeItem(localStorageKeys.lastUsedWalletType);
-      localStorage.removeItem(localStorageKeys.lastUsedWalletArguments);
+      clearPreviousConfig();
       return {
         ...state,
         address: null,

@@ -187,6 +187,15 @@ export enum WalletTypes {
 }
 
 /**
+ * These wallets cannot have their networks
+ * updated via use-contractkit
+ */
+export const STATIC_NETWORK_WALLETS = [
+  WalletTypes['MetaMask'],
+  WalletTypes['CeloExtensionWallet'],
+];
+
+/**
  * Gets the provider associated with a wallet type.
  * @param wallet
  * @returns
@@ -199,7 +208,7 @@ export const getProviderForWallet = (
 /**
  * Default networks to connect to.
  */
-export const DEFAULT_NETWORKS = [Mainnet, Alfajores];
+export const DEFAULT_NETWORKS = [Mainnet, Alfajores, Baklava];
 
 /**
  * Chain ID of a default network.

@@ -1,14 +1,9 @@
 import { ContractKit } from '@celo/contractkit';
-import { useContext } from 'react';
 
 import { WalletTypes } from './constants';
-import { ContractKitContext } from './contract-kit-provider';
+import { useContractKitContext } from './contract-kit-provider';
 import { Connector, Dapp, Network } from './types';
-import { useContractKitMethods } from './use-contract-kit-methods';
 
-/**
- * Exports for ContractKit.
- */
 export interface UseContractKit {
   dapp: Dapp;
   kit: ContractKit;
@@ -51,10 +46,11 @@ export interface UseContractKit {
 }
 
 export const useContractKit = (): UseContractKit => {
-  const [{ dapp, connector, connectorInitError, address, network }] =
-    useContext(ContractKitContext);
-  const { destroy, updateNetwork, connect, getConnectedKit, performActions } =
-    useContractKitMethods();
+  const [
+    { dapp, connector, connectorInitError, address, network },
+    _dispatch,
+    { destroy, updateNetwork, connect, getConnectedKit, performActions },
+  ] = useContractKitContext();
 
   return {
     address,
@@ -85,9 +81,11 @@ interface UseContractKitInternal extends UseContractKit {
  * useContractKit with internal methods exposed. Package use only.
  */
 export const useContractKitInternal = (): UseContractKitInternal => {
-  const { initConnector } = useContractKitMethods();
-  const [{ pendingActionCount, connectionCallback }] =
-    useContext(ContractKitContext);
+  const [
+    { pendingActionCount, connectionCallback },
+    _dispatch,
+    { initConnector },
+  ] = useContractKitContext();
 
   return {
     ...useContractKit(),
