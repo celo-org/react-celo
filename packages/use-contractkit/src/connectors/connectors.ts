@@ -328,16 +328,11 @@ export class WalletConnectConnector implements Connector {
     if (!address) {
       return undefined;
     }
-    try {
-      const accounts = await this.kit.contracts.getAccounts();
-      const walletAddress = await accounts.getWalletAddress(address);
-      return walletAddress === '0x0000000000000000000000000000000000000000'
-        ? address
-        : walletAddress;
-    } catch (error) {
-      console.error('Error fetching wallet address', error);
-      return address;
-    }
+    const accounts = await this.kit.contracts.getAccounts();
+    const walletAddress = await accounts.getWalletAddress(address);
+    return walletAddress === '0x0000000000000000000000000000000000000000'
+      ? address
+      : walletAddress;
   }
 
   close(): Promise<void> {
