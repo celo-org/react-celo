@@ -4,6 +4,7 @@ import {
   WalletConnectWallet,
   WalletConnectWalletOptions,
 } from '@celo/wallet-walletconnect';
+import { BigNumber } from 'bignumber.js';
 
 import { localStorageKeys, WalletTypes } from '../constants';
 import { ChainId, Connector, Network } from '../types';
@@ -332,8 +333,7 @@ export class WalletConnectConnector implements Connector {
 
     await wallet.init();
     const [address] = wallet.getAccounts();
-    const defaultAccount =
-      (await this.fetchWalletAddressForAccount(address)) ?? address;
+    const defaultAccount = await this.fetchWalletAddressForAccount(address);
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
     this.initialised = true;
@@ -346,7 +346,8 @@ export class WalletConnectConnector implements Connector {
       return undefined;
     }
     const accounts = await this.kit.contracts.getAccounts();
-    return accounts.getWalletAddress(address);
+    const walletAddress = await accounts.getWalletAddress(address);
+    return new BigNumber(walletAddress).isZero() ? address : walletAddress;
   }
 
   close(): Promise<void> {
