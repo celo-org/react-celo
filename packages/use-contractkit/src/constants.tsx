@@ -11,6 +11,7 @@ import {
   PRIVATE_KEY,
   VALORA,
   WALLETCONNECT,
+  CELODANCE,
 } from './walletIcons';
 
 export const localStorageKeys = {
@@ -30,6 +31,7 @@ export enum SupportedProviders {
   PrivateKey = 'Private key',
   Valora = 'Valora',
   WalletConnect = 'WalletConnect',
+  CeloDance = 'CeloDance',
 }
 
 export const PROVIDERS: {
@@ -52,6 +54,16 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => 0,
+  },
+  [SupportedProviders.CeloDance]: {
+    name: 'CeloDance',
+    description:
+      'Send、Vote and Earn rewards within one wallet',
+    icon: CELODANCE,
+    canConnect: () => true,
+    showInList: () => true,
+    listPriority: () => 0,
+    installURL: 'https://celo.dance/',
   },
   [SupportedProviders.Ledger]: {
     name: 'Ledger',
@@ -177,6 +189,7 @@ export enum WalletTypes {
   Valora = 'Valora',
   MetaMask = 'MetaMask',
   WalletConnect = 'WalletConnect',
+  CeloDance = 'CeloDance',
   CeloWallet = 'CeloWallet',
   CeloTerminal = 'CeloTerminal',
   CeloExtensionWallet = 'CeloExtensionWallet',

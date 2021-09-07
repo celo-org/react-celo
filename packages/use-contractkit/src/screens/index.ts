@@ -9,6 +9,7 @@ import { MetaMaskWallet } from './metamask';
 import { PrivateKey } from './private-key';
 import { Valora } from './valora';
 import { WalletConnect } from './wallet-connect';
+import { CeloDanceConnector } from './celo-dance';
 
 export const defaultScreens: {
   [P in SupportedProviders]: React.FC<ConnectorProps>;
@@ -18,6 +19,7 @@ export const defaultScreens: {
   [SupportedProviders.WalletConnect]: WalletConnect,
   [SupportedProviders.Ledger]: Ledger,
   [SupportedProviders.CeloWallet]: CeloWallet,
+  [SupportedProviders.CeloDance]: CeloDanceConnector,
   [SupportedProviders.CeloTerminal]: WalletConnect,
   [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.Injected]: MetaMaskWallet,

@@ -356,3 +356,85 @@ export class WalletConnectConnector implements Connector {
     return wallet.close();
   }
 }
+
+export class CeloDanceConnector implements Connector {
+  public initialised = false;
+  public type = WalletTypes.CeloDance;
+  public kit: ContractKit;
+  public account: string | null = null;
+
+  private onUriCallback?: (uri: string) => void;
+  private onCloseCallback?: () => void;
+
+  constructor(
+    private network: Network,
+    options: WalletConnectWalletOptions,
+    readonly autoOpen = false,
+    readonly getDeeplinkUrl?: (uri: string) => string
+  ) {
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletType,
+      WalletTypes.CeloDance
+    );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([options])
+    );
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+
+    const wallet = new WalletConnectWallet(options);
+    this.kit = newKit(network.rpcUrl, wallet);
+  }
+
+  onUri(callback: (uri: string) => void): void {
+    this.onUriCallback = callback;
+  }
+
+  onClose(callback: () => void): void {
+    this.onCloseCallback = callback;
+  }
+
+  async initialise(): Promise<this> {
+    const wallet = this.kit.getWallet() as WalletConnectWallet;
+
+    if (this.onCloseCallback) {
+      wallet.onPairingDeleted = () => this.onCloseCallback?.();
+      wallet.onSessionDeleted = () => this.onCloseCallback?.();
+    }
+
+    const uri = await wallet.getUri();
+    if (uri && this.onUriCallback) {
+      this.onUriCallback(uri);
+    }
+
+    if (uri && this.autoOpen) {
+      const deepLink = this.getDeeplinkUrl ? this.getDeeplinkUrl(uri) : uri;
+      location.href = deepLink;
+    }
+
+    await wallet.init();
+    const [address] = wallet.getAccounts();
+    const defaultAccount = await this.fetchWalletAddressForAccount(address);
+    this.kit.defaultAccount = defaultAccount;
+    this.account = defaultAccount ?? null;
+    this.initialised = true;
+
+    return this;
+  }
+
+  private async fetchWalletAddressForAccount(address?: string) {
+    if (!address) {
+      return undefined;
+    }
+    const accounts = await this.kit.contracts.getAccounts();
+    const walletAddress = await accounts.getWalletAddress(address);
+    return new BigNumber(walletAddress).isZero() ? address : walletAddress;
+  }
+
+  close(): Promise<void> {
+    clearPreviousConfig();
+    const wallet = this.kit.getWallet() as WalletConnectWallet;
+    return wallet.close();
+  }
+}
+

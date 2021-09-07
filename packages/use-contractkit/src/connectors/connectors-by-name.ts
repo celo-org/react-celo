@@ -8,6 +8,7 @@ import {
   PrivateKeyConnector,
   UnauthenticatedConnector,
   WalletConnectConnector,
+  CeloDanceConnector
 } from './connectors';
 
 /**
@@ -25,6 +26,7 @@ export const CONNECTOR_TYPES: {
   [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
   [WalletTypes.Valora]: WalletConnectConnector,
   [WalletTypes.WalletConnect]: WalletConnectConnector,
+  [WalletTypes.CeloDance]: CeloDanceConnector,
   [WalletTypes.CeloTerminal]: WalletConnectConnector,
   [WalletTypes.CeloWallet]: WalletConnectConnector,
 };
