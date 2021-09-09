@@ -11,6 +11,7 @@ import {
   PRIVATE_KEY,
   VALORA,
   WALLETCONNECT,
+  CELO_DANCE,
 } from './walletIcons';
 
 export const localStorageKeys = {
@@ -24,6 +25,7 @@ export enum SupportedProviders {
   CeloExtensionWallet = 'Celo Extension Wallet',
   CeloTerminal = 'Celo Terminal',
   CeloWallet = 'Celo Wallet',
+  CeloDance = 'CeloDance',
   Injected = 'Injected',
   Ledger = 'Ledger',
   MetaMask = 'MetaMask',
@@ -52,6 +54,14 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => 0,
+  },
+  [SupportedProviders.CeloDance]: {
+    name: 'CeloDance',
+    description: 'Send, vote, and earn rewards within one wallet',
+    icon: CELO_DANCE,
+    canConnect: () => true,
+    showInList: () => true,
+    listPriority: () => 1,
   },
   [SupportedProviders.Ledger]: {
     name: 'Ledger',
@@ -138,6 +148,7 @@ export const images = {
   [SupportedProviders.WalletConnect]: WALLETCONNECT,
   [SupportedProviders.Ledger]: LEDGER,
   [SupportedProviders.CeloWallet]: CELO,
+  [SupportedProviders.CeloDance]: CELO_DANCE,
   [SupportedProviders.CeloTerminal]: CELO,
   [SupportedProviders.CeloExtensionWallet]: CHROME_EXTENSION_STORE,
   [SupportedProviders.PrivateKey]: PRIVATE_KEY,
@@ -177,6 +188,7 @@ export enum WalletTypes {
   Valora = 'Valora',
   MetaMask = 'MetaMask',
   WalletConnect = 'WalletConnect',
+  CeloDance = 'CeloDance',
   CeloWallet = 'CeloWallet',
   CeloTerminal = 'CeloTerminal',
   CeloExtensionWallet = 'CeloExtensionWallet',
