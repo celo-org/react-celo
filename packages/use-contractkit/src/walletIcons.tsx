@@ -489,8 +489,7 @@ export const CELO_DANCE: React.FC<React.SVGProps<SVGSVGElement>> = (
     width="981px" 
     height="981px" 
     viewBox="0 0 981 981" 
-    fill ="#00000000"
-    fillRule ="inherit"
+    fill="#FFFFFF"
     style={{ height: '42px', width: '42px' }} 
     version="1.1" 
     xmlns="http://www.w3.org/2000/svg"
@@ -504,7 +503,6 @@ export const CELO_DANCE: React.FC<React.SVGProps<SVGSVGElement>> = (
     />
     <circle 
       id="circle" 
-      fill="#FFFFFF" 
       cx="491.5" 
       cy="492.5" 
       r="490.5"
