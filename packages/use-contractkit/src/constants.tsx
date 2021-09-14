@@ -62,6 +62,7 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => 1,
+    installURL:"https://celo.dance/"
   },
   [SupportedProviders.Ledger]: {
     name: 'Ledger',

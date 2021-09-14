@@ -11,8 +11,12 @@ interface Props {
   onSubmit: (connector: Connector) => void;
 }
 
+const getDeepLink = (uri: string) => {
+  return `celo://wallet/wc?uri=${uri}`;
+};
+
 export const CeloDance: React.FC<Props> = ({ onSubmit }: Props) => {
-  const uri = useWalletConnectConnector(onSubmit, isAndroid);
+  const uri = useWalletConnectConnector(onSubmit, isMobile, getDeepLink);
 
   return (
     <div className="tw-flex tw-flex-col tw-items-center">
