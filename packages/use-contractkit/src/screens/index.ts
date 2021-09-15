@@ -2,6 +2,7 @@ import React from 'react';
 
 import { SupportedProviders } from '../constants';
 import { Connector } from '../types';
+import { CeloDance } from './celo-dance';
 import { CeloWallet } from './celo-wallet';
 import { CeloExtensionWallet } from './cew';
 import { Ledger } from './ledger';
@@ -9,7 +10,7 @@ import { MetaMaskWallet } from './metamask';
 import { PrivateKey } from './private-key';
 import { Valora } from './valora';
 import { WalletConnect } from './wallet-connect';
-import { CeloDance } from './celo-dance';
+
 export const defaultScreens: {
   [P in SupportedProviders]: React.FC<ConnectorProps>;
 } = {

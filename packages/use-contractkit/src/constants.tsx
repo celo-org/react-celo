@@ -4,6 +4,7 @@ import { isMobile } from 'react-device-detect';
 import { ChainId, Provider } from './types';
 import {
   CELO,
+  CELO_DANCE,
   CHROME_EXTENSION_STORE,
   ETHEREUM,
   LEDGER,
@@ -11,7 +12,6 @@ import {
   PRIVATE_KEY,
   VALORA,
   WALLETCONNECT,
-  CELO_DANCE,
 } from './walletIcons';
 
 export const localStorageKeys = {
@@ -62,7 +62,7 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => 1,
-    installURL:"https://celo.dance/"
+    installURL: 'https://celo.dance/',
   },
   [SupportedProviders.Ledger]: {
     name: 'Ledger',

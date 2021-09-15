@@ -1,6 +1,6 @@
 import QrCode from 'qrcode.react';
 import React from 'react';
-import { isAndroid, isMobile } from 'react-device-detect';
+import { isMobile } from 'react-device-detect';
 import Loader from 'react-loader-spinner';
 
 import { CopyText } from '../components';
