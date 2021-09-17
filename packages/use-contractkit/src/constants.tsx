@@ -55,15 +55,6 @@ export const PROVIDERS: {
     showInList: () => true,
     listPriority: () => 0,
   },
-  [SupportedProviders.CeloDance]: {
-    name: 'CeloDance',
-    description: 'Send, vote, and earn rewards within one wallet',
-    icon: CELO_DANCE,
-    canConnect: () => true,
-    showInList: () => true,
-    listPriority: () => 1,
-    installURL: 'https://celo.dance/',
-  },
   [SupportedProviders.Ledger]: {
     name: 'Ledger',
     description: 'Sync with your Ledger hardware wallet',
@@ -140,6 +131,15 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => process.env.NODE_ENV !== 'production',
     listPriority: () => 1,
+  },
+  [SupportedProviders.CeloDance]: {
+    name: 'CeloDance',
+    description: 'Send, vote, and earn rewards within one wallet',
+    icon: CELO_DANCE,
+    canConnect: () => true,
+    showInList: () => true,
+    listPriority: () => 1,
+    installURL: 'https://celo.dance/',
   },
 };
 
