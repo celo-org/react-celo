@@ -2,6 +2,7 @@ import React from 'react';
 
 import { SupportedProviders } from '../constants';
 import { Connector } from '../types';
+import { CeloDance } from './celo-dance';
 import { CeloWallet } from './celo-wallet';
 import { CeloExtensionWallet } from './cew';
 import { Ledger } from './ledger';
@@ -18,6 +19,7 @@ export const defaultScreens: {
   [SupportedProviders.WalletConnect]: WalletConnect,
   [SupportedProviders.Ledger]: Ledger,
   [SupportedProviders.CeloWallet]: CeloWallet,
+  [SupportedProviders.CeloDance]: CeloDance,
   [SupportedProviders.CeloTerminal]: WalletConnect,
   [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.Injected]: MetaMaskWallet,
