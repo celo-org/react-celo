@@ -25,7 +25,7 @@
     "@celo/wallet-ledger": "1.2.4",
     "@celo/wallet-local": "1.2.4",
     "@celo/wallet-remote": "1.2.4",
-    "contractkit-walletconnect": "0.0.18",
+    "contractkit-walletconnect": "0.0.19",
     "@ethersproject/providers": "^5.3.0",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
