@@ -3266,10 +3266,10 @@ content-type@~1.0.4:
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
   integrity sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
 
-contractkit-walletconnect@0.0.18:
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/contractkit-walletconnect/-/contractkit-walletconnect-0.0.18.tgz#a90a0f1dc138670bf02cabe8e2ebbc7613b54510"
-  integrity sha512-OeW9lmQw5D9mMZWdQ0VhQ63r4ArNEMRS2tQvvg8Dn68fdI8eiG80pPjWGi374tmqIlmlgXErsdqw7YQuFe75WA==
+contractkit-walletconnect@0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/contractkit-walletconnect/-/contractkit-walletconnect-0.0.19.tgz#0e16a9793f58b092beb39de52c55946bd0532073"
+  integrity sha512-FifrhWc/Nd9j489NScnzefwlfof8g47aSLHVhvJ+URWSBROKJ+bt1mF7sOkTyrUcwPIKuDcxXcUj7IvjhqN9GQ==
   dependencies:
     "@celo/connect" "1.2.5"
     "@celo/utils" "1.2.5"
