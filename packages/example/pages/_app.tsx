@@ -1,7 +1,7 @@
 import '@celo-tools/use-contractkit/lib/styles.css';
 import '../styles/global.css';
 
-import { ContractKitProvider } from '@celo-tools/use-contractkit';
+import { ContractKitProvider, NetworkNames } from '@celo-tools/use-contractkit';
 import { AppComponent, AppProps } from 'next/dist/shared/lib/router/router';
 import { Toaster } from 'react-hot-toast';
 
@@ -13,6 +13,13 @@ const MyApp: AppComponent = ({ Component, pageProps }: AppProps) => {
         description: 'A demo DApp to showcase functionality',
         url: 'https://use-contractkit.vercel.app',
         icon: 'https://use-contractkit.vercel.app/favicon.ico',
+      }}
+      network={{
+        name: NetworkNames.Alfajores,
+        rpcUrl: 'https://alfajores-forno.celo-testnet.org',
+        graphQl: 'https://alfajores-blockscout.celo-testnet.org/graphiql',
+        explorer: 'https://alfajores-blockscout.celo-testnet.org',
+        chainId: 44787,
       }}
     >
       <Toaster
