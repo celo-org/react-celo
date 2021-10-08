@@ -48,10 +48,10 @@ function WrappedApp() {
   return (
     <ContractKitProvider
       dapp={{
-          name: "My awesome dApp",
-          description: "My awesome description",
-          url: "https://example.com",
-        }}
+        name: 'My awesome dApp',
+        description: 'My awesome description',
+        url: 'https://example.com',
+      }}
     >
       <App />
     </ContractKitProvider>
@@ -173,6 +173,8 @@ use-contractkit provides a `network` variable and an `updateNetwork` function yo
 
 If you'd prefer your DApp to only access a specific network (maybe you're deploying your testnet website at `https://test-app.dapp.name` and your mainnet version at `https://app.dapp.name`) you can pass the network you want to use as a variable into the provider you wrap your application with:
 
+You can also pass in a `network` prop to the `ContractKitProvider` as the default starting network
+
 ```
 import { ContractKitProvider, Alfajores } from '@celo-tools/use-contractkit';
 
@@ -181,6 +183,13 @@ function WrappedApp({ Component, pageProps }) {
     <ContractKitProvider
       ...
       networks={[Alfajores]}
+      network={{
+        name: NetworkNames.Alfajores,
+        rpcUrl: 'https://alfajores-forno.celo-testnet.org',
+        graphQl: 'https://alfajores-blockscout.celo-testnet.org/graphiql',
+        explorer: 'https://alfajores-blockscout.celo-testnet.org',
+        chainId: 44787,
+      }}
     >
       <App />
     </ContractKitProvider>
