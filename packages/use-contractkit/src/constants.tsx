@@ -1,6 +1,5 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
-
 import { ChainId, Provider } from './types';
 import {
   CELO,
@@ -65,7 +64,7 @@ export const PROVIDERS: {
   },
   [SupportedProviders.CeloWallet]: {
     name: 'Celo Wallet',
-    description: 'Connect to Celo Wallet for web or deskop',
+    description: 'Connect to Celo Wallet for web or desktop',
     icon: CELO,
     canConnect: () => true,
     showInList: () => true,
