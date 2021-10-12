@@ -224,7 +224,7 @@ To run use-contractkit locally, simply clone this repository and run:
 - `yarn`
 - `make dev`
 
-A hot reloading server should come up on `localhost:3000`, it's the exact same as what's at [use-contractkit.vercel.app](https://use-contractkit.vercel.app).
+A hot reloading server should come up on `localhost:3000`, it's the exact same as what's at [use-contractkit-c-labs.vercel.app](https://use-contractkit-c-labs.vercel.app).
 
 ## Support
 
