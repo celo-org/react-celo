@@ -90,6 +90,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   connectModal,
   actionModal,
   dapp,
+  network = Mainnet,
   networks = DEFAULT_NETWORKS,
 }: ContractKitProviderProps) => {
   const isMountedRef = useIsMounted();
@@ -97,6 +98,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   const [state, _dispatch] = useReducer(contractKitReducer, {
     ...initialState,
     ...previousConfig,
+    network,
     networks,
     dapp: {
       ...dapp,
@@ -139,6 +141,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
 interface ContractKitProviderProps {
   children: ReactNode;
   dapp: Dapp;
+  network: Network;
   networks?: Network[];
 
   connectModal?: ConnectModalProps;
