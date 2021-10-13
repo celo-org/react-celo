@@ -3,7 +3,7 @@ import { LocalWallet } from '@celo/wallet-local';
 import {
   WalletConnectWallet,
   WalletConnectWalletOptions,
-} from '@celo/wallet-walletconnect';
+} from 'contractkit-walletconnect';
 import { BigNumber } from 'bignumber.js';
 
 import { localStorageKeys, WalletTypes } from '../constants';

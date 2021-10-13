@@ -17,9 +17,7 @@ export function useWalletConnectConnector(
     let mounted = true;
     const initialiseConnection = async () => {
       const isMainnet = network.name === Mainnet.name;
-      const relayProvider = isMainnet
-        ? 'wss://walletconnect.celo.org'
-        : 'wss://walletconnect.celo-networks-dev.org';
+      const relayProvider = 'wss://relay.walletconnect.org';
       const connector = new WalletConnectConnector(
         network,
         {
