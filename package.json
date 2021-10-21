@@ -9,7 +9,8 @@
     "postinstall": "lerna bootstrap",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint -- --fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "reset-modules": "rm -rf node_modules/ packages/*/node_modules"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.28.2",
