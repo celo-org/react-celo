@@ -59,6 +59,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           typeof window !== 'undefined' &&
           provider.showInList() &&
           Object.keys(screens).find((screen) => screen === provider.name) &&
+          // eslint-disable-next-line
           // @ts-ignore cant deduce that the keys are from the SupportedProviders enum
           !denylist.includes(providerKey)
       ),

@@ -40,6 +40,7 @@ export class UnauthenticatedConnector implements Connector {
   }
 }
 
+/* eslint-disable */
 // TODO: Move this to wallet-base maybe
 class ReadOnlyWallet implements Wallet {
   constructor(public readonly account: string) {}
@@ -72,6 +73,7 @@ class ReadOnlyWallet implements Wallet {
     throw Error('Not implemented');
   }
 }
+/* eslint-enable */
 
 export class ReadOnlyConnector implements Connector {
   public initialised = true;
@@ -87,6 +89,7 @@ export class ReadOnlyConnector implements Connector {
       JSON.stringify([account])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, n.name);
+    // eslint-disable-next-line
     // @ts-ignore
     this.kit = newKit(n.rpcUrl, new ReadOnlyWallet(account));
     this.kit.defaultAccount = account;
