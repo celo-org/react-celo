@@ -1,4 +1,3 @@
-import { ReadOnlyConnector } from '.';
 import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import {
@@ -9,6 +8,7 @@ import {
   PrivateKeyConnector,
   UnauthenticatedConnector,
   WalletConnectConnector,
+  ReadOnlyConnector,
 } from './connectors';
 
 /**
