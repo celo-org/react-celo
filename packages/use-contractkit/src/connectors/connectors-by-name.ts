@@ -1,3 +1,4 @@
+import { ReadOnlyConnector } from '.';
 import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import {
@@ -28,4 +29,5 @@ export const CONNECTOR_TYPES: {
   [WalletTypes.CeloDance]: WalletConnectConnector,
   [WalletTypes.CeloTerminal]: WalletConnectConnector,
   [WalletTypes.CeloWallet]: WalletConnectConnector,
+  [WalletTypes.ReadOnly]: ReadOnlyConnector,
 };

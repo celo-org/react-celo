@@ -30,6 +30,7 @@ export enum SupportedProviders {
   MetaMask = 'MetaMask',
   PrivateKey = 'Private key',
   Valora = 'Valora',
+  ReadOnly = 'Readonly',
   WalletConnect = 'WalletConnect',
 }
 
@@ -131,6 +132,14 @@ export const PROVIDERS: {
     showInList: () => process.env.NODE_ENV !== 'production',
     listPriority: () => 1,
   },
+  [SupportedProviders.ReadOnly]: {
+    name: 'Readonly',
+    description: 'Enter an address to "pretend" to be it',
+    icon: PRIVATE_KEY,
+    canConnect: () => true,
+    showInList: () => true,
+    listPriority: () => 1,
+  },
   [SupportedProviders.CeloDance]: {
     name: 'CeloDance',
     description: 'Send, vote, and earn rewards within one wallet',
@@ -195,6 +204,7 @@ export enum WalletTypes {
   Ledger = 'Ledger',
   Injected = 'Injected',
   PrivateKey = 'PrivateKey',
+  ReadOnly = 'ReadOnly',
   Unauthenticated = 'Unauthenticated',
 }
 

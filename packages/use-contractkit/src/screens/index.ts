@@ -8,6 +8,7 @@ import { CeloExtensionWallet } from './cew';
 import { Ledger } from './ledger';
 import { MetaMaskWallet } from './metamask';
 import { PrivateKey } from './private-key';
+import { ReadOnly } from './readonly';
 import { Valora } from './valora';
 import { WalletConnect } from './wallet-connect';
 
@@ -24,6 +25,7 @@ export const defaultScreens: {
   [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.Injected]: MetaMaskWallet,
   [SupportedProviders.PrivateKey]: PrivateKey,
+  [SupportedProviders.ReadOnly]: ReadOnly,
 };
 
 export type ConnectorProps = {

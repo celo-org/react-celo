@@ -21,12 +21,14 @@ export interface ConnectModalProps {
   };
   RenderProvider?: React.FC<{ provider: Provider; onClick: () => void }>;
   reactModalProps?: Partial<ReactModal.Props>;
+  denylist?: SupportedProviders[];
 }
 
 export const ConnectModal: React.FC<ConnectModalProps> = ({
   reactModalProps,
   RenderProvider = ProviderSelect,
   screens = defaultScreens,
+  denylist = [SupportedProviders.ReadOnly],
 }: ConnectModalProps) => {
   const { connectionCallback } = useContractKitInternal();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
@@ -53,10 +55,12 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   const providers = useMemo<[providerKey: string, provider: Provider][]>(
     () =>
       Object.entries(PROVIDERS).filter(
-        ([, provider]) =>
+        ([providerKey, provider]) =>
           typeof window !== 'undefined' &&
           provider.showInList() &&
-          Object.keys(screens).find((screen) => screen === provider.name)
+          Object.keys(screens).find((screen) => screen === provider.name) &&
+          // @ts-ignore cant deduce that the keys are from the SupportedProviders enum
+          !denylist.includes(providerKey)
       ),
     [screens]
   );

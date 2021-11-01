@@ -1,4 +1,5 @@
 import { ContractKit, newKit, newKitFromWeb3 } from '@celo/contractkit';
+import { Wallet } from '@celo/wallet-base';
 import { LocalWallet } from '@celo/wallet-local';
 import {
   WalletConnectWallet,
@@ -33,6 +34,67 @@ export class UnauthenticatedConnector implements Connector {
     return this;
   }
 
+  close(): void {
+    clearPreviousConfig();
+    return;
+  }
+}
+
+// TODO: Move this to wallet-base maybe
+class ReadOnlyWallet implements Wallet {
+  constructor(public readonly account: string) {}
+  addAccount() {}
+  getAccounts() {
+    return [this.account];
+  }
+  removeAccount() {}
+  hasAccount(address?: string | undefined) {
+    return !!address && address === this.account;
+  }
+  // @ts-ignore
+  signTransaction() {
+    throw Error('Not implemented');
+  }
+  // @ts-ignore
+  signTypedData() {
+    throw Error('Not implemented');
+  }
+  // @ts-ignore
+  signPersonalMessage() {
+    throw Error('Not implemented');
+  }
+  // @ts-ignore
+  decrypt() {
+    throw Error('Not implemented');
+  }
+  // @ts-ignore
+  computeSharedSecret() {
+    throw Error('Not implemented');
+  }
+}
+
+export class ReadOnlyConnector implements Connector {
+  public initialised = true;
+  public type = WalletTypes.ReadOnly;
+  public kit: ContractKit;
+  constructor(n: Network, public readonly account: string) {
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletType,
+      WalletTypes.ReadOnly
+    );
+    localStorage.setItem(
+      localStorageKeys.lastUsedWalletArguments,
+      JSON.stringify([account])
+    );
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, n.name);
+    // @ts-ignore
+    this.kit = newKit(n.rpcUrl, new ReadOnlyWallet(account));
+    this.kit.defaultAccount = account;
+  }
+  initialise(): this {
+    this.initialised = true;
+    return this;
+  }
   close(): void {
     clearPreviousConfig();
     return;
