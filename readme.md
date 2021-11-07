@@ -1,7 +1,7 @@
 # use-contractkit
 
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-tools/use-contractkit/blob/master/LICENSEs)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/celo-tools/use-contractkit/issues)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/celo-org/use-contractkit/issues)
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![npm version](https://badge.fury.io/js/%40celo-tools%2Fuse-contractkit.png)](https://badge.fury.io/js/%40celo-tools%2Fuse-contractkit)
 
