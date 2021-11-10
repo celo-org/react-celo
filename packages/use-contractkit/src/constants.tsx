@@ -132,14 +132,6 @@ export const PROVIDERS: {
     showInList: () => process.env.NODE_ENV !== 'production',
     listPriority: () => 1,
   },
-  [SupportedProviders.ReadOnly]: {
-    name: 'Readonly',
-    description: 'Enter an address to "pretend" to be it',
-    icon: PRIVATE_KEY,
-    canConnect: () => true,
-    showInList: () => true,
-    listPriority: () => 1,
-  },
   [SupportedProviders.CeloDance]: {
     name: 'CeloDance',
     description: 'Send, vote, and earn rewards within one wallet',
@@ -148,6 +140,14 @@ export const PROVIDERS: {
     showInList: () => true,
     listPriority: () => 1,
     installURL: 'https://celo.dance/',
+  },
+  [SupportedProviders.ReadOnly]: {
+    name: 'Readonly',
+    description: 'Use an address without sending transactions',
+    icon: PRIVATE_KEY,
+    canConnect: () => true,
+    showInList: () => true,
+    listPriority: () => 1,
   },
 };
 

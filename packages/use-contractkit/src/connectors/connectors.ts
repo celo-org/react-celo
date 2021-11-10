@@ -40,7 +40,7 @@ export class UnauthenticatedConnector implements Connector {
   }
 }
 
-/* eslint-disable */
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-empty-function */
 // TODO: Move this to wallet-base maybe
 class ReadOnlyWallet implements Wallet {
   constructor(public readonly account: string) {}
