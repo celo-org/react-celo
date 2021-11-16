@@ -1,11 +1,16 @@
 import '@celo-tools/use-contractkit/lib/styles.css';
 import '../styles/global.css';
 
-import { ContractKitProvider, NetworkNames } from '@celo-tools/use-contractkit';
-import { AppComponent, AppProps } from 'next/dist/shared/lib/router/router';
+import { Alfajores, ContractKitProvider } from '@celo-tools/use-contractkit';
+import { AppProps } from 'next/app';
 import { Toaster } from 'react-hot-toast';
 
-const MyApp: AppComponent = ({ Component, pageProps }: AppProps) => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+function MyApp({ Component, pageProps, router }: AppProps) {
+  if (router.route === '/wallet') {
+    return <Component {...pageProps} />;
+  }
+
   return (
     <ContractKitProvider
       dapp={{
@@ -14,13 +19,7 @@ const MyApp: AppComponent = ({ Component, pageProps }: AppProps) => {
         url: 'https://use-contractkit.vercel.app',
         icon: 'https://use-contractkit.vercel.app/favicon.ico',
       }}
-      network={{
-        name: NetworkNames.Alfajores,
-        rpcUrl: 'https://alfajores-forno.celo-testnet.org',
-        graphQl: 'https://alfajores-blockscout.celo-testnet.org/graphiql',
-        explorer: 'https://alfajores-blockscout.celo-testnet.org',
-        chainId: 44787,
-      }}
+      network={Alfajores}
     >
       <Toaster
         position="top-right"
@@ -36,6 +35,6 @@ const MyApp: AppComponent = ({ Component, pageProps }: AppProps) => {
       </div>
     </ContractKitProvider>
   );
-};
+}
 
 export default MyApp;

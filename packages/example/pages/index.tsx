@@ -40,7 +40,6 @@ export default function Home(): React.ReactElement {
     performActions,
     walletType,
   } = useContractKit();
-
   const [summary, setSummary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
 
@@ -56,6 +55,7 @@ export default function Home(): React.ReactElement {
       kit.contracts.getStableToken(StableToken.cUSD),
       kit.contracts.getStableToken(StableToken.cEUR),
     ]);
+
     const [summary, celo, cusd, ceur] = await Promise.all([
       accounts.getAccountSummary(address).catch((e) => {
         console.error(e);
@@ -90,6 +90,7 @@ export default function Home(): React.ReactElement {
       toast.success('sendTransaction succeeded');
       await fetchSummary();
     } catch (e) {
+      throw e;
       toast.error((e as Error).message);
     } finally {
       setSending(false);
@@ -108,6 +109,7 @@ export default function Home(): React.ReactElement {
       });
       toast.success('signTypedData succeeded');
     } catch (e) {
+      throw e;
       toast.error((e as Error).message);
     }
 
@@ -128,6 +130,7 @@ export default function Home(): React.ReactElement {
       });
       toast.success('sign_personal succeeded');
     } catch (e) {
+      throw e;
       toast.error((e as Error).message);
     }
 
@@ -263,7 +266,11 @@ export default function Home(): React.ReactElement {
           <div className="mb-2 text-lg">Try it out</div>
           <div className="text-gray-600 mb-4">
             Connect to your wallet of choice and sign something for send a test
-            transaction
+            transaction (here is an example{' '}
+            <a target="_blank" className="text-blue-500" href="/wallet">
+              wallet
+            </a>
+            )
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center space-x-8 mb-4">
