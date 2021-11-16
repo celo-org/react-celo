@@ -1,6 +1,5 @@
 import { ContractKit } from '@celo/contractkit';
 import { useCallback } from 'react';
-
 import { CONNECTOR_TYPES } from './connectors';
 import {
   localStorageKeys,
@@ -69,7 +68,7 @@ export function useContractKitMethods(
   const updateNetwork = useCallback(
     async (newNetwork: Network) => {
       if (STATIC_NETWORK_WALLETS.includes(connector.type)) {
-        return console.error(
+        throw new Error(
           "The connected wallet's network must be changed from the wallet."
         );
       }

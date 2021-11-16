@@ -270,12 +270,12 @@ export default function Home(): React.ReactElement {
               <select
                 className="border border-gray-300 rounded px-4 py-2"
                 value={network.name}
-                onChange={(e) => {
+                onChange={async (e) => {
                   const newNetwork = networks.find(
                     (n) => n.name === e.target.value
                   );
                   if (newNetwork) {
-                    updateNetwork(newNetwork);
+                    await updateNetwork(newNetwork);
                   }
                 }}
               >

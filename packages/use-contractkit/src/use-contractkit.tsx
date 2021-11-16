@@ -1,5 +1,4 @@
 import { ContractKit } from '@celo/contractkit';
-
 import { WalletTypes } from './constants';
 import { useContractKitContext } from './contract-kit-provider';
 import { Connector, Dapp, Network } from './types';
@@ -18,7 +17,7 @@ export interface UseContractKit {
   connect: () => Promise<Connector>;
   destroy: () => Promise<void>;
   network: Network;
-  updateNetwork: (network: Network) => void;
+  updateNetwork: (network: Network) => Promise<void>;
 
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will
