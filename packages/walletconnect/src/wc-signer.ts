@@ -48,7 +48,7 @@ export class WalletConnectSigner implements Signer {
   async signRawTransaction(tx: CeloTx): Promise<EncodedTransaction> {
     const signedTx = await this.request<EncodedTransaction>(
       SupportedMethods.signTransaction,
-      [tx, this.account]
+      [tx, this.getNativeKey()]
     );
     return signedTx;
   }
@@ -58,7 +58,7 @@ export class WalletConnectSigner implements Signer {
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
     const signature = await this.request<string>(
       SupportedMethods.signTypedData,
-      [data, this.account]
+      [this.getNativeKey(), JSON.stringify(data)]
     );
     return ethUtil.fromRpcSig(signature) as { v: number; r: Buffer; s: Buffer };
   }
@@ -68,7 +68,7 @@ export class WalletConnectSigner implements Signer {
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
     const signature = await this.request<string>(
       SupportedMethods.personalSign,
-      [this.account, data]
+      [data, this.getNativeKey()]
     );
     return ethUtil.fromRpcSig(signature) as { v: number; r: Buffer; s: Buffer };
   }
@@ -76,14 +76,17 @@ export class WalletConnectSigner implements Signer {
   getNativeKey = (): string => this.account;
 
   async decrypt(data: Buffer): Promise<Buffer> {
-    const result = await this.request<string>(SupportedMethods.decrypt, [data]);
+    const result = await this.request<string>(SupportedMethods.decrypt, [
+      this.getNativeKey(),
+      data,
+    ]);
     return Buffer.from(result, 'hex');
   }
 
   async computeSharedSecret(publicKey: string): Promise<Buffer> {
     const result = await this.request<string>(
       SupportedMethods.computeSharedSecret,
-      [publicKey]
+      [this.getNativeKey(), publicKey]
     );
     return Buffer.from(result, 'hex');
   }

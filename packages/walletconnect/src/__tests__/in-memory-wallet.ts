@@ -1,9 +1,21 @@
 import { newKit } from '@celo/contractkit';
 import { toChecksumAddress } from '@celo/utils/lib/address';
+import { Alfajores } from '@celo-tools/use-contractkit';
 import WalletConnect from '@walletconnect/client';
+import { IInternalEvent } from '@walletconnect/types';
 import debugConfig from 'debug';
 
-import { CLIENT_EVENTS, SupportedMethods } from '../types';
+import {
+  AccountsProposal,
+  CLIENT_EVENTS,
+  ComputeSharedSecretProposal,
+  DecryptProposal,
+  PersonalSignProposal,
+  Request,
+  SignTransactionProposal,
+  SignTypedSignProposal,
+  SupportedMethods,
+} from '../types';
 import {
   parseComputeSharedSecret,
   parseDecrypt,
@@ -26,122 +38,139 @@ export const testAddress = toChecksumAddress(account);
 
 export function getTestWallet() {
   let client: WalletConnect;
-  let sessionTopic: string;
-  let pairingTopic: string;
 
-  const onSessionProposal = (proposal: SessionTypes.Proposal) => {
-    const response: ClientTypes.ApproveParams = {
-      response: {
-        metadata: {
-          name: 'Wallet',
-          description: 'A mobile payments wallet that works worldwide',
-          url: 'https://wallet.com',
-          icons: ['https://wallet.com/favicon.ico'],
-        },
-        state: {
-          accounts: [`${account}@celo:44787`],
-        },
-      },
-      proposal,
-    };
-    return client.approve(response);
+  const onSessionCreated = (
+    error: Error | null,
+    session: IInternalEvent
+  ): void => {
+    debug('onSessionCreated', error, session);
+    if (error) {
+      throw error;
+    }
   };
-  const onSessionCreated = (session: SessionTypes.Created) => {
-    sessionTopic = session.topic;
-  };
-  const onSessionUpdated = (session: SessionTypes.Update) => {
-    debug('onSessionUpdated', session);
-  };
-  const onSessionDeleted = (session: SessionTypes.DeleteParams) => {
-    debug('onSessionDeleted', session);
-  };
-
-  const onPairingProposal = (pairing: PairingTypes.Proposal) => {
-    debug('onPairingProposal', pairing);
-  };
-  const onPairingCreated = (pairing: PairingTypes.Created) => {
-    pairingTopic = pairing.topic;
-  };
-  const onPairingUpdated = (pairing: PairingTypes.Update) => {
-    debug('onPairingUpdated', pairing);
-  };
-  const onPairingDeleted = (pairing: PairingTypes.DeleteParams) => {
-    debug('onPairingDeleted', pairing);
-  };
-
-  async function onSessionRequest(event: SessionTypes.RequestParams) {
-    const {
-      topic,
-      request: {
-        // @ts-ignore
-        id,
-        method,
-        // @ts-ignore
-        params,
-      },
-    } = event;
-
-    let result: any;
-
-    if (method === SupportedMethods.personalSign) {
-      const { payload, from } = parsePersonalSign(params);
-      result = await wallet.signPersonalMessage(from, payload);
-    } else if (method === SupportedMethods.signTypedData) {
-      const { from, payload } = parseSignTypedData(params);
-      result = await wallet.signTypedData(from, payload);
-    } else if (method === SupportedMethods.signTransaction) {
-      const tx = parseSignTransaction(params);
-      result = await wallet.signTransaction(tx);
-    } else if (method === SupportedMethods.computeSharedSecret) {
-      const { from, publicKey } = parseComputeSharedSecret(params);
-      result = (await wallet.computeSharedSecret(from, publicKey)).toString(
-        'hex'
-      );
-    } else if (method === SupportedMethods.decrypt) {
-      const { from, payload } = parseDecrypt(params);
-      result = (await wallet.decrypt(from, payload)).toString('hex');
-    } else {
-      // client.reject({})
-      // in memory wallet should always approve actions
-      debug('unknown method', method);
-      return;
+  const onSessionDeleted = (
+    error: Error | null,
+    session: IInternalEvent
+  ): void => {
+    debug('onSessionDeleted', error);
+    if (error) {
+      throw error;
     }
 
-    return client.respond({
-      topic,
-      response: {
-        id,
-        jsonrpc: '2.0',
-        result,
-      },
+    if (session.event === 'disconnect') {
+      const params = session.params as { message: string }[];
+      const error =
+        params && params[0] && params[0].message
+          ? params[0].message
+          : 'Unknown error';
+      // TODO?
+    }
+  };
+  const onSessionRequest = (error: Error | null, session: Request): void => {
+    debug('onSessionRequest', error, session);
+    if (error) {
+      throw error;
+    }
+    return client.approveSession({
+      chainId: Alfajores.chainId,
+      accounts: [account],
+      networkId: 0,
+      rpcUrl: Alfajores.rpcUrl,
+    });
+  };
+  const onSessionUpdated = (error: Error | null, session: Request): void => {
+    debug('onSessionUpdated', error, session);
+    if (error) {
+      throw error;
+    }
+  };
+  const onWcSessionRequest = (error: Error | null, payload: Request): void => {
+    debug('onWcSessionRequest', error, payload);
+    if (error) {
+      throw error;
+    }
+  };
+  const onWcSessionUpdate = (error: Error | null, payload: Request): void => {
+    debug('onWcSessionUpdate', error, payload);
+    if (error) {
+      throw error;
+    }
+  };
+
+  async function onCallRequest(
+    error: Error | null,
+    event:
+      | AccountsProposal
+      | SignTransactionProposal
+      | PersonalSignProposal
+      | SignTypedSignProposal
+      | DecryptProposal
+      | ComputeSharedSecretProposal
+  ) {
+    const { method, params, id } = event;
+
+    let result;
+    let payload, from, publicKey, tx;
+    switch (method) {
+      case SupportedMethods.accounts:
+        result = wallet.getAccounts();
+        break;
+      case SupportedMethods.personalSign:
+        ({ payload, from } = parsePersonalSign(params));
+        result = await wallet.signPersonalMessage(from, payload);
+        break;
+      case SupportedMethods.signTypedData:
+        ({ from, payload } = parseSignTypedData(params));
+        result = await wallet.signTypedData(from, payload);
+        break;
+      case SupportedMethods.signTransaction:
+        tx = parseSignTransaction(params);
+        result = await wallet.signTransaction(tx);
+        break;
+      case SupportedMethods.computeSharedSecret:
+        ({ from, publicKey } = parseComputeSharedSecret(params));
+        result = (await wallet.computeSharedSecret(from, publicKey)).toString(
+          'hex'
+        );
+        break;
+      case SupportedMethods.decrypt:
+        ({ from, payload } = parseDecrypt(params));
+        result = (await wallet.decrypt(from, payload)).toString('hex');
+        break;
+      default:
+        client.rejectRequest({
+          id,
+          error: { message: `Unhandled method ${method}` }, // eslint-disable-line @typescript-eslint/restrict-template-expressions
+        });
+        return;
+    }
+
+    client.approveRequest({
+      id,
+      result,
     });
   }
 
   return {
-    init: async (uri: string) => {
-      client = await WalletConnect.init({
-        relayProvider: process.env.WALLET_CONNECT_BRIDGE,
-        controller: true,
-        logger: 'error',
+    init(uri: string) {
+      client = new WalletConnect({
+        uri,
+        bridge: process.env.WALLET_CONNECT_BRIDGE,
       });
 
-      client.on(CLIENT_EVENTS.session.proposal, onSessionProposal);
-      client.on(CLIENT_EVENTS.session.created, onSessionCreated);
-      client.on(CLIENT_EVENTS.session.updated, onSessionUpdated);
-      client.on(CLIENT_EVENTS.session.deleted, onSessionDeleted);
-      client.on(CLIENT_EVENTS.session.request, onSessionRequest);
-
-      client.on(CLIENT_EVENTS.pairing.proposal, onPairingProposal);
-      client.on(CLIENT_EVENTS.pairing.created, onPairingCreated);
-      client.on(CLIENT_EVENTS.pairing.updated, onPairingUpdated);
-      client.on(CLIENT_EVENTS.pairing.deleted, onPairingDeleted);
-
-      await client.pair({ uri });
+      client.on(CLIENT_EVENTS.connect, onSessionCreated);
+      client.on(CLIENT_EVENTS.disconnect, onSessionDeleted);
+      client.on(CLIENT_EVENTS.session_request, onSessionRequest);
+      client.on(CLIENT_EVENTS.session_update, onSessionUpdated);
+      client.on(CLIENT_EVENTS.call_request, onCallRequest); // eslint-disable-line @typescript-eslint/no-misused-promises
+      client.on(CLIENT_EVENTS.wc_sessionRequest, onWcSessionRequest);
+      client.on(CLIENT_EVENTS.wc_sessionUpdate, onWcSessionUpdate);
     },
-    async close() {
-      const reason = ERROR.USER_DISCONNECTED.format();
-      await client.disconnect({ topic: sessionTopic, reason });
-      await client.pairing.delete({ topic: pairingTopic, reason });
+    async close(message?: string) {
+      if (!client) {
+        throw new Error('Wallet must be initialized before calling close()');
+      }
+      await client.killSession({ message });
     },
   };
 }

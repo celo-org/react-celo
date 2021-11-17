@@ -60,20 +60,20 @@ export interface SignTransactionProposal extends IJsonRpcRequest {
 
 export interface PersonalSignProposal extends IJsonRpcRequest {
   method: SupportedMethods.personalSign;
-  params: [/*address*/ string, /*data*/ string];
+  params: [/*data*/ string, /*address*/ string];
 }
 
 export interface SignTypedSignProposal extends IJsonRpcRequest {
   method: SupportedMethods.signTypedData;
-  params: [/*data*/ EIP712TypedData, /*address*/ string];
+  params: [/*address*/ string, /*data*/ EIP712TypedData];
 }
 
 export interface DecryptProposal extends IJsonRpcRequest {
   method: SupportedMethods.decrypt;
-  params: [/*encrypted*/ Buffer, /*address*/ string];
+  params: [/*address*/ string, /*encrypted*/ Buffer];
 }
 
 export interface ComputeSharedSecretProposal extends IJsonRpcRequest {
   method: SupportedMethods.computeSharedSecret;
-  params: [/*publicKey*/ string, /*address*/ string];
+  params: [/*address*/ string, /*publicKey*/ string];
 }

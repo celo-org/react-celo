@@ -14,13 +14,13 @@ import {
 import { recoverTransaction } from '@celo/wallet-base';
 import Web3 from 'web3';
 
-import { WalletConnectWallet } from '.';
 import {
   getTestWallet,
   testAddress,
   testPrivateKey,
 } from './__tests__/in-memory-wallet';
 import { MockWalletConnectClient } from './__tests__/mock-client';
+import { WalletConnectWallet } from './wc-wallet';
 
 const CHAIN_ID = 44378;
 const TYPED_DATA = {
@@ -82,11 +82,11 @@ const E2E = !!walletConnectBridge;
 
 describe('WalletConnectWallet tests', () => {
   let testWallet: {
-    init: (uri: string) => Promise<void>;
+    init: (uri: string) => void;
     close: () => Promise<void>;
   };
 
-  const wallet: WalletConnectWallet = new WalletConnectWallet({
+  const wallet = new WalletConnectWallet({
     init: {
       bridge: walletConnectBridge,
     },
@@ -105,18 +105,13 @@ describe('WalletConnectWallet tests', () => {
 
   beforeAll(async () => {
     const uri = await wallet.getUri();
-    await testWallet?.init(uri!);
+    testWallet?.init(uri!);
     await wallet.init();
   }, 10000);
 
   afterAll(async () => {
     await wallet.close();
     await testWallet?.close();
-
-    // TODO: bug in WalletConnect V2
-    setTimeout(() => {
-      process.exit(0);
-    }, 10000);
   }, 10000);
 
   it('getAccounts()', () => {

@@ -252,11 +252,11 @@ export default function Wallet(): React.ReactElement {
           });
         case SupportedMethods.personalSign:
           decodedMessage = Buffer.from(
-            trimLeading0x(payload.params[1]),
+            trimLeading0x(payload.params[0]),
             'hex'
           ).toString('utf8');
           return setApprovalData({
-            accept: () => personalSign(payload.id, payload.params[1]),
+            accept: () => personalSign(payload.id, payload.params[0]),
             reject: () =>
               reject(payload.id, `User rejected personalSign ${payload.id}`),
             meta: {
@@ -267,8 +267,10 @@ export default function Wallet(): React.ReactElement {
         case SupportedMethods.signTypedData:
           return setApprovalData({
             accept: () =>
-              // TODO: figure out with the `as` is required here?
-              signTypedData(payload.id, payload.params[0] as EIP712TypedData),
+              signTypedData(
+                payload.id,
+                JSON.parse(payload.params[1]) as EIP712TypedData
+              ),
             reject: () =>
               reject(payload.id, `User rejected signTypedData ${payload.id}`),
             meta: {
@@ -278,7 +280,7 @@ export default function Wallet(): React.ReactElement {
           });
         case SupportedMethods.decrypt:
           return setApprovalData({
-            accept: () => decrypt(payload.id, payload.params[0]),
+            accept: () => decrypt(payload.id, payload.params[1]),
             reject: () =>
               reject(payload.id, `User rejected decrypt ${payload.id}`),
             meta: {
@@ -288,14 +290,14 @@ export default function Wallet(): React.ReactElement {
           });
         case SupportedMethods.computeSharedSecret:
           return setApprovalData({
-            accept: () => computeSharedSecret(payload.id, payload.params[0]),
+            accept: () => computeSharedSecret(payload.id, payload.params[1]),
             reject: () =>
               reject(
                 payload.id,
                 `User rejected computeSharedSecret ${payload.id}`
               ),
             meta: {
-              title: `Compute a shared secret for this publickey ${payload.params[0]}`,
+              title: `Compute a shared secret for this publickey ${payload.params[1]}`,
               raw: payload,
             },
           });
