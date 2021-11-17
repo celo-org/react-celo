@@ -90,7 +90,6 @@ export default function Home(): React.ReactElement {
       toast.success('sendTransaction succeeded');
       await fetchSummary();
     } catch (e) {
-      throw e;
       toast.error((e as Error).message);
     } finally {
       setSending(false);
@@ -109,7 +108,6 @@ export default function Home(): React.ReactElement {
       });
       toast.success('signTypedData succeeded');
     } catch (e) {
-      throw e;
       toast.error((e as Error).message);
     }
 
@@ -130,7 +128,6 @@ export default function Home(): React.ReactElement {
       });
       toast.success('sign_personal succeeded');
     } catch (e) {
-      throw e;
       toast.error((e as Error).message);
     }
 
