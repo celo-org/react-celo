@@ -5,13 +5,22 @@ import WalletConnect from '@walletconnect/client';
 import {
   ICreateSessionOptions,
   IInternalEvent,
-  ISessionParams,
   IWalletConnectSDKOptions,
 } from '@walletconnect/types';
 import debugConfig from 'debug';
 
-import { CLIENT_EVENTS, defaultBridge } from '.';
-import { WalletConnectWalletOptions } from './types';
+import { defaultBridge } from './constants';
+import {
+  AccountsProposal,
+  CLIENT_EVENTS,
+  ComputeSharedSecretProposal,
+  DecryptProposal,
+  PersonalSignProposal,
+  Request,
+  SignTransactionProposal,
+  SignTypedSignProposal,
+  WalletConnectWalletOptions,
+} from './types';
 import { WalletConnectSigner } from './wc-signer';
 
 const debug = debugConfig('kit:wallet:wallet-connect-wallet-v1');
@@ -120,31 +129,40 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       void this.close(error);
     }
   };
-  onSessionRequest = (error: Error | null, session: ISessionParams): void => {
+  onSessionRequest = (error: Error | null, session: Request): void => {
     debug('onSessionRequest', error, session);
     if (error) {
       throw error;
     }
   };
-  onSessionUpdated = (error: Error | null, session: ISessionParams): void => {
+  onSessionUpdated = (error: Error | null, session: Request): void => {
     debug('onSessionUpdated', error, session);
     if (error) {
       throw error;
     }
   };
-  onCallRequest = (error: Error | null, payload: unknown): void => {
+  onCallRequest = (
+    error: Error | null,
+    payload:
+      | AccountsProposal
+      | SignTransactionProposal
+      | PersonalSignProposal
+      | SignTypedSignProposal
+      | DecryptProposal
+      | ComputeSharedSecretProposal
+  ): void => {
     debug('onCallRequest', error, payload);
     if (error) {
       throw error;
     }
   };
-  onWcSessionRequest = (error: Error | null, payload: unknown): void => {
+  onWcSessionRequest = (error: Error | null, payload: Request): void => {
     debug('onWcSessionRequest', error, payload);
     if (error) {
       throw error;
     }
   };
-  onWcSessionUpdate = (error: Error | null, payload: unknown): void => {
+  onWcSessionUpdate = (error: Error | null, payload: Request): void => {
     debug('onWcSessionUpdate', error, payload);
     if (error) {
       throw error;
@@ -160,7 +178,6 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     await waitForTruthy(() => !!this.client?.connected);
 
     const addressToSigner = new Map<string, WalletConnectSigner>();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     this.client?.session.accounts.forEach((address) => {
       const signer = new WalletConnectSigner(
         this.client as WalletConnect,

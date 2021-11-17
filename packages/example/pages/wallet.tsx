@@ -31,6 +31,7 @@ const account = web3.eth.accounts.privateKeyToAccount(
   'e2d7138baa3a5600ac37984e40981591d7cf857bcadd7dc6f7d14023a17b0787'
 );
 kit.addAccount(account.privateKey);
+const wallet = kit.getWallet()!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
 
 export default function Wallet(): React.ReactElement {
   const inputRef = createRef<HTMLInputElement>();
@@ -114,25 +115,27 @@ export default function Wallet(): React.ReactElement {
     async (id: number, params: TransactionConfig) => {
       if (!connector) return;
 
-      await account.signTransaction(params).then((signedTx) => {
-        connector.approveRequest({
-          id,
-          result: { raw: signedTx.rawTransaction },
+      await wallet
+        .signTransaction({ ...params, chainId: Alfajores.chainId })
+        .then((result) => {
+          connector.approveRequest({
+            id,
+            result,
+          });
         });
-      });
       setApprovalData(null);
     },
     [connector]
   );
 
   const personalSign = useCallback(
-    (id: number, message: string) => {
+    async (id: number, message: string) => {
       if (!connector) return;
 
-      const result = account.sign(message);
+      const result = await wallet.signPersonalMessage(account.address, message);
       connector.approveRequest({
         id,
-        result: result.signature,
+        result,
       });
       setApprovalData(null);
     },
@@ -143,7 +146,57 @@ export default function Wallet(): React.ReactElement {
     async (id: number, data: EIP712TypedData) => {
       if (!connector) return;
 
-      const result = await kit.signTypedData(account.address, data);
+      const result = await wallet.signTypedData(account.address, data);
+
+      connector.approveRequest({
+        id,
+        result: result,
+      });
+      setApprovalData(null);
+    },
+    [connector]
+  );
+
+  const accounts = useCallback(
+    (id: number) => {
+      if (!connector) return;
+
+      const result = wallet.getAccounts();
+      connector.approveRequest({
+        id,
+        result,
+      });
+      setApprovalData(null);
+    },
+    [connector]
+  );
+
+  const decrypt = useCallback(
+    async (id: number, data: string) => {
+      if (!connector) return;
+
+      const result = await wallet.decrypt(
+        account.address,
+        Buffer.from(data, 'hex')
+      );
+
+      connector.approveRequest({
+        id,
+        result: result,
+      });
+      setApprovalData(null);
+    },
+    [connector]
+  );
+
+  const computeSharedSecret = useCallback(
+    async (id: number, publicKey: string) => {
+      if (!connector) return;
+
+      const result = await wallet.computeSharedSecret(
+        account.address,
+        publicKey
+      );
 
       connector.approveRequest({
         id,
@@ -172,6 +225,18 @@ export default function Wallet(): React.ReactElement {
 
       switch (payload.method) {
         case SupportedMethods.accounts:
+          return setApprovalData({
+            accept: () => accounts(payload.id),
+            reject: () =>
+              reject(
+                payload.id,
+                `User rejected computeSharedSecret ${payload.id}`
+              ),
+            meta: {
+              title: `Send all accounts of this wallet?`,
+              raw: payload,
+            },
+          });
           break;
         case SupportedMethods.signTransaction:
           return setApprovalData({
@@ -213,41 +278,38 @@ export default function Wallet(): React.ReactElement {
           });
         case SupportedMethods.decrypt:
           return setApprovalData({
-            accept: () => {
-              console.log(payload);
-
-              throw new Error(`${payload.method} is not implemented`);
-            },
+            accept: () => decrypt(payload.id, payload.params[0]),
             reject: () =>
               reject(payload.id, `User rejected decrypt ${payload.id}`),
             meta: {
-              title: `Decrypt`,
+              title: `Decrypt this encrypted message`,
               raw: payload,
             },
           });
         case SupportedMethods.computeSharedSecret:
           return setApprovalData({
-            accept: () => {
-              console.log(payload);
-
-              throw new Error(`${payload.method} is not implemented`);
-            },
+            accept: () => computeSharedSecret(payload.id, payload.params[0]),
             reject: () =>
               reject(
                 payload.id,
                 `User rejected computeSharedSecret ${payload.id}`
               ),
             meta: {
-              title: `Compute this shared secret`,
+              title: `Compute a shared secret for this publickey ${payload.params[0]}`,
               raw: payload,
             },
           });
-        default:
-          // eslint-disable-next-line
-          reject(payload.id, `${payload.method} not supported!`);
       }
     },
-    [personalSign, reject, signTransaction, signTypedData]
+    [
+      accounts,
+      computeSharedSecret,
+      decrypt,
+      personalSign,
+      reject,
+      signTransaction,
+      signTypedData,
+    ]
   );
 
   useEffect(() => {

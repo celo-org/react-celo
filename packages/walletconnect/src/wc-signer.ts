@@ -38,16 +38,11 @@ export class WalletConnectSigner implements Signer {
   }
 
   private request<T>(method: SupportedMethods, params: unknown[]): Promise<T> {
-    return this.client
-      .sendCustomRequest({
-        method,
-        params,
-        jsonrpc: '2.0',
-      })
-      .then((_) => {
-        console.log('request result', _);
-        return _ as unknown;
-      }) as Promise<T>;
+    return this.client.sendCustomRequest({
+      method,
+      params,
+      jsonrpc: '2.0',
+    }) as Promise<T>;
   }
 
   async signRawTransaction(tx: CeloTx): Promise<EncodedTransaction> {
@@ -61,11 +56,11 @@ export class WalletConnectSigner implements Signer {
   async signTypedData(
     data: EIP712TypedData
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
-    const rpcSig = await this.request<{ v: number; r: Buffer; s: Buffer }>(
+    const signature = await this.request<string>(
       SupportedMethods.signTypedData,
       [data, this.account]
     );
-    return rpcSig;
+    return ethUtil.fromRpcSig(signature) as { v: number; r: Buffer; s: Buffer };
   }
 
   async signPersonalMessage(
