@@ -5,8 +5,8 @@
     "noEmit": false,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "typeRoots": ["./src/global"]
+    "sourceMap": true
   },
-  "include": ["src/"]
+  "include": ["src/*.ts"],
+  "exclude": ["src/*.test.ts", "__tests__/*"]
 }

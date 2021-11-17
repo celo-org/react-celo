@@ -1,6 +1,5 @@
 import { sleep } from '@celo/base';
 import { CeloTx, EncodedTransaction } from '@celo/connect';
-import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import { RemoteWallet } from '@celo/wallet-remote';
 import WalletConnect from '@walletconnect/client';
 import {
@@ -9,25 +8,13 @@ import {
   ISessionParams,
   IWalletConnectSDKOptions,
 } from '@walletconnect/types';
+import debugConfig from 'debug';
 
-// import { ERROR } from '@walletconnect/utils';
-import { defaultBridge } from '.';
+import { CLIENT_EVENTS, defaultBridge } from '.';
 import { WalletConnectWalletOptions } from './types';
 import { WalletConnectSigner } from './wc-signer';
 
-// const debug = debugConfig('kit:wallet:wallet-connect-wallet');
-const debug = console.log.bind(console);
-
-// Note: Pulled events from https://docs.walletconnect.com/1.0/client-api#register-event-subscription
-const CLIENT_EVENTS = {
-  connect: 'connect',
-  disconnect: 'disconnect',
-  session_request: 'session_request',
-  session_update: 'session_update',
-  call_request: 'call_request',
-  wc_sessionRequest: 'wc_sessionRequest',
-  wc_sessionUpdate: 'wc_sessionUpdate',
-};
+const debug = debugConfig('kit:wallet:wallet-connect-wallet-v1');
 
 /**
  * Session establishment happens out of band so after somehow
@@ -63,23 +50,7 @@ const defaultInitOptions: IWalletConnectSDKOptions = {
 };
 
 const defaultConnectOptions: ICreateSessionOptions = {
-  chainId: 44787, // TODO
-  // permissions: {
-  //   blockchain: {
-  //     // alfajores, mainnet, baklava
-  //     chains: [
-  //       'eip155:44787',
-  //       'eip155:42220',
-  //       'eip155:62320',
-  //       // 'celo',
-  //       // 'alfajores',
-  //       // 'baklava',
-  //     ],
-  //   },
-  //   jsonrpc: {
-  //     methods: Object.values(SupportedMethods),
-  //   },
-  // },
+  chainId: 44787,
 };
 
 export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
@@ -105,7 +76,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   /**
    * Get the URI needed for out of band session establishment
    */
-  public async getUri(): Promise<string | void> {
+  public async getUri(): Promise<string | undefined> {
     this.client = this.getWalletConnectClient();
 
     this.client.on(CLIENT_EVENTS.connect, this.onSessionCreated);
@@ -113,14 +84,8 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.client.on(CLIENT_EVENTS.session_request, this.onSessionRequest);
     this.client.on(CLIENT_EVENTS.session_update, this.onSessionUpdated);
     this.client.on(CLIENT_EVENTS.call_request, this.onCallRequest);
-    this.client.on(
-      CLIENT_EVENTS.wc_sessionRequest,
-      console.log.bind(console, 'wc_sessionRequest')
-    );
-    this.client.on(
-      CLIENT_EVENTS.wc_sessionUpdate,
-      console.log.bind(console, 'wc_sessionUpdate')
-    );
+    this.client.on(CLIENT_EVENTS.wc_sessionRequest, this.onWcSessionRequest);
+    this.client.on(CLIENT_EVENTS.wc_sessionUpdate, this.onWcSessionUpdate);
 
     // Check if connection is already established
     if (!this.client.connected) {
@@ -134,53 +99,57 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return this.client?.uri;
   }
 
-  onSessionCreated = (error: Error | null, session: IInternalEvent) => {
+  onSessionCreated = (error: Error | null, session: IInternalEvent): void => {
     debug('onSessionCreated', error, session);
     if (error) {
       throw error;
     }
   };
-  onSessionDeleted = async (error: Error | null, session: IInternalEvent) => {
+  onSessionDeleted = (error: Error | null, session: IInternalEvent): void => {
     debug('onSessionDeleted', error);
     if (error) {
       throw error;
     }
 
     if (session.event === 'disconnect') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      await this.close(session.params[0].message as string);
+      const params = session.params as { message: string }[];
+      const error =
+        params && params[0] && params[0].message
+          ? params[0].message
+          : 'Unknown error';
+      void this.close(error);
     }
   };
-  onSessionRequest = (error: Error | null, session: ISessionParams) => {
+  onSessionRequest = (error: Error | null, session: ISessionParams): void => {
     debug('onSessionRequest', error, session);
     if (error) {
       throw error;
     }
   };
-  onSessionUpdated = (error: Error | null, session: ISessionParams) => {
+  onSessionUpdated = (error: Error | null, session: ISessionParams): void => {
     debug('onSessionUpdated', error, session);
     if (error) {
       throw error;
     }
   };
-  onCallRequest = (error: Error | null, payload: any) => {
+  onCallRequest = (error: Error | null, payload: unknown): void => {
     debug('onCallRequest', error, payload);
     if (error) {
       throw error;
     }
   };
-  // onWcSessionRequest = (error: Error | null, payload: any) => {
-  //   debug('onWcSessionRequest', error, payload);
-  //   if (error) {
-  //     throw error;
-  //   }
-  // };
-  // onWcSessionUpdate = (error: Error | null, payload: any) => {
-  //   debug('onWcSessionUpdate', error, payload);
-  //   if (error) {
-  //     throw error;
-  //   }
-  // };
+  onWcSessionRequest = (error: Error | null, payload: unknown): void => {
+    debug('onWcSessionRequest', error, payload);
+    if (error) {
+      throw error;
+    }
+  };
+  onWcSessionUpdate = (error: Error | null, payload: unknown): void => {
+    debug('onWcSessionUpdate', error, payload);
+    if (error) {
+      throw error;
+    }
+  };
 
   async loadAccountSigners(): Promise<Map<string, WalletConnectSigner>> {
     /**
@@ -198,7 +167,6 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
         this.client?.session,
         address
       );
-      console.log('HERE', signer);
       addressToSigner.set(address, signer);
     });
 

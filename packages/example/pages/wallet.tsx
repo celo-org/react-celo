@@ -1,36 +1,29 @@
-import { Alfajores } from '@celo-tools/use-contractkit';
 import { trimLeading0x } from '@celo/base';
 import { newKitFromWeb3 } from '@celo/contractkit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
+import { Alfajores } from '@celo-tools/use-contractkit';
+import {
+  AccountsProposal,
+  CLIENT_EVENTS,
+  ComputeSharedSecretProposal,
+  DecryptProposal,
+  PersonalSignProposal,
+  Request,
+  SessionProposal,
+  SignTransactionProposal,
+  SignTypedSignProposal,
+  SupportedMethods,
+} from '@celo-tools/walletconnect';
 import WalletConnect from '@walletconnect/client';
 import Head from 'next/head';
 import { createRef, useCallback, useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import Web3 from 'web3';
-import { TransactionConfig } from 'web3-core';
+import { TransactionConfig } from 'web3-core/types';
 
-import { PrimaryButton, SecondaryButton } from '../components';
+import { PrimaryButton } from '../components';
 
 const WALLET_ID = 'test-wallet-clabs';
-
-export enum SupportedMethods {
-  accounts = 'eth_accounts',
-  signTransaction = 'eth_signTransaction',
-  personalSign = 'personal_sign',
-  signTypedData = 'eth_signTypedData',
-  decrypt = 'personal_decrypt',
-  computeSharedSecret = 'personal_computeSharedSecret',
-}
-
-const CLIENT_EVENTS = {
-  connect: 'connect',
-  disconnect: 'disconnect',
-  session_request: 'session_request',
-  session_update: 'session_update',
-  call_request: 'call_request',
-  wc_sessionRequest: 'wc_sessionRequest',
-  wc_sessionUpdate: 'wc_sessionUpdate',
-};
 
 const web3 = new Web3(Alfajores.rpcUrl);
 const kit = newKitFromWeb3(web3);
@@ -164,8 +157,14 @@ export default function Wallet(): React.ReactElement {
   const handleNewRequests = useCallback(
     (
       error: Error | null,
-      payload: { id: number; method: string; params: unknown[] }
-    ) => {
+      payload:
+        | AccountsProposal
+        | SignTransactionProposal
+        | PersonalSignProposal
+        | SignTypedSignProposal
+        | DecryptProposal
+        | ComputeSharedSecretProposal
+    ): void => {
       if (error) return setError(error.message);
 
       console.log('call_request', payload);
@@ -175,72 +174,63 @@ export default function Wallet(): React.ReactElement {
         case SupportedMethods.accounts:
           break;
         case SupportedMethods.signTransaction:
-          setApprovalData({
-            accept: () =>
-              signTransaction(
-                payload.id,
-                payload.params[0] as TransactionConfig
-              ),
+          return setApprovalData({
+            accept: () => signTransaction(payload.id, payload.params[0]),
             reject: () =>
               reject(payload.id, `User rejected transaction ${payload.id}`),
             meta: {
-              // TODO: Find out how the value can be determined from the payload
+              // TODO: Find out how the value can be determined from the payload// eslint-disable-next-line
               // eslint-disable-next-line
               title: `Transfer ${payload.params[0].value} CELO from ${payload.params[0].from} to ${payload.params[0].to}`,
               raw: payload,
             },
           });
-          break;
         case SupportedMethods.personalSign:
           decodedMessage = Buffer.from(
-            trimLeading0x(payload.params[0] as string),
+            trimLeading0x(payload.params[1]),
             'hex'
           ).toString('utf8');
-          setApprovalData({
-            accept: () => personalSign(payload.id, payload.params[0] as string),
+          return setApprovalData({
+            accept: () => personalSign(payload.id, payload.params[1]),
             reject: () =>
               reject(payload.id, `User rejected personalSign ${payload.id}`),
             meta: {
-              // eslint-disable-next-line
               title: `Sign this message: ${decodedMessage}`,
               raw: payload,
             },
           });
-          break;
         case SupportedMethods.signTypedData:
-          setApprovalData({
+          return setApprovalData({
             accept: () =>
+              // TODO: figure out with the `as` is required here?
               signTypedData(payload.id, payload.params[0] as EIP712TypedData),
             reject: () =>
               reject(payload.id, `User rejected signTypedData ${payload.id}`),
             meta: {
-              // eslint-disable-next-line
               title: `Sign this typed data`,
               raw: payload,
             },
           });
-          break;
         case SupportedMethods.decrypt:
-          setApprovalData({
+          return setApprovalData({
             accept: () => {
               console.log(payload);
 
-              debugger;
+              throw new Error(`${payload.method} is not implemented`);
             },
             reject: () =>
               reject(payload.id, `User rejected decrypt ${payload.id}`),
             meta: {
-              // eslint-disable-next-line
               title: `Decrypt`,
               raw: payload,
             },
           });
-          break;
         case SupportedMethods.computeSharedSecret:
-          setApprovalData({
+          return setApprovalData({
             accept: () => {
               console.log(payload);
-              debugger;
+
+              throw new Error(`${payload.method} is not implemented`);
             },
             reject: () =>
               reject(
@@ -248,13 +238,12 @@ export default function Wallet(): React.ReactElement {
                 `User rejected computeSharedSecret ${payload.id}`
               ),
             meta: {
-              // eslint-disable-next-line
               title: `Compute this shared secret`,
               raw: payload,
             },
           });
-          break;
         default:
+          // eslint-disable-next-line
           reject(payload.id, `${payload.method} not supported!`);
       }
     },
@@ -262,50 +251,30 @@ export default function Wallet(): React.ReactElement {
   );
 
   useEffect(() => {
-    if (!connector) {
-      //   // Rehydration attemps.
-      //   window._connector = connector;
-      //   let storedValue = null;
-      //   try {
-      //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      //     storedValue = JSON.parse(localStorage.getItem(WALLET_ID) as string);
-      //     const connector = new WalletConnect(storedValue);
-      //     setConnector(connector);
+    if (!connector) return;
 
-      //     // connector.updateSession({
-      //     //   chainId: Alfajores.chainId,
-      //     //   accounts: [account.address],
-      //     //   networkId: 0,
-      //     //   rpcUrl: Alfajores.rpcUrl,
-      //     // });
-      //   } catch (e) {
-      //     // noop
-      //   }
-      return;
-    }
+    connector.on(
+      CLIENT_EVENTS.session_request,
+      (error, payload: SessionProposal) => {
+        if (error) return setError(error.message);
 
-    connector.on(CLIENT_EVENTS.session_request, (error, payload) => {
-      if (error) return setError(error.message);
+        setApprovalData({
+          accept: approveConnection,
+          reject: rejectConnection,
+          meta: {
+            title: `new connection from dApp ${payload.params[0].peerMeta.name}`,
+            raw: payload,
+          },
+        });
+      }
+    );
 
-      console.log(CLIENT_EVENTS.session_request, payload);
-      setApprovalData({
-        accept: approveConnection,
-        reject: rejectConnection,
-        meta: {
-          // eslint-disable-next-line
-          title: `new connection from dApp ${payload.params[0].peerMeta.name}`,
-          // eslint-disable-next-line
-          raw: payload,
-        },
-      });
-    });
-
-    connector.on(CLIENT_EVENTS.connect, (error, payload) => {
+    connector.on(CLIENT_EVENTS.connect, (error, payload: Request) => {
       if (error) return setError(error.message);
 
       console.log(CLIENT_EVENTS.connect, payload);
 
-      connector.on(CLIENT_EVENTS.disconnect, (error, payload) => {
+      connector.on(CLIENT_EVENTS.disconnect, (error, payload: Request) => {
         if (error) return setError(error.message);
         if (!connector) return;
 
@@ -315,17 +284,17 @@ export default function Wallet(): React.ReactElement {
       });
     });
 
-    connector.on(CLIENT_EVENTS.session_update, (error, payload) => {
+    connector.on(CLIENT_EVENTS.session_update, (error, payload: Request) => {
       if (error) return setError(error.message);
 
       console.log(CLIENT_EVENTS.session_update, payload);
     });
-    connector.on(CLIENT_EVENTS.wc_sessionRequest, (error, payload) => {
+    connector.on(CLIENT_EVENTS.wc_sessionRequest, (error, payload: Request) => {
       if (error) return setError(error.message);
 
       console.log(CLIENT_EVENTS.wc_sessionRequest, payload);
     });
-    connector.on(CLIENT_EVENTS.wc_sessionUpdate, (error, payload) => {
+    connector.on(CLIENT_EVENTS.wc_sessionUpdate, (error, payload: Request) => {
       if (error) return setError(error.message);
 
       console.log(CLIENT_EVENTS.wc_sessionUpdate, payload);

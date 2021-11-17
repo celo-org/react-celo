@@ -53,7 +53,7 @@ export class WalletConnectSigner implements Signer {
   async signRawTransaction(tx: CeloTx): Promise<EncodedTransaction> {
     const signedTx = await this.request<EncodedTransaction>(
       SupportedMethods.signTransaction,
-      [tx]
+      [tx, this.account]
     );
     return signedTx;
   }
@@ -63,7 +63,7 @@ export class WalletConnectSigner implements Signer {
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
     const rpcSig = await this.request<{ v: number; r: Buffer; s: Buffer }>(
       SupportedMethods.signTypedData,
-      [data]
+      [data, this.account]
     );
     return rpcSig;
   }
@@ -73,7 +73,7 @@ export class WalletConnectSigner implements Signer {
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
     const signature = await this.request<string>(
       SupportedMethods.personalSign,
-      [data]
+      [this.account, data]
     );
     return ethUtil.fromRpcSig(signature) as { v: number; r: Buffer; s: Buffer };
   }
