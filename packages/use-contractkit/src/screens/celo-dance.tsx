@@ -5,6 +5,7 @@ import Loader from 'react-loader-spinner';
 
 import { CopyText } from '../components';
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
+import { WalletIds } from '../constants';
 import { Connector } from '../types';
 
 interface Props {
@@ -16,7 +17,12 @@ const getDeepLink = (uri: string) => {
 };
 
 export const CeloDance: React.FC<Props> = ({ onSubmit }: Props) => {
-  const uri = useWalletConnectConnector(onSubmit, isMobile, getDeepLink);
+  const uri = useWalletConnectConnector(
+    onSubmit,
+    isMobile,
+    getDeepLink,
+    WalletIds.CeloDance
+  );
 
   return (
     <div className="tw-flex tw-flex-col tw-items-center">

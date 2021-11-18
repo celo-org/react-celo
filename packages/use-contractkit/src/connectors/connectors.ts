@@ -294,7 +294,7 @@ export class WalletConnectConnector implements Connector {
     options: WalletConnectWalletOptions,
     readonly autoOpen = false,
     readonly getDeeplinkUrl?: (uri: string) => string,
-    readonly version = 1
+    readonly version?: number
   ) {
     console.log(version);
     localStorage.setItem(
@@ -315,7 +315,6 @@ export class WalletConnectConnector implements Connector {
             init: options.init,
           } as WalletConnectWalletOptionsV1)
         : new WalletConnectWallet(options);
-
     this.kit = newKit(network.rpcUrl, wallet);
     this.version = version;
   }

@@ -3,6 +3,7 @@ import Loader from 'react-loader-spinner';
 
 import { CopyText } from '../components';
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
+import { WalletIds } from '../constants';
 import { Connector } from '../types';
 
 interface Props {
@@ -10,8 +11,12 @@ interface Props {
 }
 
 export const CeloWallet: React.FC<Props> = ({ onSubmit }: Props) => {
-  const uri = useWalletConnectConnector(onSubmit, false);
-
+  const uri = useWalletConnectConnector(
+    onSubmit,
+    false,
+    undefined,
+    WalletIds.CeloWallet
+  );
   const onClickPlatform = (platform: 'web' | 'desktop') => {
     if (!uri) return;
     let url;

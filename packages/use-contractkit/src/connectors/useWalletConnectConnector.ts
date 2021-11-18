@@ -1,26 +1,30 @@
 import { SupportedMethods } from '@celo-tools/walletconnect';
 import { useEffect, useState } from 'react';
 
-import { Mainnet } from '../constants';
+import { Mainnet, WalletIds } from '../constants';
 import { Connector } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
-import { useDappVersion } from '../utils/useDappVersion';
+import { useWalletVersion } from '../utils/useWalletVersion';
 import { WalletConnectConnector } from './connectors';
 
 export function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
   autoOpen: boolean,
-  getDeeplinkUrl?: (uri: string) => string
+  getDeeplinkUrl?: (uri: string) => string,
+  walletId?: WalletIds
 ): string {
   const { network, dapp, destroy, initConnector } = useContractKitInternal();
   const [uri, setUri] = useState('');
-  const version = useDappVersion(dapp);
+  const version = useWalletVersion(walletId);
 
   useEffect(() => {
     let mounted = true;
     const initialiseConnection = async () => {
       if (version == null) {
-        throw ', supported version not fetched yet';
+        console.warn(
+          'WalletconnectConnector initialization awaiting for version'
+        );
+        return;
       }
 
       const isMainnet = network.name === Mainnet.name;
