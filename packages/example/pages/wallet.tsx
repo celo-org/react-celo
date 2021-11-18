@@ -1,5 +1,5 @@
 import { trimLeading0x } from '@celo/base';
-import { newKitFromWeb3 } from '@celo/contractkit';
+import { newKitFromWeb3, StableToken } from '@celo/contractkit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import { Alfajores } from '@celo-tools/use-contractkit';
 import {
@@ -15,6 +15,7 @@ import {
   SupportedMethods,
 } from '@celo-tools/walletconnect';
 import WalletConnect from '@walletconnect/client';
+import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { createRef, useCallback, useEffect, useState } from 'react';
 import Modal from 'react-modal';
@@ -31,12 +32,26 @@ const account = web3.eth.accounts.privateKeyToAccount(
   'e2d7138baa3a5600ac37984e40981591d7cf857bcadd7dc6f7d14023a17b0787'
 );
 kit.addAccount(account.privateKey);
-const wallet = kit.getWallet()!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+const wallet = kit.getWallet()!;
+
+const defaultSummary = {
+  name: '',
+  address: '',
+  wallet: '',
+  celo: new BigNumber(0),
+  cusd: new BigNumber(0),
+  ceur: new BigNumber(0),
+};
+
+function truncateAddress(address: string) {
+  return `${address.slice(0, 8)}...${address.slice(36)}`;
+}
 
 export default function Wallet(): React.ReactElement {
   const inputRef = createRef<HTMLInputElement>();
   const [error, setError] = useState<string | null>(null);
   const [connector, setConnector] = useState<WalletConnect | null>(null);
+  const [summary, setSummary] = useState(defaultSummary);
   const [approvalData, setApprovalData] = useState<{
     accept: () => void;
     reject: () => void;
@@ -45,6 +60,32 @@ export default function Wallet(): React.ReactElement {
       raw: unknown;
     };
   } | null>(null);
+
+  const fetchSummary = useCallback(async () => {
+    const [accounts, goldToken, cUSD, cEUR] = await Promise.all([
+      kit.contracts.getAccounts(),
+      kit.contracts.getGoldToken(),
+      kit.contracts.getStableToken(StableToken.cUSD),
+      kit.contracts.getStableToken(StableToken.cEUR),
+    ]);
+
+    const [summary, celo, cusd, ceur] = await Promise.all([
+      accounts.getAccountSummary(account.address).catch((e) => {
+        console.error(e);
+        return defaultSummary;
+      }),
+      goldToken.balanceOf(account.address),
+      cUSD.balanceOf(account.address),
+      cEUR.balanceOf(account.address),
+    ]);
+
+    setSummary({
+      ...summary,
+      celo,
+      cusd,
+      ceur,
+    });
+  }, []);
 
   const connect = useCallback(() => {
     if (!inputRef.current) {
@@ -123,9 +164,11 @@ export default function Wallet(): React.ReactElement {
             result,
           });
         });
+
+      setTimeout(() => void fetchSummary(), 5000);
       setApprovalData(null);
     },
-    [connector]
+    [connector, fetchSummary]
   );
 
   const personalSign = useCallback(
@@ -315,6 +358,10 @@ export default function Wallet(): React.ReactElement {
   );
 
   useEffect(() => {
+    void fetchSummary();
+  }, [fetchSummary]);
+
+  useEffect(() => {
     if (!connector) return;
 
     connector.on(
@@ -407,6 +454,39 @@ export default function Wallet(): React.ReactElement {
         </PrimaryButton>
         <div className={error ? '' : 'hidden'}>
           <span className="text-red-500">{error}</span>
+        </div>
+        <div className="w-64 md:w-96 space-y-4 text-gray-700">
+          <div className="mb-4">
+            <div className="text-lg font-bold mb-2 text-gray-900">
+              Account summary
+            </div>
+            <div className="space-y-2">
+              <div>
+                walletconnect status:{' '}
+                {connector?.session.connected
+                  ? 'connected'
+                  : connector
+                  ? 'connecting…'
+                  : 'disconnected'}
+              </div>
+              <div>Name: {summary.name || 'Not set'}</div>
+              <div className="">
+                Address: {truncateAddress(account.address)}
+              </div>
+              <div className="">
+                Wallet address:{' '}
+                {summary.wallet ? truncateAddress(summary.wallet) : 'Not set'}
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-lg font-bold mb-2 text-gray-900">Balances</div>
+            <div className="space-y-2">
+              <div>CELO: {Web3.utils.fromWei(summary.celo.toFixed())}</div>
+              <div>cUSD: {Web3.utils.fromWei(summary.cusd.toFixed())}</div>
+              <div>cEUR: {Web3.utils.fromWei(summary.ceur.toFixed())}</div>
+            </div>
+          </div>
         </div>
         <Modal
           ariaHideApp={false}

@@ -87,6 +87,7 @@ export default function Home(): React.ReactElement {
           )
           .sendAndWaitForReceipt({ from: k.defaultAccount });
       });
+
       toast.success('sendTransaction succeeded');
       await fetchSummary();
     } catch (e) {
