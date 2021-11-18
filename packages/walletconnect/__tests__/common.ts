@@ -22,7 +22,7 @@ export function parseSignTypedData(params: any): {
   const [from, payload] = params;
   return { from, payload: JSON.parse(payload) };
 }
-export function parseSignTransaction(params: any): CeloTx {
+export function parseSignTransaction(params: any[]): CeloTx {
   return params[0];
 }
 export function parseComputeSharedSecret(params: any): {

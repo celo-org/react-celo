@@ -8,8 +8,8 @@ import {
   PersonalSignProposal,
   SignTransactionProposal,
   SignTypedSignProposal,
-} from '..';
-import { CLIENT_EVENTS, SupportedMethods } from '../types';
+} from '../src';
+import { CLIENT_EVENTS, SupportedMethods } from '../src/types';
 import {
   parseComputeSharedSecret,
   parseDecrypt,
@@ -37,13 +37,7 @@ export class MockWalletConnectClient extends EventEmitter {
         },
       },
     });
-    this.emit(CLIENT_EVENTS.connect, {
-      peer: {
-        metadata: {},
-        // tslint:disable-next-line
-        delete: () => {},
-      },
-    });
+    this.emit(CLIENT_EVENTS.connect, {});
   }
 
   createSession(): void {

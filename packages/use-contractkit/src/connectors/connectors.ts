@@ -311,10 +311,11 @@ export class WalletConnectConnector implements Connector {
       version == 1
         ? new WalletConnectWalletV1({
             connect: options.connect,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             init: options.init,
           } as WalletConnectWalletOptionsV1)
         : new WalletConnectWallet(options);
-    // const wallet = new WalletConnectWallet(options);
+
     this.kit = newKit(network.rpcUrl, wallet);
     this.version = version;
   }

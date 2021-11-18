@@ -14,13 +14,9 @@ import {
 import { recoverTransaction } from '@celo/wallet-base';
 import Web3 from 'web3';
 
-import {
-  getTestWallet,
-  testAddress,
-  testPrivateKey,
-} from './__tests__/in-memory-wallet';
-import { MockWalletConnectClient } from './__tests__/mock-client';
-import { WalletConnectWallet } from './wc-wallet';
+import { WalletConnectWallet } from '../src/wc-wallet';
+import { getTestWallet, testAddress, testPrivateKey } from './in-memory-wallet';
+import { MockWalletConnectClient } from './mock-client';
 
 const CHAIN_ID = 44378;
 const TYPED_DATA = {
@@ -132,7 +128,7 @@ describe('WalletConnectWallet tests', () => {
       );
     }
 
-    it('hasAccount()', async () => {
+    it('hasAccount()', () => {
       expect(wallet.hasAccount(unknownAddress)).toBeFalsy();
     });
 
@@ -141,8 +137,8 @@ describe('WalletConnectWallet tests', () => {
       try {
         await wallet.signPersonalMessage(unknownAddress, hexString);
         throw new Error('Expected exception to be thrown');
-      } catch (e: any) {
-        assertInvalidAddress(e);
+      } catch (e) {
+        assertInvalidAddress(e as Error);
       }
     });
 
@@ -150,8 +146,8 @@ describe('WalletConnectWallet tests', () => {
       try {
         await wallet.signTypedData(unknownAddress, TYPED_DATA);
         throw new Error('Expected exception to be thrown');
-      } catch (e: any) {
-        assertInvalidAddress(e);
+      } catch (e) {
+        assertInvalidAddress(e as Error);
       }
     });
 
@@ -162,8 +158,8 @@ describe('WalletConnectWallet tests', () => {
           from: unknownAddress,
         });
         throw new Error('Expected exception to be thrown');
-      } catch (e: any) {
-        assertInvalidAddress(e);
+      } catch (e) {
+        assertInvalidAddress(e as Error);
       }
     });
 
@@ -179,8 +175,8 @@ describe('WalletConnectWallet tests', () => {
       try {
         await wallet.decrypt(unknownAddress, encrypted);
         throw new Error('Expected exception to be thrown');
-      } catch (e: any) {
-        assertInvalidAddress(e);
+      } catch (e) {
+        assertInvalidAddress(e as Error);
       }
     });
 
@@ -191,14 +187,14 @@ describe('WalletConnectWallet tests', () => {
       try {
         await wallet.computeSharedSecret(unknownAddress, otherPubKey);
         throw new Error('Expected exception to be thrown');
-      } catch (e: any) {
-        assertInvalidAddress(e);
+      } catch (e) {
+        assertInvalidAddress(e as Error);
       }
     });
   });
 
   describe('with a known address', () => {
-    it('hasAccount()', async () => {
+    it('hasAccount()', () => {
       expect(wallet.hasAccount(testAddress)).toBeTruthy();
     });
 

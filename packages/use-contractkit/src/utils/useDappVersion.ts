@@ -1,7 +1,6 @@
-import { consoleLogger } from '@celo/base';
 import { useEffect, useState } from 'react';
-import { ChainId } from '..';
 
+import { ChainId } from '..';
 import type { Dapp } from '../types';
 
 export type WalletConnectRegistryDapp = {
@@ -26,7 +25,7 @@ export type WalletConnectRegistryDapp = {
   id: string;
   metadata: {
     shortName: string;
-    colors: {};
+    colors: Record<string, string>;
   };
   name: string;
   versions: string[];
@@ -49,7 +48,7 @@ export function useDappVersion(dapp: Dapp): number | null {
       );
       console.log(dapp, celoDApps);
 
-      // todo: find the dapp within the dapps and assign the correct version
+      // TODO: find the dapp within the dapps and assign the correct version
       setVersion(1);
     }
 

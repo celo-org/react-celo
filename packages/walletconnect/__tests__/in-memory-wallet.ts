@@ -15,7 +15,7 @@ import {
   SignTransactionProposal,
   SignTypedSignProposal,
   SupportedMethods,
-} from '../types';
+} from '../src/types';
 import {
   parseComputeSharedSecret,
   parseDecrypt,
