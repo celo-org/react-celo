@@ -1,4 +1,3 @@
-import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import {
   ICreateSessionOptions,
   IJsonRpcRequest,

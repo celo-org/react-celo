@@ -78,7 +78,7 @@ export class WalletConnectSigner implements Signer {
   async decrypt(data: Buffer): Promise<Buffer> {
     const result = await this.request<string>(SupportedMethods.decrypt, [
       this.getNativeKey(),
-      data,
+      data.toString('hex'),
     ]);
     return Buffer.from(result, 'hex');
   }

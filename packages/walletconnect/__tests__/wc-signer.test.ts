@@ -15,8 +15,12 @@ import { recoverTransaction } from '@celo/wallet-base';
 import Web3 from 'web3';
 
 import { WalletConnectWallet } from '../src/wc-wallet';
-import { getTestWallet, testAddress, testPrivateKey } from './in-memory-wallet';
-import { MockWalletConnectClient } from './mock-client';
+import {
+  getTestWallet,
+  testAddress,
+  testPrivateKey,
+} from './utils/in-memory-wallet';
+import { MockWalletConnectClient } from './utils/mock-client';
 
 const CHAIN_ID = 44378;
 const TYPED_DATA = {

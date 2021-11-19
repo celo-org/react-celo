@@ -3,13 +3,14 @@ import { EventEmitter } from 'events';
 
 import {
   AccountsProposal,
+  CLIENT_EVENTS,
   ComputeSharedSecretProposal,
   DecryptProposal,
   PersonalSignProposal,
   SignTransactionProposal,
   SignTypedSignProposal,
-} from '../src';
-import { CLIENT_EVENTS, SupportedMethods } from '../src/types';
+  SupportedMethods,
+} from '../../src/types';
 import {
   parseComputeSharedSecret,
   parseDecrypt,
