@@ -30,11 +30,14 @@ export interface WalletConnectWalletOptions {
   connect?: ICreateSessionOptions;
 }
 
-export interface Request extends IJsonRpcRequest {
-  params: unknown[];
+export interface Request<T extends unknown[], V extends string = string>
+  extends IJsonRpcRequest {
+  params: T;
+  method: V;
 }
-export interface SessionProposal extends IJsonRpcRequest {
-  params: [
+
+export type SessionProposal = Request<
+  [
     {
       chainId: number;
       peerId: string;
@@ -45,34 +48,31 @@ export interface SessionProposal extends IJsonRpcRequest {
         url: string;
       };
     }
-  ];
-}
-export interface AccountsProposal extends IJsonRpcRequest {
-  method: SupportedMethods.accounts;
-  params: unknown[];
-}
+  ]
+>;
+export type AccountsProposal = Request<unknown[], SupportedMethods.accounts>;
 
-export interface SignTransactionProposal extends IJsonRpcRequest {
-  method: SupportedMethods.signTransaction;
-  params: [/*tx*/ TransactionConfig, /*address*/ string];
-}
+export type SignTransactionProposal = Request<
+  [/*tx*/ TransactionConfig, /*address*/ string],
+  SupportedMethods.signTransaction
+>;
 
-export interface PersonalSignProposal extends IJsonRpcRequest {
-  method: SupportedMethods.personalSign;
-  params: [/*data*/ string, /*address*/ string];
-}
+export type PersonalSignProposal = Request<
+  [/*data*/ string, /*address*/ string],
+  SupportedMethods.personalSign
+>;
 
-export interface SignTypedSignProposal extends IJsonRpcRequest {
-  method: SupportedMethods.signTypedData;
-  params: [/*address*/ string, /*json string of EIP712TypedData*/ string];
-}
+export type SignTypedSignProposal = Request<
+  [/*address*/ string, /*json string of EIP712TypedData*/ string],
+  SupportedMethods.signTypedData
+>;
 
-export interface DecryptProposal extends IJsonRpcRequest {
-  method: SupportedMethods.decrypt;
-  params: [/*address*/ string, /*encrypted*/ string];
-}
+export type DecryptProposal = Request<
+  [/*address*/ string, /*encrypted*/ string],
+  SupportedMethods.decrypt
+>;
 
-export interface ComputeSharedSecretProposal extends IJsonRpcRequest {
-  method: SupportedMethods.computeSharedSecret;
-  params: [/*address*/ string, /*publicKey*/ string];
-}
+export type ComputeSharedSecretProposal = Request<
+  [/*address*/ string, /*publicKey*/ string],
+  SupportedMethods.computeSharedSecret
+>;

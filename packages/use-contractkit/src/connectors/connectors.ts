@@ -290,7 +290,7 @@ export class WalletConnectConnector implements Connector {
   private onCloseCallback?: () => void;
 
   constructor(
-    private network: Network,
+    readonly network: Network,
     options: WalletConnectWalletOptions,
     readonly autoOpen = false,
     readonly getDeeplinkUrl?: (uri: string) => string,

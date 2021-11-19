@@ -55,22 +55,22 @@ export class WalletConnectSigner implements Signer {
 
   async signTypedData(
     data: EIP712TypedData
-  ): Promise<{ v: number; r: Buffer; s: Buffer }> {
+  ): Promise<ReturnType<typeof ethUtil.fromRpcSig>> {
     const signature = await this.request<string>(
       SupportedMethods.signTypedData,
       [this.getNativeKey(), JSON.stringify(data)]
     );
-    return ethUtil.fromRpcSig(signature) as { v: number; r: Buffer; s: Buffer };
+    return ethUtil.fromRpcSig(signature);
   }
 
   async signPersonalMessage(
     data: string
-  ): Promise<{ v: number; r: Buffer; s: Buffer }> {
+  ): Promise<ReturnType<typeof ethUtil.fromRpcSig>> {
     const signature = await this.request<string>(
       SupportedMethods.personalSign,
       [data, this.getNativeKey()]
     );
-    return ethUtil.fromRpcSig(signature) as { v: number; r: Buffer; s: Buffer };
+    return ethUtil.fromRpcSig(signature);
   }
 
   getNativeKey = (): string => this.account;
