@@ -1,3 +1,4 @@
+import { SupportedMethods } from '@celo-tools/walletconnect';
 import { useEffect, useState } from 'react';
 
 import { Mainnet } from '../constants';
@@ -34,7 +35,14 @@ export function useWalletConnectConnector(
               url: dapp.url,
               icons: [dapp.icon],
             },
-            permissions: [],
+            permissions: {
+              blockchain: {
+                chains: [`eip155:${network.chainId}`],
+              },
+              jsonrpc: {
+                methods: Object.values(SupportedMethods),
+              },
+            },
           },
           init: {
             relayProvider,
