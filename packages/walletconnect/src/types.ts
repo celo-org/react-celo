@@ -65,12 +65,12 @@ export interface PersonalSignProposal extends IJsonRpcRequest {
 
 export interface SignTypedSignProposal extends IJsonRpcRequest {
   method: SupportedMethods.signTypedData;
-  params: [/*address*/ string, /*data*/ EIP712TypedData];
+  params: [/*address*/ string, /*json string of EIP712TypedData*/ string];
 }
 
 export interface DecryptProposal extends IJsonRpcRequest {
   method: SupportedMethods.decrypt;
-  params: [/*address*/ string, /*encrypted*/ Buffer];
+  params: [/*address*/ string, /*encrypted*/ string];
 }
 
 export interface ComputeSharedSecretProposal extends IJsonRpcRequest {
