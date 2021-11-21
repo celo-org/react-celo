@@ -12,6 +12,7 @@ import { isEthereumFromMetamask, isEthereumPresent } from './utils/ethereum';
 import {
   CELO,
   CELO_DANCE,
+  CELO_TERMINAL,
   CHROME_EXTENSION_STORE,
   ETHEREUM,
   LEDGER,
@@ -128,8 +129,7 @@ export const PROVIDERS: {
     name: SupportedProviders.CeloTerminal,
     type: WalletTypes.WalletConnect,
     description: 'Connect to the Celo Terminal desktop app',
-    // TODO get SVG icon
-    icon: 'https://raw.githubusercontent.com/zviadm/celoterminal/main/static/icon.png',
+    icon: CELO_TERMINAL,
     canConnect: () => true,
     showInList: () => !isMobile,
     listPriority: () => Priorities.Default,
@@ -234,7 +234,7 @@ export const images = {
   [SupportedProviders.Ledger]: LEDGER,
   [SupportedProviders.CeloWallet]: CELO,
   [SupportedProviders.CeloDance]: CELO_DANCE,
-  [SupportedProviders.CeloTerminal]: CELO,
+  [SupportedProviders.CeloTerminal]: CELO_TERMINAL,
   [SupportedProviders.CeloExtensionWallet]: CHROME_EXTENSION_STORE,
   [SupportedProviders.PrivateKey]: PRIVATE_KEY,
   [SupportedProviders.Steakwallet]: STEAKWALLET,
