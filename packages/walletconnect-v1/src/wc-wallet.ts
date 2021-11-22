@@ -16,7 +16,7 @@ import {
   ComputeSharedSecretProposal,
   DecryptProposal,
   PersonalSignProposal,
-  Request,
+  SessionProposal,
   SignTransactionProposal,
   SignTypedSignProposal,
   WalletConnectWalletOptions,
@@ -125,13 +125,13 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       void this.close(error);
     }
   };
-  onSessionRequest = (error: Error | null, session: Request): void => {
+  onSessionRequest = (error: Error | null, session: SessionProposal): void => {
     debug('onSessionRequest', error, session);
     if (error) {
       throw error;
     }
   };
-  onSessionUpdated = (error: Error | null, session: Request): void => {
+  onSessionUpdated = (error: Error | null, session: SessionProposal): void => {
     debug('onSessionUpdated', error, session);
     if (error) {
       throw error;
@@ -152,13 +152,16 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       throw error;
     }
   };
-  onWcSessionRequest = (error: Error | null, payload: Request): void => {
+  onWcSessionRequest = (
+    error: Error | null,
+    payload: SessionProposal
+  ): void => {
     debug('onWcSessionRequest', error, payload);
     if (error) {
       throw error;
     }
   };
-  onWcSessionUpdate = (error: Error | null, payload: Request): void => {
+  onWcSessionUpdate = (error: Error | null, payload: SessionProposal): void => {
     debug('onWcSessionUpdate', error, payload);
     if (error) {
       throw error;

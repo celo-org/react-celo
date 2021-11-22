@@ -380,36 +380,51 @@ export default function Wallet(): React.ReactElement {
       }
     );
 
-    connector.on(CLIENT_EVENTS.connect, (error, payload: Request) => {
-      if (error) return setError(error.message);
-
-      console.log(CLIENT_EVENTS.connect, payload);
-
-      connector.on(CLIENT_EVENTS.disconnect, (error, payload: Request) => {
+    connector.on(
+      CLIENT_EVENTS.connect,
+      (error, payload: Request<unknown[]>) => {
         if (error) return setError(error.message);
-        if (!connector) return;
 
-        console.log(CLIENT_EVENTS.disconnect, payload);
-        setConnector(null);
-        setApprovalData(null);
-      });
-    });
+        console.log(CLIENT_EVENTS.connect, payload);
 
-    connector.on(CLIENT_EVENTS.session_update, (error, payload: Request) => {
-      if (error) return setError(error.message);
+        connector.on(
+          CLIENT_EVENTS.disconnect,
+          (error, payload: Request<unknown[]>) => {
+            if (error) return setError(error.message);
+            if (!connector) return;
 
-      console.log(CLIENT_EVENTS.session_update, payload);
-    });
-    connector.on(CLIENT_EVENTS.wc_sessionRequest, (error, payload: Request) => {
-      if (error) return setError(error.message);
+            console.log(CLIENT_EVENTS.disconnect, payload);
+            setConnector(null);
+            setApprovalData(null);
+          }
+        );
+      }
+    );
 
-      console.log(CLIENT_EVENTS.wc_sessionRequest, payload);
-    });
-    connector.on(CLIENT_EVENTS.wc_sessionUpdate, (error, payload: Request) => {
-      if (error) return setError(error.message);
+    connector.on(
+      CLIENT_EVENTS.session_update,
+      (error, payload: Request<unknown[]>) => {
+        if (error) return setError(error.message);
 
-      console.log(CLIENT_EVENTS.wc_sessionUpdate, payload);
-    });
+        console.log(CLIENT_EVENTS.session_update, payload);
+      }
+    );
+    connector.on(
+      CLIENT_EVENTS.wc_sessionRequest,
+      (error, payload: Request<unknown[]>) => {
+        if (error) return setError(error.message);
+
+        console.log(CLIENT_EVENTS.wc_sessionRequest, payload);
+      }
+    );
+    connector.on(
+      CLIENT_EVENTS.wc_sessionUpdate,
+      (error, payload: Request<unknown[]>) => {
+        if (error) return setError(error.message);
+
+        console.log(CLIENT_EVENTS.wc_sessionUpdate, payload);
+      }
+    );
 
     connector.on(CLIENT_EVENTS.call_request, handleNewRequests);
   }, [
