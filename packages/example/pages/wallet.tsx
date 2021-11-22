@@ -1,7 +1,6 @@
 import { trimLeading0x } from '@celo/base';
 import { newKitFromWeb3, StableToken } from '@celo/contractkit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
-import { Alfajores } from '@celo-tools/use-contractkit';
 import {
   AccountsProposal,
   CLIENT_EVENTS,
@@ -14,6 +13,7 @@ import {
   SignTypedSignProposal,
   SupportedMethods,
 } from '@celo/wallet-walletconnect-v1';
+import { Alfajores } from '@celo-tools/use-contractkit';
 import WalletConnect from '@walletconnect/client';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
