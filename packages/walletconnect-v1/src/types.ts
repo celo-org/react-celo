@@ -91,3 +91,11 @@ export type ComputeSharedSecretProposal = Request<
   [/*address*/ string, /*publicKey*/ string],
   SupportedMethods.computeSharedSecret
 >;
+
+export type EthProposal =
+  | AccountsProposal
+  | SignTransactionProposal
+  | PersonalSignProposal
+  | SignTypedSignProposal
+  | DecryptProposal
+  | ComputeSharedSecretProposal;

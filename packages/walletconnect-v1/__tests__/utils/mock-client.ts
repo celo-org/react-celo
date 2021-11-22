@@ -1,16 +1,7 @@
 import { EncodedTransaction } from '@celo/connect/lib/types';
 import { EventEmitter } from 'events';
 
-import {
-  AccountsProposal,
-  CLIENT_EVENTS,
-  ComputeSharedSecretProposal,
-  DecryptProposal,
-  PersonalSignProposal,
-  SignTransactionProposal,
-  SignTypedSignProposal,
-  SupportedMethods,
-} from '../../src/types';
+import { CLIENT_EVENTS, EthProposal, SupportedMethods } from '../../src/types';
 import {
   parseComputeSharedSecret,
   parseDecrypt,
@@ -27,8 +18,9 @@ export class MockWalletConnectClient extends EventEmitter {
     accounts: string[];
   } | null = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  init(): void {}
+  init(): void {
+    // noop
+  }
 
   connect(): void {
     this.emit(CLIENT_EVENTS.session_request, {
@@ -65,47 +57,42 @@ export class MockWalletConnectClient extends EventEmitter {
       method,
       params,
       jsonrpc: '2.0',
-    } as AccountsProposal | SignTransactionProposal | PersonalSignProposal | SignTypedSignProposal | DecryptProposal | ComputeSharedSecretProposal);
+    } as EthProposal);
   }
 
   async request(
-    event:
-      | AccountsProposal
-      | SignTransactionProposal
-      | PersonalSignProposal
-      | SignTypedSignProposal
-      | DecryptProposal
-      | ComputeSharedSecretProposal
+    event: EthProposal
   ): Promise<string[] | string | EncodedTransaction> {
-    const { method, params } = event;
-
     let payload, from, publicKey;
-    switch (method) {
+
+    switch (event.method) {
       case SupportedMethods.accounts:
         return testWallet.getAccounts();
+
       case SupportedMethods.personalSign:
-        ({ from, payload } = parsePersonalSign(params));
+        ({ from, payload } = parsePersonalSign(event.params));
         return testWallet.signPersonalMessage(from, payload);
 
       case SupportedMethods.signTypedData:
-        ({ from, payload } = parseSignTypedData(params));
+        ({ from, payload } = parseSignTypedData(event.params));
         return testWallet.signTypedData(from, payload);
 
       case SupportedMethods.signTransaction:
-        return testWallet.signTransaction(parseSignTransaction(params));
+        return testWallet.signTransaction(parseSignTransaction(event.params));
 
       case SupportedMethods.decrypt:
-        ({ from, payload } = parseDecrypt(params));
+        ({ from, payload } = parseDecrypt(event.params));
         return (await testWallet.decrypt(from, payload)).toString('hex');
 
       case SupportedMethods.computeSharedSecret:
-        ({ from, publicKey } = parseComputeSharedSecret(params));
+        ({ from, publicKey } = parseComputeSharedSecret(event.params));
         return (await testWallet.computeSharedSecret(from, publicKey)).toString(
           'hex'
         );
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  disconnect(): void {}
+  disconnect(): void {
+    // noop
+  }
 }

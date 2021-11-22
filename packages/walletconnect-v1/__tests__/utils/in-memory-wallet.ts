@@ -6,15 +6,10 @@ import { IInternalEvent } from '@walletconnect/types';
 import debugConfig from 'debug';
 
 import {
-  AccountsProposal,
   CLIENT_EVENTS,
-  ComputeSharedSecretProposal,
-  DecryptProposal,
-  PersonalSignProposal,
+  EthProposal,
   Request,
   SessionProposal,
-  SignTransactionProposal,
-  SignTypedSignProposal,
   SupportedMethods,
 } from '../../src/types';
 import {
@@ -37,7 +32,10 @@ const [account] = wallet.getAccounts();
 export const testPrivateKey = privateKey;
 export const testAddress = toChecksumAddress(account);
 
-export function getTestWallet() {
+export function getTestWallet(): {
+  init: (uri: string) => void;
+  close: (message?: string) => Promise<void>;
+} {
   let client: WalletConnect;
 
   const onSessionCreated = (
@@ -110,17 +108,8 @@ export function getTestWallet() {
     }
   };
 
-  async function onCallRequest(
-    error: Error | null,
-    event:
-      | AccountsProposal
-      | SignTransactionProposal
-      | PersonalSignProposal
-      | SignTypedSignProposal
-      | DecryptProposal
-      | ComputeSharedSecretProposal
-  ) {
-    const { method, params, id } = event;
+  async function onCallRequest(error: Error | null, event: EthProposal) {
+    const { method, id } = event;
 
     let result;
     let payload, from, publicKey, tx;
@@ -129,25 +118,25 @@ export function getTestWallet() {
         result = wallet.getAccounts();
         break;
       case SupportedMethods.personalSign:
-        ({ payload, from } = parsePersonalSign(params));
+        ({ payload, from } = parsePersonalSign(event.params));
         result = await wallet.signPersonalMessage(from, payload);
         break;
       case SupportedMethods.signTypedData:
-        ({ from, payload } = parseSignTypedData(params));
+        ({ from, payload } = parseSignTypedData(event.params));
         result = await wallet.signTypedData(from, payload);
         break;
       case SupportedMethods.signTransaction:
-        tx = parseSignTransaction(params);
+        tx = parseSignTransaction(event.params);
         result = await wallet.signTransaction(tx);
         break;
       case SupportedMethods.computeSharedSecret:
-        ({ from, publicKey } = parseComputeSharedSecret(params));
+        ({ from, publicKey } = parseComputeSharedSecret(event.params));
         result = (await wallet.computeSharedSecret(from, publicKey)).toString(
           'hex'
         );
         break;
       case SupportedMethods.decrypt:
-        ({ from, payload } = parseDecrypt(params));
+        ({ from, payload } = parseDecrypt(event.params));
         result = (await wallet.decrypt(from, payload)).toString('hex');
         break;
       default:
