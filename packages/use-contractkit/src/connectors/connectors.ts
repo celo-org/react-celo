@@ -7,7 +7,7 @@ import {
 import {
   WalletConnectWallet as WalletConnectWalletV1,
   WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
-} from '@celo-tools/walletconnect';
+} from '@celo/wallet-walletconnect-v1';
 import { BigNumber } from 'bignumber.js';
 
 import { localStorageKeys, WalletTypes } from '../constants';
@@ -296,7 +296,6 @@ export class WalletConnectConnector implements Connector {
     readonly getDeeplinkUrl?: (uri: string) => string,
     readonly version?: number
   ) {
-    console.log(version);
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.WalletConnect

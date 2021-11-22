@@ -1,5 +1,5 @@
 {
-  "name": "@celo-tools/walletconnect",
+  "name": "@celo/wallet-walletconnect-v1",
   "version": "1.2.0-dev",
   "description": "WalletConnect wallet legacy (v1) implementation",
   "author": "Celo",

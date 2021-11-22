@@ -1,10 +1,9 @@
 import { CeloTx, EncodedTransaction, Signer } from '@celo/connect';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import WalletConnect from '@walletconnect/client';
-import { IClientMeta } from '@walletconnect/types';
 import * as ethUtil from 'ethereumjs-util';
 
-import { SupportedMethods } from './types';
+import { SupportedMethods, WCSession } from './types';
 
 /**
  * Implements the signer interface on top of the WalletConnect interface.
@@ -15,21 +14,7 @@ export class WalletConnectSigner implements Signer {
    */
   constructor(
     protected client: WalletConnect,
-    protected session:
-      | undefined
-      | {
-          connected: boolean;
-          accounts: string[];
-          chainId: number;
-          bridge: string;
-          key: string;
-          clientId: string;
-          clientMeta: IClientMeta | null;
-          peerId: string;
-          peerMeta: IClientMeta | null;
-          handshakeId: number;
-          handshakeTopic: string;
-        },
+    protected session: WCSession | undefined,
     protected account: string
   ) {}
 

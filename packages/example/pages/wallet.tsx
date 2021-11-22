@@ -13,7 +13,7 @@ import {
   SignTransactionProposal,
   SignTypedSignProposal,
   SupportedMethods,
-} from '@celo-tools/walletconnect';
+} from '@celo/wallet-walletconnect-v1';
 import WalletConnect from '@walletconnect/client';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';

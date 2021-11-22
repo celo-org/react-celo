@@ -1,4 +1,4 @@
-import { SupportedMethods } from '@celo-tools/walletconnect';
+import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
 import { useEffect, useState } from 'react';
 
 import { Mainnet, WalletIds } from '../constants';

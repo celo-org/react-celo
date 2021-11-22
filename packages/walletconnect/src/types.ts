@@ -1,4 +1,5 @@
 import {
+  IClientMeta,
   ICreateSessionOptions,
   IJsonRpcRequest,
   IWalletConnectSDKOptions,
@@ -34,6 +35,20 @@ export interface Request<T extends unknown[], V extends string = string>
   extends IJsonRpcRequest {
   params: T;
   method: V;
+}
+
+export interface WCSession {
+  connected: boolean;
+  accounts: string[];
+  chainId: number;
+  bridge: string;
+  key: string;
+  clientId: string;
+  clientMeta: IClientMeta | null;
+  peerId: string;
+  peerMeta: IClientMeta | null;
+  handshakeId: number;
+  handshakeTopic: string;
 }
 
 export type SessionProposal = Request<

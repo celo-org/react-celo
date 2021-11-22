@@ -12,6 +12,7 @@ import {
   DecryptProposal,
   PersonalSignProposal,
   Request,
+  SessionProposal,
   SignTransactionProposal,
   SignTypedSignProposal,
   SupportedMethods,
@@ -66,7 +67,10 @@ export function getTestWallet() {
       // TODO?
     }
   };
-  const onSessionRequest = (error: Error | null, session: Request): void => {
+  const onSessionRequest = (
+    error: Error | null,
+    session: SessionProposal
+  ): void => {
     debug('onSessionRequest', error, session);
     if (error) {
       throw error;
@@ -78,19 +82,28 @@ export function getTestWallet() {
       rpcUrl: Alfajores.rpcUrl,
     });
   };
-  const onSessionUpdated = (error: Error | null, session: Request): void => {
+  const onSessionUpdated = (
+    error: Error | null,
+    session: Request<unknown[]>
+  ): void => {
     debug('onSessionUpdated', error, session);
     if (error) {
       throw error;
     }
   };
-  const onWcSessionRequest = (error: Error | null, payload: Request): void => {
+  const onWcSessionRequest = (
+    error: Error | null,
+    payload: Request<unknown[]>
+  ): void => {
     debug('onWcSessionRequest', error, payload);
     if (error) {
       throw error;
     }
   };
-  const onWcSessionUpdate = (error: Error | null, payload: Request): void => {
+  const onWcSessionUpdate = (
+    error: Error | null,
+    payload: Request<unknown[]>
+  ): void => {
     debug('onWcSessionUpdate', error, payload);
     if (error) {
       throw error;

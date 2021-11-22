@@ -76,7 +76,6 @@ export function parseAddress(addressLike: string): AddressWithNetwork {
     try {
       return parse(addressLike);
     } catch (e) {
-      console.log(e);
       lastError = e;
     }
   }

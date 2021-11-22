@@ -33,7 +33,6 @@ const debug = debugConfig('kit:wallet:wallet-connect-wallet-v1');
 async function waitForTruthy(getValue: () => boolean, attempts = 10) {
   let waitDuration = 500;
   for (let i = 0; i < attempts; i++) {
-    console.log('loop', i, attempts, getValue());
     if (getValue()) {
       return;
     }
@@ -99,12 +98,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     // Check if connection is already established
     if (!this.client.connected) {
       // create new session
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       await this.client.createSession(this.connectOptions);
     }
-    console.log('here v1 uri', this.client?.uri);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.client?.uri;
   }
 
