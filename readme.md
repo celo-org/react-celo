@@ -140,7 +140,7 @@ function App() {
   async function transfer() {
     const kit = await getConnectedKit();
     const cUSD = await kit.contracts.getStableToken();
-    await cUSD.transfer('0x...', 10000).sendAndWaitForReceipt();
+    await cUSD.transfer('0x...', 10_000).sendAndWaitForReceipt();
   }
 
   return <button onClick={transfer}>Transfer</button>;
@@ -158,7 +158,7 @@ function App() {
   async function transfer() {
     await performActions(async (kit) => {
       const cUSD = await kit.contracts.getStableToken();
-      await cUSD.transfer('0x...', 10000).sendAndWaitForReceipt();
+      await cUSD.transfer('0x...', 10_000).sendAndWaitForReceipt();
     });
   }
 
