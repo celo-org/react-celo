@@ -4,6 +4,10 @@ import {
   WalletConnectWallet,
   WalletConnectWalletOptions,
 } from '@celo/wallet-walletconnect';
+import {
+  WalletConnectWallet as WalletConnectWalletV1,
+  WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
+} from '@celo/wallet-walletconnect-v1';
 import { BigNumber } from 'bignumber.js';
 
 import { localStorageKeys, WalletTypes } from '../constants';
@@ -286,10 +290,11 @@ export class WalletConnectConnector implements Connector {
   private onCloseCallback?: () => void;
 
   constructor(
-    private network: Network,
-    options: WalletConnectWalletOptions,
+    readonly network: Network,
+    options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     readonly autoOpen = false,
-    readonly getDeeplinkUrl?: (uri: string) => string
+    readonly getDeeplinkUrl?: (uri: string) => string,
+    readonly version?: number
   ) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
@@ -301,8 +306,12 @@ export class WalletConnectConnector implements Connector {
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
-    const wallet = new WalletConnectWallet(options);
+    const wallet =
+      version == 1
+        ? new WalletConnectWalletV1(options as WalletConnectWalletOptionsV1)
+        : new WalletConnectWallet(options as WalletConnectWalletOptions);
     this.kit = newKit(network.rpcUrl, wallet);
+    this.version = version;
   }
 
   onUri(callback: (uri: string) => void): void {

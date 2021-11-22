@@ -1,0 +1,61 @@
+{
+  "name": "@celo/wallet-walletconnect-v1",
+  "version": "1.2.0-dev",
+  "description": "WalletConnect wallet legacy (v1) implementation",
+  "author": "Celo",
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "keywords": [
+    "celo",
+    "blockchain",
+    "sdk",
+    "WalletConnect",
+    "wallet"
+  ],
+  "scripts": {
+    "dev": "yarn run build && tsc-watch",
+    "build": "tsc -b .",
+    "clean": "tsc -b . --clean",
+    "test": "jest --runInBand",
+    "test-staging": "WALLET_CONNECT_BRIDGE=wss://walletconnect.celo-networks-dev.org yarn test",
+    "test-production": "WALLET_CONNECT_BRIDGE=wss://walletconnect.celo.org yarn test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepublishOnly": "yarn build"
+  },
+  "dependencies": {
+    "@celo/wallet-walletconnect": "1.3.1",
+    "@walletconnect/client": "1.6.6",
+    "@walletconnect/types": "1.6.6",
+    "@walletconnect/utils": "1.6.6",
+    "debug": "^4.1.1",
+    "ethereumjs-util": "^7.0.8"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "homepage": "https://github.com/celo-org/use-contractkit#readme",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/celo-org/use-contractkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/celo-org/use-contractkit/issues"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "jest": "^27.3.1",
+    "ts-jest": "^27.0.7"
+  }
+}

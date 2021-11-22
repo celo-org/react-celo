@@ -1,5 +1,6 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
+
 import { ChainId, Provider } from './types';
 import {
   CELO,
@@ -196,6 +197,13 @@ export enum WalletTypes {
   Injected = 'Injected',
   PrivateKey = 'PrivateKey',
   Unauthenticated = 'Unauthenticated',
+}
+
+export enum WalletIds {
+  Valora = 'd01c7758d741b363e637a817a09bcf579feae4db9f5bb16f599fdd1f66e2f974',
+  CeloWallet = '36d854b702817e228d5c853c528d7bdb46f4bb041d255f67b82eb47111e5676b',
+  CeloDance = 'TODO',
+  CeloTerminal = '8f8506b7f191a8ab95a8295fc8ca147aa152b1358bee4283d6ad2468d97e0ca4',
 }
 
 /**

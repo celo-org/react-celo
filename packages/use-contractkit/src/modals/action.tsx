@@ -47,6 +47,7 @@ export const ActionModal: React.FC<Props> = ({
   return (
     <ReactModal
       isOpen={pendingActionCount > 0}
+      ariaHideApp={false}
       {...(reactModalProps
         ? reactModalProps
         : {

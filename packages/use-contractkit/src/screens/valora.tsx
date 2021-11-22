@@ -4,6 +4,7 @@ import { isMobile } from 'react-device-detect';
 import Loader from 'react-loader-spinner';
 
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
+import { WalletIds } from '../constants';
 import { Connector } from '../types';
 
 interface Props {
@@ -15,7 +16,12 @@ const getDeepLink = (uri: string) => {
 };
 
 export const Valora: React.FC<Props> = ({ onSubmit }: Props) => {
-  const uri = useWalletConnectConnector(onSubmit, isMobile, getDeepLink);
+  const uri = useWalletConnectConnector(
+    onSubmit,
+    isMobile,
+    getDeepLink,
+    WalletIds.Valora
+  );
 
   return (
     <div className="tw-flex tw-flex-col tw-items-center">

@@ -109,6 +109,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
       style={defaultModalStyles}
       overlayClassName="tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0"
       {...reactModalProps}
+      ariaHideApp={false}
     >
       <div className="use-ck tw-bg-white dark:tw-bg-gray-800 tw-p-2">
         <div className="tw-relative use-ck-connect-container">
