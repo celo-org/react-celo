@@ -5,23 +5,26 @@ import Loader from 'react-loader-spinner';
 
 import { CopyText } from '../components';
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
-import { WalletIds } from '../constants';
-import { Connector } from '../types';
+import { Connector, WalletEntry } from '../types';
 
 interface Props {
   onSubmit: (connector: Connector) => void;
+  wallet: WalletEntry;
 }
 
 const getDeepLink = (uri: string) => {
   return `celo://wallet/wc?uri=${uri}`;
 };
 
-export const CeloDance: React.FC<Props> = ({ onSubmit }: Props) => {
+export const WalletConnectCustom: React.FC<Props> = ({
+  onSubmit,
+  wallet,
+}: Props) => {
   const uri = useWalletConnectConnector(
     onSubmit,
     isMobile,
     getDeepLink,
-    WalletIds.CeloDance
+    wallet.id
   );
 
   return (
