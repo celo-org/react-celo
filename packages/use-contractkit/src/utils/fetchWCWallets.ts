@@ -2,6 +2,11 @@ import fetch from 'isomorphic-fetch';
 
 import { ChainId } from '../types';
 
+export interface AppEntryLogos {
+  sm: string;
+  md: string;
+  lg: string;
+}
 export interface AppEntry {
   id: string;
   name: string;
@@ -9,6 +14,7 @@ export interface AppEntry {
   homepage: string;
   chains: string[];
   versions: string[];
+  logos: AppEntryLogos;
   app: {
     browser: string;
     ios: string;
@@ -40,8 +46,26 @@ const WALLETCONNECT_REGISTRY_WALLETS_URL =
   'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/master/public/data/wallets.json';
 const WALLETCONNECT_REGISTRY_DAPPS_URL =
   'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/master/public/data/dapps.json';
+const LOGO_BASE_URL =
+  'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/master/public/logo';
+
+const makeLogos = (id: string): AppEntryLogos => ({
+  sm: `${LOGO_BASE_URL}/sm/${id}.jpeg`,
+  md: `${LOGO_BASE_URL}/md/${id}.jpeg`,
+  lg: `${LOGO_BASE_URL}/lg/${id}.jpeg`,
+});
+
+const CACHE: { ts: number | null; wallets: AppEntry[] | null } = {
+  ts: null,
+  wallets: null,
+};
+const MINUTE = 60 * 1_000;
 
 export default async function fetchWCWallets(): Promise<AppEntry[]> {
+  if (CACHE.wallets && CACHE.ts !== null && Date.now() - MINUTE <= CACHE.ts) {
+    return CACHE.wallets;
+  }
+
   const appRegistry = await Promise.all(
     [
       fetch(WALLETCONNECT_REGISTRY_WALLETS_URL),
@@ -51,7 +75,16 @@ export default async function fetchWCWallets(): Promise<AppEntry[]> {
     _.reduce((acc, apps) => acc.concat(Object.values(apps)), [] as AppEntry[])
   );
 
-  return appRegistry.filter((Wallet) =>
-    Wallet?.chains?.includes(`eip155:${ChainId.Mainnet}`)
+  const celoApps = appRegistry.filter((app) =>
+    app?.chains?.includes(`eip155:${ChainId.Mainnet}`)
   );
+
+  celoApps.forEach((app) => {
+    app.logos = makeLogos(app.id);
+  });
+
+  CACHE.ts = Date.now();
+  CACHE.wallets = celoApps;
+
+  return celoApps;
 }

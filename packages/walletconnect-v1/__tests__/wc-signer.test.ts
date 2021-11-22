@@ -108,12 +108,12 @@ describe('WalletConnectWallet tests', () => {
     const uri = await wallet.getUri();
     testWallet?.init(uri!);
     await wallet.init();
-  }, 10000);
+  }, 10_000);
 
   afterAll(async () => {
     await wallet.close();
     await testWallet?.close();
-  }, 10000);
+  }, 10_000);
 
   it('getAccounts()', () => {
     const accounts = wallet.getAccounts();
