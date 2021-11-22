@@ -22,7 +22,7 @@ export function useWalletConnectConnector(
     const initialiseConnection = async () => {
       if (version == null) {
         console.warn(
-          'WalletconnectConnector initialization awaiting for version'
+          'WalletconnectConnector initialization awaiting for registry'
         );
         return;
       }

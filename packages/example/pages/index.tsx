@@ -264,11 +264,11 @@ export default function Home(): React.ReactElement {
           <div className="mb-2 text-lg">Try it out</div>
           <div className="text-gray-600 mb-4">
             Connect to your wallet of choice and sign something for send a test
-            transaction (here is an example{' '}
+            transaction
+            <br />
             <a target="_blank" className="text-blue-500" href="/wallet">
-              wallet
+              Example wallet
             </a>
-            )
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center space-x-8 mb-4">

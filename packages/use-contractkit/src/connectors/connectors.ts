@@ -291,7 +291,7 @@ export class WalletConnectConnector implements Connector {
 
   constructor(
     readonly network: Network,
-    options: WalletConnectWalletOptions,
+    options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     readonly autoOpen = false,
     readonly getDeeplinkUrl?: (uri: string) => string,
     readonly version?: number
@@ -308,12 +308,8 @@ export class WalletConnectConnector implements Connector {
 
     const wallet =
       version == 1
-        ? new WalletConnectWalletV1({
-            connect: options.connect,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            init: options.init,
-          } as WalletConnectWalletOptionsV1)
-        : new WalletConnectWallet(options);
+        ? new WalletConnectWalletV1(options as WalletConnectWalletOptionsV1)
+        : new WalletConnectWallet(options as WalletConnectWalletOptions);
     this.kit = newKit(network.rpcUrl, wallet);
     this.version = version;
   }

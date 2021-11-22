@@ -5,8 +5,7 @@ import { Alfajores, ContractKitProvider } from '@celo-tools/use-contractkit';
 import { AppProps } from 'next/app';
 import { Toaster } from 'react-hot-toast';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-function MyApp({ Component, pageProps, router }: AppProps) {
+function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
   if (router.route === '/wallet') {
     return <Component {...pageProps} />;
   }
