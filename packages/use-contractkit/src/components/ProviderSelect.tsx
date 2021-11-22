@@ -25,9 +25,14 @@ export const ProviderSelect: React.FC<Props> = ({
     >
       <div className="tw-flex tw-flex-shrink-0 tw-mr-4 md:tw-mr-5 ">
         <span className="tw-my-auto">
-          {typeof provider.icon === 'string' ? (
+          {'md' in provider.icon ? (
             <img
-              src={provider.icon}
+              srcSet={`
+              ${provider.icon.sm} 1x,
+              ${provider.icon.md} 2x,
+              ${provider.icon.lg} 3x"
+              `.trim()}
+              src={provider.icon.md}
               alt={`${provider.name} logo`}
               style={{ height: '42px', width: '42px' }}
             />

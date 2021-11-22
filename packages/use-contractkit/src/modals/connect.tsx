@@ -1,23 +1,18 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import ReactModal from 'react-modal';
 
 import { ProviderSelect } from '../components/ProviderSelect';
-import { PROVIDERS, SupportedProviders } from '../constants';
-import { defaultScreens } from '../screens';
+import { PROVIDERS, SupportedProviders, WalletIds } from '../constants';
+import { ConnectorProps, defaultScreens } from '../screens';
+import { WalletConnectCustom } from '../screens/wallet-connect-custom';
 import { Connector, Provider } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
+import { useFetchWCWallets } from '../utils/useFetchWCWallets';
 import { defaultModalStyles } from './styles';
 
 export interface ConnectModalProps {
   screens?: {
-    [x in SupportedProviders]?: FunctionComponent<{
-      onSubmit: (connector: Connector) => void;
-    }>;
+    [x in SupportedProviders]?: React.FC<ConnectorProps>;
   };
   RenderProvider?: React.FC<{ provider: Provider; onClick: () => void }>;
   reactModalProps?: Partial<ReactModal.Props>;
@@ -31,6 +26,45 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   const { connectionCallback } = useContractKitInternal();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
   const [showMore, setShowMore] = useState(false);
+  const celoWallets = useFetchWCWallets();
+
+  const allScreens: Record<string, React.FC<ConnectorProps>> = useMemo(
+    () => ({
+      ...screens,
+      ...celoWallets.reduce((acc, wallet) => {
+        const WalletConnectCustomWrapper: React.FC<ConnectorProps> = ({
+          onSubmit,
+        }: ConnectorProps) => (
+          <WalletConnectCustom onSubmit={onSubmit} wallet={wallet} />
+        );
+
+        acc[wallet.id] = WalletConnectCustomWrapper;
+        return acc;
+      }, {} as Record<string, React.FC<ConnectorProps>>),
+    }),
+    [celoWallets, screens]
+  );
+
+  const _providers: Record<string, Provider> = useMemo(
+    () => ({
+      ...PROVIDERS,
+      ...celoWallets.reduce((acc, wallet) => {
+        acc[wallet.id] = {
+          name: wallet.name,
+          description: wallet.description || 'Missing description in registry',
+          icon: wallet.logos,
+          canConnect: () => true,
+          showInList: () => true,
+          // TODO: what do we think about that?
+          listPriority: () => (wallet.id === WalletIds.Valora ? 0 : 1),
+          // TODO: what do we think about that?
+          installURL: wallet.homepage,
+        };
+        return acc;
+      }, {} as Record<string, Provider>),
+    }),
+    [celoWallets]
+  );
 
   const close = useCallback((): void => {
     setAdding(null);
@@ -52,14 +86,17 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
 
   const providers = useMemo<[providerKey: string, provider: Provider][]>(
     () =>
-      Object.entries(PROVIDERS).filter(
-        ([, provider]) =>
-          typeof window !== 'undefined' &&
-          provider.showInList() &&
-          Object.keys(screens).find((screen) => screen === provider.name)
-      ),
-    [screens]
+      Object.entries(_providers)
+        .filter(
+          ([providerKey, provider]) =>
+            typeof window !== 'undefined' &&
+            provider.showInList() &&
+            Object.keys(allScreens).find((screen) => screen === providerKey)
+        )
+        .sort(([, a], [, b]) => a.listPriority() - b.listPriority()),
+    [_providers, allScreens]
   );
+
   const prioritizedProviders = useMemo<
     [providerKey: string, provider: Provider][]
   >(
@@ -95,7 +132,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
       </div>
     );
   } else {
-    const ProviderElement = screens?.[adding];
+    const ProviderElement = allScreens?.[adding];
     if (!ProviderElement) {
       return null;
     }

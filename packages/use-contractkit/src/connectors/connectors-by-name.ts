@@ -24,9 +24,4 @@ export const CONNECTOR_TYPES: {
   [WalletTypes.PrivateKey]: PrivateKeyConnector,
   [WalletTypes.Unauthenticated]: UnauthenticatedConnector,
   [WalletTypes.WalletConnect]: WalletConnectConnector,
-  // TODO: only show these ones dynamically depending on the which wallets run on our blockchain (eip155:42220)
-  [WalletTypes.Valora]: WalletConnectConnector,
-  [WalletTypes.CeloDance]: WalletConnectConnector,
-  [WalletTypes.CeloTerminal]: WalletConnectConnector,
-  [WalletTypes.CeloWallet]: WalletConnectConnector,
 };

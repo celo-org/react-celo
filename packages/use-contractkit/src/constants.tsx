@@ -4,14 +4,11 @@ import { isMobile } from 'react-device-detect';
 import { ChainId, Provider } from './types';
 import { isEthereumFromMetamask, isEthereumPresent } from './utils/ethereum';
 import {
-  CELO,
-  CELO_DANCE,
   CHROME_EXTENSION_STORE,
   ETHEREUM,
   LEDGER,
   METAMASK,
   PRIVATE_KEY,
-  VALORA,
   WALLETCONNECT,
 } from './walletIcons';
 
@@ -25,30 +22,16 @@ export const localStorageKeys = {
 
 export enum SupportedProviders {
   CeloExtensionWallet = 'Celo Extension Wallet',
-  CeloTerminal = 'Celo Terminal',
-  CeloWallet = 'Celo Wallet',
-  CeloDance = 'CeloDance',
   Injected = 'Injected',
   Ledger = 'Ledger',
   MetaMask = 'MetaMask',
   PrivateKey = 'Private key',
-  Valora = 'Valora',
   WalletConnect = 'WalletConnect',
 }
 
 export const PROVIDERS: {
   [K in SupportedProviders]: Provider;
 } = {
-  [SupportedProviders.Valora]: {
-    name: SupportedProviders.Valora,
-    description:
-      'Connect to Valora, a mobile payments app that works worldwide',
-    icon: VALORA,
-    canConnect: () => true,
-    showInList: () => true,
-    listPriority: () => 0,
-    installURL: 'https://valoraapp.com/',
-  },
   [SupportedProviders.WalletConnect]: {
     name: SupportedProviders.WalletConnect,
     description: 'Scan a QR code to connect your wallet',
@@ -64,23 +47,6 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => !isMobile,
     listPriority: () => 0,
-  },
-  [SupportedProviders.CeloWallet]: {
-    name: SupportedProviders.CeloWallet,
-    description: 'Connect to Celo Wallet for web or desktop',
-    icon: CELO,
-    canConnect: () => true,
-    showInList: () => true,
-    listPriority: () => (!isMobile ? 0 : 1),
-  },
-  [SupportedProviders.CeloTerminal]: {
-    name: SupportedProviders.CeloTerminal,
-    description: 'Connect to the Celo Terminal desktop app',
-    // TODO get SVG icon
-    icon: 'https://raw.githubusercontent.com/zviadm/celoterminal/main/static/icon.png',
-    canConnect: () => true,
-    showInList: () => !isMobile,
-    listPriority: () => 1,
   },
   [SupportedProviders.MetaMask]: {
     name: SupportedProviders.MetaMask,
@@ -134,25 +100,12 @@ export const PROVIDERS: {
     showInList: () => process.env.NODE_ENV !== 'production',
     listPriority: () => 1,
   },
-  [SupportedProviders.CeloDance]: {
-    name: SupportedProviders.CeloDance,
-    description: 'Send, vote, and earn rewards within one wallet',
-    icon: CELO_DANCE,
-    canConnect: () => true,
-    showInList: () => true,
-    listPriority: () => 1,
-    installURL: 'https://celo.dance/',
-  },
 };
 
 export const images = {
-  [SupportedProviders.Valora]: VALORA,
   [SupportedProviders.MetaMask]: METAMASK,
   [SupportedProviders.WalletConnect]: WALLETCONNECT,
   [SupportedProviders.Ledger]: LEDGER,
-  [SupportedProviders.CeloWallet]: CELO,
-  [SupportedProviders.CeloDance]: CELO_DANCE,
-  [SupportedProviders.CeloTerminal]: CELO,
   [SupportedProviders.CeloExtensionWallet]: CHROME_EXTENSION_STORE,
   [SupportedProviders.PrivateKey]: PRIVATE_KEY,
 } as const;
@@ -197,12 +150,8 @@ export const Localhost = {
 } as const;
 
 export enum WalletTypes {
-  Valora = 'Valora',
   MetaMask = 'MetaMask',
   WalletConnect = 'WalletConnect',
-  CeloDance = 'CeloDance',
-  CeloWallet = 'CeloWallet',
-  CeloTerminal = 'CeloTerminal',
   CeloExtensionWallet = 'CeloExtensionWallet',
   Ledger = 'Ledger',
   Injected = 'Injected',
