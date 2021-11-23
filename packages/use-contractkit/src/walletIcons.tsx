@@ -75,7 +75,6 @@ export const ETHEREUM: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 export const PRIVATE_KEY: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     className="dark:tw-text-gray-300"
-    style={{ height: '24px', width: '24px' }}
     aria-hidden="true"
     focusable="false"
     data-prefix="fas"
@@ -96,8 +95,6 @@ export const WALLETCONNECT: React.FC<React.SVGProps<SVGSVGElement>> = (
   props
 ) => (
   <svg
-    width="300px"
-    height="185px"
     viewBox="0 0 300 185"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
@@ -239,203 +236,6 @@ export const METAMASK: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
-export const CELO: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    id="Celo_Rings"
-    data-name="Celo Rings"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 950 950"
-    {...props}
-  >
-    <defs>
-      <style>{`.cls-1{fill:#fbcc5c;}.cls-2{fill:#35d07f;}.cls-3{fill:#5ea33b;}`}</style>
-    </defs>
-    <path
-      id="Bottom_Ring"
-      data-name="Bottom Ring"
-      className="cls-1"
-      d="M375,850c151.88,0,275-123.12,275-275S526.88,300,375,300,100,423.12,100,575,223.12,850,375,850Zm0,100C167.9,950,0,782.1,0,575S167.9,200,375,200,750,367.9,750,575,582.1,950,375,950Z"
-    />
-    <path
-      id="Top_Ring"
-      data-name="Top Ring"
-      className="cls-2"
-      d="M575,650c151.88,0,275-123.12,275-275S726.88,100,575,100,300,223.12,300,375,423.12,650,575,650Zm0,100c-207.1,0-375-167.9-375-375S367.9,0,575,0,950,167.9,950,375,782.1,750,575,750Z"
-    />
-    <path
-      id="Rings_Overlap"
-      data-name="Rings Overlap"
-      className="cls-3"
-      d="M587.39,750a274.38,274.38,0,0,0,54.55-108.06A274.36,274.36,0,0,0,750,587.4a373.63,373.63,0,0,1-29.16,133.45A373.62,373.62,0,0,1,587.39,750ZM308.06,308.06A274.36,274.36,0,0,0,200,362.6a373.63,373.63,0,0,1,29.16-133.45A373.62,373.62,0,0,1,362.61,200,274.38,274.38,0,0,0,308.06,308.06Z"
-    />
-  </svg>
-);
-
-export const VALORA: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    viewBox="0 0 256 256"
-    {...props}
-  >
-    <defs>
-      <radialGradient
-        id="f"
-        cx="33.9%"
-        cy="6.9%"
-        r="38.6%"
-        fx="33.9%"
-        fy="6.9%"
-        gradientTransform="rotate(68.4 .4 .1) scale(1 1.748)"
-      >
-        <stop offset="0%" stopColor="#00E09D" />
-        <stop offset="23.1%" stopColor="#00E09D" stopOpacity=".9" />
-        <stop offset="100%" stopColor="#3BEB9F" stopOpacity="0" />
-      </radialGradient>
-      <radialGradient
-        id="g"
-        cx="102.2%"
-        cy="53.7%"
-        r="43.7%"
-        fx="102.2%"
-        fy="53.7%"
-        gradientTransform="matrix(.67893 .7342 -.9508 .87921 .8 -.7)"
-      >
-        <stop offset="0%" stopColor="#19CF7A" />
-        <stop offset="100%" stopColor="#82D148" stopOpacity="0" />
-      </radialGradient>
-      <radialGradient
-        id="h"
-        cx="57.9%"
-        cy="99.8%"
-        r="34.6%"
-        fx="57.9%"
-        fy="99.8%"
-        gradientTransform="matrix(-.193 -.981 1.271 -.25 -.6 1.8)"
-      >
-        <stop offset="0%" stopColor="#F79A0F" />
-        <stop offset="31.7%" stopColor="#F4A227" stopOpacity=".9" />
-        <stop offset="100%" stopColor="#E6C832" stopOpacity="0" />
-      </radialGradient>
-      <radialGradient
-        id="j"
-        cx="61.3%"
-        cy="39.9%"
-        r="17.9%"
-        fx="61.3%"
-        fy="39.9%"
-        gradientTransform="matrix(.6046 .79653 -1.17647 .893 .7 -.4)"
-      >
-        <stop offset="0%" stopColor="#73D444" />
-        <stop offset="33.5%" stopColor="#73D444" stopOpacity=".5" />
-        <stop offset="100%" stopColor="#73D444" stopOpacity="0" />
-      </radialGradient>
-      <radialGradient
-        id="k"
-        cx="90.1%"
-        cy="45.1%"
-        r="34.2%"
-        fx="90.1%"
-        fy="45.1%"
-        gradientTransform="rotate(93.3 .9 .4) scale(1 .878)"
-      >
-        <stop offset="0%" stopColor="#00CF5C" />
-        <stop offset="35.1%" stopColor="#00CF5C" stopOpacity=".8" />
-        <stop offset="62.8%" stopColor="#00D05B" stopOpacity=".3" />
-        <stop offset="100%" stopColor="#00D05B" stopOpacity="0" />
-      </radialGradient>
-      <radialGradient
-        id="l"
-        cx="16%"
-        cy="11.7%"
-        r="52.9%"
-        fx="16%"
-        fy="11.7%"
-        gradientTransform="matrix(.642 .767 -1.29 1.08 .2 -.1)"
-      >
-        <stop offset="0%" stopColor="#FFF" stopOpacity=".7" />
-        <stop offset="84.6%" stopColor="#FFF" stopOpacity=".1" />
-        <stop offset="100%" stopColor="#FFF" stopOpacity="0" />
-      </radialGradient>
-      <linearGradient id="c" x1="46.5%" x2="67.4%" y1="55.3%" y2="32.9%">
-        <stop offset="0%" stopColor="#35D07F" stopOpacity="0" />
-        <stop offset="100%" stopColor="#00D063" />
-      </linearGradient>
-      <linearGradient id="d" x1="47.3%" x2="76.6%" y1="98%" y2="16%">
-        <stop offset="0%" stopColor="#F8CD0C" />
-        <stop offset="29.2%" stopColor="#F2CE27" />
-        <stop offset="100%" stopColor="#86D23C" stopOpacity="0" />
-      </linearGradient>
-      <linearGradient id="e" x1=".3%" x2="64.5%" y1="54.9%" y2="18.9%">
-        <stop offset="0%" stopColor="#FDEB3F" />
-        <stop offset="100%" stopColor="#FBC74B" stopOpacity="0" />
-      </linearGradient>
-      <linearGradient id="i" x1="23.2%" x2="27.7%" y1="8.2%" y2="24.2%">
-        <stop offset="0%" stopColor="#39E2A4" />
-        <stop offset="100%" stopColor="#67E290" stopOpacity="0" />
-      </linearGradient>
-      <path id="b" d="M-82-82h420v420H-82z" />
-      <path
-        id="m"
-        d="M142.2 206.2c6.8-53.5 31.9-83.9 69.7-111.5l-19.3-25.6c-24.8 19-51.8 46.1-64.3 83.4C118 122 96.7 95.3 62.3 69L42 95.3c43 30.7 64.6 65.1 70.5 111h29.6z"
-      />
-      <clipPath id="a">
-        <path d="M166.7 0c25.7 0 38.6 0 52.4 4.4a54.4 54.4 0 0132.5 32.5c4.4 13.8 4.4 26.7 4.4 52.4v77.4c0 25.7 0 38.6-4.4 52.4a54.4 54.4 0 01-32.5 32.5c-13.8 4.4-26.7 4.4-52.4 4.4H89.3c-25.7 0-38.6 0-52.4-4.4a54.4 54.4 0 01-32.5-32.5C0 205.3 0 192.4 0 166.7V89.3c0-25.7 0-38.6 4.4-52.4A54.4 54.4 0 0136.9 4.4C50.7 0 63.6 0 89.3 0h77.4z" />
-      </clipPath>
-      <filter
-        id="n"
-        width="140%"
-        height="149.6%"
-        x="-20%"
-        y="-21.2%"
-        filterUnits="objectBoundingBox"
-      >
-        <feOffset dy="5" in="SourceAlpha" result="shadowOffsetOuter1" />
-        <feGaussianBlur
-          in="shadowOffsetOuter1"
-          result="shadowBlurOuter1"
-          stdDeviation="10.5"
-        />
-        <feColorMatrix
-          in="shadowBlurOuter1"
-          result="shadowMatrixOuter1"
-          values="0 0 0 0 0.0454666095 0 0 0 0 0.692623415 0 0 0 0 0.418861661 0 0 0 0.1 0"
-        />
-        <feOffset dy="1" in="SourceAlpha" result="shadowOffsetOuter2" />
-        <feGaussianBlur
-          in="shadowOffsetOuter2"
-          result="shadowBlurOuter2"
-          stdDeviation="2.5"
-        />
-        <feColorMatrix
-          in="shadowBlurOuter2"
-          result="shadowMatrixOuter2"
-          values="0 0 0 0 0.100878734 0 0 0 0 0.550724638 0 0 0 0 0.389331606 0 0 0 0.07 0"
-        />
-        <feMerge>
-          <feMergeNode in="shadowMatrixOuter1" />
-          <feMergeNode in="shadowMatrixOuter2" />
-        </feMerge>
-      </filter>
-    </defs>
-    <g clipPath="url(#a)">
-      <use fill="#35D07F" xlinkHref="#b" />
-      <use fill="url(#c)" xlinkHref="#b" fillOpacity=".8" />
-      <use fill="url(#d)" xlinkHref="#b" />
-      <use fill="url(#e)" xlinkHref="#b" />
-      <use fill="url(#f)" xlinkHref="#b" />
-      <use fill="url(#g)" xlinkHref="#b" />
-      <use fill="url(#h)" xlinkHref="#b" />
-      <use fill="url(#i)" xlinkHref="#b" />
-      <use fill="url(#j)" xlinkHref="#b" fillOpacity=".6" />
-      <use fill="url(#k)" xlinkHref="#b" />
-      <path fill="url(#l)" fillOpacity=".5" d="M-100-100h455v455h-455z" />
-      <use xlinkHref="#m" filter="url(#n)" />
-      <use fill="#FFF" xlinkHref="#m" />
-    </g>
-  </svg>
-);
-
 export const CHROME_EXTENSION_STORE: React.FC<React.SVGProps<SVGSVGElement>> = (
   props
 ) => (
@@ -479,47 +279,5 @@ export const CHROME_EXTENSION_STORE: React.FC<React.SVGProps<SVGSVGElement>> = (
       fill="#231F20"
       d="M2073.6 1909.2H151.7A152.1 152.1 0 010 1757.5v12.7c0 83.4 68.3 151.7 151.7 151.7h1921.9c83.4 0 151.7-68.3 151.7-151.7v-12.7c0 83.5-68.3 151.7-151.7 151.7zM859.8 202.3h505.7a101 101 0 01100.8 94.8c.1-2.1.4-4.2.4-6.3 0-55.9-45.3-101.2-101.2-101.2H859.8A101.2 101.2 0 00759 297.1a101 101 0 01100.8-94.8z"
     />
-  </svg>
-);
-
-export const CELO_DANCE: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    width="981px"
-    height="981px"
-    viewBox="0 0 981 981"
-    fill="#FFFFFF"
-    style={{ height: '42px', width: '42px' }}
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
-    <rect id="rect" x="0" y="0" width="981" height="981" />
-    <circle id="circle" cx="491.5" cy="492.5" r="490.5" />
-    <g
-      id="celo-dance-logo"
-      transform="translate(186.000000, 133.000000)"
-      fillRule="nonzero"
-    >
-      <path
-        d="M349.163656,1.4449387 L349.304628,1.47285884 L350.685868,1.77470983 C389.228485,10.5027046 414.07897,42.1708161 424.446224,94.3965604 C433.789216,141.462517 431.593734,200.144602 417.706441,288.030601 L416.645703,294.689122 L384.305659,286.360393 L385.225205,280.586604 C398.053519,199.349284 399.668557,145.069275 390.936153,101.0792 C383.184513,62.0297841 367.551523,40.8627788 343.439933,35.2438135 L342.706672,35.0782962 L341.928883,34.9500152 C312.348086,30.3343676 279.578633,51.0726422 248.450135,97.1622967 C151.061871,242.043447 151.992334,378.820985 251.015705,510.010643 L253.195591,512.898633 L227.370986,533.028675 L225.122297,530.049532 C116.76727,386.496967 114.697919,234.034487 219.773387,77.7174089 L220.952702,75.9833192 C259.390815,19.8580126 303.430253,-6.00915158 347.603565,1.17765636 L349.163656,1.4449387 Z"
-        id="路径"
-        fill="#34D07F"
-      />
-      <polygon
-        id="rol"
-        fill="#34D07F"
-        points="342.641587 35.0632364 342.706672 35.0782962 342.754287 35.0857764"
-      />
-      <path
-        d="M221.888901,552.777973 C291.18123,504.138534 336.63714,442.377915 368.638271,348.754758 L369.723331,345.580287 L403.289636,353.734796 L401.987557,357.544184 C367.460991,458.5558 316.257964,528.596903 241.315131,580.952984 L238.813229,582.688315 L238.68412,582.773378 L236.844034,583.930945 C184.400832,616.775409 139.103289,632.394177 100.703193,631.269394 C70.3219369,630.379492 45.3078614,619.102372 26.7543796,598.850806 C20.6410128,592.177921 15.5364576,584.839016 11.4709437,577.043375 C10.1177919,574.448701 8.93755078,571.908825 7.93701105,569.459604 C7.67638413,568.821616 7.43481586,568.206271 7.21087601,567.610878 L6.91476291,566.806594 L6.67912632,566.138419 L6.004201,564.124707 C-4.2046692,532.567315 -0.404627315,491.973173 17.503564,451.90644 C37.5233302,407.115393 73.6755368,365.504848 124.156326,332.325375 L129.15602,329.039229 L133.253233,365.360918 L131.677279,366.627811 C89.8890189,400.220951 61.3336729,435.995188 46.269549,471.245829 C33.0391022,502.205592 30.8810915,531.558051 38.8977754,554.735478 L39.0859994,555.273258 L39.3009226,555.843554 L39.5483467,556.464551 L39.7511014,556.953274 C40.3135392,558.288039 40.9828481,559.707003 41.7507542,561.179466 C44.4472281,566.349967 47.8597813,571.255939 51.9207433,575.688576 C64.2480523,589.144126 80.5990063,596.420497 101.701262,597.038607 C132.792592,597.949307 171.898177,584.195138 218.535551,555.016156 L219.95111,554.127222 L221.888901,552.777973 Z"
-        id="路径"
-        fill="#F8C550"
-      />
-      <path
-        d="M196.80185,339.367619 L192.599454,340.356845 L190.176449,306.196521 L193.22151,305.479727 C348.680804,268.885287 473.617926,302.640626 567.246843,406.791927 C593.822457,436.354214 608.859042,467.628279 611.915605,499.140614 C614.498344,525.767967 608.321946,551.658699 594.539262,573.458608 C590.941492,579.149159 586.335121,585.194663 581.826019,589.961689 C576.45178,595.643339 569.242881,601.69719 564.090876,604.962985 C502.389146,644.074966 406.756618,633.188533 285.649546,572.20821 L280.939397,569.836536 L304.859619,547.517359 L307.147024,548.669123 C413.335165,602.137404 493.641301,609.100782 545.828304,576.020071 C548.570552,574.281793 553.609962,570.017278 557.031104,566.400443 C559.928224,563.337605 563.264902,558.946602 565.679033,555.128198 C575.405432,539.744068 579.751764,521.45249 577.909019,502.454284 C575.580369,478.446537 563.611793,453.907516 541.863845,429.715449 C457.287528,335.634112 341.17028,305.38392 196.80185,339.367619 Z"
-        id="路径"
-        fill="#2C92F0"
-      />
-    </g>
   </svg>
 );
