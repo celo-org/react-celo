@@ -41,8 +41,8 @@ export default async function fetchWCWallets(): Promise<WalletEntry[]> {
     )
   );
 
-  const celoApps = appRegistry.filter((app) =>
-    app?.chains?.includes(`eip155:${ChainId.Mainnet}`)
+  const celoApps = appRegistry.filter(
+    (app) => app?.chains && app.chains.includes(`eip155:${ChainId.Mainnet}`)
   );
 
   celoApps.forEach((app) => {
