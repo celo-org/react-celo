@@ -12,9 +12,14 @@ interface Props {
   wallet: WalletEntry;
 }
 
-const getDeepLink = (uri: string) => {
-  return `celo://wallet/wc?uri=${uri}`;
-};
+// TODO: get in touch with CeloWallet and see if we can harmonize deeplinks
+// CeloWallet: celowallet://wc?...
+// Valora/CeloDance: celo://wallet/wc?...
+const getDeepLink =
+  (protocol = 'celo:') =>
+  (uri: string) => {
+    return `${protocol}//wallet/wc?uri=${uri}`;
+  };
 
 export const WalletConnectCustom: React.FC<Props> = ({
   onSubmit,
@@ -23,7 +28,7 @@ export const WalletConnectCustom: React.FC<Props> = ({
   const uri = useWalletConnectConnector(
     onSubmit,
     isMobile,
-    getDeepLink,
+    getDeepLink(wallet.mobile.native),
     wallet.id
   );
 
