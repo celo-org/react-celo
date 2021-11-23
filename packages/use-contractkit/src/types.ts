@@ -34,6 +34,7 @@ export interface Provider {
   showInList: () => boolean;
   listPriority: () => number;
   installURL?: string;
+  walletConnectRegistryId?: string;
 }
 
 /**

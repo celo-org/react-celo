@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
 import { ProviderSelect } from '../components/ProviderSelect';
@@ -54,11 +55,13 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           description: wallet.description || 'Missing description in registry',
           icon: wallet.logos,
           canConnect: () => true,
-          showInList: () => true,
+          showInList: () =>
+            isMobile ? Object.values(wallet.mobile).some(Boolean) : true,
           // TODO: what do we think about that?
           listPriority: () => (wallet.id === WalletIds.Valora ? 0 : 1),
           // TODO: what do we think about that?
           installURL: wallet.homepage,
+          walletConnectRegistryId: wallet.id,
         };
         return acc;
       }, {} as Record<string, Provider>),
