@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { WalletIds } from '../constants';
-import fetchWCWallets from './fetchWCWallets';
 import { useFetchWCWallets } from './useFetchWCWallets';
 
 const VERSION_OVERRIDE: Record<string, number> = Object.freeze({
@@ -19,7 +18,8 @@ export function useWalletVersion(walletId?: WalletIds): number | null {
     if (!walletId) {
       return;
     }
-    const wallet = celoWallets.find((appEntry) => appEntry.id === walletId);
+
+    const wallet = celoWallets.find((wallet) => wallet.id === walletId);
     if (wallet) {
       const versionFromRegistry = Math.max(
         ...wallet.versions.map((_) => parseInt(_, 10))
