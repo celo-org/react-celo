@@ -94,11 +94,11 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   networks = DEFAULT_NETWORKS,
 }: ContractKitProviderProps) => {
   const isMountedRef = useIsMounted();
-  const previousConfig = useMemo(loadPreviousConfig, []);
+  const previousConfig = useMemo(() => loadPreviousConfig(network), [network]);
   const [state, _dispatch] = useReducer(contractKitReducer, {
     ...initialState,
     ...previousConfig,
-    network,
+    network: previousConfig.network || network,
     networks,
     dapp: {
       ...dapp,
