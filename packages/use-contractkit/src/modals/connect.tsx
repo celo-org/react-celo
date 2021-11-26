@@ -83,8 +83,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     [connectionCallback]
   );
 
-  const onClickShowMore = useCallback(() => {
-    setShowMore(true);
+  const onToggleShowMore = useCallback(() => {
+    setShowMore((state) => !state);
   }, []);
 
   const providers = useMemo<[providerKey: string, provider: Provider][]>(
@@ -100,11 +100,15 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     [_providers, allScreens]
   );
 
+  const HAS_MORE_ITEMS = providers.length >= 5; // TODO: is 5 a good default?
   const prioritizedProviders = useMemo<
     [providerKey: string, provider: Provider][]
   >(
-    () => providers.filter(([, provider]) => provider.listPriority() === 0),
-    [providers]
+    () =>
+      HAS_MORE_ITEMS
+        ? providers.filter(([, provider]) => provider.listPriority() === 0)
+        : providers,
+    [providers, HAS_MORE_ITEMS]
   );
 
   let modalContent;
@@ -124,12 +128,12 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
             />
           );
         })}
-        {!showMore && (
+        {HAS_MORE_ITEMS && (
           <button
-            onClick={onClickShowMore}
+            onClick={onToggleShowMore}
             className="tw-font-medium tw-text-md tw-w-32 tw-self-center tw-mt-4 tw-text-blue-800 dark:tw-text-blue-400 hover:tw-text-blue-600 focus:tw-outline-none"
           >
-            Show More
+            Show {showMore ? 'Less' : 'More'}
           </button>
         )}
       </div>

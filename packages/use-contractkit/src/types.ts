@@ -102,6 +102,12 @@ export interface WalletEntry {
       secondary: string;
     };
   };
+  responsive?: {
+    mobileFriendly: boolean;
+    browserFriendly: boolean;
+    mobileOnly: boolean;
+    browserOnly: boolean;
+  };
 }
 
 export type AppRegistry = Record<string, WalletEntry>;
