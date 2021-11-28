@@ -9,6 +9,7 @@ export function useMetaMaskConnector(
 ): UseMetaMaskConnector {
   const {
     network,
+    feeCurrency,
     initConnector,
     initError: error,
     dapp,
@@ -17,7 +18,7 @@ export function useMetaMaskConnector(
   useEffect(() => {
     let stale;
     void (async () => {
-      const connector = new MetaMaskConnector(network);
+      const connector = new MetaMaskConnector(network, feeCurrency);
       try {
         await initConnector(connector);
         if (!stale) {

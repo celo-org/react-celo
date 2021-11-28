@@ -1,4 +1,4 @@
-import { ContractKit } from '@celo/contractkit';
+import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import { useCallback } from 'react';
 import { CONNECTOR_TYPES } from './connectors';
 import {
@@ -14,7 +14,13 @@ export function useContractKitMethods(
     connector,
     networks,
     network,
-  }: { connector: Connector; networks: Network[]; network: Network },
+    feeCurrency,
+  }: {
+    connector: Connector;
+    networks: Network[];
+    network: Network;
+    feeCurrency: CeloTokenContract;
+  },
   dispatch: Dispatcher
 ): ContractKitMethods {
   const destroy = useCallback(async () => {
@@ -42,7 +48,17 @@ export function useContractKitMethods(
         initialisedConnector.onNetworkChange?.((chainId) => {
           // TODO: We should probably throw an error if we can't find the new chainId
           const network = networks.find((n) => n.chainId === chainId);
-          network && dispatch('setNetwork', network);
+
+          if (network) {
+            dispatch('setNetwork', network);
+            initialisedConnector.updateKitWithNetwork &&
+              initialisedConnector
+                .updateKitWithNetwork(network)
+                .then(() =>
+                  dispatch('initialisedConnector', initialisedConnector)
+                )
+                .catch((e) => console.log(e));
+          }
         });
         initialisedConnector.onAddressChange?.((address) => {
           dispatch('setAddress', address);
@@ -115,6 +131,14 @@ export function useContractKitMethods(
 
     return initialisedConnection.kit;
   }, [connect, connector, initConnector]);
+
+  const updateFeeCurrency = useCallback(
+    async (newFeeCurrency: CeloTokenContract): Promise<void> => {
+      await connector.updateFeeCurrency(newFeeCurrency);
+      dispatch('setFeeCurrency', newFeeCurrency);
+    },
+    [feeCurrency, connector]
+  );
 
   const performActions = useCallback(
     async (

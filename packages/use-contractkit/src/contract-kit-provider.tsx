@@ -1,3 +1,4 @@
+import { CeloContract, CeloTokenContract } from '@celo/contractkit';
 import React, {
   ReactNode,
   useCallback,
@@ -62,6 +63,7 @@ const initialState = {
   pendingActionCount: 0,
   address: null,
   connectionCallback: null,
+  feeCurrency: CeloContract.GoldToken,
 };
 
 export const [useContractKitContext, ContextProvider] =
@@ -92,6 +94,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   dapp,
   network = Mainnet,
   networks = DEFAULT_NETWORKS,
+  feeCurrency = CeloContract.StableToken,
 }: ContractKitProviderProps) => {
   const isMountedRef = useIsMounted();
   const previousConfig = useMemo(loadPreviousConfig, []);
@@ -100,6 +103,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
     ...previousConfig,
     network,
     networks,
+    feeCurrency,
     dapp: {
       ...dapp,
       icon: dapp.icon ?? `${dapp.url}/favicon.ico`,
@@ -143,7 +147,7 @@ interface ContractKitProviderProps {
   dapp: Dapp;
   network?: Network;
   networks?: Network[];
-
+  feeCurrency?: CeloTokenContract;
   connectModal?: ConnectModalProps;
   actionModal?: {
     reactModalProps?: Partial<ReactModal.Props>;

@@ -39,6 +39,7 @@ export default function Home(): React.ReactElement {
     destroy,
     performActions,
     walletType,
+    feeCurrency,
   } = useContractKit();
   const [summary, setSummary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
