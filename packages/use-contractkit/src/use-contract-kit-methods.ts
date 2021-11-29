@@ -57,7 +57,21 @@ export function useContractKitMethods(
                 .then(() => {
                   dispatch('initialisedConnector', initialisedConnector);
                 })
-                .catch((e) => console.log(e));
+                .catch((e) => {
+                  console.error(
+                    '[use-contractkit] Error switching network',
+                    nextConnector.type,
+                    e
+                  );
+                  const error =
+                    e instanceof Error
+                      ? e
+                      : new Error(
+                          `Failed to initialise connector with ${network.name}`
+                        );
+                  dispatch('setConnectorInitError', error);
+                  throw e;
+                });
           }
         });
         initialisedConnector.onAddressChange?.((address) => {

@@ -19,7 +19,7 @@ export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
     const connector = new CeloExtensionWalletConnector(network, feeCurrency);
     await initConnector(connector);
     void onSubmit(connector);
-  }, [initConnector, network, onSubmit]);
+  }, [initConnector, network, onSubmit, feeCurrency]);
 
   useEffect(() => {
     void initialiseConnection();
