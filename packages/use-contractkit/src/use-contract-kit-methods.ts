@@ -151,7 +151,7 @@ export function useContractKitMethods(
       await connector.updateFeeCurrency(newFeeCurrency);
       dispatch('setFeeCurrency', newFeeCurrency);
     },
-    [feeCurrency, connector]
+    [connector, dispatch]
   );
 
   const performActions = useCallback(
@@ -184,6 +184,7 @@ export function useContractKitMethods(
     connect,
     getConnectedKit,
     performActions,
+    updateFeeCurrency,
   };
 }
 
@@ -196,4 +197,5 @@ export interface ContractKitMethods {
   performActions: (
     ...operations: ((kit: ContractKit) => unknown | Promise<unknown>)[]
   ) => Promise<unknown[]>;
+  updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
 }

@@ -94,7 +94,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   dapp,
   network = Mainnet,
   networks = DEFAULT_NETWORKS,
-  feeCurrency = CeloContract.StableToken,
+  feeCurrency = CeloContract.GoldToken,
 }: ContractKitProviderProps) => {
   const isMountedRef = useIsMounted();
   const previousConfig = useMemo(loadPreviousConfig, []);

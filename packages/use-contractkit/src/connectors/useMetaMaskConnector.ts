@@ -32,7 +32,7 @@ export function useMetaMaskConnector(
     return () => {
       stale = true;
     };
-  }, [initConnector, network, onSubmit]);
+  }, [initConnector, network, onSubmit, feeCurrency]);
 
   return { error, dapp, network };
 }
