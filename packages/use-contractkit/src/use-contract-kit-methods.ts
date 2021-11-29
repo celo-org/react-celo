@@ -54,9 +54,9 @@ export function useContractKitMethods(
             initialisedConnector.updateKitWithNetwork &&
               initialisedConnector
                 .updateKitWithNetwork(network)
-                .then(() =>
-                  dispatch('initialisedConnector', initialisedConnector)
-                )
+                .then(() => {
+                  dispatch('initialisedConnector', initialisedConnector);
+                })
                 .catch((e) => console.log(e));
           }
         });

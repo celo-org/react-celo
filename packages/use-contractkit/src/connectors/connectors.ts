@@ -314,7 +314,7 @@ export class CeloExtensionWalletConnector implements Connector {
   }
   async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
     this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
+    await this.kit.setFeeCurrency(this.feeCurrency);
   }
 
   onNetworkChange(callback: (chainId: number) => void): void {
