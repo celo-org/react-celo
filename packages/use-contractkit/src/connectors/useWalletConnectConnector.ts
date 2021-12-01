@@ -13,7 +13,8 @@ export function useWalletConnectConnector(
   getDeeplinkUrl?: (uri: string) => string,
   walletId?: WalletIds
 ): string {
-  const { network, dapp, destroy, initConnector } = useContractKitInternal();
+  const { network, feeCurrency, dapp, destroy, initConnector } =
+    useContractKitInternal();
   const [uri, setUri] = useState('');
   const version = useWalletVersion(walletId);
 
@@ -31,6 +32,7 @@ export function useWalletConnectConnector(
       const relayProvider = 'wss://relay.walletconnect.org';
       const connector = new WalletConnectConnector(
         network,
+        feeCurrency,
         {
           connect: {
             metadata: {

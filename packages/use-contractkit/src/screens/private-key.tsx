@@ -8,14 +8,14 @@ export const PrivateKey: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
   const [value, setValue] = useState('');
-  const { network } = useContractKit();
+  const { network, feeCurrency } = useContractKit();
 
   const handleSubmit = () => {
     if (!value) {
       return;
     }
 
-    const connector = new PrivateKeyConnector(network, value);
+    const connector = new PrivateKeyConnector(network, value, feeCurrency);
     void onSubmit(connector);
   };
 

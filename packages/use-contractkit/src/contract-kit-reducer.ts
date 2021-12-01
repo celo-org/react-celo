@@ -1,3 +1,4 @@
+import { CeloTokenContract } from '@celo/contractkit';
 import { UnauthenticatedConnector } from './connectors';
 import { localStorageKeys } from './constants';
 import { Connector, Dapp, Network } from './types';
@@ -42,7 +43,8 @@ export function contractKitReducer(
         connectorInitError: null,
         address: null,
       };
-
+    case 'setFeeCurrency':
+      return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
       const newConnector = action.payload;
       const address = newConnector.kit.defaultAccount ?? null;
@@ -95,6 +97,8 @@ export interface ReducerState {
   networks: Network[];
   pendingActionCount: number;
   address: string | null;
+  feeCurrency: CeloTokenContract;
+
   connectionCallback: ((connector: Connector | false) => void) | null;
 }
 
