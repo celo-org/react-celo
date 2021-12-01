@@ -1,4 +1,4 @@
-import { ContractKit } from '@celo/contractkit';
+import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import React from 'react';
 
 import { NetworkNames, WalletTypes } from './constants';
@@ -43,11 +43,14 @@ export interface Connector {
   kit: ContractKit;
   type: WalletTypes;
   account: string | null;
+  feeCurrency: CeloTokenContract;
 
   initialised: boolean;
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
+  updateFeeCurrency: (token: CeloTokenContract) => Promise<void>;
 
+  updateKitWithNetwork?: (network: Network) => Promise<void>;
   onNetworkChange?: (callback: (chainId: number) => void) => void;
   onAddressChange?: (callback: (address: string | null) => void) => void;
 }

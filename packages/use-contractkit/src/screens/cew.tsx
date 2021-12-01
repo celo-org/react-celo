@@ -8,13 +8,18 @@ import { ConnectorProps } from '.';
 export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
-  const { network, initConnector, initError: error } = useContractKitInternal();
+  const {
+    network,
+    initConnector,
+    initError: error,
+    feeCurrency,
+  } = useContractKitInternal();
 
   const initialiseConnection = useCallback(async () => {
-    const connector = new CeloExtensionWalletConnector(network);
+    const connector = new CeloExtensionWalletConnector(network, feeCurrency);
     await initConnector(connector);
     void onSubmit(connector);
-  }, [initConnector, network, onSubmit]);
+  }, [initConnector, network, onSubmit, feeCurrency]);
 
   useEffect(() => {
     void initialiseConnection();

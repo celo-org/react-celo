@@ -9,14 +9,23 @@ import { ConnectorProps } from '.';
 export const Ledger: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
-  const { network, initConnector, initError: error } = useContractKitInternal();
+  const {
+    network,
+    initConnector,
+    initError: error,
+    feeCurrency,
+  } = useContractKitInternal();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
   const isMountedRef = useIsMounted();
 
   const submit = async () => {
     setSubmitting(true);
-    const connector = new LedgerConnector(network, parseInt(index, 10));
+    const connector = new LedgerConnector(
+      network,
+      parseInt(index, 10),
+      feeCurrency
+    );
     try {
       await initConnector(connector);
       onSubmit(connector);

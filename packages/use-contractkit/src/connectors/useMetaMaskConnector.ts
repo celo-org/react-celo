@@ -11,6 +11,7 @@ export function useInjectedConnector(
 ): UseInjectedConnector {
   const {
     network,
+    feeCurrency,
     initConnector,
     initError: error,
     dapp,
@@ -20,8 +21,8 @@ export function useInjectedConnector(
     let stale;
     void (async () => {
       const connector = isMetamask
-        ? new MetaMaskConnector(network)
-        : new InjectedConnector(network);
+        ? new MetaMaskConnector(network, feeCurrency)
+        : new InjectedConnector(network, feeCurrency);
 
       try {
         await initConnector(connector);
@@ -36,7 +37,7 @@ export function useInjectedConnector(
     return () => {
       stale = true;
     };
-  }, [initConnector, network, onSubmit, isMetamask]);
+  }, [initConnector, network, onSubmit, isMetamask, feeCurrency]);
 
   return { error, dapp, network };
 }

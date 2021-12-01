@@ -1,4 +1,4 @@
-import { ContractKit } from '@celo/contractkit';
+import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import { WalletTypes } from './constants';
 import { useContractKitContext } from './contract-kit-provider';
 import { Connector, Dapp, Network } from './types';
@@ -7,6 +7,7 @@ export interface UseContractKit {
   dapp: Dapp;
   kit: ContractKit;
   walletType: WalletTypes;
+  feeCurrency: CeloTokenContract;
 
   /**
    * Name of the account.
@@ -46,7 +47,7 @@ export interface UseContractKit {
 
 export const useContractKit = (): UseContractKit => {
   const [
-    { dapp, connector, connectorInitError, address, network },
+    { dapp, connector, connectorInitError, address, network, feeCurrency },
     _dispatch,
     { destroy, updateNetwork, connect, getConnectedKit, performActions },
   ] = useContractKitContext();
@@ -60,6 +61,7 @@ export const useContractKit = (): UseContractKit => {
     walletType: connector.type,
     account: connector.account,
     initialised: connector.initialised,
+    feeCurrency,
 
     performActions,
     getConnectedKit,

@@ -1,4 +1,10 @@
-import { ContractKit, newKit, newKitFromWeb3 } from '@celo/contractkit';
+import {
+  CeloContract,
+  CeloTokenContract,
+  ContractKit,
+  newKit,
+  newKitFromWeb3,
+} from '@celo/contractkit';
 import { LocalWallet } from '@celo/wallet-local';
 import {
   WalletConnectWallet,
@@ -27,7 +33,7 @@ export class UnauthenticatedConnector implements Connector {
   public type = WalletTypes.Unauthenticated;
   public kit: ContractKit;
   public account: string | null = null;
-
+  public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
   constructor(n: Network) {
     this.kit = newKit(n.rpcUrl);
   }
@@ -35,6 +41,11 @@ export class UnauthenticatedConnector implements Connector {
   initialise(): this {
     this.initialised = true;
     return this;
+  }
+
+  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
+    this.feeCurrency = feeContract;
+    await this.kit.setFeeCurrency(feeContract);
   }
 
   close(): void {
@@ -49,7 +60,11 @@ export class PrivateKeyConnector implements Connector {
   public kit: ContractKit;
   public account: string | null = null;
 
-  constructor(n: Network, privateKey: string) {
+  constructor(
+    n: Network,
+    privateKey: string,
+    public feeCurrency: CeloTokenContract
+  ) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.PrivateKey
@@ -68,9 +83,16 @@ export class PrivateKeyConnector implements Connector {
     this.account = this.kit.defaultAccount ?? null;
   }
 
-  initialise(): this {
+  async initialise(): Promise<this> {
+    await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
     return this;
+  }
+
+  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
+    this.feeCurrency = feeContract;
+    const res = await this.kit.setFeeCurrency(feeContract);
+    console.log(res, 'console');
   }
 
   close(): void {
@@ -85,7 +107,11 @@ export class LedgerConnector implements Connector {
   public kit: ContractKit;
   public account: string | null = null;
 
-  constructor(private network: Network, private index: number) {
+  constructor(
+    private network: Network,
+    private index: number,
+    public feeCurrency: CeloTokenContract
+  ) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.Ledger
@@ -95,8 +121,8 @@ export class LedgerConnector implements Connector {
       JSON.stringify([index])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
-
     this.kit = newKit(network.rpcUrl);
+    console.log(this.kit, 'kit');
   }
 
   async initialise(): Promise<this> {
@@ -112,7 +138,12 @@ export class LedgerConnector implements Connector {
 
     this.initialised = true;
     this.account = this.kit.defaultAccount ?? null;
+    await this.updateFeeCurrency(this.feeCurrency);
     return this;
+  }
+  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
+    this.feeCurrency = feeContract;
+    await this.kit.setFeeCurrency(feeContract);
   }
 
   close(): void {
@@ -139,6 +170,7 @@ export class InjectedConnector implements Connector {
 
   constructor(
     network: Network,
+    public feeCurrency: CeloTokenContract,
     defaultType: WalletTypes = WalletTypes.Injected
   ) {
     this.type = defaultType;
@@ -148,7 +180,6 @@ export class InjectedConnector implements Connector {
       JSON.stringify([])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
-
     this.kit = newKit(network.rpcUrl);
   }
 
@@ -188,9 +219,20 @@ export class InjectedConnector implements Connector {
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
+    await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
 
     return this;
+  }
+
+  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
+    this.feeCurrency = feeContract;
+    await this.kit.setFeeCurrency(feeContract);
+  }
+
+  async updateKitWithNetwork(network: Network): Promise<void> {
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+    await this.initialise();
   }
 
   onNetworkChange(callback: (chainId: number) => void): void {
@@ -210,8 +252,8 @@ export class InjectedConnector implements Connector {
 }
 
 export class MetaMaskConnector extends InjectedConnector {
-  constructor(network: Network) {
-    super(network, WalletTypes.MetaMask);
+  constructor(network: Network, feeCurrency: CeloTokenContract) {
+    super(network, feeCurrency, WalletTypes.MetaMask);
   }
 }
 
@@ -222,7 +264,7 @@ export class CeloExtensionWalletConnector implements Connector {
   public account: string | null = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
 
-  constructor(network: Network) {
+  constructor(network: Network, public feeCurrency: CeloTokenContract) {
     localStorage.setItem(
       localStorageKeys.lastUsedWalletType,
       WalletTypes.CeloExtensionWallet
@@ -232,7 +274,6 @@ export class CeloExtensionWalletConnector implements Connector {
       JSON.stringify([])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
-
     this.kit = newKit(network.rpcUrl);
   }
 
@@ -265,9 +306,15 @@ export class CeloExtensionWalletConnector implements Connector {
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
+
+    await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
 
     return this;
+  }
+  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
+    this.feeCurrency = feeContract;
+    await this.kit.setFeeCurrency(this.feeCurrency);
   }
 
   onNetworkChange(callback: (chainId: number) => void): void {
@@ -291,6 +338,7 @@ export class WalletConnectConnector implements Connector {
 
   constructor(
     readonly network: Network,
+    public feeCurrency: CeloTokenContract,
     options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     readonly autoOpen = false,
     readonly getDeeplinkUrl?: (uri: string) => string,
@@ -345,6 +393,8 @@ export class WalletConnectConnector implements Connector {
     const defaultAccount = await this.fetchWalletAddressForAccount(address);
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
+
+    await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
 
     return this;
@@ -357,6 +407,11 @@ export class WalletConnectConnector implements Connector {
     const accounts = await this.kit.contracts.getAccounts();
     const walletAddress = await accounts.getWalletAddress(address);
     return new BigNumber(walletAddress).isZero() ? address : walletAddress;
+  }
+
+  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
+    this.feeCurrency = feeContract;
+    await this.kit.setFeeCurrency(feeContract);
   }
 
   close(): Promise<void> {

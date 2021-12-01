@@ -213,6 +213,12 @@ function App() {
 }
 ```
 
+### Adjust FeeCurrency
+
+use-contractkit provides a `feeCurrency` variable and an `updateFeeCurrency` function you can use to display the currently selected feeCurrency (cUSD, CELO, cEUR). The feeCurrency can also be passed to the provider component. Valid values are `CeloContract.GoldToken`, `CeloContract.StableToken`, `CeloContract.StableTokenEUR`. CeloContract can be imported like so:
+
+`import { CeloTokenContract } from '@celo/contractkit'`
+
 ### Dark mode
 
 use-contrackit uses Tailwind for styling, to use the modal in dark mode simply add the class `tw-dark` to the root `<html />` tag of the web page.

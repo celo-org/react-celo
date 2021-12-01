@@ -2,18 +2,19 @@ import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 import {
   DEFAULT_NETWORKS,
   localStorageKeys,
-  Mainnet,
   NetworkNames,
   WalletTypes,
 } from '../constants';
 import { Connector, Network } from '../types';
 
-export const loadPreviousConfig = (): {
+export const loadPreviousConfig = (
+  defaultNetworkProp: Network
+): {
   address: string | null;
-  network: Network;
+  network: Network | null;
   connector: Connector;
 } => {
-  let lastUsedNetworkName: NetworkNames = Mainnet.name;
+  let lastUsedNetworkName: NetworkNames = defaultNetworkProp.name;
   let lastUsedAddress: string | null = null;
   let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
   let lastUsedWalletArguments: unknown[] = [];
@@ -48,26 +49,31 @@ export const loadPreviousConfig = (): {
     }
   }
 
-  const lastUsedNetwork =
-    DEFAULT_NETWORKS.find((n) => n.name === lastUsedNetworkName) ?? Mainnet;
+  const lastUsedNetwork = DEFAULT_NETWORKS.find(
+    (n) => n.name === lastUsedNetworkName
+  );
 
   let initialConnector: Connector;
-  if (lastUsedWalletType) {
+  if (lastUsedWalletType && lastUsedNetwork) {
     try {
       initialConnector = new CONNECTOR_TYPES[lastUsedWalletType](
         lastUsedNetwork,
         ...lastUsedWalletArguments
       );
     } catch (e) {
-      initialConnector = new UnauthenticatedConnector(lastUsedNetwork);
+      initialConnector = new UnauthenticatedConnector(
+        lastUsedNetwork || defaultNetworkProp
+      );
     }
   } else {
-    initialConnector = new UnauthenticatedConnector(lastUsedNetwork);
+    initialConnector = new UnauthenticatedConnector(
+      lastUsedNetwork || defaultNetworkProp
+    );
   }
 
   return {
     address: lastUsedAddress,
-    network: lastUsedNetwork,
+    network: lastUsedNetwork || null,
     connector: initialConnector,
   };
 };
