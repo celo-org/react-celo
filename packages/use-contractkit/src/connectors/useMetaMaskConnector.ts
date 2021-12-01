@@ -8,7 +8,7 @@ import { MetaMaskConnector } from './connectors';
 export function useInjectedConnector(
   onSubmit: (connector: Connector) => void,
   isMetamask: boolean
-): IUseMetaMaskConnector {
+): UseInjectedConnector {
   const {
     network,
     initConnector,
@@ -40,7 +40,7 @@ export function useInjectedConnector(
 
   return { error, dapp, network };
 }
-export interface IUseMetaMaskConnector {
+export interface UseInjectedConnector {
   error: Error | null;
   network: Network;
   dapp: Dapp;

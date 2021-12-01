@@ -6,7 +6,7 @@ import { UnsupportedChainIdError } from '../connectors';
 import { useInjectedConnector } from '../connectors/useMetaMaskConnector';
 import { ConnectorProps } from '.';
 
-export const MetamaskOrInjectedWallet: React.FC<ConnectorProps> = ({
+export const MetaMaskOrInjectedWallet: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
   const isMetamask = !!window.ethereum?.isMetaMask;
