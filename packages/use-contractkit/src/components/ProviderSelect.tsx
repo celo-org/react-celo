@@ -27,12 +27,8 @@ export const ProviderSelect: React.FC<Props> = ({
         <span className="tw-my-auto tw-rounded-full tw-h-10 tw-w-10">
           {'md' in provider.icon ? (
             <img
-              srcSet={`
-              ${provider.icon.sm} 1x,
-              ${provider.icon.md} 2x,
-              ${provider.icon.lg} 3x"
-              `.trim()}
-              src={provider.icon.md}
+              srcSet={`${provider.icon.sm} 640w, ${provider.icon.md} 1366w, ${provider.icon.lg} 1920w"`}
+              src={provider.icon.sm}
               alt={`${provider.name} logo`}
               className="tw-h-full tw-w-full"
             />

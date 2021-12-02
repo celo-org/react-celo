@@ -6,7 +6,7 @@ import { ProviderSelect } from '../components/ProviderSelect';
 import { PROVIDERS, SupportedProviders, WalletIds } from '../constants';
 import { ConnectorProps, defaultScreens } from '../screens';
 import { WalletConnectCustom } from '../screens/wallet-connect-custom';
-import { Connector, Provider } from '../types';
+import { Connector, CustomWCWallet, Provider, WalletEntry } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
 import { useFetchWCWallets } from '../utils/useFetchWCWallets';
 import { defaultModalStyles } from './styles';
@@ -17,56 +17,133 @@ export interface ConnectModalProps {
   };
   RenderProvider?: React.FC<{ provider: Provider; onClick: () => void }>;
   reactModalProps?: Partial<ReactModal.Props>;
+  title?: string | React.ReactElement;
+  providersOptions?: {
+    hideFromDefaults?: true | SupportedProviders[];
+    hideFromWCRegistry?: true | string[];
+    additionalWCWallets?: CustomWCWallet[];
+    sort?: (a: Provider, b: Provider) => number;
+  };
+}
+
+function walletToScreen(wallet: WalletEntry): React.FC<ConnectorProps> {
+  const WalletConnectCustomWrapper: React.FC<ConnectorProps> = ({
+    onSubmit,
+  }: ConnectorProps) => (
+    <WalletConnectCustom onSubmit={onSubmit} wallet={wallet} />
+  );
+
+  return WalletConnectCustomWrapper;
+}
+
+function walletToProvider(wallet: WalletEntry): Provider {
+  return {
+    name: wallet.name,
+    description: wallet.description || 'Missing description in registry',
+    icon: wallet.logos,
+    canConnect: () => true,
+    showInList: () =>
+      isMobile ? Object.values(wallet.mobile).some(Boolean) : true,
+    // TODO: what do we think about that?
+    listPriority: () => (wallet.id === WalletIds.Valora ? 0 : 1),
+    // TODO: what do we think about that?
+    installURL: wallet.homepage,
+    walletConnectRegistryId: wallet.id,
+  };
 }
 
 export const ConnectModal: React.FC<ConnectModalProps> = ({
   reactModalProps,
   RenderProvider = ProviderSelect,
   screens = defaultScreens,
+  title = 'Connect a wallet',
+  providersOptions = {
+    additionalWCWallets: [],
+  },
 }: ConnectModalProps) => {
   const { connectionCallback } = useContractKitInternal();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
   const [showMore, setShowMore] = useState(false);
   const celoWallets = useFetchWCWallets();
+  const { hideFromDefaults, hideFromWCRegistry, additionalWCWallets, sort } =
+    providersOptions;
 
-  const allScreens: Record<string, React.FC<ConnectorProps>> = useMemo(
-    () => ({
-      ...screens,
-      ...celoWallets.reduce((acc, wallet) => {
-        const WalletConnectCustomWrapper: React.FC<ConnectorProps> = ({
-          onSubmit,
-        }: ConnectorProps) => (
-          <WalletConnectCustom onSubmit={onSubmit} wallet={wallet} />
-        );
+  const {
+    wallets,
+    allScreens,
+  }: {
+    wallets: WalletEntry[];
+    allScreens: Record<string, React.FC<ConnectorProps>>;
+  } = useMemo(() => {
+    let _screens: Record<string, React.FC<ConnectorProps>>;
+    let _wallets = celoWallets.concat(
+      (additionalWCWallets || []) as WalletEntry[]
+    );
 
-        acc[wallet.id] = WalletConnectCustomWrapper;
-        return acc;
-      }, {} as Record<string, React.FC<ConnectorProps>>),
-    }),
-    [celoWallets, screens]
-  );
+    if (hideFromDefaults) {
+      if (hideFromDefaults === true) {
+        _screens = {};
+      } else {
+        _screens = Object.keys(screens)
+          .filter((x) => !hideFromDefaults.includes(x as SupportedProviders))
+          .reduce(
+            (acc, provider) => ({
+              ...acc,
+              [provider]: screens[provider as SupportedProviders],
+            }),
+            {}
+          );
+      }
+    } else {
+      _screens = screens;
+    }
+
+    if (hideFromWCRegistry) {
+      if (hideFromWCRegistry === true) {
+        return {
+          wallets: (additionalWCWallets || []) as WalletEntry[],
+          allScreens: {
+            ..._screens,
+            ...((additionalWCWallets || []) as WalletEntry[]).reduce(
+              (acc, wallet) => {
+                acc[wallet.id] = walletToScreen(wallet);
+                return acc;
+              },
+              {} as Record<string, React.FC<ConnectorProps>>
+            ),
+          },
+        };
+      }
+      _wallets = _wallets.filter(({ id }) => !hideFromWCRegistry.includes(id));
+    }
+
+    return {
+      wallets: _wallets,
+      allScreens: {
+        ..._screens,
+        ..._wallets.reduce((acc, wallet) => {
+          acc[wallet.id] = walletToScreen(wallet);
+          return acc;
+        }, {} as Record<string, React.FC<ConnectorProps>>),
+      },
+    };
+  }, [
+    celoWallets,
+    screens,
+    hideFromWCRegistry,
+    hideFromDefaults,
+    additionalWCWallets,
+  ]);
 
   const _providers: Record<string, Provider> = useMemo(
     () => ({
       ...PROVIDERS,
-      ...celoWallets.reduce((acc, wallet) => {
-        acc[wallet.id] = {
-          name: wallet.name,
-          description: wallet.description || 'Missing description in registry',
-          icon: wallet.logos,
-          canConnect: () => true,
-          showInList: () =>
-            isMobile ? Object.values(wallet.mobile).some(Boolean) : true,
-          // TODO: what do we think about that?
-          listPriority: () => (wallet.id === WalletIds.Valora ? 0 : 1),
-          // TODO: what do we think about that?
-          installURL: wallet.homepage,
-          walletConnectRegistryId: wallet.id,
-        };
+      ...wallets.reduce((acc, wallet) => {
+        acc[wallet.id] = walletToProvider(wallet);
         return acc;
       }, {} as Record<string, Provider>),
     }),
-    [celoWallets]
+    [wallets]
   );
 
   const close = useCallback((): void => {
@@ -96,11 +173,14 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
             provider.showInList() &&
             Object.keys(allScreens).find((screen) => screen === providerKey)
         )
-        .sort(([, a], [, b]) => a.listPriority() - b.listPriority()),
-    [_providers, allScreens]
+        .sort(([, a], [, b]) => {
+          if (sort) return sort(a, b);
+          return a.listPriority() - b.listPriority();
+        }),
+    [_providers, allScreens, sort]
   );
 
-  const HAS_MORE_ITEMS = providers.length >= 5; // TODO: is 5 a good default?
+  const HAS_MORE_ITEMS = providers.length > 5; // TODO: is 5 a good default?
   const prioritizedProviders = useMemo<
     [providerKey: string, provider: Provider][]
   >(
@@ -117,7 +197,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     modalContent = (
       <div className="tw-flex tw-flex-col tw-items-stretch">
         <h1 className="tw-pl-3 tw-pb-2 tw-text-lg tw-font-medium dark:tw-text-gray-300">
-          Connect a wallet
+          {title}
         </h1>
         {providersToDisplay.map(([providerKey, provider]) => {
           return (

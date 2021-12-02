@@ -29,7 +29,7 @@ export const WalletConnectCustom: React.FC<Props> = ({
     onSubmit,
     isMobile,
     getDeepLink(wallet.mobile.native),
-    wallet.id
+    wallet
   );
 
   const onClickPlatform = (platform: 'web' | 'desktop') => {

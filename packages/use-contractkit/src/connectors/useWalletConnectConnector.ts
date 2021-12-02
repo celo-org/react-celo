@@ -2,8 +2,7 @@
 // import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
 import { useEffect, useState } from 'react';
 
-import { WalletIds } from '../constants';
-import { Connector } from '../types';
+import { Connector, WalletEntry } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
 import { useWalletVersion } from '../utils/useWalletVersion';
 import { WalletConnectConnector } from './connectors';
@@ -12,12 +11,12 @@ export function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
   autoOpen: boolean,
   getDeeplinkUrl?: (uri: string) => string,
-  walletId?: WalletIds
+  wallet?: WalletEntry
 ): string {
   const { network, feeCurrency, destroy, initConnector } =
     useContractKitInternal();
   const [uri, setUri] = useState('');
-  const version = useWalletVersion(walletId);
+  const version = useWalletVersion(wallet);
 
   useEffect(() => {
     let mounted = true;
