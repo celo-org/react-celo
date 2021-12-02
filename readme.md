@@ -64,6 +64,110 @@ function App() {
 }
 ```
 
+### Default wallets and customization
+
+use-contractkit provides a list of default wallets (CeloExtensionWallet, Injected, Ledger, MetaMask, PrivateKey (dev only) and WalletConnect). It also leverages the public walletconnect registry to pull even more wallets (eg: Valora, CeloWallet, CeloTerminal, Steakwallet, ...) automatically. Both these behaviours can be tweaked as shown below.
+
+```javascript
+<ContractKitProvider
+  dapp={{
+    name: 'My awesome dApp',
+    description: 'My awesome description',
+    url: 'https://example.com',
+  }}
+  connectModal={{
+    // This options changes the title of the modal and can be either a string or a react element
+    title: <span>Connect your Wallet</span>,
+    providersOptions: {
+      // This option hides just specific wallets from the WalletConnect (WC) registry
+      hideFromWCRegistry: [
+        'd01c7758d741b363e637a817a09bcf579feae4db9f5bb16f599fdd1f66e2f974', // VALORA ID
+      ],
+
+      // This options hides all wallets from the WC registry
+      hideFromWCRegistry: true,
+
+      // This option hides specific wallets from the default list
+      hideFromDefaults: ['MetaMask', 'Private key', 'Celo Extension Wallet'],
+
+      // This option hides all default wallets
+      hideFromDefaults: true,
+    },
+  }}
+>
+  <App />
+</ContractKitProvider>
+```
+
+You can also add new custom wallets that don't exist in the registry or aren't in our defaults. For now, we only support custom wallets that implement the walletconnect protocol, but more may come in the future. In the example below, we're hiding all wallets except a new custom wallet.
+
+```javascript
+<ContractKitProvider
+  dapp={{
+    name: 'My awesome dApp',
+    description: 'My awesome description',
+    url: 'https://example.com',
+  }}
+  connectModal={{
+    title: <span>Connect your ExampleWallet</span>,
+    providersOptions: {
+      hideFromWCRegistry: true,
+      hideFromDefaults: true,
+      additionalWCWallets: [
+        // see https://github.com/WalletConnect/walletconnect-registry/#schema for a schema example
+        {
+          id: 'example-wallet',
+          name: 'Example Wallet',
+          description: 'Lorem ipsum',
+          homepage: 'https://example.com',
+          chains: ['eip:4220'],
+          // IMPORTANT
+          // This is the version of WC. If more than one version is provided
+          // use-contractkit will use the highest one
+          versions: ['1', '2'],
+          logos: {
+            sm: 'https://via.placeholder.com/40/000000/FFFFFF',
+            md: 'https://via.placeholder.com/80/000000/FFFFFF',
+            lg: 'https://via.placeholder.com/160/000000/FFFFFF',
+          },
+          app: {
+            browser: '...',
+            ios: '...',
+            android: '...',
+            mac: '...',
+            windows: '..',
+            linux: '...',
+          },
+          mobile: {
+            native: '...',
+            universal: '...',
+          },
+          desktop: {
+            native: '...',
+            universal: '...',
+          },
+          metadata: {
+            shortName: '...',
+            colors: {
+              primary: '...',
+              secondary: '...',
+            },
+          },
+          responsive: {
+            mobileFriendly: true,
+            browserFriendly: true,
+            mobileOnly: false,
+            browserOnly: false,
+          },
+        },
+      ],
+    },
+  }}
+>
+  <App />
+</ContractKitProvider>
+```
+
 ### Prompt users to connect their wallet
 
 use-contractkit provides a `connect` function that will open a modal with a list of wallets your user can connect to.

@@ -110,4 +110,6 @@ export interface WalletEntry {
   };
 }
 
+export type CustomWCWallet = Omit<WalletEntry, 'id'> & { id: string };
+
 export type AppRegistry = Record<string, WalletEntry>;
