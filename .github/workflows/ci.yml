@@ -26,6 +26,8 @@ jobs:
         run: yarn install
       - name: Lerna bootstrap
         run: yarn lerna bootstrap
+      - name: Run build wallet-walletconnect
+        run: yarn lerna run build --scope '*/wallet-walletconnect'
       - name: Run build walletconnect-v1 wrapper
         run: yarn lerna run build --scope '*/wallet-walletconnect-v1'
       - name: Run build use-contractkit
@@ -48,6 +50,8 @@ jobs:
         run: yarn install
       - name: Lerna bootstrap
         run: yarn lerna bootstrap
+      - name: Run build wallet-walletconnect
+        run: yarn lerna run build --scope '*/wallet-walletconnect'
       - name: Run build walletconnect-v1 wrapper
         run: yarn lerna run build --scope '*/wallet-walletconnect-v1'
       - name: Run build use-contractkit
