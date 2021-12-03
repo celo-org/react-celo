@@ -22,7 +22,7 @@ const debug = debugConfig('kit:wallet:wallet-connect-wallet');
  * communicating the connection URI (often via QR code) we can
  * continue with the setup process
  */
-async function waitForTruthy(getValue: () => any, attempts: number = 10) {
+async function waitForTruthy(getValue: () => boolean, attempts = 10) {
   let waitDuration = 500;
   for (let i = 0; i < attempts; i++) {
     if (getValue()) {
