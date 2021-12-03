@@ -5,6 +5,7 @@ import {
   newKit,
   newKitFromWeb3,
 } from '@celo/contractkit';
+import { ReadOnlyWallet } from '@celo/connect/lib';
 import { LocalWallet } from '@celo/wallet-local';
 import {
   WalletConnectWallet,
@@ -358,7 +359,7 @@ export class WalletConnectConnector implements Connector {
       version == 1
         ? new WalletConnectWalletV1(options as WalletConnectWalletOptionsV1)
         : new WalletConnectWallet(options as WalletConnectWalletOptions);
-    this.kit = newKit(network.rpcUrl, wallet);
+    this.kit = newKit(network.rpcUrl, wallet as ReadOnlyWallet);
     this.version = version;
   }
 
