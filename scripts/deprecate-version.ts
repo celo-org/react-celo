@@ -1,14 +1,14 @@
 import * as child_process from 'child_process';
 import { green, red, yellow } from 'colors';
 import * as path from 'path';
-import { get, start } from 'prompt';
+import { get, RevalidatorSchema, start } from 'prompt';
 import { valid } from 'semver';
 
 import { findPackagePaths, readPackageJson } from './utils';
 
 void (async function () {
   start();
-  const prompts = [
+  const prompts: RevalidatorSchema[] = [
     {
       name: 'version',
       description: green('Which sdk version do you want to deprecate?'),

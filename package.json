@@ -11,8 +11,8 @@
     "lint-fix": "lerna run lint -- --fix",
     "prepare": "husky install",
     "reset-modules": "rm -rf node_modules/ packages/*/node_modules",
-    "deploy-sdks": "ts-node ./scripts/deploy-sdks.ts",
-    "deprecate-sdks": "ts-node ./scripts/deprecate-sdks.ts"
+    "publish-packages": "ts-node ./scripts/publish-packages.ts",
+    "deprecate-version": "ts-node ./scripts/deprecate-version.ts"
   },
   "devDependencies": {
     "@types/prompt": "^1.1.2",

@@ -1,9 +1,9 @@
 #!/usr/local/bin/node
 
 /*
- * deploy-sdks script
- * THIS SCRIPT MUST BE RUN WITH NPM TO PUBLISH - `npm run deploy-sdks`
- * From the monorepo root run `yarn deploy-sdks`
+ * publish-packages script
+ * THIS SCRIPT MUST BE RUN WITH NPM TO PUBLISH - `npm run publish-packages`
+ * From the monorepo root run `yarn publish-packages`
  * You'll first be asked which version to update the sdks to.
  * You can pick major, minor, patch, a semantic version,
  * or nothing if you don't want to update the versions.
@@ -22,7 +22,7 @@
  * the `failedSDKs.json` file.
  * You will be asked to fix these packages and try again.
  * Then the script will exit.
- * If you run deploy-sdks and it detects a `failedSDKs.json`
+ * If you run publish-packages and it detects a `failedSDKs.json`
  * file it will attempt again to publish those packages
  * (using the same version and possibly dry-run option) and
  * nothing else.
@@ -36,7 +36,7 @@ import * as child_process from 'child_process';
 import { green, red } from 'colors';
 import * as fs from 'fs';
 import * as path from 'path';
-import { get, start } from 'prompt';
+import { get, RevalidatorSchema, start } from 'prompt';
 import { valid } from 'semver';
 
 import {
@@ -261,7 +261,7 @@ async function getAnswers(): Promise<Answers> {
     );
     return json;
   } catch (e) {
-    const prompts = [
+    const prompts: RevalidatorSchema[] = [
       {
         name: 'version',
         description: green(
@@ -270,7 +270,8 @@ async function getAnswers(): Promise<Answers> {
       },
       {
         name: 'publish',
-        description: green(`Should the sdks also be published? Y/N/dry-run`),
+        description: green(`Should the sdks also be published? y/n/dry-run`),
+        default: 'dry-run',
       },
     ];
     const { version, publish }: { version: string; publish: string } =
