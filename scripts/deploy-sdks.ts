@@ -126,6 +126,7 @@ void (async function () {
     },
   ];
 
+  let otp = '';
   const successfulPackages: string[] = [];
   if (shouldPublish) {
     // Here we build and publish all the sdk packages
@@ -147,11 +148,16 @@ void (async function () {
 
         console.log(`Publishing ${packageJson.name}@${packageJson.version}`);
         // Here you enter the 2FA code for npm
-        const { otp } = await get(otpPrompt);
+        let { newOtp } = await get<{ newOtp: string }>(otpPrompt);
+        if (!newOtp) {
+          newOtp = otp;
+        } else {
+          otp = newOtp;
+        }
 
         // Here is the actual publishing
         child_process.execSync(
-          `npm publish --access public --otp ${otp as string} ${
+          `npm publish --access public --otp ${newOtp} ${
             publish === 'dry-run' ? '--dry-run' : ''
           }`,
           { cwd: packageFolderPath, stdio: 'ignore' }
