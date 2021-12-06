@@ -13,6 +13,7 @@ import {
 } from '@celo/utils/lib/signatureUtils';
 import { recoverTransaction } from '@celo/wallet-base';
 import Web3 from 'web3';
+
 import { WalletConnectWallet } from '.';
 import {
   getTestWallet,

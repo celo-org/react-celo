@@ -7,9 +7,10 @@ import {
   ClientTypes,
   PairingTypes,
   SessionTypes,
-} from '@walletconnect/types';
+} from '@walletconnect/types/dist/cjs';
 import { ERROR } from '@walletconnect/utils';
 import debugConfig from 'debug';
+
 import { endpoint } from './constants';
 import { SupportedMethods, WalletConnectWalletOptions } from './types';
 import { parseAddress } from './utils';
