@@ -1,5 +1,5 @@
 import { CLIENT_EVENTS } from '@walletconnect/client';
-import { SessionTypes } from '@walletconnect/types';
+import { SessionTypes } from '@walletconnect/types/dist/cjs';
 import { EventEmitter } from 'events';
 import { SupportedMethods } from '../types';
 import {
@@ -15,10 +15,11 @@ import {
 const pairingTopic = 'XXX';
 
 export class MockWalletConnectClient extends EventEmitter {
-  // tslint:disable-next-line
-  init() {}
+  init(): void {
+    // noop
+  }
 
-  async connect() {
+  connect() {
     this.emit(CLIENT_EVENTS.pairing.proposal, {
       signal: {
         params: {
@@ -30,8 +31,9 @@ export class MockWalletConnectClient extends EventEmitter {
       topic: pairingTopic,
       peer: {
         metadata: {},
-        // tslint:disable-next-line
-        delete: () => {},
+        delete: () => {
+          // noop
+        },
       },
     });
     this.emit(CLIENT_EVENTS.session.created, {
@@ -43,30 +45,33 @@ export class MockWalletConnectClient extends EventEmitter {
   }
 
   async request(event: SessionTypes.RequestEvent) {
-    const {
-      request: { method, params },
-    } = event;
+    const { request } = event;
+    const { method } = request;
 
     // the request gets transformed between the client
     // and wallet, here we reassign to use our decoding
     //  methods in ./common.ts.
     let result = null;
     if (method === SupportedMethods.personalSign) {
-      const { payload, from } = parsePersonalSign(params);
+      const { payload, from } = parsePersonalSign(
+        request.params as [string, string]
+      );
       result = await testWallet.signPersonalMessage(from, payload);
     } else if (method === SupportedMethods.signTypedData) {
-      const { from, payload } = parseSignTypedData(params);
+      const { from, payload } = parseSignTypedData(
+        request.params as [string, string]
+      );
       result = await testWallet.signTypedData(from, payload);
     } else if (method === SupportedMethods.signTransaction) {
-      const tx = parseSignTransaction(params);
+      const tx = parseSignTransaction(request.params);
       result = await testWallet.signTransaction(tx);
     } else if (method === SupportedMethods.computeSharedSecret) {
-      const { from, publicKey } = parseComputeSharedSecret(params);
+      const { from, publicKey } = parseComputeSharedSecret(request.params);
       result = (await testWallet.computeSharedSecret(from, publicKey)).toString(
         'hex'
       );
     } else if (method === SupportedMethods.decrypt) {
-      const { from, payload } = parseDecrypt(params);
+      const { from, payload } = parseDecrypt(request.params);
       result = (await testWallet.decrypt(from, payload)).toString('hex');
     } else {
       return;
@@ -75,6 +80,7 @@ export class MockWalletConnectClient extends EventEmitter {
     return result;
   }
 
-  // tslint:disable-next-line
-  disconnect() {}
+  disconnect() {
+    // noop
+  }
 }

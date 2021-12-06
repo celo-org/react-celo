@@ -6,31 +6,34 @@ import { toChecksumAddress } from 'ethereumjs-util';
 
 // personal_sign is the one RPC that has [payload, from] rather
 // than [from, payload]
-export function parsePersonalSign(params: any): {
+export function parsePersonalSign(params: [string, string]): {
   from: string;
   payload: string;
 } {
   const [payload, from] = params;
   return { from, payload };
 }
-export function parseSignTypedData(params: any): {
+export function parseSignTypedData(params: [string, string]): {
   from: string;
   payload: EIP712TypedData;
 } {
   const [from, payload] = params;
-  return { from, payload: JSON.parse(payload) };
+  return { from, payload: JSON.parse(payload) as EIP712TypedData };
 }
-export function parseSignTransaction(params: any): CeloTx {
-  return params;
+export function parseSignTransaction(params: [CeloTx, string]): CeloTx {
+  return params[0];
 }
-export function parseComputeSharedSecret(params: any): {
+export function parseComputeSharedSecret(params: [string, string]): {
   from: Address;
   publicKey: string;
 } {
   const [from, publicKey] = params;
   return { from, publicKey };
 }
-export function parseDecrypt(params: any): { from: string; payload: Buffer } {
+export function parseDecrypt(params: [string, string]): {
+  from: string;
+  payload: Buffer;
+} {
   const [from, payload] = params;
   return { from, payload: Buffer.from(payload, 'hex') };
 }
