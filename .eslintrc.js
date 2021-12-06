@@ -5,7 +5,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['*.js', 'lib/'],
+  ignorePatterns: ['*.js', 'lib/', 'scripts'],
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['simple-import-sort', 'import', 'unused-imports'],

@@ -19,11 +19,11 @@ export class WalletConnectSigner implements Signer {
     protected chainId: string
   ) {}
 
-  async signTransaction(): Promise<{ v: number; r: Buffer; s: Buffer }> {
+  signTransaction(): Promise<{ v: number; r: Buffer; s: Buffer }> {
     throw new Error('signTransaction unimplemented; use signRawTransaction');
   }
 
-  private request(method: SupportedMethods, params: any) {
+  private request<T>(method: SupportedMethods, params: T) {
     return this.client.request({
       topic: this.session.topic,
       chainId: `eip155:${this.chainId}`,
@@ -35,44 +35,52 @@ export class WalletConnectSigner implements Signer {
   }
 
   signRawTransaction(tx: CeloTx): Promise<EncodedTransaction> {
-    return this.request(SupportedMethods.signTransaction, tx);
+    return this.request<CeloTx>(
+      SupportedMethods.signTransaction,
+      tx
+    ) as Promise<EncodedTransaction>;
   }
 
   async signTypedData(
     data: EIP712TypedData
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
-    const result = await this.request(SupportedMethods.signTypedData, [
-      this.account,
-      JSON.stringify(data),
-    ]);
-    return ethUtil.fromRpcSig(result) as { v: number; r: Buffer; s: Buffer };
+    const result = (await this.request<[string, string]>(
+      SupportedMethods.signTypedData,
+      [this.account, JSON.stringify(data)]
+    )) as string;
+    return ethUtil.fromRpcSig(result) as {
+      v: number;
+      r: Buffer;
+      s: Buffer;
+    };
   }
 
   async signPersonalMessage(
     data: string
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
-    const result = await this.request(SupportedMethods.personalSign, [
+    const result = (await this.request(SupportedMethods.personalSign, [
       data,
       this.account,
-    ]);
+    ])) as string;
+
     return ethUtil.fromRpcSig(result) as { v: number; r: Buffer; s: Buffer };
   }
 
   getNativeKey = () => this.account;
 
   async decrypt(data: Buffer) {
-    const result = await this.request(SupportedMethods.decrypt, [
-      this.account,
-      data,
-    ]);
+    const result = (await this.request<[string, Buffer]>(
+      SupportedMethods.decrypt,
+      [this.account, data]
+    )) as string;
     return Buffer.from(result, 'hex');
   }
 
   async computeSharedSecret(publicKey: string) {
-    const result = await this.request(SupportedMethods.computeSharedSecret, [
-      this.account,
-      publicKey,
-    ]);
+    const result = (await this.request<[string, string]>(
+      SupportedMethods.computeSharedSecret,
+      [this.account, publicKey]
+    )) as string;
     return Buffer.from(result, 'hex');
   }
 }

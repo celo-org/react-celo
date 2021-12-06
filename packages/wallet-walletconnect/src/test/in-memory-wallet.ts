@@ -1,7 +1,12 @@
+import { CeloTx, EncodedTransaction } from '@celo/connect';
 import { newKit } from '@celo/contractkit';
 import { toChecksumAddress } from '@celo/utils/lib/address';
 import WalletConnect, { CLIENT_EVENTS } from '@walletconnect/client';
-import { ClientTypes, PairingTypes, SessionTypes } from '@walletconnect/types';
+import {
+  ClientTypes,
+  PairingTypes,
+  SessionTypes,
+} from '@walletconnect/types/dist/cjs';
 import { ERROR } from '@walletconnect/utils';
 import debugConfig from 'debug';
 import { SupportedMethods } from '../types';
@@ -70,36 +75,37 @@ export function getTestWallet() {
     debug('onPairingDeleted', pairing);
   };
 
-  async function onSessionRequest(event: SessionTypes.RequestParams) {
-    const {
-      topic,
-      request: {
-        // @ts-ignore
-        id,
-        method,
-        // @ts-ignore
-        params,
-      },
-    } = event;
-
-    let result: any;
+  async function onSessionRequest(
+    event: SessionTypes.RequestParams & { request: { id: number } }
+  ) {
+    const { topic, request } = event;
+    const { method, id } = request;
+    let result: string | EncodedTransaction;
 
     if (method === SupportedMethods.personalSign) {
-      const { payload, from } = parsePersonalSign(params);
+      const { payload, from } = parsePersonalSign(
+        request.params as [string, string]
+      );
       result = await wallet.signPersonalMessage(from, payload);
     } else if (method === SupportedMethods.signTypedData) {
-      const { from, payload } = parseSignTypedData(params);
+      const { from, payload } = parseSignTypedData(
+        request.params as [string, string]
+      );
       result = await wallet.signTypedData(from, payload);
     } else if (method === SupportedMethods.signTransaction) {
-      const tx = parseSignTransaction(params);
+      const tx = parseSignTransaction(request.params as [CeloTx, string]);
       result = await wallet.signTransaction(tx);
     } else if (method === SupportedMethods.computeSharedSecret) {
-      const { from, publicKey } = parseComputeSharedSecret(params);
+      const { from, publicKey } = parseComputeSharedSecret(
+        request.params as [string, string]
+      );
       result = (await wallet.computeSharedSecret(from, publicKey)).toString(
         'hex'
       );
     } else if (method === SupportedMethods.decrypt) {
-      const { from, payload } = parseDecrypt(params);
+      const { from, payload } = parseDecrypt(
+        request.params as [string, string]
+      );
       result = (await wallet.decrypt(from, payload)).toString('hex');
     } else {
       // client.reject({})

@@ -1,4 +1,4 @@
-import { ClientOptions, ClientTypes } from '@walletconnect/types';
+import { ClientOptions, ClientTypes } from '@walletconnect/types/dist/cjs';
 
 export enum SupportedMethods {
   accounts = 'eth_accounts',

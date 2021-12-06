@@ -121,7 +121,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       console.error(`WalletConnect connection failed: ${e.message}`);
     });
 
-    await waitForTruthy(() => this.pairingProposal);
+    await waitForTruthy(() => !!this.pairingProposal);
 
     return this.pairingProposal!.signal.params.uri;
   }
@@ -168,7 +168,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
      * communicating the connection URI (often via QR code) we can
      * continue with the setup process
      */
-    await waitForTruthy(() => this.session);
+    await waitForTruthy(() => !!this.session);
 
     const addressToSigner = new Map<string, WalletConnectSigner>();
     this.session!.state.accounts.forEach((addressLike) => {

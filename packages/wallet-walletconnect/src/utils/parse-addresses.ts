@@ -47,7 +47,7 @@ function parseCaip10Address(addressLike: string) {
 }
 
 export function parseAddress(addressLike: string): AddressWithNetwork {
-  let lastError: Error | null = null;
+  let lastError: Error | unknown;
   for (const parse of [
     parseCaip10Address,
     parseCaip50Address,
@@ -55,7 +55,7 @@ export function parseAddress(addressLike: string): AddressWithNetwork {
   ]) {
     try {
       return parse(addressLike);
-    } catch (e: any) {
+    } catch (e) {
       lastError = e;
     }
   }

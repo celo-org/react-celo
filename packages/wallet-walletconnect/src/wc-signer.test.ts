@@ -80,10 +80,12 @@ const walletConnectBridge = process.env.WALLET_CONNECT_BRIDGE;
 const E2E = !!walletConnectBridge;
 
 describe('WalletConnectWallet tests', () => {
-  let wallet: WalletConnectWallet;
-  let testWallet: any;
+  let testWallet: {
+    init: (uri: string) => void;
+    close: () => Promise<void>;
+  };
 
-  wallet = new WalletConnectWallet({
+  const wallet = new WalletConnectWallet({
     init: {
       relayProvider: walletConnectBridge,
       logger: 'error',
@@ -108,7 +110,7 @@ describe('WalletConnectWallet tests', () => {
 
   beforeAll(async () => {
     const uri = await wallet.getUri();
-    await testWallet?.init(uri);
+    testWallet?.init(uri as string);
     await wallet.init();
   }, 10000);
 
@@ -122,8 +124,8 @@ describe('WalletConnectWallet tests', () => {
     }, 10000);
   }, 10000);
 
-  it('getAccounts()', async () => {
-    const accounts = await wallet.getAccounts();
+  it('getAccounts()', () => {
+    const accounts = wallet.getAccounts();
     expect(accounts.length).toBe(1);
     expect(eqAddress(accounts[0], testAddress)).toBe(true);
   });
@@ -140,7 +142,7 @@ describe('WalletConnectWallet tests', () => {
       );
     }
 
-    it('hasAccount()', async () => {
+    it('hasAccount()', () => {
       expect(wallet.hasAccount(unknownAddress)).toBeFalsy();
     });
 
@@ -206,7 +208,7 @@ describe('WalletConnectWallet tests', () => {
   });
 
   describe('with a known address', () => {
-    it('hasAccount()', async () => {
+    it('hasAccount()', () => {
       expect(wallet.hasAccount(testAddress)).toBeTruthy();
     });
 
