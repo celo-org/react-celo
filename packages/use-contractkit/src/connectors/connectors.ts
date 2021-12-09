@@ -22,6 +22,7 @@ import { ChainId, Connector, Network } from '../types';
 import { getInjectedEthereum } from '../utils/ethereum';
 import { clearPreviousConfig } from '../utils/helpers';
 import localStorage from '../utils/localStorage';
+import { switchToCeloNetwork } from '../utils/metamask';
 
 type Web3Type = Parameters<typeof newKitFromWeb3>[0];
 
@@ -170,6 +171,7 @@ export class InjectedConnector implements Connector {
   public account: string | null = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
   private onAddressChangeCallback?: (address: string | null) => void;
+  private network: Network;
 
   constructor(
     network: Network,
@@ -180,10 +182,11 @@ export class InjectedConnector implements Connector {
     localStorage.setItem(localStorageKeys.lastUsedWalletType, defaultType);
     localStorage.setItem(
       localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([])
+      JSON.stringify([feeCurrency])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
     this.kit = newKit(network.rpcUrl);
+    this.network = network;
   }
 
   async initialise(): Promise<this> {
@@ -197,24 +200,11 @@ export class InjectedConnector implements Connector {
 
     void (await ethereum.request({ method: 'eth_requestAccounts' }));
 
-    const chainId = await web3.eth.getChainId();
-    if (!Object.values(ChainId).includes(chainId)) {
-      throw new UnsupportedChainIdError(chainId);
-    }
-
-    ethereum.on('chainChanged', (chainIdHex: string) => {
-      if (this.onNetworkChangeCallback) {
-        const chainId = parseInt(chainIdHex, 16);
-        this.onNetworkChangeCallback(chainId);
-      }
-    });
-
-    ethereum.on('accountsChanged', (accounts) => {
-      if (this.onAddressChangeCallback) {
-        this.kit.defaultAccount = accounts[0];
-        this.onAddressChangeCallback(accounts[0] ?? null);
-      }
-    });
+    ethereum.removeListener('chainChanged', this.onChainChanged);
+    ethereum.removeListener('accountsChanged', this.onAccountsChanged);
+    await switchToCeloNetwork(this.kit, this.network, ethereum);
+    ethereum.on('chainChanged', this.onChainChanged);
+    ethereum.on('accountsChanged', this.onAccountsChanged);
 
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
@@ -225,6 +215,20 @@ export class InjectedConnector implements Connector {
 
     return this;
   }
+
+  private onChainChanged = (chainIdHex: string) => {
+    const chainId = parseInt(chainIdHex, 16);
+    if (this.onNetworkChangeCallback && this.network.chainId !== chainId) {
+      this.onNetworkChangeCallback(chainId);
+    }
+  };
+
+  private onAccountsChanged = (accounts: string[]) => {
+    if (this.onAddressChangeCallback) {
+      this.kit.defaultAccount = accounts[0];
+      this.onAddressChangeCallback(accounts[0] ?? null);
+    }
+  };
 
   async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
     this.feeCurrency = feeContract;
@@ -246,6 +250,10 @@ export class InjectedConnector implements Connector {
 
   close(): void {
     clearPreviousConfig();
+    if (typeof window.ethereum !== 'undefined') {
+      window.ethereum.removeListener('chainChanged', this.onChainChanged);
+      window.ethereum.removeListener('accountsChanged', this.onAccountsChanged);
+    }
     this.onNetworkChangeCallback = undefined;
     this.onAddressChangeCallback = undefined;
     return;
@@ -272,7 +280,7 @@ export class CeloExtensionWalletConnector implements Connector {
     );
     localStorage.setItem(
       localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([])
+      JSON.stringify([feeCurrency])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
     this.kit = newKit(network.rpcUrl);
@@ -351,7 +359,7 @@ export class WalletConnectConnector implements Connector {
     );
     localStorage.setItem(
       localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([options])
+      JSON.stringify([feeCurrency, options])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 

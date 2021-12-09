@@ -46,8 +46,10 @@ export function useContractKitMethods(
         // and we need to update what network we're storing
         // accordingly.
         initialisedConnector.onNetworkChange?.((chainId) => {
-          // TODO: We should probably throw an error if we can't find the new chainId
           const network = networks.find((n) => n.chainId === chainId);
+          if (netId === chainId || !network) return;
+
+          // TODO: We should probably throw an error if we can't find the new chainId
 
           if (network) {
             dispatch('setNetwork', network);

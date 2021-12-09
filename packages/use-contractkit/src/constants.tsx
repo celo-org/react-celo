@@ -211,10 +211,7 @@ export enum WalletIds {
  * These wallets cannot have their networks
  * updated via use-contractkit
  */
-export const STATIC_NETWORK_WALLETS = [
-  WalletTypes['MetaMask'],
-  WalletTypes['CeloExtensionWallet'],
-];
+export const STATIC_NETWORK_WALLETS = [WalletTypes['CeloExtensionWallet']];
 
 /**
  * Gets the provider associated with a wallet type.

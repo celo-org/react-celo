@@ -18,6 +18,9 @@ export function contractKitReducer(
       };
 
     case 'setAddress':
+      if (action.payload === state.address) {
+        return state;
+      }
       if (action.payload) {
         localStorage.setItem(localStorageKeys.lastUsedAddress, action.payload);
       } else {
@@ -28,6 +31,9 @@ export function contractKitReducer(
         address: action.payload,
       };
     case 'setNetwork':
+      if (action.payload === state.network) {
+        return state;
+      }
       localStorage.setItem(
         localStorageKeys.lastUsedNetwork,
         action.payload.name
@@ -46,6 +52,10 @@ export function contractKitReducer(
         address: null,
       };
     case 'setFeeCurrency':
+      if (action.payload === state.feeCurrency) {
+        return state;
+      }
+
       return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
       const newConnector = action.payload;
