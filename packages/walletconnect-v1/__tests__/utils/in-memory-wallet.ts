@@ -1,6 +1,5 @@
 import { newKit } from '@celo/contractkit';
 import { toChecksumAddress } from '@celo/utils/lib/address';
-import { Alfajores } from '@celo-tools/use-contractkit';
 import WalletConnect from '@walletconnect/client';
 import { IInternalEvent } from '@walletconnect/types';
 import debugConfig from 'debug';
@@ -74,10 +73,10 @@ export function getTestWallet(): {
       throw error;
     }
     return client.approveSession({
-      chainId: Alfajores.chainId,
+      chainId: 44787, // Alfajores
       accounts: [account],
       networkId: 0,
-      rpcUrl: Alfajores.rpcUrl,
+      rpcUrl: 'https://alfajores-forno.celo-testnet.org',
     });
   };
   const onSessionUpdated = (
