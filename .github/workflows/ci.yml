@@ -30,11 +30,11 @@ jobs:
       - name: Lerna bootstrap
         run: yarn lerna bootstrap
 
-      - name: Lint
-        run: yarn lint
-
       - name: Build
         run: yarn lerna run build
+
+      - name: Lint
+        run: yarn lint
 
       - name: Test
         run: yarn test
