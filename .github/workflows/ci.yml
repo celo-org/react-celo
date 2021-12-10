@@ -11,62 +11,39 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [12, 14, 16]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: ${{ matrix.node }}
       - name: Cache node_modules
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-v${{ matrix.node }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install
       - name: Lerna bootstrap
         run: yarn lerna bootstrap
-      - name: Run build walletconnect-v1 wrapper
-        run: yarn lerna run build --scope '*/wallet-walletconnect-v1'
-      - name: Run build use-contractkit
-        run: yarn lerna run build --scope '*/use-contractkit'
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
-        run: yarn install
-      - name: Lerna bootstrap
-        run: yarn lerna bootstrap
       - name: Lint
         run: yarn lint
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
-        run: yarn install
-      - name: Lerna bootstrap
-        run: yarn lerna bootstrap
+      - name: Build
+        run: yarn lerna run build
+
       - name: Test
         run: yarn test
+
+      - name: NPM Publish
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        id: publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: TODO:${{ secrets.NPM_TOKEN }}
+          check-version: true
+          dry-run: true
