@@ -9,6 +9,7 @@
     "postinstall": "lerna bootstrap",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint -- --fix",
+    "test": "lerna link && COVERAGE=ON lerna run --stream --no-bail test",
     "prepare": "husky install",
     "reset-modules": "rm -rf node_modules/ packages/*/node_modules",
     "publish-packages": "ts-node ./scripts/publish-packages.ts",
