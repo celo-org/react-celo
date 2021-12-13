@@ -37,13 +37,17 @@ jobs:
         run: yarn lint
 
       - name: Test
+        id: tests
         run: yarn test
 
       - name: Coverage report upload
         if: matrix.node == 'lts/*'
         uses: codecov/codecov-action@v2
         with:
-          flags: use-contractkit, walletconnect-v1
+          files: ./packages/use-contractkit/coverage/lcov.info,./packages/walletconnect-v1/coverage/lcov.info
+          fail_ci_if_error: true
+          verbose: true
+
       - name: NPM Publish
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         uses: JS-DevTools/npm-publish@v1
