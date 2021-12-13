@@ -4,8 +4,8 @@ import Loader from 'react-loader-spinner';
 import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
 import { UnsupportedChainIdError } from '../connectors';
 import { useInjectedConnector } from '../connectors/useMetaMaskConnector';
-import { ConnectorProps } from '.';
 import { isEthereumFromMetamask } from '../utils/ethereum';
+import { ConnectorProps } from '.';
 
 export const MetaMaskOrInjectedWallet: React.FC<ConnectorProps> = ({
   onSubmit,

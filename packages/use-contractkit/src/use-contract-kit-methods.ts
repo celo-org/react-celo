@@ -1,5 +1,6 @@
 import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import { useCallback } from 'react';
+
 import { CONNECTOR_TYPES } from './connectors';
 import {
   localStorageKeys,
@@ -14,7 +15,6 @@ export function useContractKitMethods(
     connector,
     networks,
     network,
-    feeCurrency,
   }: {
     connector: Connector;
     networks: Network[];

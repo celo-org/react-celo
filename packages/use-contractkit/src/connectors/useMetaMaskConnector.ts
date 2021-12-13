@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { InjectedConnector } from '.';
 
 import { Connector, Dapp, Network } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
+import { InjectedConnector } from '.';
 import { MetaMaskConnector } from './connectors';
 
 export function useInjectedConnector(

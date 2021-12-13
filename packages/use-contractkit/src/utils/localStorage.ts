@@ -40,6 +40,7 @@ class MockedLocalStorage {
     return this.storage.size;
   }
 }
+
 const localStorage: Storage =
   typeof window === 'undefined'
     ? new MockedLocalStorage()

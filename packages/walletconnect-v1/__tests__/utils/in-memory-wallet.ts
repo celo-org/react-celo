@@ -25,7 +25,12 @@ const privateKey =
   '04f9d516be49bb44346ca040bdd2736d486bca868693c74d51d274ad92f61976';
 const kit = newKit('https://alfajores-forno.celo-testnet.org');
 kit.addAccount(privateKey);
-const wallet = kit.getWallet()!;
+const wallet = kit.getWallet();
+
+if (wallet == null) {
+  throw new Error("Something went terribly wrong, wallet isn't initialized");
+}
+
 const [account] = wallet.getAccounts();
 
 export const testPrivateKey = privateKey;
@@ -61,7 +66,7 @@ export function getTestWallet(): {
         params && params[0] && params[0].message
           ? params[0].message
           : 'Unknown error';
-      // TODO?
+      console.log('DISCONNECT', params, error);
     }
   };
   const onSessionRequest = (

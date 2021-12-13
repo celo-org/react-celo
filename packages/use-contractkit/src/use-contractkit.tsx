@@ -1,4 +1,5 @@
 import { CeloTokenContract, ContractKit } from '@celo/contractkit';
+
 import { WalletTypes } from './constants';
 import { useContractKitContext } from './contract-kit-provider';
 import { Connector, Dapp, Network } from './types';
