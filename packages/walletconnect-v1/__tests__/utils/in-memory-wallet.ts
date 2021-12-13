@@ -25,12 +25,8 @@ const privateKey =
   '04f9d516be49bb44346ca040bdd2736d486bca868693c74d51d274ad92f61976';
 const kit = newKit('https://alfajores-forno.celo-testnet.org');
 kit.addAccount(privateKey);
-const wallet = kit.getWallet();
-
-if (wallet == null) {
-  throw new Error("Something went terribly wrong, wallet isn't initialized");
-}
-
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const wallet = kit.getWallet()!;
 const [account] = wallet.getAccounts();
 
 export const testPrivateKey = privateKey;

@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [12, 14, 16]
+        node: [12, 14, lts/*]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -38,6 +38,12 @@ jobs:
 
       - name: Test
         run: yarn test
+
+      - name: Codecov report upload
+        if: ${{ matrix.node }} == 'lts/*'
+        run: |
+          npm install -g codecov
+          ./scripts/codecov.sh
 
       - name: NPM Publish
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')

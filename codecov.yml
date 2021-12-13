@@ -1,0 +1,11 @@
+flags:
+  use-contractkit:
+    paths:
+      - packages/use-contractkit/
+  walletconnect-v1:
+    paths:
+      - packages/walletconnect-v1/
+  # When WC-v2 is merged
+  # walletconnect:
+  #   paths:
+  #     - packages/walletconnect/
