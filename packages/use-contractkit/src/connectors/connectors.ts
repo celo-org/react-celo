@@ -18,7 +18,9 @@ import { BigNumber } from 'bignumber.js';
 
 import { localStorageKeys, WalletTypes } from '../constants';
 import { ChainId, Connector, Network } from '../types';
+import { getEthereum } from '../utils/ethereum';
 import { clearPreviousConfig } from '../utils/helpers';
+import localStorage from '../utils/localStorage';
 
 type Web3Type = Parameters<typeof newKitFromWeb3>[0];
 
@@ -186,7 +188,7 @@ export class InjectedConnector implements Connector {
   async initialise(): Promise<this> {
     const { default: Web3 } = await import('web3');
 
-    const ethereum = window.ethereum;
+    const ethereum = getEthereum();
     if (!ethereum) {
       throw new Error('Ethereum wallet not installed');
     }

@@ -1,8 +1,10 @@
 import { CeloTokenContract } from '@celo/contractkit';
+
 import { UnauthenticatedConnector } from './connectors';
 import { localStorageKeys } from './constants';
 import { Connector, Dapp, Network } from './types';
 import { clearPreviousConfig } from './utils/helpers';
+import localStorage from './utils/localStorage';
 
 export function contractKitReducer(
   state: ReducerState,

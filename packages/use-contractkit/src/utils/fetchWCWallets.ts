@@ -1,5 +1,6 @@
-import { ChainId } from '..';
+import fetch from 'isomorphic-fetch';
 
+import { ChainId } from '..';
 export interface AppEntry {
   id: string;
   name: string;

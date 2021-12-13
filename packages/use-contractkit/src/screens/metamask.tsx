@@ -5,11 +5,12 @@ import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
 import { UnsupportedChainIdError } from '../connectors';
 import { useInjectedConnector } from '../connectors/useMetaMaskConnector';
 import { ConnectorProps } from '.';
+import { isEthereumFromMetamask } from '../utils/ethereum';
 
 export const MetaMaskOrInjectedWallet: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
-  const isMetamask = !!window.ethereum?.isMetaMask;
+  const isMetamask = isEthereumFromMetamask();
   const { error, dapp, network } = useInjectedConnector(onSubmit, isMetamask);
   if (error?.name === UnsupportedChainIdError.NAME) {
     return (

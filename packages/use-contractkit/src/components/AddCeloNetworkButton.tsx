@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Alfajores, Baklava, Mainnet } from '../constants';
 import { ChainId, Network } from '../types';
+import { getEthereum, isEthereumPresent } from '../utils/ethereum';
 
 const CELO_PARAMS = {
   chainName: 'Celo',
@@ -70,7 +71,13 @@ export const AddCeloNetworkButton: React.FC<Props> = ({ chainId }: Props) => {
   return (
     <button
       onClick={async () => {
-        await window.ethereum?.request({
+        if (!isEthereumPresent()) {
+          throw new Error(
+            "Ethereum isn't available in this context. This component should be mounted"
+          );
+        }
+
+        await getEthereum()?.request({
           method: 'wallet_addEthereumChain',
           params: [makeNetworkParams(NETWORKS[chainId])],
         });

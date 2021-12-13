@@ -2,6 +2,7 @@ import React from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { ChainId, Provider } from './types';
+import { isEthereumFromMetamask, isEthereumPresent } from './utils/ethereum';
 import {
   CELO,
   CELO_DANCE,
@@ -100,7 +101,7 @@ export const PROVIDERS: {
       </>
     ),
     icon: METAMASK,
-    canConnect: () => !!window.ethereum?.isMetaMask,
+    canConnect: () => isEthereumFromMetamask(),
     showInList: () => !isMobile,
     listPriority: () => 0,
     installURL: 'https://metamask.app.link/',
@@ -119,8 +120,8 @@ export const PROVIDERS: {
     name: SupportedProviders.Injected,
     description: 'Connect any Ethereum wallet to Celo',
     icon: ETHEREUM,
-    canConnect: () => !!window.ethereum,
-    showInList: () => !!window.ethereum && !window.ethereum.isMetaMask,
+    canConnect: () => isEthereumPresent(),
+    showInList: () => isEthereumFromMetamask(),
     listPriority: () => 1,
   },
   [SupportedProviders.PrivateKey]: {
