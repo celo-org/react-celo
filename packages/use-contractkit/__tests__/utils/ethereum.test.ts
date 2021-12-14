@@ -21,16 +21,17 @@ const jestEthereum = jest.fn(() => ({
   isMetaMask: true,
 }))();
 
+let windowSpy: jest.SpyInstance;
 const setEthereum = (implementation?: Ethereum) => {
-  // eslint-disable-next-line
-  // @ts-ignore
-  global.window = {
-    ethereum: implementation,
-  };
+  windowSpy.mockImplementation(() => ({ ethereum: implementation }));
 };
 
 beforeEach(() => {
+  windowSpy = jest.spyOn(global, 'window', 'get');
   setEthereum(jestEthereum as Ethereum);
+});
+afterAll(() => {
+  windowSpy.mockRestore();
 });
 
 describe('getEthereum', () => {
