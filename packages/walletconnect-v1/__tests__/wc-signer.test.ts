@@ -99,13 +99,18 @@ describe('WalletConnectWallet tests', () => {
     testWallet = getTestWallet();
   } else {
     jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .spyOn<any, any>(wallet, 'getWalletConnectClient')
       .mockImplementation(() => new MockWalletConnectClient());
   }
 
   beforeAll(async () => {
     const uri = await wallet.getUri();
-    testWallet?.init(uri!);
+    if (!uri) {
+      throw new Error('Couldnt get URI in tests. Something is wrong!');
+    }
+
+    testWallet?.init(uri);
     await wallet.init();
   }, 10000);
 

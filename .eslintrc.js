@@ -24,7 +24,7 @@ module.exports = {
     },
     ecmaVersion: 14,
     sourceType: 'module',
-    project: ['tsconfig.json'],
+    project: ['tsconfig.json', 'tsconfig.spec.json'],
   },
   rules: {
     'react/react-in-jsx-scope': 'off',
