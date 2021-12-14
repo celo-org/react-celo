@@ -8,7 +8,7 @@
     "lint:fix": "eslint . --fix",
     "test": "jest --runInBand",
     "test:watch": "jest --runInBand --watch",
-    "clean": "rm -r lib coverage",
+    "clean": "rm -rf lib coverage",
     "dev": "yarn run build && tsc-watch --onSuccess \"yarn run build-styles\"",
     "build-styles": "NODE_ENV=production yarn tailwind build -i ./src/styles.css -o ./lib/styles.css -c ./tailwind.config.js"
   },

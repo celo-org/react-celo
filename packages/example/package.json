@@ -3,7 +3,7 @@
   "version": "2.0.0-dev",
   "scripts": {
     "build": "next build",
-    "clean": "rm -r .next out",
+    "clean": "rm -rf .next out",
     "dev": "next dev --port 3000",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

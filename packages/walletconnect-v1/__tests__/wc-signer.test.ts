@@ -106,11 +106,7 @@ describe('WalletConnectWallet tests', () => {
 
   beforeAll(async () => {
     const uri = await wallet.getUri();
-    if (!uri) {
-      throw new Error('Couldnt get URI in tests. Something is wrong!');
-    }
-
-    testWallet?.init(uri);
+    testWallet?.init(uri!);
     await wallet.init();
   }, 10000);
 
