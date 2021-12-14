@@ -87,10 +87,9 @@ const makeNetworkParams = async (
   info: Network,
   CELO: GoldTokenWrapper
 ): Promise<AddEthereumChainParameter> => {
-  const [symbol, decimals, name] = await Promise.all([
+  const [symbol, decimals] = await Promise.all([
     CELO.symbol(),
     CELO.decimals(),
-    CELO.name(),
   ]);
 
   return {
@@ -224,8 +223,6 @@ export async function switchToCeloNetwork(
         // user has already been requested to switch the network
         return;
       } else {
-        console.log(err, code);
-        debugger;
         throw err;
       }
     }

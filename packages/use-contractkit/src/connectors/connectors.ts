@@ -18,8 +18,8 @@ import {
 import { BigNumber } from 'bignumber.js';
 
 import { localStorageKeys, WalletTypes } from '../constants';
-import { ChainId, Connector, Network } from '../types';
-import { getInjectedEthereum } from '../utils/ethereum';
+import { Connector, Network } from '../types';
+import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
 import { clearPreviousConfig } from '../utils/helpers';
 import localStorage from '../utils/localStorage';
 import { switchToCeloNetwork } from '../utils/metamask';
@@ -250,9 +250,10 @@ export class InjectedConnector implements Connector {
 
   close(): void {
     clearPreviousConfig();
-    if (typeof window.ethereum !== 'undefined') {
-      window.ethereum.removeListener('chainChanged', this.onChainChanged);
-      window.ethereum.removeListener('accountsChanged', this.onAccountsChanged);
+    const ethereum = getEthereum();
+    if (ethereum) {
+      ethereum.removeListener('chainChanged', this.onChainChanged);
+      ethereum.removeListener('accountsChanged', this.onAccountsChanged);
     }
     this.onNetworkChangeCallback = undefined;
     this.onAddressChangeCallback = undefined;
