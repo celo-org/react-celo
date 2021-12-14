@@ -7,7 +7,7 @@ import { MetaMaskConnector } from './connectors';
 
 export function useInjectedConnector(
   onSubmit: (connector: Connector) => void,
-  isMetamask: boolean
+  isMetaMask: boolean
 ): UseInjectedConnector {
   const {
     network,
@@ -20,7 +20,7 @@ export function useInjectedConnector(
   useEffect(() => {
     let stale;
     void (async () => {
-      const connector = isMetamask
+      const connector = isMetaMask
         ? new MetaMaskConnector(network, feeCurrency)
         : new InjectedConnector(network, feeCurrency);
 
@@ -37,7 +37,7 @@ export function useInjectedConnector(
     return () => {
       stale = true;
     };
-  }, [initConnector, network, onSubmit, isMetamask, feeCurrency]);
+  }, [initConnector, network, onSubmit, isMetaMask, feeCurrency]);
 
   return { error, dapp, network };
 }

@@ -10,8 +10,8 @@ import { ConnectorProps } from '.';
 export const MetaMaskOrInjectedWallet: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
-  const isMetamask = isEthereumFromMetamask();
-  const { error, dapp, network } = useInjectedConnector(onSubmit, isMetamask);
+  const isMetaMask = isEthereumFromMetamask();
+  const { error, dapp, network } = useInjectedConnector(onSubmit, isMetaMask);
   if (error?.name === UnsupportedChainIdError.NAME) {
     return (
       <div className="tw-space-y-6">
@@ -20,7 +20,7 @@ export const MetaMaskOrInjectedWallet: React.FC<ConnectorProps> = ({
         </p>
         <p className="dark:tw-text-gray-400">
           In order to use {dapp.name} you must be connected to the Celo network.{' '}
-          {isMetamask && (
+          {isMetaMask && (
             <a
               className="tw-underline tw-font-medium"
               target="_blank"
