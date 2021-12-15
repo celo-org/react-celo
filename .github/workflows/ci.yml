@@ -48,10 +48,13 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-      - name: NPM Publish
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: TODO:${{ secrets.NPM_TOKEN }}
-          check-version: true
-          dry-run: true
+      # Uncomment the block blow (and the dry-run flag) when
+      # we are decided to use git tags to publish new versions
+      #
+      # - name: NPM Publish
+      #   if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+      #   uses: JS-DevTools/npm-publish@v1
+      #   with:
+      #     token: TODO:${{ secrets.NPM_TOKEN }}
+      #     check-version: true
+      #     dry-run: true
