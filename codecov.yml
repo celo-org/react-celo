@@ -1,0 +1,24 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 5%
+        base: auto
+        if_ci_failed: error
+
+flags:
+  use-contractkit:
+    paths:
+      - packages/use-contractkit/
+  walletconnect-v1:
+    paths:
+      - packages/walletconnect-v1/
+  # When WC-v2 is merged
+  # walletconnect:
+  #   paths:
+  #     - packages/walletconnect/
+ignore:
+  - 'packages/*/node_modules'
+  - 'node_modules'
+  - 'packages/example'

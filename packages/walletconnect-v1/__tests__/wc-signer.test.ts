@@ -99,6 +99,7 @@ describe('WalletConnectWallet tests', () => {
     testWallet = getTestWallet();
   } else {
     jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .spyOn<any, any>(wallet, 'getWalletConnectClient')
       .mockImplementation(() => new MockWalletConnectClient());
   }
