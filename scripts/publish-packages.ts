@@ -78,45 +78,42 @@ void (async function () {
     process.exit(1);
   }
 
-  const sdkPackagePaths = findPackagePaths(
-    path.join(__dirname, '..', 'packages')
-  );
-  const sdkJsons = sdkPackagePaths.map(readPackageJson);
+  const packagePaths = findPackagePaths(path.join(__dirname, '..', 'packages'));
+  const packageJsons = packagePaths.map(readPackageJson);
 
   // We need all the sdkNames before we go through and update the
   // `package.json` dependencies.
-  const sdkNames = sdkJsons.map(({ name }) => name);
+  const packageNames = packageJsons.map(({ name }) => name);
+
+  const currentVersion = removeDevSuffix(packageJsons[0].name);
 
   let newVersion: string;
+  if (!version) {
+    newVersion = currentVersion;
+  } else {
+    newVersion = VERSIONS.includes(version)
+      ? incrementVersion(currentVersion, version)
+      : version;
+  }
   // Here we update the sdk `package.json` objects with updated
   // versions and dependencies.
-  sdkJsons.forEach((json, index) => {
-    if (!newVersion) {
-      if (!version) {
-        newVersion = removeDevSuffix(json.version);
-      } else {
-        newVersion = VERSIONS.includes(version)
-          ? incrementVersion(removeDevSuffix(json.version), version)
-          : version;
-      }
-    }
-
+  packageJsons.forEach((json, index) => {
     json.version = newVersion;
 
     if (shouldPublish) {
       for (const depName in json.dependencies) {
-        if (sdkNames.includes(depName)) {
+        if (packageNames.includes(depName)) {
           json.dependencies[depName] = newVersion;
         }
       }
       for (const depName in json.devDependencies) {
-        if (sdkNames.includes(depName)) {
+        if (packageNames.includes(depName)) {
           json.devDependencies[depName] = newVersion;
         }
       }
     }
 
-    writePackageJson(sdkPackagePaths[index], json);
+    writePackageJson(packagePaths[index], json);
   });
 
   const otpPrompt = [
@@ -130,9 +127,9 @@ void (async function () {
   const successfulPackages: string[] = [];
   if (shouldPublish) {
     // Here we build and publish all the sdk packages
-    for (let index = 0; index < sdkPackagePaths.length; index++) {
-      const path = sdkPackagePaths[index];
-      const packageJson = sdkJsons[index];
+    for (let index = 0; index < packagePaths.length; index++) {
+      const path = packagePaths[index];
+      const packageJson = packageJsons[index];
       if (packages.length && !packages.includes(packageJson.name)) {
         console.log(`Skipping ${packageJson.name}`);
         successfulPackages.push(packageJson.name);
@@ -187,10 +184,10 @@ void (async function () {
   // to keep them in sync.
   if (
     successfulPackages.length &&
-    successfulPackages.length !== sdkNames.length
+    successfulPackages.length !== packageNames.length
   ) {
-    const failedPackages = sdkNames.filter(
-      (sdkName) => !successfulPackages.includes(sdkName)
+    const failedPackages = packageNames.filter(
+      (name) => !successfulPackages.includes(name)
     );
     console.error(
       red(
@@ -201,14 +198,14 @@ void (async function () {
     );
     console.error(red('Creating failed packages file.'));
     fs.writeFileSync(
-      path.join(__dirname, 'failedSDKs.json'),
+      path.join(__dirname, 'failedPackages.json'),
       JSON.stringify({ packages: failedPackages, version: undefined, publish })
     );
     console.error(red(`Fix failed packages and try again.`));
     process.exit(1);
   }
 
-  const failedJsonPath = path.join(__dirname, 'failedSDKs.json');
+  const failedJsonPath = path.join(__dirname, 'failedPackages.json');
   if (fs.existsSync(failedJsonPath)) {
     fs.unlinkSync(failedJsonPath);
   }
@@ -217,37 +214,32 @@ void (async function () {
     path.join(__dirname, '..', 'packages')
   );
 
+  const newDevVersion = getNewDevVersion(newVersion);
+
   // Finally we update all the packages across the monorepo
-  // to use the most recent sdk packages.
+  // to use the most recent packages.
   allPackagePaths.forEach((path) => {
     const json = readPackageJson(path);
-    let packageChanged = false;
-    const isSdk = sdkNames.includes(json.name);
 
-    if (isSdk) {
-      json.version = `${newVersion}-dev`;
-      packageChanged = true;
-    }
+    json.version = `${newVersion}-dev`;
 
     for (const depName in json.dependencies) {
-      if (sdkNames.includes(depName)) {
-        const suffix =
-          json.dependencies[depName].includes('-dev') || isSdk ? '-dev' : '';
-        json.dependencies[depName] = `${newVersion}${suffix}`;
-        packageChanged = true;
+      if (packageNames.includes(depName)) {
+        const versionUpdate = json.dependencies[depName].includes('-dev')
+          ? `${newDevVersion}-dev`
+          : newVersion;
+        json.dependencies[depName] = versionUpdate;
       }
     }
     for (const depName in json.devDependencies) {
-      if (sdkNames.includes(depName)) {
-        const suffix =
-          json.devDependencies[depName].includes('-dev') || isSdk ? '-dev' : '';
-        json.devDependencies[depName] = `${newVersion}${suffix}`;
-        packageChanged = true;
+      if (packageNames.includes(depName)) {
+        const versionUpdate = json.devDependencies[depName].includes('-dev')
+          ? `${newDevVersion}-dev`
+          : newVersion;
+        json.devDependencies[depName] = versionUpdate;
       }
     }
-    if (packageChanged) {
-      writePackageJson(path, json);
-    }
+    writePackageJson(path, json);
   });
 })();
 
@@ -283,4 +275,12 @@ async function getAnswers(): Promise<Answers> {
       packages: [],
     };
   }
+}
+
+function getNewDevVersion(version: string) {
+  const versionArray = version.split('.');
+  const bump = Number(versionArray[2]) + 1;
+  if (isNaN(bump)) return version;
+  versionArray[2] = `${bump}`;
+  return versionArray.join('.');
 }
