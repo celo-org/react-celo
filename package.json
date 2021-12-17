@@ -46,5 +46,10 @@
   },
   "lint-staged": {
     "*.{js,css,md,ts,tsx,json,yaml,yml}": "prettier --write"
+  },
+  "resolutions": {
+    "@walletconnect/client": "2.0.0-beta.20.3",
+    "@walletconnect/types": "2.0.0-beta.20.3",
+    "@walletconnect/utils": "2.0.0-beta.20.3"
   }
 }

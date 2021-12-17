@@ -36,6 +36,7 @@ module.exports = {
     'import/newline-after-import': 'warn',
     'import/no-duplicates': 'warn',
     'unused-imports/no-unused-imports': 'error',
+    '@typescript-eslint/triple-slash-reference': 'off',
     '@typescript-eslint/no-unused-vars': [
       'warn',
       {

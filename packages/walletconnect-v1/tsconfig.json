@@ -6,7 +6,17 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"]
+    "typeRoots": [
+      "./node_modules/@types",
+      "../../node_modules/@types",
+      "../../node_modules/@walletconnect/types-v1"
+    ],
+    "paths": {
+      "@walletconnect/client-v1": [
+        "../../node_modules/@walletconnect/client-v1"
+      ],
+      "@walletconnect/utils-v1": ["../../node_modules/@walletconnect/utils-v1"]
+    }
   },
   "include": ["src/"]
 }
