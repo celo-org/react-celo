@@ -118,10 +118,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.client.on(CLIENT_EVENTS.pairing.updated, this.onPairingUpdated);
     this.client.on(CLIENT_EVENTS.pairing.deleted, this.onPairingDeleted);
 
-    this.client.connect(this.connectOptions).catch((e: Error) => {
-      console.error(`WalletConnect connection failed: ${e.message}`);
-    });
-
+    await this.client.connect(this.connectOptions);
     await waitForTruthy(() => !!this.pairingProposal);
 
     return this.pairingProposal!.signal.params.uri;

@@ -93,7 +93,7 @@ export function getTestWallet() {
       );
       result = await wallet.signTypedData(from, payload);
     } else if (method === SupportedMethods.signTransaction) {
-      const tx = parseSignTransaction(request.params as [CeloTx, string]);
+      const tx = parseSignTransaction(request.params as CeloTx);
       result = await wallet.signTransaction(tx);
     } else if (method === SupportedMethods.computeSharedSecret) {
       const { from, publicKey } = parseComputeSharedSecret(

@@ -20,8 +20,8 @@ export function parseSignTypedData(params: [string, string]): {
   const [from, payload] = params;
   return { from, payload: JSON.parse(payload) as EIP712TypedData };
 }
-export function parseSignTransaction(params: [CeloTx, string]): CeloTx {
-  return params[0];
+export function parseSignTransaction(params: CeloTx): CeloTx {
+  return params;
 }
 export function parseComputeSharedSecret(params: [string, string]): {
   from: Address;

@@ -1,5 +1,6 @@
 import { CLIENT_EVENTS } from '@walletconnect/client';
 import { SessionTypes } from '@walletconnect/types/dist/cjs';
+import { ErrorResponse } from '@walletconnect/jsonrpc-types/dist/cjs';
 import { EventEmitter } from 'events';
 import { SupportedMethods } from '../types';
 import {
@@ -18,6 +19,12 @@ export class MockWalletConnectClient extends EventEmitter {
   init(): void {
     // noop
   }
+
+  pairing = {
+    delete: ({ topic, reason }: { topic: string; reason: ErrorResponse }) => {
+      // noop
+    },
+  };
 
   connect() {
     this.emit(CLIENT_EVENTS.pairing.proposal, {
