@@ -3,14 +3,15 @@ import Loader from 'react-loader-spinner';
 
 import { AddCeloNetworkButton } from '../components/AddCeloNetworkButton';
 import { UnsupportedChainIdError } from '../connectors';
-import { useMetaMaskConnector } from '../connectors/useMetaMaskConnector';
+import { useInjectedConnector } from '../connectors/useMetaMaskConnector';
+import { isEthereumFromMetamask } from '../utils/ethereum';
 import { ConnectorProps } from '.';
 
-export const MetaMaskWallet: React.FC<ConnectorProps> = ({
+export const MetaMaskOrInjectedWallet: React.FC<ConnectorProps> = ({
   onSubmit,
 }: ConnectorProps) => {
-  const { error, dapp, network } = useMetaMaskConnector(onSubmit);
-
+  const isMetaMask = isEthereumFromMetamask();
+  const { error, dapp, network } = useInjectedConnector(onSubmit, isMetaMask);
   if (error?.name === UnsupportedChainIdError.NAME) {
     return (
       <div className="tw-space-y-6">
@@ -19,14 +20,16 @@ export const MetaMaskWallet: React.FC<ConnectorProps> = ({
         </p>
         <p className="dark:tw-text-gray-400">
           In order to use {dapp.name} you must be connected to the Celo network.{' '}
-          <a
-            className="tw-underline tw-font-medium"
-            target="_blank"
-            rel="noreferrer"
-            href="https://docs.celo.org/getting-started/wallets/using-metamask-with-celo"
-          >
-            What does this mean?
-          </a>
+          {isMetaMask && (
+            <a
+              className="tw-underline tw-font-medium"
+              target="_blank"
+              rel="noreferrer"
+              href="https://docs.celo.org/getting-started/wallets/using-metamask-with-celo"
+            >
+              What does this mean?
+            </a>
+          )}
         </p>
 
         <div className="tw-flex tw-justify-center">

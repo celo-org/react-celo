@@ -16,8 +16,9 @@
   "scripts": {
     "dev": "yarn run build && tsc-watch",
     "build": "tsc -b .",
-    "clean": "tsc -b . --clean",
+    "clean": "rm -rf lib coverage",
     "test": "jest --runInBand",
+    "test:watch": "jest --runInBand --watch",
     "test-staging": "WALLET_CONNECT_BRIDGE=wss://walletconnect.celo-networks-dev.org yarn test",
     "test-production": "WALLET_CONNECT_BRIDGE=wss://walletconnect.celo.org yarn test",
     "lint": "eslint .",
@@ -52,10 +53,5 @@
   },
   "bugs": {
     "url": "https://github.com/celo-org/use-contractkit/issues"
-  },
-  "devDependencies": {
-    "@types/jest": "^27.0.3",
-    "jest": "^27.3.1",
-    "ts-jest": "^27.0.7"
   }
 }

@@ -6,6 +6,7 @@ import {
   WalletTypes,
 } from '../constants';
 import { Connector, Network } from '../types';
+import localStorage from './localStorage';
 
 export const loadPreviousConfig = (
   defaultNetworkProp: Network

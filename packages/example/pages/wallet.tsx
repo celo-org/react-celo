@@ -32,6 +32,7 @@ const account = web3.eth.accounts.privateKeyToAccount(
   'e2d7138baa3a5600ac37984e40981591d7cf857bcadd7dc6f7d14023a17b0787'
 );
 kit.addAccount(account.privateKey);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const wallet = kit.getWallet()!;
 
 const defaultSummary = {

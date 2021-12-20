@@ -2,6 +2,7 @@ import React from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { ChainId, Provider } from './types';
+import { isEthereumFromMetamask, isEthereumPresent } from './utils/ethereum';
 import {
   CELO,
   CELO_DANCE,
@@ -38,7 +39,7 @@ export const PROVIDERS: {
   [K in SupportedProviders]: Provider;
 } = {
   [SupportedProviders.Valora]: {
-    name: 'Valora',
+    name: SupportedProviders.Valora,
     description:
       'Connect to Valora, a mobile payments app that works worldwide',
     icon: VALORA,
@@ -48,7 +49,7 @@ export const PROVIDERS: {
     installURL: 'https://valoraapp.com/',
   },
   [SupportedProviders.WalletConnect]: {
-    name: 'WalletConnect',
+    name: SupportedProviders.WalletConnect,
     description: 'Scan a QR code to connect your wallet',
     icon: WALLETCONNECT,
     canConnect: () => true,
@@ -56,7 +57,7 @@ export const PROVIDERS: {
     listPriority: () => 0,
   },
   [SupportedProviders.Ledger]: {
-    name: 'Ledger',
+    name: SupportedProviders.Ledger,
     description: 'Sync with your Ledger hardware wallet',
     icon: LEDGER,
     canConnect: () => true,
@@ -64,7 +65,7 @@ export const PROVIDERS: {
     listPriority: () => 0,
   },
   [SupportedProviders.CeloWallet]: {
-    name: 'Celo Wallet',
+    name: SupportedProviders.CeloWallet,
     description: 'Connect to Celo Wallet for web or desktop',
     icon: CELO,
     canConnect: () => true,
@@ -72,7 +73,7 @@ export const PROVIDERS: {
     listPriority: () => (!isMobile ? 0 : 1),
   },
   [SupportedProviders.CeloTerminal]: {
-    name: 'Celo Terminal',
+    name: SupportedProviders.CeloTerminal,
     description: 'Connect to the Celo Terminal desktop app',
     // TODO get SVG icon
     icon: 'https://raw.githubusercontent.com/zviadm/celoterminal/main/static/icon.png',
@@ -81,7 +82,7 @@ export const PROVIDERS: {
     listPriority: () => 1,
   },
   [SupportedProviders.MetaMask]: {
-    name: 'MetaMask',
+    name: SupportedProviders.MetaMask,
     description: (
       <>
         Use the Metamask browser extension. Celo support is limited.{' '}
@@ -100,13 +101,13 @@ export const PROVIDERS: {
       </>
     ),
     icon: METAMASK,
-    canConnect: () => !!window.ethereum?.isMetaMask,
+    canConnect: () => isEthereumFromMetamask(),
     showInList: () => !isMobile,
     listPriority: () => 0,
     installURL: 'https://metamask.app.link/',
   },
   [SupportedProviders.CeloExtensionWallet]: {
-    name: 'Celo Extension Wallet',
+    name: SupportedProviders.CeloExtensionWallet,
     description: 'Use a wallet from the the Celo chrome extension',
     icon: CHROME_EXTENSION_STORE,
     canConnect: () => !!window.celo,
@@ -116,15 +117,15 @@ export const PROVIDERS: {
       'https://chrome.google.com/webstore/detail/celoextensionwallet/kkilomkmpmkbdnfelcpgckmpcaemjcdh/related',
   },
   [SupportedProviders.Injected]: {
-    name: 'Ethereum Web3',
+    name: SupportedProviders.Injected,
     description: 'Connect any Ethereum wallet to Celo',
     icon: ETHEREUM,
-    canConnect: () => !!window.ethereum,
-    showInList: () => !!window.ethereum && !window.ethereum.isMetaMask,
+    canConnect: () => isEthereumPresent(),
+    showInList: () => isEthereumFromMetamask(),
     listPriority: () => 1,
   },
   [SupportedProviders.PrivateKey]: {
-    name: 'Private Key',
+    name: SupportedProviders.PrivateKey,
     description:
       'Enter a plaintext private key to load your account (testing only)',
     icon: PRIVATE_KEY,
@@ -133,7 +134,7 @@ export const PROVIDERS: {
     listPriority: () => 1,
   },
   [SupportedProviders.CeloDance]: {
-    name: 'CeloDance',
+    name: SupportedProviders.CeloDance,
     description: 'Send, vote, and earn rewards within one wallet',
     icon: CELO_DANCE,
     canConnect: () => true,
