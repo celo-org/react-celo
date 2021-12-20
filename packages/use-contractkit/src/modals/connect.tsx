@@ -8,6 +8,7 @@ import { ConnectorProps, defaultScreens } from '../screens';
 import { WalletConnectCustom } from '../screens/wallet-connect-custom';
 import { Connector, CustomWCWallet, Provider, WalletEntry } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
+import { defaultProviderSort } from '../utils/sort';
 import { useFetchWCWallets } from '../utils/useFetchWCWallets';
 import { defaultModalStyles } from './styles';
 
@@ -44,9 +45,7 @@ function walletToProvider(wallet: WalletEntry): Provider {
     canConnect: () => true,
     showInList: () =>
       isMobile ? Object.values(wallet.mobile).some(Boolean) : true,
-    // TODO: what do we think about that?
     listPriority: () => (wallet.id === WalletIds.Valora ? 0 : 1),
-    // TODO: what do we think about that?
     installURL: wallet.homepage,
     walletConnectRegistryId: wallet.id,
   };
@@ -57,16 +56,18 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   RenderProvider = ProviderSelect,
   screens = defaultScreens,
   title = 'Connect a wallet',
-  providersOptions = {
-    additionalWCWallets: [],
-  },
+  providersOptions = {},
 }: ConnectModalProps) => {
   const { connectionCallback } = useContractKitInternal();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
   const [showMore, setShowMore] = useState(false);
   const celoWallets = useFetchWCWallets();
-  const { hideFromDefaults, hideFromWCRegistry, additionalWCWallets, sort } =
-    providersOptions;
+  const {
+    hideFromDefaults,
+    hideFromWCRegistry,
+    additionalWCWallets = [],
+    sort = defaultProviderSort,
+  } = providersOptions;
 
   const {
     wallets,
@@ -173,10 +174,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
             provider.showInList() &&
             Object.keys(allScreens).find((screen) => screen === providerKey)
         )
-        .sort(([, a], [, b]) => {
-          if (sort) return sort(a, b);
-          return a.listPriority() - b.listPriority();
-        }),
+        .sort(([, a], [, b]) => sort(a, b)),
     [_providers, allScreens, sort]
   );
 
