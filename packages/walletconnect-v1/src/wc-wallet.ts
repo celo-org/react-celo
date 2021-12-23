@@ -1,7 +1,9 @@
+/// <reference path='../../../node_modules/@walletconnect/types-v1/index.d.ts' />
+
 import { sleep } from '@celo/base';
 import { CeloTx, EncodedTransaction } from '@celo/connect';
 import { RemoteWallet } from '@celo/wallet-remote';
-import WalletConnect from '@walletconnect/client';
+import WalletConnect from '@walletconnect/client-v1';
 import {
   ICreateSessionOptions,
   IInternalEvent,

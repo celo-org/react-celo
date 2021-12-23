@@ -27,9 +27,9 @@
   },
   "dependencies": {
     "@celo/wallet-walletconnect": "2.0.0-dev",
-    "@walletconnect/client": "1.6.6",
-    "@walletconnect/types": "1.6.6",
-    "@walletconnect/utils": "1.6.6",
+    "@walletconnect/client-v1": "npm:@walletconnect/client@1.6.6",
+    "@walletconnect/types-v1": "npm:@walletconnect/types@1.6.6",
+    "@walletconnect/utils-v1": "npm:@walletconnect/utils@1.6.6",
     "debug": "^4.1.1",
     "ethereumjs-util": "^7.0.8"
   },

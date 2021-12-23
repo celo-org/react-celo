@@ -27,7 +27,7 @@ async function main() {
       },
     },
     init: {
-      relayProvider: endpoint,
+      relayUrl: endpoint,
       logger: 'error',
     },
   });

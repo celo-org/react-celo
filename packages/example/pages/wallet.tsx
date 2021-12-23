@@ -14,7 +14,7 @@ import {
   SupportedMethods,
 } from '@celo/wallet-walletconnect-v1';
 import { Alfajores } from '@celo-tools/use-contractkit';
-import WalletConnect from '@walletconnect/client';
+import WalletConnect from '@walletconnect/client-v1';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { createRef, useCallback, useEffect, useState } from 'react';

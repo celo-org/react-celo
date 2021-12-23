@@ -40,7 +40,7 @@ async function waitForTruthy(getValue: () => boolean, attempts = 10) {
 }
 
 const defaultInitOptions: ClientOptions = {
-  relayProvider: endpoint,
+  relayUrl: endpoint,
 };
 const defaultConnectOptions: ClientTypes.ConnectParams = {
   metadata: {
