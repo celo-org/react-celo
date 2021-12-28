@@ -88,7 +88,7 @@ describe('WalletConnectWallet tests', () => {
 
   const wallet = new WalletConnectWallet({
     init: {
-      relayProvider: walletConnectBridge,
+      relayUrl: walletConnectBridge,
       logger: 'error',
     },
     connect: {

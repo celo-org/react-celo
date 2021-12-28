@@ -29,7 +29,7 @@ export function useWalletConnectConnector(
       }
 
       const isMainnet = network.name === Mainnet.name;
-      const relayProvider = 'wss://relay.walletconnect.org';
+      const relayUrl = 'wss://relay.walletconnect.org';
       const connector = new WalletConnectConnector(
         network,
         feeCurrency,
@@ -51,7 +51,7 @@ export function useWalletConnectConnector(
             },
           },
           init: {
-            relayProvider,
+            relayUrl,
             logger: 'error',
           },
         },
