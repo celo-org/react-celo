@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 import { WalletIds } from '../constants';
 import fetchWCWallets from './fetchWCWallets';
 

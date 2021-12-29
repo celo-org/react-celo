@@ -10,7 +10,6 @@ import {
   IWalletConnectSDKOptions,
 } from '@walletconnect/types';
 import debugConfig from 'debug';
-
 import { defaultBridge } from './constants';
 import {
   AccountsProposal,
@@ -60,7 +59,7 @@ const defaultInitOptions: IWalletConnectSDKOptions = {
 };
 
 const defaultConnectOptions: ICreateSessionOptions = {
-  chainId: 44787,
+  chainId: 42220, // Celo Mainnet
 };
 
 export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {

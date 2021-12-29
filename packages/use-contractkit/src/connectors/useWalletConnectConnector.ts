@@ -1,6 +1,5 @@
 import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
 import { useEffect, useState } from 'react';
-
 import { Mainnet, WalletIds } from '../constants';
 import { Connector } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
@@ -29,7 +28,6 @@ export function useWalletConnectConnector(
       }
 
       const isMainnet = network.name === Mainnet.name;
-      const relayUrl = 'wss://relay.walletconnect.org';
       const connector = new WalletConnectConnector(
         network,
         feeCurrency,
@@ -49,10 +47,6 @@ export function useWalletConnectConnector(
                 methods: Object.values(SupportedMethods),
               },
             },
-          },
-          init: {
-            relayUrl,
-            logger: 'error',
           },
         },
         autoOpen && isMainnet,

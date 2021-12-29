@@ -12,7 +12,6 @@ import { newKit } from '@celo/contractkit';
 //   verifySignature,
 // } from '@celo/utils/src/signatureUtils'
 import { WalletConnectWallet } from '../src';
-import { endpoint } from '../src/constants';
 
 async function main() {
   const name = `CLI DApp ${Math.random().toString().substring(12)}`;
@@ -25,10 +24,6 @@ async function main() {
         url: 'https://use-contractkit.vercel.app',
         icons: [],
       },
-    },
-    init: {
-      relayUrl: endpoint,
-      logger: 'error',
     },
   });
 

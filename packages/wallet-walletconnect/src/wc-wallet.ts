@@ -10,8 +10,7 @@ import {
 } from '@walletconnect/types/dist/cjs';
 import { ERROR } from '@walletconnect/utils';
 import debugConfig from 'debug';
-
-import { endpoint } from './constants';
+import { PROJECT_ID, RELAY_URL } from './constants';
 import { SupportedMethods, WalletConnectWalletOptions } from './types';
 import { parseAddress } from './utils';
 import { WalletConnectSigner } from './wc-signer';
@@ -40,7 +39,9 @@ async function waitForTruthy(getValue: () => boolean, attempts = 10) {
 }
 
 const defaultInitOptions: ClientOptions = {
-  relayUrl: endpoint,
+  relayUrl: RELAY_URL,
+  projectId: PROJECT_ID,
+  logger: 'error',
 };
 const defaultConnectOptions: ClientTypes.ConnectParams = {
   metadata: {
@@ -118,7 +119,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.client.on(CLIENT_EVENTS.pairing.updated, this.onPairingUpdated);
     this.client.on(CLIENT_EVENTS.pairing.deleted, this.onPairingDeleted);
 
-    await this.client.connect(this.connectOptions);
+    this.client.connect(this.connectOptions)?.catch((e: Error) => {
+      console.error(`WalletConnect connection failed: ${e.message}`);
+    });
     await waitForTruthy(() => !!this.pairingProposal);
 
     return this.pairingProposal!.signal.params.uri;
