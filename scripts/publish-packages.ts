@@ -38,7 +38,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { get, RevalidatorSchema, start } from 'prompt';
 import { valid } from 'semver';
-
 import {
   findPackagePaths,
   incrementVersion,
@@ -71,7 +70,8 @@ void (async function () {
     process.exit(1);
   }
 
-  const shouldPublish = publish === 'Y' || publish === 'dry-run';
+  const shouldPublish =
+    publish.toLowerCase() === 'y' || publish.toLowerCase() === 'dry-run';
 
   if (!shouldPublish && !version) {
     console.error(red('Either a version or --publish must be given'));
@@ -85,7 +85,7 @@ void (async function () {
   // `package.json` dependencies.
   const packageNames = packageJsons.map(({ name }) => name);
 
-  const currentVersion = removeDevSuffix(packageJsons[0].name);
+  const currentVersion = removeDevSuffix(packageJsons[0].version);
 
   let newVersion: string;
   if (!version) {
@@ -123,7 +123,6 @@ void (async function () {
     },
   ];
 
-  let otp = '';
   const successfulPackages: string[] = [];
   if (shouldPublish) {
     // Here we build and publish all the sdk packages
@@ -145,16 +144,14 @@ void (async function () {
 
         console.log(`Publishing ${packageJson.name}@${packageJson.version}`);
         // Here you enter the 2FA code for npm
-        let { newOtp } = await get<{ newOtp: string }>(otpPrompt);
-        if (!newOtp) {
-          newOtp = otp;
-        } else {
-          otp = newOtp;
+        let { otp } = await get<{ otp: string }>(otpPrompt);
+        if (!otp) {
+          console.error(red('OTP is required. Can be anything for dry run'));
         }
 
         // Here is the actual publishing
         child_process.execSync(
-          `npm publish --access public --otp ${newOtp} ${
+          `npm publish --access public --otp ${otp} ${
             publish === 'dry-run' ? '--dry-run' : ''
           }`,
           { cwd: packageFolderPath, stdio: 'ignore' }
