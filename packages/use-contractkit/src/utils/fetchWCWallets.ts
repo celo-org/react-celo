@@ -3,10 +3,6 @@ import { isMobile } from 'react-device-detect';
 
 import { AppRegistry, ChainId, WalletEntry, WalletEntryLogos } from '../types';
 
-// TODO: remove dapps' URL when CeloTerminal is moved into the wallets.json
-// https://github.com/WalletConnect/walletconnect-registry/issues/350
-const WALLETCONNECT_REGISTRY_DAPPS_URL =
-  'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/master/public/data/dapps.json';
 const WALLETCONNECT_REGISTRY_WALLETS_URL =
   'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/master/public/data/wallets.json';
 const LOGO_BASE_URL =
@@ -49,19 +45,11 @@ export default async function fetchWCWallets(): Promise<WalletEntry[]> {
   if (CACHE.wallets && CACHE.ts !== null && Date.now() - MINUTE <= CACHE.ts) {
     return CACHE.wallets;
   }
-  const appRegistry: WalletEntry[] = await Promise.all(
-    [
-      // TODO: remove dapps' URL when CeloTerminal is moved into the wallets.json
-      // https://github.com/WalletConnect/walletconnect-registry/issues/350
-      fetch(WALLETCONNECT_REGISTRY_DAPPS_URL),
-      fetch(WALLETCONNECT_REGISTRY_WALLETS_URL),
-    ].map((_) => _.then((r) => r.json() as Promise<AppRegistry>))
-  ).then((_) =>
-    _.reduce(
-      (acc, apps) => acc.concat(Object.values(apps)),
-      [] as WalletEntry[]
-    )
-  );
+  const appRegistry: WalletEntry[] = await fetch(
+    WALLETCONNECT_REGISTRY_WALLETS_URL
+  )
+    .then((r) => r.json() as Promise<AppRegistry>)
+    .then((apps) => Object.values(apps));
 
   const celoWallets = appRegistry.filter(
     (app) => app?.chains && app.chains.includes(`eip155:${ChainId.Mainnet}`)
