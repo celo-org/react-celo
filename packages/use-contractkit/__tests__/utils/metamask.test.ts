@@ -1,6 +1,5 @@
-import { ContractKit, newKit, StableToken } from '@celo/contractkit';
+import { ContractKit, newKit } from '@celo/contractkit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
-import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 
 import { Alfajores } from '../../src';
 import {
@@ -53,6 +52,7 @@ afterEach(() => {
 
 beforeAll(async () => {
   kit = newKit(Alfajores.rpcUrl);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   ({ CELO, ...tokens } = await kit.celoTokens.getWrappers());
 });
