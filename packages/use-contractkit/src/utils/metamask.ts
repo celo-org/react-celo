@@ -37,7 +37,13 @@ const params: { [chain in ChainId]: typeof CELO_PARAMS } = {
   [ChainId.Baklava]: BAKLAVA_PARAMS,
 };
 
-interface ERC20Token {
+const NETWORKS = {
+  [ChainId.Mainnet]: Mainnet,
+  [ChainId.Alfajores]: Alfajores,
+  [ChainId.Baklava]: Baklava,
+};
+
+export interface ERC20Token {
   address: string;
   name: string;
   symbol: string;
@@ -45,19 +51,19 @@ interface ERC20Token {
   image?: string;
 }
 
-interface AddERC20TokenParameter {
+export interface AddERC20TokenParameter {
   type: 'ERC20';
   options: ERC20Token;
 }
 
-interface CeloTokens {
+export interface CeloTokens {
   CELO: GoldTokenWrapper;
   cUSD: StableTokenWrapper;
   cEUR: StableTokenWrapper;
 }
-type StableTokens = Omit<CeloTokens, 'CELO'>;
+export type StableTokens = Omit<CeloTokens, 'CELO'>;
 
-interface AddEthereumChainParameter {
+export interface AddEthereumChainParameter {
   chainId: string;
   chainName: string;
   nativeCurrency: Omit<ERC20Token, 'address'>;
@@ -66,24 +72,18 @@ interface AddEthereumChainParameter {
   iconUrls?: string[]; // Currently ignored by metamask
 }
 
-const NETWORKS = {
-  [ChainId.Mainnet]: Mainnet,
-  [ChainId.Alfajores]: Alfajores,
-  [ChainId.Baklava]: Baklava,
-};
-
-enum MetamaskRPCErrorCode {
+export enum MetamaskRPCErrorCode {
   AwaitingUserConfirmation = -32002,
   UnknownNetwork = 4902,
 }
 
-interface MetamaskRPCError {
+export interface MetamaskRPCError {
   code: MetamaskRPCErrorCode;
   message: string;
   stack: string;
 }
 
-const makeNetworkParams = async (
+export const makeNetworkParams = async (
   info: Network,
   CELO: GoldTokenWrapper
 ): Promise<AddEthereumChainParameter> => {
@@ -106,7 +106,7 @@ const makeNetworkParams = async (
   };
 };
 
-const tokenToParam = async (
+export const tokenToParam = async (
   token: GoldTokenWrapper | StableTokenWrapper
 ): Promise<AddERC20TokenParameter> => {
   const [symbol, decimals, name] = await Promise.all([
@@ -127,15 +127,15 @@ const tokenToParam = async (
   };
 };
 
-const makeAddCeloTokensParams = async (
+export const makeAddCeloTokensParams = async (
   tokens: StableTokens
 ): Promise<AddERC20TokenParameter[]> =>
   Promise.all(Object.values(tokens).map(tokenToParam));
 
-const addTokensToMetamask = async (
+export const addTokensToMetamask = async (
   ethereum: Ethereum,
   tokens: StableTokens
-) => {
+): Promise<boolean> => {
   const tokenParams = await makeAddCeloTokensParams(tokens);
   const added = (
     await Promise.all(
@@ -151,7 +151,7 @@ const addTokensToMetamask = async (
   return added;
 };
 
-const addNetworkToMetamask = async (
+export const addNetworkToMetamask = async (
   ethereum: Ethereum,
   networkConfig: Network
 ): Promise<void> => {
@@ -181,7 +181,6 @@ const addNetworkToMetamask = async (
         `Please check your Metamask window to add ${networkConfig.name} to Metamask`
       );
     } else {
-      console.log(err, code);
       throw err;
     }
   }
