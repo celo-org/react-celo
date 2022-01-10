@@ -17,6 +17,7 @@ export const CeloWallet: React.FC<Props> = ({ onSubmit }: Props) => {
     undefined,
     WalletIds.CeloWallet
   );
+
   const onClickPlatform = (platform: 'web' | 'desktop') => {
     if (!uri) return;
     let url;

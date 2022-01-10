@@ -4,6 +4,7 @@ import {
   AddEthereumEventListener,
   Ethereum,
   EthereumRequest,
+  RemoveEthereumEventListener,
 } from '../../src/global';
 import {
   getEthereum,
@@ -13,9 +14,11 @@ import {
 } from '../../src/utils/ethereum';
 
 const jestEthereumOn: AddEthereumEventListener = jest.fn();
+const jestEthereumOff: RemoveEthereumEventListener = jest.fn();
 const jestEthereumRequest: EthereumRequest = jest.fn();
 const jestEthereum = jest.fn(() => ({
   on: jestEthereumOn,
+  removeListener: jestEthereumOff,
   request: jestEthereumRequest,
   enable: () => Promise.resolve(),
   isMetaMask: true,

@@ -15,6 +15,7 @@ declare global {
 
 interface Ethereum extends Exclude<AbstractProvider, 'request'> {
   on: AddEthereumEventListener;
+  removeListener: RemoveEthereumEventListener;
   isMetaMask?: boolean;
   request: EthereumRequest;
   enable: () => Promise<void>;
@@ -23,6 +24,11 @@ interface Ethereum extends Exclude<AbstractProvider, 'request'> {
 type AddEthereumEventListener = <Event extends keyof EthereumEventCallbacks>(
   event: Event,
   cb: EthereumEventCallbacks[Event]
+) => void;
+
+type RemoveEthereumEventListener = <Event extends keyof EthereumEventCallbacks>(
+  event: Event,
+  cb?: EthereumEventCallbacks[Event]
 ) => void;
 
 interface EthereumEventCallbacks {
@@ -38,4 +44,6 @@ type EthereumRequest = <Method extends keyof EthereumRequestReturns>(args: {
 interface EthereumRequestReturns {
   eth_requestAccounts: string[];
   wallet_addEthereumChain: null;
+  wallet_watchAsset: boolean;
+  wallet_switchEthereumChain: null;
 }
