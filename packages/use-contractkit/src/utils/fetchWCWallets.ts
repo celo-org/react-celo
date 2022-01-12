@@ -4,9 +4,9 @@ import { isMobile } from 'react-device-detect';
 import { AppRegistry, ChainId, WalletEntry, WalletEntryLogos } from '../types';
 
 const WALLETCONNECT_REGISTRY_WALLETS_URL =
-  'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/master/public/data/wallets.json';
+  'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/production/public/data/wallets.json';
 const LOGO_BASE_URL =
-  'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/master/public/logo';
+  'https://raw.githubusercontent.com/WalletConnect/walletconnect-registry/production/public/logo';
 
 const makeLogos = (id: string): WalletEntryLogos => ({
   sm: `${LOGO_BASE_URL}/sm/${id}.jpeg`,
@@ -48,8 +48,15 @@ export default async function fetchWCWallets(): Promise<WalletEntry[]> {
   const appRegistry: WalletEntry[] = await fetch(
     WALLETCONNECT_REGISTRY_WALLETS_URL
   )
-    .then((r) => r.json() as Promise<AppRegistry>)
-    .then((apps) => Object.values(apps));
+    .then((r) => r.json())
+    .catch((err) => {
+      console.log(err);
+
+      // NOTE: nextjs doesn't allow to write an import with a variable so the
+      // magic string needs to stay.
+      return import('@walletconnect/registry/public/data/wallets.json');
+    })
+    .then((apps: AppRegistry) => Object.values(apps));
 
   const celoWallets = appRegistry.filter(
     (app) => app?.chains && app.chains.includes(`eip155:${ChainId.Mainnet}`)
@@ -61,6 +68,10 @@ export default async function fetchWCWallets(): Promise<WalletEntry[]> {
     const mobileOnly = !browserFriendly && mobileFriendly;
     const browserOnly = browserFriendly && !mobileFriendly;
 
+    // NOTE: makeLogos still points to the github registry
+    // even if the initial fetch failed. This is because I think a
+    // missing image is acceptable, while adding _all_ images from the registry
+    // into the bundle isn't.
     wallet.logos = makeLogos(wallet.id);
     wallet.responsive = {
       mobileFriendly,

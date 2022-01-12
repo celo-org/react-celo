@@ -32,6 +32,7 @@
     "@ethersproject/providers": "^5.3.0",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "@types/isomorphic-fetch": "^0.0.35",
+    "@walletconnect/registry": "git+https://github.com/WalletConnect/walletconnect-registry.git#production",
     "isomorphic-fetch": "^3.0.0",
     "qrcode.react": "^1.0.1",
     "react-device-detect": "^1.17.0",
