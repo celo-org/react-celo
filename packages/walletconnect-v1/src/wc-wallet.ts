@@ -10,6 +10,7 @@ import {
   IWalletConnectSDKOptions,
 } from '@walletconnect/types';
 import debugConfig from 'debug';
+
 import { defaultBridge } from './constants';
 import {
   AccountsProposal,

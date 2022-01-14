@@ -1,3 +1,4 @@
+import { ReadOnlyWallet } from '@celo/connect/lib';
 import {
   CeloContract,
   CeloTokenContract,
@@ -5,12 +6,12 @@ import {
   newKit,
   newKitFromWeb3,
 } from '@celo/contractkit';
-import { ReadOnlyWallet } from '@celo/connect/lib';
 import { LocalWallet } from '@celo/wallet-local';
-import {
-  WalletConnectWallet,
-  WalletConnectWalletOptions,
-} from '@celo/wallet-walletconnect';
+// Uncomment with WCV2 support
+// import {
+//   WalletConnectWallet,
+//   WalletConnectWalletOptions,
+// } from '@celo/wallet-walletconnect';
 import {
   WalletConnectWallet as WalletConnectWalletV1,
   WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
@@ -349,7 +350,8 @@ export class WalletConnectConnector implements Connector {
   constructor(
     readonly network: Network,
     public feeCurrency: CeloTokenContract,
-    options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
+    // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
+    options: WalletConnectWalletOptionsV1,
     readonly autoOpen = false,
     readonly getDeeplinkUrl?: (uri: string) => string,
     readonly version?: number
@@ -364,10 +366,11 @@ export class WalletConnectConnector implements Connector {
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 
-    const wallet =
-      version == 1
-        ? new WalletConnectWalletV1(options as WalletConnectWalletOptionsV1)
-        : new WalletConnectWallet(options as WalletConnectWalletOptions);
+    const wallet = new WalletConnectWalletV1(options);
+    // Uncomment with WCV2 support
+    // version == 1
+    //   ? new WalletConnectWalletV1(options as WalletConnectWalletOptionsV1)
+    //   : new WalletConnectWallet(options as WalletConnectWalletOptions);
     this.kit = newKit(network.rpcUrl, wallet as ReadOnlyWallet);
     this.version = version;
   }
@@ -381,10 +384,11 @@ export class WalletConnectConnector implements Connector {
   }
 
   async initialise(): Promise<this> {
-    const wallet = this.kit.getWallet() as WalletConnectWallet;
+    const wallet = this.kit.getWallet() as WalletConnectWalletV1;
 
     if (this.onCloseCallback) {
-      wallet.onPairingDeleted = () => this.onCloseCallback?.();
+      // Uncomment with WCV2 support
+      // wallet.onPairingDeleted = () => this.onCloseCallback?.();
       wallet.onSessionDeleted = () => this.onCloseCallback?.();
     }
 
@@ -426,7 +430,7 @@ export class WalletConnectConnector implements Connector {
 
   close(): Promise<void> {
     clearPreviousConfig();
-    const wallet = this.kit.getWallet() as WalletConnectWallet;
+    const wallet = this.kit.getWallet() as WalletConnectWalletV1;
     return wallet.close();
   }
 }

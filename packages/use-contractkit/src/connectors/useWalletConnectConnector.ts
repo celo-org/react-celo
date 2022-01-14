@@ -1,5 +1,7 @@
-import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
+// Uncomment with WCV2 support
+// import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
 import { useEffect, useState } from 'react';
+
 import { Mainnet, WalletIds } from '../constants';
 import { Connector } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
@@ -12,7 +14,7 @@ export function useWalletConnectConnector(
   getDeeplinkUrl?: (uri: string) => string,
   walletId?: WalletIds
 ): string {
-  const { network, feeCurrency, dapp, destroy, initConnector } =
+  const { network, feeCurrency, destroy, initConnector } =
     useContractKitInternal();
   const [uri, setUri] = useState('');
   const version = useWalletVersion(walletId);
@@ -33,20 +35,22 @@ export function useWalletConnectConnector(
         feeCurrency,
         {
           connect: {
-            metadata: {
-              name: dapp.name,
-              description: dapp.description,
-              url: dapp.url,
-              icons: [dapp.icon],
-            },
-            permissions: {
-              blockchain: {
-                chains: [`eip155:${network.chainId}`],
-              },
-              jsonrpc: {
-                methods: Object.values(SupportedMethods),
-              },
-            },
+            chainId: network.chainId,
+            // Uncomment with WCV2 support
+            // metadata: {
+            //   name: dapp.name,
+            //   description: dapp.description,
+            //   url: dapp.url,
+            //   icons: [dapp.icon],
+            // },
+            // permissions: {
+            //   blockchain: {
+            //     chains: [`eip155:${}`],
+            //   },
+            //   jsonrpc: {
+            //     methods: Object.values(SupportedMethods),
+            //   },
+            // },
           },
         },
         autoOpen && isMainnet,
