@@ -160,6 +160,7 @@ export enum NetworkNames {
   Alfajores = 'Alfajores',
   Baklava = 'Baklava',
   Mainnet = 'Mainnet',
+  Localhost = 'Localhost',
 }
 
 export const Alfajores = {
@@ -184,6 +185,14 @@ export const Mainnet = {
   graphQl: 'https://explorer.celo.org/graphiql',
   explorer: 'https://explorer.celo.org',
   chainId: ChainId.Mainnet,
+} as const;
+
+export const Localhost = {
+  name: NetworkNames.Localhost,
+  rpcUrl: 'http://localhost:8545',
+  graphQl: '',
+  explorer: '',
+  chainId: 1337,
 } as const;
 
 export enum WalletTypes {
@@ -226,7 +235,12 @@ export const getProviderForWallet = (
 /**
  * Default networks to connect to.
  */
-export const DEFAULT_NETWORKS = [Mainnet, Alfajores, Baklava];
+export const DEFAULT_NETWORKS = [
+  Mainnet,
+  Alfajores,
+  Baklava,
+  ...(process.env.NODE_ENV !== 'production' ? [Localhost] : []),
+];
 
 /**
  * Chain ID of a default network.
