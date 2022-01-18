@@ -153,6 +153,8 @@ void (async function () {
         child_process.execSync(
           `npm publish --access public --otp ${otp} ${
             publish === 'dry-run' ? '--dry-run' : ''
+          } --tag ${
+            version.toLocaleLowerCase().includes('beta') ? 'beta' : 'latest'
           }`,
           { cwd: packageFolderPath, stdio: 'ignore' }
         );
