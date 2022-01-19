@@ -1,5 +1,5 @@
 import { Address } from '@celo/base';
-import { CeloTx } from '@celo/connect';
+import { CeloTx, ReadOnlyWallet } from '@celo/connect';
 import { newKit } from '@celo/contractkit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import { toChecksumAddress } from 'ethereumjs-util';
@@ -45,6 +45,6 @@ kit.addAccount(privateKey);
 const wallet = kit.getWallet()!;
 const [account] = wallet.getAccounts();
 
-export const testWallet = wallet;
+export const testWallet: ReadOnlyWallet = wallet;
 export const testPrivateKey = privateKey;
 export const testAddress = toChecksumAddress(account);

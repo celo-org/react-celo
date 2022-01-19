@@ -23,8 +23,10 @@ By default use-contractkit is styled so that you can drop it into your applicati
 ## Install
 
 ```
-yarn add @celo-tools/use-contractkit
+yarn add @celo-tools/use-contractkit @celo/contractkit
 ```
+
+You can use any `@celo/contractkit` version at least as recent as `1.5.1`.
 
 ## Supported wallets
 
