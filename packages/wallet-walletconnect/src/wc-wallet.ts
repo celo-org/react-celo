@@ -10,6 +10,7 @@ import {
 } from '@walletconnect/types/dist/cjs';
 import { ERROR } from '@walletconnect/utils';
 import debugConfig from 'debug';
+
 import { PROJECT_ID, RELAY_URL } from './constants';
 import { SupportedMethods, WalletConnectWalletOptions } from './types';
 import { parseAddress } from './utils';

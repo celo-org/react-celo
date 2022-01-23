@@ -1,8 +1,9 @@
 import React from 'react';
 import { TailSpin } from 'react-loader-spinner';
-import { ConnectorProps } from '.';
+
 import { useInjectedConnector } from '../connectors/useMetaMaskConnector';
 import { isEthereumFromMetamask } from '../utils/ethereum';
+import { ConnectorProps } from '.';
 
 export const MetaMaskOrInjectedWallet: React.FC<ConnectorProps> = ({
   onSubmit,

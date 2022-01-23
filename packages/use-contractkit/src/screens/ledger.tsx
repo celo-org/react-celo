@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { TailSpin } from 'react-loader-spinner';
-import { ConnectorProps } from '.';
+
 import { LedgerConnector } from '../connectors';
 import { useContractKitInternal } from '../use-contractkit';
 import { useIsMounted } from '../utils/useIsMounted';
+import { ConnectorProps } from '.';
 
 export const Ledger: React.FC<ConnectorProps> = ({
   onSubmit,

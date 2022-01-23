@@ -1,5 +1,6 @@
 import React from 'react';
 import { TailSpin } from 'react-loader-spinner';
+
 import { CopyText } from '../components';
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { WalletIds } from '../constants';

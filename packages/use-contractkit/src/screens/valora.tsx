@@ -2,6 +2,7 @@ import QrCode from 'qrcode.react';
 import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { TailSpin } from 'react-loader-spinner';
+
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { WalletIds } from '../constants';
 import { Connector } from '../types';

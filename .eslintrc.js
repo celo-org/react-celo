@@ -27,14 +27,15 @@ module.exports = {
     project: ['tsconfig.json', 'tsconfig.spec.json'],
   },
   rules: {
-    'react/react-in-jsx-scope': 'off',
-    'react/no-unescaped-entities': 'off',
     'import/order': 'off',
-    'simple-import-sort/imports': 'warn',
-    'simple-import-sort/exports': 'warn',
     'import/first': 'warn',
     'import/newline-after-import': 'warn',
     'import/no-duplicates': 'warn',
+    'no-non-null-assertion': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'react/no-unescaped-entities': 'off',
+    'simple-import-sort/imports': 'warn',
+    'simple-import-sort/exports': 'warn',
     'unused-imports/no-unused-imports': 'error',
     '@typescript-eslint/triple-slash-reference': 'off',
     '@typescript-eslint/no-unused-vars': [
@@ -46,5 +47,6 @@ module.exports = {
         argsIgnorePattern: '^_',
       },
     ],
+    '@typescript-eslint/no-non-null-assertion': 'off',
   },
 };

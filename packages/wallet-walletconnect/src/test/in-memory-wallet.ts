@@ -9,6 +9,7 @@ import {
 } from '@walletconnect/types/dist/cjs';
 import { ERROR } from '@walletconnect/utils';
 import debugConfig from 'debug';
+
 import { SupportedMethods } from '../types';
 import {
   parseComputeSharedSecret,

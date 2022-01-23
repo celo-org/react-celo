@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { TailSpin } from 'react-loader-spinner';
 import ReactModal from 'react-modal';
+
 import { useContractKitInternal } from '../use-contractkit';
 import { defaultModalStyles } from './styles';
 
