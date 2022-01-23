@@ -1,14 +1,8 @@
 module.exports = {
   prefix: 'tw-',
   important: true,
-  purge: {
-    enabled: true,
-    preserveHtmlElements: false,
-    content: ['./src/**/*.{js,jsx,tsx}'],
-    options: {
-      safelist: ['dark', 'tw-dark'],
-    },
-  },
+  content: ['./src/**/*.{js,jsx,tsx}'],
+  safelist: ['dark', 'tw-dark'],
   darkMode: 'class',
   theme: {
     extend: {},

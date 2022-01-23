@@ -5,7 +5,8 @@
     "module": "esnext",
     "isolatedModules": true,
     "jsx": "preserve",
-    "sourceMap": true
+    "sourceMap": true,
+    "incremental": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

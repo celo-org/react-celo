@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
-import Loader from 'react-loader-spinner';
+import { TailSpin } from 'react-loader-spinner';
 import ReactModal from 'react-modal';
-
 import { useContractKitInternal } from '../use-contractkit';
 import { defaultModalStyles } from './styles';
 
@@ -27,7 +26,7 @@ const defaultActionModalComponent = ({
         . Please check your wallet to confirm.
       </p>
       <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
-        <Loader type="TailSpin" color="#666666" height="60px" width="60px" />
+        <TailSpin color="#666666" height="60px" width="60px" />
       </div>
     </div>
   );
