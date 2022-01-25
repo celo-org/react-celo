@@ -1,5 +1,5 @@
 import React from 'react';
-import Loader from 'react-loader-spinner';
+import { TailSpin } from 'react-loader-spinner';
 
 import { useInjectedConnector } from '../connectors/useMetaMaskConnector';
 import { isEthereumFromMetamask } from '../utils/ethereum';
@@ -17,7 +17,7 @@ export const MetaMaskOrInjectedWallet: React.FC<ConnectorProps> = ({
         <p className="tw-text-red-500 tw-pb-4">{error.message}</p>
       ) : (
         <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
-          <Loader type="TailSpin" color="#666666" height="60px" width="60px" />
+          <TailSpin color="#666666" height="60px" width="60px" />
         </div>
       )}
     </div>

@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CLIENT_EVENTS } from '@walletconnect/client';
-import { SessionTypes } from '@walletconnect/types/dist/cjs';
 import { ErrorResponse } from '@walletconnect/jsonrpc-types/dist/cjs';
+import { SessionTypes } from '@walletconnect/types/dist/cjs';
 import { EventEmitter } from 'events';
+
 import { SupportedMethods } from '../types';
 import {
   parseComputeSharedSecret,

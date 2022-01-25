@@ -1,7 +1,7 @@
 import QrCode from 'qrcode.react';
 import React from 'react';
 import { isMobile } from 'react-device-detect';
-import Loader from 'react-loader-spinner';
+import { TailSpin } from 'react-loader-spinner';
 
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { WalletIds } from '../constants';
@@ -37,12 +37,7 @@ export const Valora: React.FC<Props> = ({ onSubmit }: Props) => {
           <QrCode value={uri} size={180} />
         ) : (
           <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
-            <Loader
-              type="TailSpin"
-              color="#666666"
-              height="60px"
-              width="60px"
-            />
+            <TailSpin color="#666666" height="60px" width="60px" />
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Loader from 'react-loader-spinner';
+import { TailSpin } from 'react-loader-spinner';
 
 import { LedgerConnector } from '../connectors';
 import { useContractKitInternal } from '../use-contractkit';
@@ -88,12 +88,7 @@ export const Ledger: React.FC<ConnectorProps> = ({
             >
               {submitting ? (
                 <div className="tw-flex tw-items-center tw-justify-center">
-                  <Loader
-                    type="TailSpin"
-                    color="white"
-                    height={24}
-                    width={24}
-                  />
+                  <TailSpin color="white" height={24} width={24} />
                 </div>
               ) : (
                 'Connect'
