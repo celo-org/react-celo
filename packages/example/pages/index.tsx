@@ -85,7 +85,10 @@ export default function Home(): React.ReactElement {
             '0x73D20479390E1acdB243570b5B739655989412f5',
             Web3.utils.toWei('0.00000001', 'ether')
           )
-          .sendAndWaitForReceipt({ from: k.defaultAccount });
+          .sendAndWaitForReceipt({
+            from: k.defaultAccount,
+            gasPrice: k.gasPrice,
+          });
       });
 
       toast.success('sendTransaction succeeded');
