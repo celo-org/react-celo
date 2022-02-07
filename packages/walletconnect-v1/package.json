@@ -1,6 +1,6 @@
 {
   "name": "@celo/wallet-walletconnect-v1",
-  "version": "2.1.2-dev",
+  "version": "2.1.3-dev",
   "description": "WalletConnect wallet legacy (v1) implementation",
   "author": "Celo",
   "license": "Apache-2.0",
@@ -26,7 +26,7 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "@celo/wallet-walletconnect": "2.1.2-dev",
+    "@celo/wallet-walletconnect": "2.1.3-dev",
     "@walletconnect/client-v1": "npm:@walletconnect/client@1.6.6",
     "@walletconnect/types-v1": "npm:@walletconnect/types@1.6.6",
     "@walletconnect/utils-v1": "npm:@walletconnect/utils@1.6.6",
