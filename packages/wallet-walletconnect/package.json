@@ -1,6 +1,6 @@
 {
   "name": "@celo/wallet-walletconnect",
-  "version": "3.0.0-beta-dev",
+  "version": "3.0.0-beta2-dev",
   "description": "WalletConnect wallet implementation",
   "author": "Celo",
   "license": "Apache-2.0",
