@@ -53,7 +53,7 @@ export function useWalletConnectConnector(
             // },
           },
         },
-        autoOpen && isMainnet,
+        autoOpen,
         getDeeplinkUrl,
         version
       );
