@@ -10,14 +10,16 @@
     "test:watch": "jest --runInBand --watch",
     "clean": "rm -rf lib coverage",
     "dev": "yarn run build && tsc-watch --onSuccess \"yarn run build-styles\"",
-    "build-styles": "NODE_ENV=production yarn tailwind build -i ./src/styles.css -o ./lib/styles.css -c ./tailwind.config.js"
+    "build-styles": "NODE_ENV=production yarn tailwind build -i ./src/styles.css -o ./lib/styles.css -c ./tailwind.config.js",
+    "prepublish": "\\cp ../../readme.md ./README.md"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "README.md"
   ],
-  "homepage": "https://use-contractkit.vercel.app",
+  "homepage": "https://use-contractkit-gamma.vercel.app",
   "readme": "../../readme.md",
   "license": "MIT",
   "dependencies": {
