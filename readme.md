@@ -237,4 +237,4 @@ A hot reloading server should come up on `localhost:3000`, it's the exact same a
 
 ## Support
 
-Struggling with anything use-contractkit related? Jump into the [celo-org discord channel](https://chat.celo.org) and ask for help any time.
+Struggling with anything use-contractkit related? Jump into the [GitHub Discussions](https://github.com/celo-org/use-contractkit/discussions) or [celo-org discord channel](https://chat.celo.org) and ask for help any time.
