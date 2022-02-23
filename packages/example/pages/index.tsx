@@ -1,5 +1,6 @@
-import { StableToken } from '@celo/contractkit';
 import { ensureLeading0x } from '@celo/utils/lib/address';
+import { StableToken } from '@celo/contractkit/lib/celo-tokens';
+import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 import {
   Alfajores,
   Baklava,
@@ -14,13 +15,20 @@ import Web3 from 'web3';
 import { PrimaryButton, SecondaryButton, toast } from '../components';
 import { TYPED_DATA } from '../utils';
 
-const defaultSummary = {
+interface Summary {
+  name: string;
+  address: string;
+  wallet: string;
+  celo: BigNumber;
+  balances: { symbol: string; value: BigNumber }[];
+}
+
+const defaultSummary: Summary = {
   name: '',
   address: '',
   wallet: '',
   celo: new BigNumber(0),
-  cusd: new BigNumber(0),
-  ceur: new BigNumber(0),
+  balances: [],
 };
 
 function truncateAddress(address: string) {
@@ -49,27 +57,32 @@ export default function Home(): React.ReactElement {
       return;
     }
 
-    const [accounts, goldToken, cUSD, cEUR] = await Promise.all([
+    const [accounts, goldToken, stableTokens] = await Promise.all([
       kit.contracts.getAccounts(),
       kit.contracts.getGoldToken(),
-      kit.contracts.getStableToken(StableToken.cUSD),
-      kit.contracts.getStableToken(StableToken.cEUR),
+      Promise.all(
+        Object.values(StableToken).map(async (stable) => {
+          return {
+            symbol: stable,
+            contract: await kit.contracts.getStableToken(stable),
+          };
+        })
+      ),
     ]);
 
-    const [summary, celo, cusd, ceur] = await Promise.all([
+    const [summary, celo, balances] = await Promise.all([
       accounts.getAccountSummary(address).catch((e) => {
         console.error(e);
         return defaultSummary;
       }),
       goldToken.balanceOf(address),
-      cUSD.balanceOf(address),
-      cEUR.balanceOf(address),
+      getBalances(stableTokens, address),
     ]);
+
     setSummary({
       ...summary,
       celo,
-      cusd,
-      ceur,
+      balances,
     });
   }, [address, kit]);
 
@@ -356,12 +369,12 @@ export default function Home(): React.ReactElement {
                     <div>
                       CELO: {Web3.utils.fromWei(summary.celo.toFixed())}
                     </div>
-                    <div>
-                      cUSD: {Web3.utils.fromWei(summary.cusd.toFixed())}
-                    </div>
-                    <div>
-                      cEUR: {Web3.utils.fromWei(summary.ceur.toFixed())}
-                    </div>
+                    {summary.balances.map((token) => (
+                      <div key={token.symbol}>
+                        {token.symbol}:{' '}
+                        {Web3.utils.fromWei(token.value.toFixed())}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -370,5 +383,16 @@ export default function Home(): React.ReactElement {
         </div>
       </main>
     </div>
+  );
+}
+async function getBalances(
+  stableTokens: { symbol: string; contract: StableTokenWrapper }[],
+  address: string
+) {
+  return Promise.all(
+    stableTokens.map(async (stable) => ({
+      symbol: stable.symbol,
+      value: await stable.contract.balanceOf(address),
+    }))
   );
 }
