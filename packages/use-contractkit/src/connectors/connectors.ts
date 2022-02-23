@@ -48,10 +48,7 @@ export class UnauthenticatedConnector implements Connector {
     return this;
   }
 
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
-  }
+  updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
     clearPreviousConfig();
@@ -89,6 +86,7 @@ export class PrivateKeyConnector implements Connector {
   }
 
   async initialise(): Promise<this> {
+    // where does this.feeCurrency get set before this?
     await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
     return this;
@@ -143,13 +141,10 @@ export class LedgerConnector implements Connector {
 
     this.initialised = true;
     this.account = this.kit.defaultAccount ?? null;
-    await this.updateFeeCurrency(this.feeCurrency);
+    await this.updateFeeCurrency(this.feeCurrency || CeloContract.GoldToken);
     return this;
   }
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
-  }
+  updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
     clearPreviousConfig();
@@ -211,7 +206,9 @@ export class InjectedConnector implements Connector {
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
-    await this.updateFeeCurrency(this.feeCurrency);
+    await this.updateFeeCurrency(
+      isMetaMask ? CeloContract.GoldToken : this.feeCurrency
+    );
     this.initialised = true;
 
     return this;
@@ -231,10 +228,7 @@ export class InjectedConnector implements Connector {
     }
   };
 
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
-  }
+  updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   async updateKitWithNetwork(network: Network): Promise<void> {
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
@@ -263,8 +257,8 @@ export class InjectedConnector implements Connector {
 }
 
 export class MetaMaskConnector extends InjectedConnector {
-  constructor(network: Network, feeCurrency: CeloTokenContract) {
-    super(network, feeCurrency, WalletTypes.MetaMask);
+  constructor(network: Network) {
+    super(network, CeloContract.GoldToken, WalletTypes.MetaMask);
   }
 }
 
@@ -323,10 +317,7 @@ export class CeloExtensionWalletConnector implements Connector {
 
     return this;
   }
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(this.feeCurrency);
-  }
+  updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   onNetworkChange(callback: (chainId: number) => void): void {
     this.onNetworkChangeCallback = callback;
@@ -423,14 +414,24 @@ export class WalletConnectConnector implements Connector {
     return new BigNumber(walletAddress).isZero() ? address : walletAddress;
   }
 
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
-  }
+  updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): Promise<void> {
     clearPreviousConfig();
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
     return wallet.close();
   }
+}
+
+async function updateFeeCurrency(
+  this: Connector, // fake this arg https://www.typescriptlang.org/docs/handbook/2/functions.html#declaring-this-in-a-function
+  feeContract: CeloTokenContract // the true first argument
+): Promise<void> {
+  if (!feeContract) {
+    throw new Error(
+      'updateFeeCurrency requires a feeContract (CeloToken or a StableToken) but none was given'
+    );
+  }
+  this.feeCurrency = feeContract;
+  await this.kit.setFeeCurrency(feeContract);
 }

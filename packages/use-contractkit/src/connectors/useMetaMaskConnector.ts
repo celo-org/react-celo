@@ -23,7 +23,7 @@ export function useInjectedConnector(
     let stale;
     void (async () => {
       const connector = isMetaMask
-        ? new MetaMaskConnector(network, feeCurrency)
+        ? new MetaMaskConnector(network)
         : new InjectedConnector(network, feeCurrency);
 
       try {
