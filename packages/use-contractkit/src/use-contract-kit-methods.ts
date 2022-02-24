@@ -1,5 +1,6 @@
 import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import { useCallback } from 'react';
+import { isMobile } from 'react-device-detect';
 
 import { CONNECTOR_TYPES } from './connectors';
 import {
@@ -161,11 +162,15 @@ export function useContractKitMethods(
       ...operations: ((kit: ContractKit) => unknown | Promise<unknown>)[]
     ) => {
       const kit = await getConnectedKit();
-
       dispatch('setPendingActionCount', operations.length);
+
       const results: unknown[] = [];
       for (const op of operations) {
         try {
+          // When on mobile direct user to their wallet app.
+          if (isMobile && connector.getDeeplinkUrl) {
+            window.open(connector.getDeeplinkUrl(''), '_blank');
+          }
           results.push(await op(kit));
         } catch (e) {
           dispatch('setPendingActionCount', 0);
@@ -176,7 +181,7 @@ export function useContractKitMethods(
       }
       return results;
     },
-    [getConnectedKit, dispatch]
+    [getConnectedKit, dispatch, isMobile]
   );
 
   return {
