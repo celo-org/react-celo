@@ -386,7 +386,7 @@ export default function Home(): React.ReactElement {
   );
 }
 async function getBalances(
-  stableTokens: { symbol: string; contract: StableTokenWrapper }[],
+  stableTokens: { symbol: StableToken; contract: StableTokenWrapper }[],
   address: string
 ) {
   return Promise.all(
