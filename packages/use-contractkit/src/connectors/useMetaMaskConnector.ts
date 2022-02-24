@@ -1,9 +1,8 @@
-import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
-import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 import { useCallback, useEffect } from 'react';
 
 import { Connector, Dapp, Network } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
+import { CeloTokens } from '../utils/metamask';
 import { InjectedConnector, MetaMaskConnector } from './connectors';
 
 export function useInjectedConnector(
@@ -41,20 +40,16 @@ export function useInjectedConnector(
     };
   }, [initConnector, network, onSubmit, isMetaMask, feeCurrency]);
 
-  const getTokens = useCallback(async (): Promise<Tokens> => {
-    return kit.celoTokens.getWrappers() as Promise<Tokens>;
+  const getTokens = useCallback(async (): Promise<CeloTokens> => {
+    return kit.celoTokens.getWrappers() as Promise<CeloTokens>;
   }, [kit]);
 
   return { error, dapp, network, getTokens };
 }
-interface Tokens {
-  CELO: GoldTokenWrapper;
-  cUSD: StableTokenWrapper;
-  cEUR: StableTokenWrapper;
-}
+
 export interface UseInjectedConnector {
   error: Error | null;
   network: Network;
   dapp: Dapp;
-  getTokens: () => Promise<Tokens>;
+  getTokens: () => Promise<CeloTokens>;
 }

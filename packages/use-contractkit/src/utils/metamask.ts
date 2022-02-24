@@ -60,6 +60,7 @@ export interface CeloTokens {
   CELO: GoldTokenWrapper;
   cUSD: StableTokenWrapper;
   cEUR: StableTokenWrapper;
+  cREAL: StableTokenWrapper;
 }
 export type StableTokens = Omit<CeloTokens, 'CELO'>;
 
