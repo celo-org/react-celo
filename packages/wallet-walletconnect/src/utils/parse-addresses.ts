@@ -1,4 +1,4 @@
-import { AddressUtils } from '@celo/utils';
+import { isValidAddress } from '@celo/utils/lib/address';
 
 interface AddressWithNetwork {
   address: string;
@@ -12,7 +12,7 @@ function invalidChain(chain: string) {
 // celo:0x123
 function parseShortNameAddress(addressLike: string) {
   const [celo, address] = addressLike.split(':');
-  if (invalidChain(celo) || !AddressUtils.isValidAddress(address)) {
+  if (invalidChain(celo) || !isValidAddress(address)) {
     throw new Error('Invalid short name address');
   }
 
@@ -26,7 +26,7 @@ function parseShortNameAddress(addressLike: string) {
 function parseCaip50Address(addressLike: string) {
   const [address, chain, networkId] = addressLike.split(/[@:]/);
 
-  if (!AddressUtils.isValidAddress(address) || invalidChain(chain)) {
+  if (!isValidAddress(address) || invalidChain(chain)) {
     throw new Error(`Invalid CAIP50 address ${address}`);
   }
 
@@ -39,7 +39,7 @@ function parseCaip50Address(addressLike: string) {
 function parseCaip10Address(addressLike: string) {
   const [chain, networkId, address] = addressLike.split(':');
 
-  if (!AddressUtils.isValidAddress(address) || invalidChain(chain)) {
+  if (!isValidAddress(address) || invalidChain(chain)) {
     throw new Error(`Invalid CAIP10 address ${address}`);
   }
 
