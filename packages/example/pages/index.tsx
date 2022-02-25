@@ -1,6 +1,7 @@
-import { ensureLeading0x } from '@celo/utils/lib/address';
+import { CeloContract, CeloTokenContract } from '@celo/contractkit';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
+import { ensureLeading0x } from '@celo/utils/lib/address';
 import {
   Alfajores,
   Baklava,
@@ -31,6 +32,15 @@ const defaultSummary: Summary = {
   balances: [],
 };
 
+type FeeTokenMap = { [FeeToken in CeloTokenContract]: string };
+
+const feeTokenMap: FeeTokenMap = {
+  [CeloContract.GoldToken]: 'Celo',
+  [CeloContract.StableToken]: 'cUSD',
+  [CeloContract.StableTokenEUR]: 'cEUR',
+  [CeloContract.StableTokenBRL]: 'cBRL',
+};
+
 function truncateAddress(address: string) {
   return `${address.slice(0, 8)}...${address.slice(36)}`;
 }
@@ -47,7 +57,10 @@ export default function Home(): React.ReactElement {
     destroy,
     performActions,
     walletType,
+    feeCurrency,
+    updateFeeCurrency,
   } = useContractKit();
+
   const [summary, setSummary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
 
@@ -376,6 +389,24 @@ export default function Home(): React.ReactElement {
                       </div>
                     ))}
                   </div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold mb-2 text-gray-900">
+                    Fee Currency
+                  </div>
+                  <select
+                    value={feeCurrency}
+                    onChange={(event) =>
+                      updateFeeCurrency(event.target.value as CeloTokenContract)
+                    }
+                    className="border border-gray-300 rounded px-4 py-2"
+                  >
+                    {Object.keys(feeTokenMap).map((token) => (
+                      <option key={token} value={token}>
+                        {feeTokenMap[token as keyof FeeTokenMap]}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             )}

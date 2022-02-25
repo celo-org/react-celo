@@ -20,6 +20,7 @@ export const localStorageKeys = {
   lastUsedNetwork: 'use-contractkit/last-used-network',
   lastUsedWalletType: 'use-contractkit/last-used-wallet',
   lastUsedWalletArguments: 'use-contractkit/last-used-wallet-arguments',
+  lastUsedFeeCurrency: 'use-contractkit/last-used-fee-currency',
 };
 
 export enum SupportedProviders {

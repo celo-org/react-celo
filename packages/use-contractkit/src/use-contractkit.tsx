@@ -20,6 +20,7 @@ export interface UseContractKit {
   destroy: () => Promise<void>;
   network: Network;
   updateNetwork: (network: Network) => Promise<void>;
+  updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
 
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will
@@ -50,13 +51,21 @@ export const useContractKit = (): UseContractKit => {
   const [
     { dapp, connector, connectorInitError, address, network, feeCurrency },
     _dispatch,
-    { destroy, updateNetwork, connect, getConnectedKit, performActions },
+    {
+      destroy,
+      updateNetwork,
+      connect,
+      getConnectedKit,
+      performActions,
+      updateFeeCurrency,
+    },
   ] = useContractKitContext();
 
   return {
     address,
     dapp,
     network,
+    updateFeeCurrency,
     updateNetwork,
     kit: connector.kit,
     walletType: connector.type,

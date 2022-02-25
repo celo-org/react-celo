@@ -96,8 +96,7 @@ export class PrivateKeyConnector implements Connector {
 
   async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
     this.feeCurrency = feeContract;
-    const res = await this.kit.setFeeCurrency(feeContract);
-    console.log(res, 'console');
+    await this.kit.setFeeCurrency(feeContract);
   }
 
   close(): void {
@@ -127,7 +126,6 @@ export class LedgerConnector implements Connector {
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
     this.kit = newKit(network.rpcUrl);
-    console.log(this.kit, 'kit');
   }
 
   async initialise(): Promise<this> {
@@ -148,7 +146,10 @@ export class LedgerConnector implements Connector {
   }
   async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
     this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
+
+    if (this.feeCurrency) {
+      await this.kit.setFeeCurrency(feeContract);
+    }
   }
 
   close(): void {
@@ -183,7 +184,7 @@ export class InjectedConnector implements Connector {
     localStorage.setItem(localStorageKeys.lastUsedWalletType, defaultType);
     localStorage.setItem(
       localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([feeCurrency])
+      JSON.stringify([])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
     this.kit = newKit(network.rpcUrl);
@@ -362,7 +363,7 @@ export class WalletConnectConnector implements Connector {
     );
     localStorage.setItem(
       localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([feeCurrency, options])
+      JSON.stringify([options])
     );
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
 

@@ -20,7 +20,6 @@ export function useContractKitMethods(
     connector: Connector;
     networks: Network[];
     network: Network;
-    feeCurrency: CeloTokenContract;
   },
   dispatch: Dispatcher
 ): ContractKitMethods {
