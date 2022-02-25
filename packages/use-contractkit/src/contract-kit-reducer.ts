@@ -55,7 +55,10 @@ export function contractKitReducer(
       if (action.payload === state.feeCurrency) {
         return state;
       }
-
+      localStorage.setItem(
+        localStorageKeys.lastUsedFeeCurrency,
+        action.payload
+      );
       return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
       const newConnector = action.payload;

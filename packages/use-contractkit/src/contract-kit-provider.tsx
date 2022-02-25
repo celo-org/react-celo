@@ -97,13 +97,18 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   feeCurrency = CeloContract.GoldToken,
 }: ContractKitProviderProps) => {
   const isMountedRef = useIsMounted();
-  const previousConfig = useMemo(() => loadPreviousConfig(network), [network]);
+  const previousConfig = useMemo(
+    () => loadPreviousConfig(network, feeCurrency),
+    // We only want this to run on mount so the deps array is empty.
+    /* eslint-disable-next-line */
+    []
+  );
   const [state, _dispatch] = useReducer(contractKitReducer, {
     ...initialState,
     ...previousConfig,
     network: previousConfig.network || network,
+    feeCurrency: previousConfig.feeCurrency || feeCurrency,
     networks,
-    feeCurrency,
     dapp: {
       ...dapp,
       icon: dapp.icon ?? `${dapp.url}/favicon.ico`,
@@ -128,10 +133,9 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
         dispatch('destroy');
       });
     }
-    /* eslint-disable */
     // We only want this to run on mount so the deps array is empty.
+    /* eslint-disable-next-line */
   }, []);
-  /* eslint-enable */
 
   return (
     <ContextProvider value={[state, dispatch, methods]}>

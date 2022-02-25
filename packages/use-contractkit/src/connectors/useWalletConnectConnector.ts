@@ -2,7 +2,7 @@
 // import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
 import { useEffect, useState } from 'react';
 
-import { Mainnet, WalletIds } from '../constants';
+import { WalletIds } from '../constants';
 import { Connector } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
 import { useWalletVersion } from '../utils/useWalletVersion';
@@ -29,7 +29,6 @@ export function useWalletConnectConnector(
         return;
       }
 
-      const isMainnet = network.name === Mainnet.name;
       const connector = new WalletConnectConnector(
         network,
         feeCurrency,
