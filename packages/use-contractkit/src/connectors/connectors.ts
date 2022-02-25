@@ -353,7 +353,7 @@ export class WalletConnectConnector implements Connector {
     // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     options: WalletConnectWalletOptionsV1,
     readonly autoOpen = false,
-    readonly getDeeplinkUrl?: (uri: string) => string,
+    public getDeeplinkUrl?: (uri: string) => string,
     readonly version?: number
   ) {
     localStorage.setItem(

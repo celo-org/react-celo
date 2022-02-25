@@ -49,7 +49,7 @@ export interface Connector {
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
   updateFeeCurrency: (token: CeloTokenContract) => Promise<void>;
-
+  getDeeplinkUrl?: (uri: string) => string;
   updateKitWithNetwork?: (network: Network) => Promise<void>;
   onNetworkChange?: (callback: (chainId: number) => void) => void;
   onAddressChange?: (callback: (address: string | null) => void) => void;
