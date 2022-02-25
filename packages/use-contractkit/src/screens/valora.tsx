@@ -29,12 +29,17 @@ export const Valora: React.FC<Props> = ({ onSubmit }: Props) => {
         Valora
       </h1>
       <div className="tw-w-64 tw-text-gray-600 dark:tw-text-gray-400 tw-text-sm tw-mt-2 tw-text-center">
-        {`Opening Valora Wallet. If it doesn't open, you can scan this QR code.`}
+        {`Opening Valora Wallet. If it doesn't open, you can scan this QR code or if on a mobile device press 'Open'.`}
       </div>
 
       <div className="tw-mt-6 tw-mb-2">
         {uri ? (
-          <QrCode value={uri} size={180} />
+          <>
+            <QrCode value={uri} size={180} />
+            <div className="tw-mt-6 tw-flex tw-items-center tw-justify-center">
+              <a href={getDeepLink(uri)}>Open valora</a>
+            </div>
+          </>
         ) : (
           <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
             <TailSpin color="#666666" height="60px" width="60px" />
