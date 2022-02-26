@@ -1,6 +1,6 @@
 {
   "name": "@celo-tools/use-contractkit",
-  "version": "3.0.0-dev",
+  "version": "3.0.1-dev",
   "private": false,
   "scripts": {
     "build": "tsc -b && yarn run build-styles",
@@ -28,7 +28,7 @@
     "@celo/wallet-ledger": "1.5.2",
     "@celo/wallet-local": "1.5.2",
     "@celo/wallet-remote": "1.5.2",
-    "@celo/wallet-walletconnect-v1": "3.0.0-dev",
+    "@celo/wallet-walletconnect-v1": "3.0.1-dev",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "isomorphic-fetch": "^3.0.0",

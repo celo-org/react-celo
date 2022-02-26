@@ -4,13 +4,13 @@
  * publish-packages script
  * THIS SCRIPT MUST BE RUN WITH NPM TO PUBLISH - `npm run publish-packages`
  * From the monorepo root run `yarn publish-packages`
- * You'll first be asked which version to update the sdks to.
+ * You'll first be asked which version to update to.
  * You can pick major, minor, patch, a semantic version,
  * or nothing if you don't want to update the versions.
- * Then you'll be asked if you want to publish the sdks.
+ * Then you'll be asked if you want to publish.
  * You can pick Y or N or dry-run for the same behavior as
  * `npm publish --dry-run`
- * The script will then update all the sdk packages accordingly
+ * The script will then update all the packages accordingly
  * and attempt to publish them accordingly.
  * As 2FA is enabled for these packages you'll need to be ready
  * to enter 2FA codes as you are prompted.
@@ -18,18 +18,17 @@
  * If a package fails to update you will be prompted if you
  * want to retry.
  * You can pick Y or N.
- * Any sdk packages that are not published will be saved to
- * the `failedSDKs.json` file.
+ * Any packages that are not published will be saved to
+ * the `failedPublish.json` file.
  * You will be asked to fix these packages and try again.
  * Then the script will exit.
- * If you run publish-packages and it detects a `failedSDKs.json`
+ * If you run publish-packages and it detects a `failedPublish.json`
  * file it will attempt again to publish those packages
  * (using the same version and possibly dry-run option) and
  * nothing else.
  * Once all packages are successfully deployed the script will
- * delete the `failedSDKs.json` file and update all other
- * packages in the monorepo that use any of the sdk packages
- * to use their `-dev` new version.
+ * delete the `failedPublish.json` file and update all other
+ * packages that use any of the packages to use their `-dev`version.
  */
 
 import * as child_process from 'child_process';
@@ -58,7 +57,7 @@ void (async function () {
   start();
 
   // `getAnswers` will either prompt the user for a version and whether
-  // or not to publish or it will use an existing failedSDKs.json file.
+  // or not to publish or it will use an existing failedPublish.json file.
   const { packages, version, publish } = await getAnswers();
 
   if (version && !valid(version) && !VERSIONS.includes(version)) {
@@ -81,7 +80,7 @@ void (async function () {
   const packagePaths = findPackagePaths(path.join(__dirname, '..', 'packages'));
   const packageJsons = packagePaths.map(readPackageJson);
 
-  // We need all the sdkNames before we go through and update the
+  // We need all the names before we go through and update the
   // `package.json` dependencies.
   const packageNames = packageJsons.map(({ name }) => name);
 
@@ -95,7 +94,7 @@ void (async function () {
       ? incrementVersion(currentVersion, version)
       : version;
   }
-  // Here we update the sdk `package.json` objects with updated
+  // Here we update the `package.json` objects with updated
   // versions and dependencies.
   packageJsons.forEach((json, index) => {
     json.version = newVersion;
@@ -125,7 +124,7 @@ void (async function () {
 
   const successfulPackages: string[] = [];
   if (shouldPublish) {
-    // Here we build and publish all the sdk packages
+    // Here we build and publish all the packages
     for (let index = 0; index < packagePaths.length; index++) {
       const path = packagePaths[index];
       const packageJson = packageJsons[index];
@@ -190,9 +189,7 @@ void (async function () {
     );
     console.error(
       red(
-        `The following SDK packages failed to publish ${failedPackages.join(
-          ', '
-        )}.`
+        `The following packages failed to publish ${failedPackages.join(', ')}.`
       )
     );
     console.error(red('Creating failed packages file.'));
@@ -245,10 +242,10 @@ void (async function () {
 async function getAnswers(): Promise<Answers> {
   try {
     const json = JSON.parse(
-      fs.readFileSync(path.join(__dirname, 'failedSDKs.json')).toString()
+      fs.readFileSync(path.join(__dirname, 'failedPublish.json')).toString()
     ) as Answers;
     console.log(
-      green('Detected failed SDKs file. Attempting to republish failed SDKs.')
+      green('Detected failed publish file. Attempting to republish.')
     );
     return json;
   } catch (e) {
@@ -261,7 +258,9 @@ async function getAnswers(): Promise<Answers> {
       },
       {
         name: 'publish',
-        description: green(`Should the sdks also be published? y/n/dry-run`),
+        description: green(
+          `Should the packages also be published? y/n/dry-run`
+        ),
         default: 'dry-run',
       },
     ];
