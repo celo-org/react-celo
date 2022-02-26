@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "3.0.0-beta2-dev",
+  "version": "3.0.0-dev",
   "scripts": {
     "build": "next build",
     "clean": "rm -rf .next out",
@@ -12,8 +12,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@celo-tools/use-contractkit": "3.0.0-beta2-dev",
-    "@celo/contractkit": "^1.5.1",
+    "@celo-tools/use-contractkit": "3.0.0-dev",
+    "@celo/contractkit": "1.5.2",
     "next": "12.1.0",
     "postcss": "^8.4.5",
     "react": "^17.0.2",
