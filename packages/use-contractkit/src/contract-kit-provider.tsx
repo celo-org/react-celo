@@ -98,7 +98,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
 }: ContractKitProviderProps) => {
   const isMountedRef = useIsMounted();
   const previousConfig = useMemo(
-    () => loadPreviousConfig(network, feeCurrency),
+    () => loadPreviousConfig(network, feeCurrency, networks),
     // We only want this to run on mount so the deps array is empty.
     /* eslint-disable-next-line */
     []
