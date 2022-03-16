@@ -1,18 +1,14 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit';
 
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
-import {
-  DEFAULT_NETWORKS,
-  localStorageKeys,
-  NetworkNames,
-  WalletTypes,
-} from '../constants';
+import { localStorageKeys, NetworkNames, WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import localStorage from './localStorage';
 
 export const loadPreviousConfig = (
   defaultNetworkProp: Network,
-  defaultFeeCurrencyProp: CeloTokenContract
+  defaultFeeCurrencyProp: CeloTokenContract,
+  networks: Network[]
 ): {
   address: string | null;
   network: Network | null;
@@ -64,9 +60,7 @@ export const loadPreviousConfig = (
     }
   }
 
-  const lastUsedNetwork = DEFAULT_NETWORKS.find(
-    (n) => n.name === lastUsedNetworkName
-  );
+  const lastUsedNetwork = networks.find((n) => n.name === lastUsedNetworkName);
 
   let initialConnector: Connector;
   if (lastUsedWalletType && lastUsedNetwork) {
