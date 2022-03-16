@@ -36,7 +36,7 @@ import { green, red } from 'colors';
 import * as fs from 'fs';
 import * as path from 'path';
 import { get, RevalidatorSchema, start } from 'prompt';
-import { valid } from 'semver';
+import { valid, prerelease } from 'semver';
 import {
   findPackagePaths,
   incrementVersion,
@@ -75,6 +75,27 @@ void (async function () {
   if (!shouldPublish && !version) {
     console.error(red('Either a version or --publish must be given'));
     process.exit(1);
+  }
+
+  let tag = 'latest';
+  const prereleaseArr = prerelease(version);
+  if (prereleaseArr) {
+    tag = (prereleaseArr[0] + '').trim();
+
+    if (!['alpha', 'beta', 'canary', 'rc'].includes(tag)) {
+      const errorPrompt = [
+        {
+          name: 'confirmTag',
+          description: red(
+            `Unknown prerelease keyword given, do you really want to publish ${version} with tag ${tag}? Y/N`
+          ),
+        },
+      ];
+      const { confirmTag } = await get(errorPrompt);
+      if (confirmTag !== 'Y') {
+        process.exit(1);
+      }
+    }
   }
 
   const packagePaths = findPackagePaths(path.join(__dirname, '..', 'packages'));
@@ -141,7 +162,9 @@ void (async function () {
           stdio: 'ignore',
         });
 
-        console.log(`Publishing ${packageJson.name}@${packageJson.version}`);
+        console.info(
+          `Publishing ${packageJson.name}@${packageJson.version} tagged as ${tag}...`
+        );
         // Here you enter the 2FA code for npm
         let { otp } = await get<{ otp: string }>(otpPrompt);
         if (!otp) {
@@ -152,9 +175,7 @@ void (async function () {
         child_process.execSync(
           `npm publish --access public --otp ${otp} ${
             publish === 'dry-run' ? '--dry-run' : ''
-          } --tag ${
-            version.toLocaleLowerCase().includes('beta') ? 'beta' : 'latest'
-          }`,
+          } --tag ${tag}`,
           { cwd: packageFolderPath, stdio: 'ignore' }
         );
         successfulPackages.push(packageJson.name);
