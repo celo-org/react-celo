@@ -179,7 +179,7 @@ If you'd prefer your DApp to only access a specific network (maybe you're deploy
 You can also pass in a `network` prop to the `ContractKitProvider` as the default starting network
 
 ```javascript
-import { ContractKitProvider, Alfajores } from '@celo-tools/use-contractkit';
+import { ContractKitProvider, Alfajores, NetworkNames } from '@celo-tools/use-contractkit';
 
 function WrappedApp({ Component, pageProps }) {
   return (
