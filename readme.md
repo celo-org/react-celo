@@ -115,11 +115,11 @@ function App() {
 
 The biggest problem when developing DApps is ensuring a Web2 level experience while managing the flaky and often slow nature of blockchains. To that end we've designed use-contractkit in a way to abstract away most of that pain.
 
-Initially connecting to a users account is one thing, handled via the `connect` function we just mentioned. However once a user has connected to your DApp once we can make the experience nicer for them on repeat visits.
+Initially connecting to a user's account is one thing, handled via the `connect` function we just mentioned. However once a user has connected to your DApp we can make the experience nicer for them on repeat visits.
 
 #### Last connected account
 
-use-contractkit will remember a users last connected address when they navigate back to or refresh your DApp. Ensure that when developing your DApp nothing changes nothing in the UI whether or not the user has a `kit.defaultAccount` property set.
+use-contractkit will remember a user's last connected address when they navigate back to or refresh your DApp. Ensure that when developing your DApp nothing changes in the UI whether or not the user has a `kit.defaultAccount` property set.
 
 ```javascript
 import { useContractKit } from '@celo-tools/use-contractkit';
