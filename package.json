@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "make dev",
     "build": "lerna link && lerna run clean && lerna run build --scope 'example' --include-dependencies",
     "postinstall": "lerna bootstrap",
     "lint": "lerna run lint",
