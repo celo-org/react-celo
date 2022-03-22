@@ -84,7 +84,13 @@ export const PROVIDERS: {
   },
   [SupportedProviders.MetaMask]: {
     name: SupportedProviders.MetaMask,
-    description: (
+    description: isMobile ? (
+      isEthereumFromMetamask() ? (
+        'Connect with MetaMask Mobile App'
+      ) : (
+        'Open MetaMask Mobile App'
+      )
+    ) : (
       <>
         Use the Metamask browser extension. Celo support is limited.{' '}
         <a
@@ -103,7 +109,7 @@ export const PROVIDERS: {
     ),
     icon: METAMASK,
     canConnect: () => isEthereumFromMetamask(),
-    showInList: () => !isMobile,
+    showInList: () => true,
     listPriority: () => 0,
     installURL: 'https://metamask.app.link/',
   },
