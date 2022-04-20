@@ -75,6 +75,7 @@ export interface AddEthereumChainParameter {
 
 export enum MetamaskRPCErrorCode {
   AwaitingUserConfirmation = -32002,
+  UnrecognizedChainID = -32603, // this is the error that shows up on metamask mobile
   UnknownNetwork = 4902,
 }
 
@@ -215,7 +216,10 @@ export async function switchToCeloNetwork(
       });
     } catch (err) {
       const { code } = err as MetamaskRPCError;
-      if (code === MetamaskRPCErrorCode.UnknownNetwork) {
+      if (
+        code === MetamaskRPCErrorCode.UnknownNetwork ||
+        code === MetamaskRPCErrorCode.UnrecognizedChainID
+      ) {
         // ChainId not yet added to metamask
         await addNetworkToMetamask(ethereum, network);
         return switchToCeloNetwork(kit, network, ethereum);
