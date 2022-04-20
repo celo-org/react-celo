@@ -4,13 +4,16 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
 import { ProviderSelect } from '../components/ProviderSelect';
-import { PROVIDERS, SupportedProviders } from '../constants';
-import { defaultScreens } from '../screens';
-import { Connector, Provider } from '../types';
+import { PROVIDERS, SupportedProviders, WalletTypes } from '../constants';
+import { ConnectorProps, defaultScreens } from '../screens';
+import { WalletConnectCustom } from '../screens/wallet-connect-custom';
+import { Connector, CustomWCWallet, Provider, WalletEntry } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
+import { defaultProviderSort } from '../utils/sort';
 import { defaultModalStyles } from './styles';
 
 export interface ConnectModalProps {
@@ -21,16 +24,104 @@ export interface ConnectModalProps {
   };
   RenderProvider?: React.FC<{ provider: Provider; onClick: () => void }>;
   reactModalProps?: Partial<ReactModal.Props>;
+  title?: string | React.ReactElement;
+  providersOptions?: {
+    hideFromDefaults?: true | SupportedProviders[];
+    additionalWCWallets?: CustomWCWallet[];
+    sort?: (a: Provider, b: Provider) => number;
+  };
+}
+
+function walletToScreen(wallet: WalletEntry): React.FC<ConnectorProps> {
+  const WalletConnectCustomWrapper: React.FC<ConnectorProps> = ({
+    onSubmit,
+  }: ConnectorProps) => (
+    <WalletConnectCustom onSubmit={onSubmit} wallet={wallet} />
+  );
+
+  return WalletConnectCustomWrapper;
+}
+
+function walletToProvider(wallet: WalletEntry): Provider {
+  return {
+    name: wallet.name,
+    type: WalletTypes.WalletConnect,
+    description: wallet.description || 'Missing description in registry',
+    icon: wallet.logos.md,
+    canConnect: () => true,
+    showInList: () =>
+      isMobile ? Object.values(wallet.mobile).some(Boolean) : true,
+    listPriority: () => 0,
+    installURL: wallet.homepage,
+  };
 }
 
 export const ConnectModal: React.FC<ConnectModalProps> = ({
   reactModalProps,
   RenderProvider = ProviderSelect,
   screens = defaultScreens,
+  title = 'Connect a wallet',
+  providersOptions = {},
 }: ConnectModalProps) => {
   const { connectionCallback } = useContractKitInternal();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
   const [showMore, setShowMore] = useState(false);
+  const {
+    hideFromDefaults,
+    additionalWCWallets,
+    sort = defaultProviderSort,
+  } = providersOptions;
+
+  const {
+    wallets,
+    allScreens,
+  }: {
+    wallets: WalletEntry[];
+    allScreens: Record<string, React.FC<ConnectorProps>>;
+  } = useMemo(() => {
+    let _screens: Record<string, React.FC<ConnectorProps>>;
+    const _wallets = (additionalWCWallets || []) as WalletEntry[];
+
+    if (hideFromDefaults) {
+      if (hideFromDefaults === true) {
+        _screens = {};
+      } else {
+        _screens = Object.keys(screens)
+          .filter((x) => !hideFromDefaults.includes(x as SupportedProviders))
+          .reduce(
+            (acc, provider) => ({
+              ...acc,
+              [provider]: screens[provider as SupportedProviders],
+            }),
+            {}
+          );
+      }
+    } else {
+      _screens = screens;
+    }
+
+    return {
+      wallets: _wallets,
+      allScreens: {
+        ..._screens,
+        ..._wallets.reduce((acc, wallet) => {
+          acc[wallet.id] = walletToScreen(wallet);
+          return acc;
+        }, {} as Record<string, React.FC<ConnectorProps>>),
+      },
+    };
+  }, [screens, hideFromDefaults, additionalWCWallets]);
+
+  const _providers: Record<string, Provider> = useMemo(
+    () => ({
+      ...PROVIDERS,
+      ...wallets.reduce((acc, wallet) => {
+        acc[wallet.id] = walletToProvider(wallet);
+        return acc;
+      }, {} as Record<string, Provider>),
+    }),
+    [wallets]
+  );
 
   const close = useCallback((): void => {
     setAdding(null);
@@ -46,25 +137,32 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     [connectionCallback]
   );
 
-  const onClickShowMore = useCallback(() => {
-    setShowMore(true);
+  const onToggleShowMore = useCallback(() => {
+    setShowMore((state) => !state);
   }, []);
 
   const providers = useMemo<[providerKey: string, provider: Provider][]>(
     () =>
-      Object.entries(PROVIDERS).filter(
-        ([, provider]) =>
-          typeof window !== 'undefined' &&
-          provider.showInList() &&
-          Object.keys(screens).find((screen) => screen === provider.name)
-      ),
-    [screens]
+      Object.entries(_providers)
+        .filter(
+          ([providerKey, provider]) =>
+            typeof window !== 'undefined' &&
+            provider.showInList() &&
+            Object.keys(allScreens).find((screen) => screen === providerKey)
+        )
+        .sort(([, a], [, b]) => sort(a, b)),
+    [_providers, allScreens, sort]
   );
+
+  const hasMoreItems = providers.length > 5; // TODO: is 5 a good default?
   const prioritizedProviders = useMemo<
     [providerKey: string, provider: Provider][]
   >(
-    () => providers.filter(([, provider]) => provider.listPriority() === 0),
-    [providers]
+    () =>
+      hasMoreItems
+        ? providers.filter(([, provider]) => provider.listPriority() === 0)
+        : providers,
+    [providers, hasMoreItems]
   );
 
   let modalContent;
@@ -73,7 +171,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     modalContent = (
       <div className="tw-flex tw-flex-col tw-items-stretch">
         <h1 className="tw-pl-3 tw-pb-2 tw-text-lg tw-font-medium dark:tw-text-gray-300">
-          Connect a wallet
+          {title}
         </h1>
         {providersToDisplay.map(([providerKey, provider]) => {
           return (
@@ -84,18 +182,19 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
             />
           );
         })}
-        {!showMore && (
+        {hasMoreItems && (
           <button
-            onClick={onClickShowMore}
+            onClick={onToggleShowMore}
             className="tw-font-medium tw-text-md tw-w-32 tw-self-center tw-mt-4 tw-text-blue-800 dark:tw-text-blue-400 hover:tw-text-blue-600 focus:tw-outline-none"
           >
-            Show More
+            Show {showMore ? 'Less' : 'More'}
           </button>
         )}
       </div>
     );
   } else {
-    const ProviderElement = screens?.[adding];
+    const ProviderElement = allScreens?.[adding];
+    console.log('here?', ProviderElement);
     if (!ProviderElement) {
       return null;
     }
