@@ -44,8 +44,6 @@ export const WalletConnectCustom: React.FC<Props> = ({
     window.open(url, '_blank');
   };
 
-  console.log('HERE');
-
   let content = null;
   if (!uri) {
     content = (

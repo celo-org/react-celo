@@ -194,7 +194,6 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     );
   } else {
     const ProviderElement = allScreens?.[adding];
-    console.log('here?', ProviderElement);
     if (!ProviderElement) {
       return null;
     }
