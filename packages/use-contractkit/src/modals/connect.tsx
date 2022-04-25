@@ -65,6 +65,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
 }: ConnectModalProps) => {
   const { connectionCallback } = useContractKitInternal();
   const [adding, setAdding] = useState<SupportedProviders | null>(null);
+  const [search, setSearch] = useState('');
   const [showMore, setShowMore] = useState(false);
   const {
     hideFromDefaults,
@@ -148,10 +149,14 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           ([providerKey, provider]) =>
             typeof window !== 'undefined' &&
             provider.showInList() &&
-            Object.keys(allScreens).find((screen) => screen === providerKey)
+            Object.keys(allScreens)
+              .filter((screen) =>
+                screen.toLowerCase().includes(search.toLowerCase())
+              )
+              .find((screen) => screen === providerKey)
         )
         .sort(([, a], [, b]) => sort(a, b)),
-    [_providers, allScreens, sort]
+    [_providers, allScreens, sort, search]
   );
 
   const hasMoreItems = providers.length > 5; // TODO: is 5 a good default?
@@ -173,6 +178,10 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
         <h1 className="tw-pl-3 tw-pb-2 tw-text-lg tw-font-medium dark:tw-text-gray-300">
           {title}
         </h1>
+        <input
+          placeholder="hello"
+          onChange={(e) => setSearch(e.target.value)}
+        />
         {providersToDisplay.map(([providerKey, provider]) => {
           return (
             <RenderProvider
