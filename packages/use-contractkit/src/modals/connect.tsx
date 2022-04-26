@@ -149,11 +149,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           ([providerKey, provider]) =>
             typeof window !== 'undefined' &&
             provider.showInList() &&
-            Object.keys(allScreens)
-              .filter((screen) =>
-                screen.toLowerCase().includes(search.toLowerCase())
-              )
-              .find((screen) => screen === providerKey)
+            providerKey in allScreens &&
+            providerKey.toLowerCase().includes(search.toLowerCase())
         )
         .sort(([, a], [, b]) => sort(a, b)),
     [_providers, allScreens, sort, search]
@@ -179,7 +176,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           {title}
         </h1>
         <input
-          placeholder="hello"
+          placeholder="Search"
           onChange={(e) => setSearch(e.target.value)}
         />
         {providersToDisplay.map(([providerKey, provider]) => {
