@@ -1,13 +1,31 @@
 import React, { useCallback, useEffect } from 'react';
-import { TailSpin } from 'react-loader-spinner';
 
+import ConnectorScreen from '../components/connector-screen';
+import Spinner from '../components/spinner';
 import { CeloExtensionWalletConnector } from '../connectors';
 import { useContractKitInternal } from '../use-contractkit';
+import cls from '../utils/tailwind';
 import { ConnectorProps } from '.';
 
-export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
-  onSubmit,
-}: ConnectorProps) => {
+const styles = cls({
+  container: `
+    tw-my-8 
+    tw-flex 
+    tw-flex-col 
+    tw-items-center 
+    tw-justify-center 
+    grid tw-gap-8 
+    tw-flex-grow`,
+  error: `
+    tw-text-red-500 
+    tw-text-md 
+    tw-pb-4`,
+  disclaimer: `
+    tw-text-slate-500 
+    tw-text-sm`,
+});
+
+export const CeloExtensionWallet = ({ onSubmit }: ConnectorProps) => {
   const {
     network,
     initConnector,
@@ -26,23 +44,26 @@ export const CeloExtensionWallet: React.FC<ConnectorProps> = ({
   }, [initialiseConnection]);
 
   return (
-    <div className="tw-flex tw-items-center tw-justify-center">
-      {error ? (
-        <p
-          style={{
-            paddingBottom: '0.25em',
-            paddingTop: '0.75em',
-            fontSize: '0.7em',
-            color: 'red',
-          }}
-        >
-          {error.message}
-        </p>
-      ) : (
-        <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
-          <TailSpin color="#666666" height="60px" width="60px" />
+    <ConnectorScreen
+      title="Connect your Celo Extension Wallet"
+      content={
+        <div className={styles.container}>
+          {error ? (
+            <p className={styles.error}>{error.message}</p>
+          ) : (
+            <>
+              <Spinner />
+              <p className={styles.disclaimer}>
+                No pop-up? Check your if your MetaMask extension is unlocked.
+              </p>
+            </>
+          )}
         </div>
-      )}
-    </div>
+      }
+      footer={{
+        name: 'Celo Extension Wallet',
+        url: 'https://chrome.google.com/webstore/detail/celoextensionwallet/kkilomkmpmkbdnfelcpgckmpcaemjcdh?hl=en',
+      }}
+    />
   );
 };

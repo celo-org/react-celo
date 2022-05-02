@@ -159,6 +159,15 @@ export default function Home(): React.ReactElement {
     setSending(false);
   };
 
+  const toggleDarkMode = useCallback(() => {
+    const html = document.getElementsByTagName('html')[0] as HTMLElement;
+    if (html.classList.contains('tw-dark')) {
+      html.classList.remove('tw-dark');
+    } else {
+      html.classList.add('tw-dark');
+    }
+  }, []);
+
   useEffect(() => {
     void fetchSummary();
   }, [fetchSummary]);
@@ -170,9 +179,17 @@ export default function Home(): React.ReactElement {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <div className="toggle-dark">
+        <span>Toggle modal's dark mode</span>
+        <label className="switch">
+          <input type="checkbox" onChange={toggleDarkMode} />
+          <span className="slider round"></span>
+        </label>
+      </div>
+
       <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
         <div className="font-semibold text-2xl">use-contractkit</div>
-        <div className="text-gray-600 mt-2">
+        <div className="text-slate-600 mt-2">
           A{' '}
           <a
             className="underline"
@@ -286,7 +303,7 @@ export default function Home(): React.ReactElement {
 
         <div className="mt-6">
           <div className="mb-2 text-lg">Try it out</div>
-          <div className="text-gray-600 mb-4">
+          <div className="text-slate-600 mb-4">
             Connect to your wallet of choice and sign something for send a test
             transaction
             <br />
@@ -297,7 +314,7 @@ export default function Home(): React.ReactElement {
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center space-x-8 mb-4">
               <select
-                className="border border-gray-300 rounded px-4 py-2"
+                className="border border-slate-300 rounded px-4 py-2"
                 value={network.name}
                 onChange={async (e) => {
                   const newNetwork = networks.find(
@@ -352,9 +369,9 @@ export default function Home(): React.ReactElement {
             </div>
 
             {address && (
-              <div className="w-64 md:w-96 space-y-4 text-gray-700">
+              <div className="w-64 md:w-96 space-y-4 text-slate-700">
                 <div className="mb-4">
-                  <div className="text-lg font-bold mb-2 text-gray-900">
+                  <div className="text-lg font-bold mb-2 text-slate-900">
                     Account Summary on {network.name}
                   </div>
                   <div className="space-y-2">
@@ -370,7 +387,7 @@ export default function Home(): React.ReactElement {
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-gray-900">
+                  <div className="text-lg font-bold mb-2 text-slate-900">
                     Balances
                   </div>
                   <div className="space-y-2">
@@ -386,7 +403,7 @@ export default function Home(): React.ReactElement {
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-gray-900">
+                  <div className="text-lg font-bold mb-2 text-slate-900">
                     Fee Currency{' '}
                     {supportsFeeCurrency || `not supported on ${walletType}`}
                   </div>
@@ -396,7 +413,7 @@ export default function Home(): React.ReactElement {
                     onChange={(event) =>
                       updateFeeCurrency(event.target.value as CeloTokenContract)
                     }
-                    className="border border-gray-300 rounded px-4 py-2"
+                    className="border border-slate-300 rounded px-4 py-2"
                   >
                     {Object.keys(feeTokenMap).map((token) => (
                       <option key={token} value={token}>

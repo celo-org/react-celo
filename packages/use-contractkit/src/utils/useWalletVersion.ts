@@ -1,10 +1,9 @@
 // Uncomment with WCV2 support
 // import { useEffect, useState } from 'react';
 // import fetchWCWallets from './fetchWCWallets';
-import { WalletIds } from '../constants';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function useWalletVersion(walletId?: WalletIds): number {
+export function useWalletVersion(walletId?: string): number {
   return 1;
 }
 
@@ -16,9 +15,9 @@ export function useWalletVersion(walletId?: WalletIds): number {
 //   [WalletIds.CeloDance]: 2,
 // });
 //
-// export function useWalletVersion(walletId?: WalletIds): number | null {
+// export function useWalletVersion(walletId?: WalletIdsMaybe<): number> {
 //   // TODO: decide if to use v1 or v2 as a default for unknown wallectconnect? Or if to expose both
-//   const [version, setVersion] = useState<number | null>(walletId ? null : 2);
+//   const [version, setVersion] = useState<Maybe<number>>(walletId ? null : 2);
 //
 //   useEffect(() => {
 //     if (!walletId) {

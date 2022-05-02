@@ -1,7 +1,9 @@
 import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import React from 'react';
 
-import { WalletIds, WalletTypes } from './constants';
+import { Priorities, WalletTypes } from './constants';
+
+export type Maybe<T> = T | null | undefined;
 
 /**
  * ID of a Celo chain.
@@ -11,7 +13,6 @@ export enum ChainId {
   Baklava = 62320,
   Mainnet = 42220,
 }
-
 /**
  * Network connection information.
  */
@@ -42,8 +43,14 @@ export interface Provider {
   icon: string | React.FC<React.SVGProps<SVGSVGElement>>;
   canConnect: () => boolean;
   showInList: () => boolean;
-  listPriority: () => number;
+  listPriority: () => Priorities;
   installURL?: string;
+}
+
+export interface WalletConnectProvider extends Provider {
+  walletConnectId?: string;
+  getDeepLink?: (uri: string) => string;
+  getDesktopLink?: (uri: string) => string;
 }
 
 /**
@@ -52,7 +59,7 @@ export interface Provider {
 export interface Connector {
   kit: ContractKit;
   type: WalletTypes;
-  account: string | null;
+  account: Maybe<string>;
   feeCurrency: CeloTokenContract;
   initialised: boolean;
   initialise: () => Promise<this> | this;
@@ -62,7 +69,8 @@ export interface Connector {
   getDeeplinkUrl?: (uri: string) => string;
   updateKitWithNetwork?: (network: Network) => Promise<void>;
   onNetworkChange?: (callback: (chainId: number) => void) => void;
-  onAddressChange?: (callback: (address: string | null) => void) => void;
+  onAddressChange?: (callback: (address: Maybe<string>) => void) => void;
+  persist: () => void;
 }
 
 /**
@@ -81,7 +89,7 @@ export interface WalletEntryLogos {
   lg: string;
 }
 export interface WalletEntry {
-  id: WalletIds;
+  id: string;
   name: string;
   description: string;
   homepage: string;
@@ -118,7 +126,5 @@ export interface WalletEntry {
     browserOnly: boolean;
   };
 }
-
-export type CustomWCWallet = Omit<WalletEntry, 'id'> & { id: string };
 
 export type AppRegistry = Record<string, WalletEntry>;

@@ -14,5 +14,9 @@
     "resolveJsonModule": true,
     "jsx": "react"
   },
-  "include": ["**/*.tsx", "**/*.ts"]
+  "include": [
+    "**/*.tsx",
+    "**/*.ts",
+    "packages/use-contractkit/scripts/json-to-ts.js"
+  ]
 }

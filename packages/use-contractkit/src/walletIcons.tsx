@@ -74,7 +74,7 @@ export const ETHEREUM: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 export const PRIVATE_KEY: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
-    className="dark:tw-text-gray-300"
+    className="dark:tw-text-slate-300"
     style={{ height: '24px', width: '24px' }}
     aria-hidden="true"
     focusable="false"
@@ -523,3 +523,6 @@ export const CELO_DANCE: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     </g>
   </svg>
 );
+
+export const STEAKWALLET =
+  'https://res.cloudinary.com/helpkit/image/upload/v1637141229/steakwallet_logo_dark_6703a6b026.png';

@@ -1,3 +1,4 @@
+import QRCode from 'qrcode';
 import { AbstractProvider } from 'web3-core';
 
 declare global {
@@ -46,4 +47,14 @@ interface EthereumRequestReturns {
   wallet_addEthereumChain: null;
   wallet_watchAsset: boolean;
   wallet_switchEthereumChain: null;
+}
+
+interface BitMatrix {
+  size: number;
+  reservedBits: Uint8Array;
+  data: Uint8Array;
+}
+
+interface QRCodeClass extends QRCode.QRCode {
+  modules: BitMatrix;
 }

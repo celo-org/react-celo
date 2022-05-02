@@ -1,6 +1,6 @@
 import { Provider } from '../types';
 
-export type SortingPredicate<T> = (a: T, b: T) => -1 | 0 | 1;
+export type SortingPredicate<T> = (a: T, b: T) => number;
 
 export const sortString: SortingPredicate<string> = (a, b) => {
   const A = a.toUpperCase();
