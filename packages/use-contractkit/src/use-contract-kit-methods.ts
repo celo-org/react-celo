@@ -180,7 +180,7 @@ export function useContractKitMethods(
       }
       return results;
     },
-    [getConnectedKit, dispatch, isMobile]
+    [getConnectedKit, dispatch, connector]
   );
 
   return {
