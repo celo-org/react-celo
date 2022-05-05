@@ -4,10 +4,14 @@ import '../styles/global.css';
 import {
   Alfajores,
   ContractKitProvider,
+  DEFAULT_NETWORKS,
+  NetworkNames,
   Provider,
 } from '@celo-tools/use-contractkit';
 import { AppProps } from 'next/app';
 import { Toaster } from 'react-hot-toast';
+
+const ExtendedNetworkNames = { Ethereum: 'Ethereum', ...NetworkNames };
 
 function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
   if (router.route === '/wallet') {
@@ -23,6 +27,15 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
         icon: 'https://use-contractkit.vercel.app/favicon.ico',
       }}
       network={Alfajores}
+      networks={[
+        {
+          name: ExtendedNetworkNames.Ethereum,
+          rpcUrl: 'https://api.mycryptoapi.com/eth',
+          explorer: 'https://etherscan.io/',
+          chainId: 1,
+        },
+        ...DEFAULT_NETWORKS,
+      ]}
       connectModal={{
         title: <span>Connect your DummyWallet</span>,
         providersOptions: {
