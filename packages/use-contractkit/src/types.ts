@@ -54,11 +54,11 @@ export interface Connector {
   type: WalletTypes;
   account: string | null;
   feeCurrency: CeloTokenContract;
-
   initialised: boolean;
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
-  updateFeeCurrency: (token: CeloTokenContract) => Promise<void>;
+  updateFeeCurrency?: (token: CeloTokenContract) => Promise<void>;
+  supportsFeeCurrency: () => boolean;
   getDeeplinkUrl?: (uri: string) => string;
   updateKitWithNetwork?: (network: Network) => Promise<void>;
   onNetworkChange?: (callback: (chainId: number) => void) => void;

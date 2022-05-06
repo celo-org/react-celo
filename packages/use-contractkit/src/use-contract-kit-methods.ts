@@ -1,4 +1,9 @@
-import { CeloTokenContract, ContractKit } from '@celo/contractkit';
+import {
+  CeloContract,
+  CeloTokenContract,
+  CeloTokens,
+  ContractKit,
+} from '@celo/contractkit';
 import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
@@ -150,8 +155,17 @@ export function useContractKitMethods(
 
   const updateFeeCurrency = useCallback(
     async (newFeeCurrency: CeloTokenContract): Promise<void> => {
-      await connector.updateFeeCurrency(newFeeCurrency);
-      dispatch('setFeeCurrency', newFeeCurrency);
+      try {
+        if (connector.supportsFeeCurrency() && connector.updateFeeCurrency) {
+          await connector.updateFeeCurrency(newFeeCurrency);
+          dispatch('setFeeCurrency', newFeeCurrency);
+        }
+      } catch (error) {
+        console.warn(
+          'updating Fee Currency not supported by this wallet or network',
+          error
+        );
+      }
     },
     [connector, dispatch]
   );

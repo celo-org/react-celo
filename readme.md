@@ -319,7 +319,7 @@ function App() {
 
 #### Extending Supported Networks
 
-By default Use-Contractkit only supports Celo Blockchain Networks. You can however extend this to include other chains you choose such as Ethereum, Polygon, Avalanche etc by Passing your array of `Network`s into `ContractKitProvider`.
+By default Use-Contractkit only supports Celo Blockchain Networks. You can however extend this to include other chains you choose such as Ethereum, Polygon, Avalanche etc by Passing your array of `Network`s into `ContractKitProvider`. Note this feature is considered experimental and works better with wallets like Metamask.
 
 ### Adjust FeeCurrency
 
