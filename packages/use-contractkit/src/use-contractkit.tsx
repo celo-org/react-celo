@@ -22,7 +22,7 @@ export interface UseContractKit {
   networks: readonly Network[];
   updateNetwork: (network: Network) => Promise<void>;
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
-
+  supportsFeeCurrency: boolean;
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will
    * - open the action modal
@@ -83,6 +83,7 @@ export const useContractKit = (): UseContractKit => {
     initialised: connector.initialised,
     feeCurrency,
     updateFeeCurrency,
+    supportsFeeCurrency: connector.supportsFeeCurrency(),
     performActions,
     getConnectedKit,
     connect,

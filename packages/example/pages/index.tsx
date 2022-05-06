@@ -48,6 +48,7 @@ export default function Home(): React.ReactElement {
     networks,
     updateNetwork,
     connect,
+    supportsFeeCurrency,
     destroy,
     performActions,
     walletType,
@@ -386,9 +387,11 @@ export default function Home(): React.ReactElement {
                 </div>
                 <div>
                   <div className="text-lg font-bold mb-2 text-gray-900">
-                    Fee Currency
+                    Fee Currency{' '}
+                    {supportsFeeCurrency || `not supported on ${walletType}`}
                   </div>
                   <select
+                    disabled={!supportsFeeCurrency}
                     value={feeCurrency}
                     onChange={(event) =>
                       updateFeeCurrency(event.target.value as CeloTokenContract)
