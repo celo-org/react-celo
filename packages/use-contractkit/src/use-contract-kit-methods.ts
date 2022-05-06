@@ -1,9 +1,4 @@
-import {
-  CeloContract,
-  CeloTokenContract,
-  CeloTokens,
-  ContractKit,
-} from '@celo/contractkit';
+import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
