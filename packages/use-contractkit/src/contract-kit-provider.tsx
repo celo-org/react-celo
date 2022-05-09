@@ -1,4 +1,4 @@
-import { CeloContract, CeloTokenContract } from '@celo/contractkit';
+import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import React, {
   ReactNode,
   useCallback,

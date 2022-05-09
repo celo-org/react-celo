@@ -1,6 +1,6 @@
 import { Address } from '@celo/base';
 import { CeloTx, ReadOnlyWallet } from '@celo/connect';
-import { newKit } from '@celo/contractkit';
+import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import { toChecksumAddress } from 'ethereumjs-util';
 
@@ -41,7 +41,7 @@ export function parseDecrypt(params: [string, string]): {
 const privateKey =
   '04f9d516be49bb44346ca040bdd2736d486bca868693c74d51d274ad92f61976';
 const kit = newKit('https://alfajores-forno.celo-testnet.org');
-kit.addAccount(privateKey);
+kit.connection.addAccount(privateKey);
 const wallet = kit.getWallet()!;
 const [account] = wallet.getAccounts();
 

@@ -1,4 +1,4 @@
-import { ContractKit, newKit } from '@celo/contractkit';
+import { ContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 import Web3 from 'web3';
