@@ -2,12 +2,7 @@ import { CeloContract, CeloTokenContract } from '@celo/contractkit';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 import { ensureLeading0x } from '@celo/utils/lib/address';
-import {
-  Alfajores,
-  Baklava,
-  Mainnet,
-  useContractKit,
-} from '@celo-tools/use-contractkit';
+import { useContractKit } from '@celo-tools/use-contractkit';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
@@ -45,15 +40,15 @@ function truncateAddress(address: string) {
   return `${address.slice(0, 8)}...${address.slice(36)}`;
 }
 
-const networks = [Alfajores, Baklava, Mainnet];
-
 export default function Home(): React.ReactElement {
   const {
     kit,
     address,
     network,
+    networks,
     updateNetwork,
     connect,
+    supportsFeeCurrency,
     destroy,
     performActions,
     walletType,
@@ -360,7 +355,7 @@ export default function Home(): React.ReactElement {
               <div className="w-64 md:w-96 space-y-4 text-gray-700">
                 <div className="mb-4">
                   <div className="text-lg font-bold mb-2 text-gray-900">
-                    Account summary
+                    Account Summary on {network.name}
                   </div>
                   <div className="space-y-2">
                     <div>Wallet type: {walletType}</div>
@@ -392,9 +387,11 @@ export default function Home(): React.ReactElement {
                 </div>
                 <div>
                   <div className="text-lg font-bold mb-2 text-gray-900">
-                    Fee Currency
+                    Fee Currency{' '}
+                    {supportsFeeCurrency || `not supported on ${walletType}`}
                   </div>
                   <select
+                    disabled={!supportsFeeCurrency}
                     value={feeCurrency}
                     onChange={(event) =>
                       updateFeeCurrency(event.target.value as CeloTokenContract)

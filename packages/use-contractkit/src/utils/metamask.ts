@@ -5,7 +5,7 @@ import Web3 from 'web3';
 
 import { Alfajores, Baklava, Mainnet } from '../constants';
 import { Ethereum } from '../global';
-import { ChainId, Network } from '../types';
+import { CeloNetwork, ChainId, Network } from '../types';
 
 const CELO_PARAMS = Object.freeze({
   chainName: 'Celo',
@@ -37,6 +37,7 @@ const params: { [chain in ChainId]: typeof CELO_PARAMS } = {
   [ChainId.Baklava]: BAKLAVA_PARAMS,
 };
 
+// First Class Supported Networks
 const NETWORKS = {
   [ChainId.Mainnet]: Mainnet,
   [ChainId.Alfajores]: Alfajores,
@@ -86,7 +87,7 @@ export interface MetamaskRPCError {
 }
 
 export const makeNetworkParams = async (
-  info: Network,
+  info: CeloNetwork,
   CELO: GoldTokenWrapper
 ): Promise<AddEthereumChainParameter> => {
   const [symbol, decimals] = await Promise.all([
@@ -157,23 +158,35 @@ export const addNetworkToMetamask = async (
   ethereum: Ethereum,
   networkConfig: Network
 ): Promise<void> => {
-  const { CELO, ...tokens } = (await newKit(
-    networkConfig.rpcUrl
-  ).celoTokens.getWrappers()) as CeloTokens;
-
-  if (!CELO) {
-    throw new Error(
-      `Couldnt fetch CELO information for ${networkConfig.name}. Something's wrong`
-    );
-  }
-
   try {
-    await ethereum?.request({
-      method: 'wallet_addEthereumChain',
-      params: [await makeNetworkParams(networkConfig, CELO)],
-    });
+    // For Celo Chains
+    if (Object.keys(NETWORKS).includes(networkConfig.chainId.toString())) {
+      const { CELO, ...tokens } = (await newKit(
+        networkConfig.rpcUrl
+      ).celoTokens.getWrappers()) as CeloTokens;
 
-    await addTokensToMetamask(ethereum, tokens);
+      await ethereum?.request({
+        method: 'wallet_addEthereumChain',
+        params: [await makeNetworkParams(networkConfig, CELO)],
+      });
+
+      await addTokensToMetamask(ethereum, tokens);
+
+      // For other chains
+    } else {
+      await ethereum?.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: networkConfig.chainId,
+            chainName: networkConfig.name,
+            rpcUrls: [networkConfig.rpcUrl],
+            blockExplorerUrls: [networkConfig.explorer],
+            nativeCurrency: networkConfig.nativeCurrency,
+          },
+        ],
+      });
+    }
   } catch (err) {
     const { code } = err as MetamaskRPCError;
     if (code === MetamaskRPCErrorCode.AwaitingUserConfirmation) {

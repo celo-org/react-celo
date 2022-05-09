@@ -1,7 +1,7 @@
 import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import React from 'react';
 
-import { NetworkNames, WalletIds, WalletTypes } from './constants';
+import { WalletIds, WalletTypes } from './constants';
 
 /**
  * ID of a Celo chain.
@@ -16,10 +16,19 @@ export enum ChainId {
  * Network connection information.
  */
 export interface Network {
-  name: NetworkNames;
+  name: string;
   rpcUrl: string;
-  graphQl: string;
+  graphQl?: string;
   explorer: string;
+  chainId: ChainId | number;
+  nativeCurrency?: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+}
+
+export interface CeloNetwork extends Network {
   chainId: ChainId;
 }
 
@@ -45,11 +54,11 @@ export interface Connector {
   type: WalletTypes;
   account: string | null;
   feeCurrency: CeloTokenContract;
-
   initialised: boolean;
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
-  updateFeeCurrency: (token: CeloTokenContract) => Promise<void>;
+  updateFeeCurrency?: (token: CeloTokenContract) => Promise<void>;
+  supportsFeeCurrency: () => boolean;
   getDeeplinkUrl?: (uri: string) => string;
   updateKitWithNetwork?: (network: Network) => Promise<void>;
   onNetworkChange?: (callback: (chainId: number) => void) => void;

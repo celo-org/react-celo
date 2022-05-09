@@ -48,9 +48,8 @@ export class UnauthenticatedConnector implements Connector {
     return this;
   }
 
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
+  supportsFeeCurrency() {
+    return false;
   }
 
   close(): void {
@@ -94,10 +93,11 @@ export class PrivateKeyConnector implements Connector {
     return this;
   }
 
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
+  supportsFeeCurrency() {
+    return true;
   }
+
+  updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
     clearPreviousConfig();
@@ -144,13 +144,12 @@ export class LedgerConnector implements Connector {
     await this.updateFeeCurrency(this.feeCurrency);
     return this;
   }
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
 
-    if (this.feeCurrency) {
-      await this.kit.setFeeCurrency(feeContract);
-    }
+  supportsFeeCurrency() {
+    return true;
   }
+
+  updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
     clearPreviousConfig();
@@ -212,7 +211,6 @@ export class InjectedConnector implements Connector {
     const [defaultAccount] = await this.kit.web3.eth.getAccounts();
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
-    await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
 
     return this;
@@ -232,9 +230,8 @@ export class InjectedConnector implements Connector {
     }
   };
 
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
+  supportsFeeCurrency() {
+    return false;
   }
 
   async updateKitWithNetwork(network: Network): Promise<void> {
@@ -319,14 +316,13 @@ export class CeloExtensionWalletConnector implements Connector {
     this.kit.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
 
-    await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
 
     return this;
   }
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(this.feeCurrency);
+
+  supportsFeeCurrency() {
+    return false;
   }
 
   onNetworkChange(callback: (chainId: number) => void): void {
@@ -415,6 +411,15 @@ export class WalletConnectConnector implements Connector {
     return this;
   }
 
+  supportsFeeCurrency() {
+    // If on WC 1 it will not work due to fields being dropped
+    if (!this.version || this.version === 1) {
+      return false;
+    }
+    // TODO when V2 is used again check based on wallet?
+    return true;
+  }
+
   private async fetchWalletAddressForAccount(address?: string) {
     if (!address) {
       return undefined;
@@ -424,14 +429,22 @@ export class WalletConnectConnector implements Connector {
     return new BigNumber(walletAddress).isZero() ? address : walletAddress;
   }
 
-  async updateFeeCurrency(feeContract: CeloTokenContract): Promise<void> {
-    this.feeCurrency = feeContract;
-    await this.kit.setFeeCurrency(feeContract);
-  }
+  updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): Promise<void> {
     clearPreviousConfig();
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
     return wallet.close();
   }
+}
+
+async function updateFeeCurrency(
+  this: Connector,
+  feeContract: CeloTokenContract
+): Promise<void> {
+  if (!this.supportsFeeCurrency()) {
+    return;
+  }
+  this.feeCurrency = feeContract;
+  await this.kit.setFeeCurrency(feeContract);
 }

@@ -302,6 +302,7 @@ function WrappedApp({ Component, pageProps }) {
 function App () {
   ...
 }
+
 ```
 
 Be sure to check the use-contractkit example application for a showcase of how network management works in more depth. Usually you'll want to show a dropdown to your users allowing them to select the network to connect to.
@@ -315,6 +316,10 @@ function App() {
   return <div>Currently connected to {network}</div>;
 }
 ```
+
+#### Extending Supported Networks
+
+By default Use-Contractkit only supports Celo Blockchain Networks. You can however extend this to include other chains you choose such as Ethereum, Polygon, Avalanche etc by Passing your array of `Network`s into `ContractKitProvider`. Note this feature is considered experimental and works better with wallets like Metamask.
 
 ### Adjust FeeCurrency
 
