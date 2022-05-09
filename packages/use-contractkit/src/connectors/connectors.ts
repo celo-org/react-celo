@@ -412,7 +412,12 @@ export class WalletConnectConnector implements Connector {
   }
 
   supportsFeeCurrency() {
-    return this.version !== 1; // TODO when version 2 will need to figure this out wallet by wallet with a whitelist
+    // If on WC 1 it will not work due to fields being dropped
+    if (!this.version || this.version === 1) {
+      return false;
+    }
+    // TODO when V2 is used again check based on wallet?
+    return true;
   }
 
   private async fetchWalletAddressForAccount(address?: string) {
