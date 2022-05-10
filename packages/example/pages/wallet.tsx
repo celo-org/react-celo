@@ -1,4 +1,5 @@
 import { trimLeading0x } from '@celo/base';
+import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import {
