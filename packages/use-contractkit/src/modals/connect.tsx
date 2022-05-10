@@ -128,6 +128,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     setAdding(null);
     setShowMore(false);
     connectionCallback?.(false);
+    setSearch('');
   }, [connectionCallback]);
 
   const onSubmit = useCallback(
@@ -176,7 +177,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           {title}
         </h1>
         <input
-          placeholder="Search"
+          placeholder="Search for a wallet"
           onChange={(e) => setSearch(e.target.value)}
         />
         {providersToDisplay.map(([providerKey, provider]) => {
