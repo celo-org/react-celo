@@ -445,5 +445,10 @@ async function updateFeeCurrency(
     return;
   }
   this.feeCurrency = feeContract;
-  await this.kit.setFeeCurrency(feeContract);
+  const address =
+    feeContract === CeloContract.GoldToken
+      ? undefined
+      : await this.kit.registry.addressFor(feeContract);
+
+  this.kit.connection.defaultFeeCurrency = address;
 }
