@@ -10,6 +10,10 @@ import {
   WalletTypes,
 } from './constants';
 import { Dispatcher } from './contract-kit-provider';
+import {
+  ContractCacheBuilder,
+  useContractsCache,
+} from './ContractCacheBuilder';
 import { Connector, Network } from './types';
 
 export function useContractKitMethods(
@@ -22,7 +26,8 @@ export function useContractKitMethods(
     networks: Network[];
     network: Network;
   },
-  dispatch: Dispatcher
+  dispatch: Dispatcher,
+  buildContractsCache?: ContractCacheBuilder
 ): ContractKitMethods {
   const destroy = useCallback(async () => {
     await connector.close();
@@ -194,6 +199,8 @@ export function useContractKitMethods(
     [getConnectedKit, dispatch, connector]
   );
 
+  const contractsCache = useContractsCache(buildContractsCache, connector);
+
   return {
     destroy,
     initConnector,
@@ -202,6 +209,7 @@ export function useContractKitMethods(
     getConnectedKit,
     performActions,
     updateFeeCurrency,
+    contractsCache,
   };
 }
 
@@ -215,4 +223,5 @@ export interface ContractKitMethods {
     ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
   ) => Promise<unknown[]>;
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
+  contractsCache?: undefined | unknown;
 }

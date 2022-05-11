@@ -15,6 +15,7 @@ import {
   contractKitReducer,
   ReducerState,
 } from './contract-kit-reducer';
+import { ContractCacheBuilder } from './ContractCacheBuilder';
 import {
   ActionModal,
   ActionModalProps,
@@ -95,6 +96,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   network = Mainnet,
   networks = DEFAULT_NETWORKS,
   feeCurrency = CeloContract.GoldToken,
+  buildContractsCache,
 }: ContractKitProviderProps) => {
   const isMountedRef = useIsMounted();
   const previousConfig = useMemo(
@@ -124,7 +126,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
     [isMountedRef]
   );
 
-  const methods = useContractKitMethods(state, dispatch);
+  const methods = useContractKitMethods(state, dispatch, buildContractsCache);
 
   useEffect(() => {
     if (CONNECTOR_TYPES[state.connector.type] !== UnauthenticatedConnector) {
@@ -152,6 +154,7 @@ interface ContractKitProviderProps {
   network?: Network;
   networks?: Network[];
   feeCurrency?: CeloTokenContract;
+  buildContractsCache?: ContractCacheBuilder;
   connectModal?: ConnectModalProps;
   actionModal?: {
     reactModalProps?: Partial<ReactModal.Props>;

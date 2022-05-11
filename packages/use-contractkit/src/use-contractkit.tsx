@@ -47,9 +47,11 @@ export interface UseContractKit {
    * If the user is not connected, this opens up the connection modal.
    */
   getConnectedKit: () => Promise<MiniContractKit>;
+
+  contractsCache?: unknown;
 }
 
-export const useContractKit = (): UseContractKit => {
+export function useContractKit<CC = undefined>(): UseContractKit {
   const [
     {
       dapp,
@@ -68,6 +70,7 @@ export const useContractKit = (): UseContractKit => {
       getConnectedKit,
       performActions,
       updateFeeCurrency,
+      contractsCache,
     },
   ] = useContractKitContext();
 
@@ -79,6 +82,7 @@ export const useContractKit = (): UseContractKit => {
     networks: networks.map((net) => ({ ...net })),
     updateNetwork,
     kit: connector.kit,
+    contractsCache: contractsCache as CC,
     walletType: connector.type,
     account: connector.account,
     initialised: connector.initialised,
@@ -92,7 +96,7 @@ export const useContractKit = (): UseContractKit => {
 
     initError: connectorInitError,
   };
-};
+}
 
 interface UseContractKitInternal extends UseContractKit {
   connectionCallback: ((connector: Connector | false) => void) | null;
