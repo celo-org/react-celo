@@ -84,3 +84,6 @@ export default function ConnectorScreen({ title, content, footer }: Props) {
     </div>
   );
 }
+
+// 296.500
+// 248.762

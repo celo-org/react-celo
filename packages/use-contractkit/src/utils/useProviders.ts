@@ -44,7 +44,8 @@ export function getRecent(): Maybe<Provider> {
 
 export default function useProviders(
   wallets: WalletEntry[] = [],
-  sort = defaultProviderSort
+  sort = defaultProviderSort,
+  search?: string
 ) {
   const record: Record<string, Provider> = useMemo(
     () => ({
@@ -57,16 +58,22 @@ export default function useProviders(
     [wallets]
   );
 
-  const providers = useMemo<[providerKey: string, provider: Provider][]>(
-    () =>
-      Object.entries(record)
-        .filter(
-          ([_, provider]) =>
-            typeof window !== 'undefined' && provider.showInList()
-        )
-        .sort(([, a], [, b]) => sort(a, b)),
-    [record, sort]
-  );
+  console.log(search);
+  const providers = useMemo<[providerKey: string, provider: Provider][]>(() => {
+    let _record = Object.entries(record);
+    if (search) {
+      _record = _record.filter(([providerKey, _]) =>
+        providerKey.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    return _record
+      .filter(
+        ([_, provider]) =>
+          typeof window !== 'undefined' && provider.showInList()
+      )
+      .sort(([, a], [, b]) => sort(a, b));
+  }, [record, sort, search]);
 
   const recentlyUsedProvider = getRecent();
   const prioritizedProviders = useMemo(() => {

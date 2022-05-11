@@ -43,6 +43,7 @@ export interface ConnectModalProps {
     hideFromDefaults?: true | SupportedProviders[];
     additionalWCWallets?: WalletEntry[];
     sort?: SortingPredicate<Provider>;
+    searchable?: boolean;
   };
 }
 
@@ -63,9 +64,11 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   providersOptions = {},
 }: ConnectModalProps) => {
   const { connectionCallback } = useContractKitInternal();
+  const [search, setSearch] = useState<string>('');
   const [adding, setAdding] = useState<Maybe<SupportedProviders>>(null);
 
   const back = useCallback((): void => {
+    setSearch('');
     setAdding(null);
   }, []);
 
@@ -86,6 +89,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     hideFromDefaults,
     additionalWCWallets,
     sort = defaultProviderSort,
+    searchable = true,
   } = providersOptions;
 
   const { wallets, allScreens } = useMemo(() => {
@@ -119,7 +123,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     };
   }, [screens, hideFromDefaults, additionalWCWallets]);
 
-  const providers = useProviders(wallets, sort);
+  const providers = useProviders(wallets, sort, search);
 
   const ProviderElement = adding && allScreens?.[adding];
   const content = !ProviderElement ? (
@@ -157,6 +161,10 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
             title={title}
             onClickProvider={setAdding}
             selectedProvider={adding}
+            {...(searchable && {
+              search: search,
+              onSearch: (str) => setSearch(str),
+            })}
           />
         }
         content={content}

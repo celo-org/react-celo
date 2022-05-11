@@ -91,6 +91,9 @@ use-contractkit provides a list of default wallets (CeloExtensionWallet, Injecte
 
       // This option hides all default wallets
       hideFromDefaults: true,
+
+      // This option toggles on and off the searchbar
+      searchable: true,
     },
   }}
 >

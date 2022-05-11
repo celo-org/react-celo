@@ -19,8 +19,7 @@ const styles = cls({
     tw-py-1.5
     tw-pl-2
     tw-pr-2
-    ${isMobile ? 'tw-w-80' : 'tw-w-48'}
-    ${isMobile ? 'md:tw-w-96' : 'md:tw-w-64'}
+    ${isMobile ? 'tw-w-full' : 'tw-w-11/12'}
     tw-transition
     tw-rounded-md
     focus:tw-outline-none

@@ -24,7 +24,7 @@ function priorityToText(priority: Priorities) {
 
 const styles = cls({
   title: `
-    tw-pb-2
+    ${isMobile ? 'tw-pb-8' : 'tw-pb-2'}
     tw-text-md
     tw-font-medium
     tw-text-slate-900
@@ -33,11 +33,17 @@ const styles = cls({
     tw-flex
     tw-flex-col
     tw-overflow-hidden
-    ${isMobile ? 'tw-gap-y-4' : 'tw-gap-y-1'}`,
+    tw-flex-grow
+    tw-flex-height-full
+    tw-justify-between
+    ${isMobile ? 'tw-gap-y-4' : 'tw-gap-y-1'}
+    ${isMobile ? 'tw-w-80' : 'tw-w-48'}
+    ${isMobile ? 'md:tw-w-96' : 'md:tw-w-64'}`,
   scrollableList: `
     tw-flex
     tw-flex-col
     tw-overflow-y-auto
+    tw-overflow-x-hidden
     tw-overscroll-contain
     tw-pr-1`,
   subtitle: `
@@ -51,13 +57,42 @@ const styles = cls({
     tw-flex-col`,
   columnFooter: `
     tw-flex
-    tw-self-end`,
+    ${isMobile ? 'tw-justify-center' : 'tw-justify-end'}
+    tw-gap-x-2`,
+  columnSearchableFooter: `
+    tw-justify-between
+    `,
   version: `
     tw-text-slate-200
     dark:tw-text-slate-700
     tw-text-xs
+    tw-leading-5
     tw-font-mono
-    tw-font-thin`,
+    tw-font-thin
+    tw-self-end`,
+  noMatchesContainer: `
+    tw-h-full
+    tw-flex
+    tw-flex-col
+    tw-items-center
+    tw-justify-center`,
+  noMatchesSpan: `
+    tw-text-slate-500
+    tw-font-normal
+    tw-align-center`,
+  inputContainer: `
+    tw-flex
+    tw-self-end`,
+  input: `
+    tw-text-sm
+    tw-font-medium
+    tw-text-slate-500
+    placeholder:tw-font-medium
+    placeholder:tw-text-slate-500
+    placeholder:tw-text-align-end
+    focus-visible:tw-outline-none
+    dark:tw-bg-slate-800
+  `,
 });
 
 interface Props {
@@ -65,6 +100,8 @@ interface Props {
   providers: ReturnType<typeof useProviders>;
   title: string | React.ReactElement;
   onClickProvider: (providerKey: SupportedProviders) => void;
+  search?: string;
+  onSearch?: (search: string) => void;
 }
 
 export default function Tray({
@@ -72,6 +109,8 @@ export default function Tray({
   title,
   onClickProvider,
   selectedProvider,
+  search,
+  onSearch,
 }: Props) {
   const nPriorities = providers.reduce((acc, [prio]) => {
     if (!acc.includes(prio)) acc.push(prio);
@@ -82,6 +121,11 @@ export default function Tray({
     <>
       <h1 className={styles.title}>{title}</h1>
       <div className={styles.verticalContainer}>
+        {!providers.length && (
+          <div className={styles.noMatchesContainer}>
+            <span className={styles.noMatchesSpan}>No matches</span>
+          </div>
+        )}
         <div className={styles.scrollableList}>
           {providers.map(([priority, providers]) => (
             <div key={priority}>
@@ -107,7 +151,21 @@ export default function Tray({
             </div>
           ))}
         </div>
-        <div className={styles.columnFooter}>
+        <div
+          className={`${styles.columnFooter} ${
+            onSearch ? styles.columnSearchableFooter : ''
+          }`}
+        >
+          {onSearch && (
+            <div className={styles.inputContainer}>
+              <input
+                className={styles.input}
+                placeholder="Search for a wallet"
+                value={search || ''}
+                onChange={(event) => onSearch(event.target?.value)}
+              />
+            </div>
+          )}
           <span className={styles.version}>{version}</span>
         </div>
       </div>
