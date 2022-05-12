@@ -70,10 +70,12 @@ export default function Home(): React.ReactElement {
       kit.contracts.getGoldToken(),
       Promise.all(
         Object.values(StableToken).map(async (stable) => {
-          let contract = null;
+          let contract;
           try {
             contract = await kit.contracts.getStableToken(stable);
-          } catch (e) {}
+          } catch (e) {
+            contract = null;
+          }
           return {
             symbol: stable,
             contract: contract,
