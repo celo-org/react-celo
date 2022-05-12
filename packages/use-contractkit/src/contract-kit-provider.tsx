@@ -146,7 +146,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   );
 };
 
-interface ContractKitProviderProps {
+export interface ContractKitProviderProps {
   children: ReactNode;
   dapp: Dapp;
   network?: Network;
