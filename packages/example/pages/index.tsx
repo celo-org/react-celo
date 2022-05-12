@@ -75,6 +75,7 @@ export default function Home(): React.ReactElement {
             contract = await kit.contracts.getStableToken(stable);
           } catch (e) {
             contract = null;
+            console.error(e);
           }
           return {
             symbol: stable,
