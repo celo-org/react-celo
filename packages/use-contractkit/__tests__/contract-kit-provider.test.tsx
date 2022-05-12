@@ -3,8 +3,8 @@ import '@testing-library/jest-dom';
 import { renderHook } from '@testing-library/react';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { Mainnet } from '../src/constants';
 
+import { Mainnet } from '../src/constants';
 import {
   ContractKitProvider,
   ContractKitProviderProps,
