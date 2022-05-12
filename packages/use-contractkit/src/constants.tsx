@@ -131,7 +131,10 @@ export const PROVIDERS: {
     canConnect: () => isEthereumFromMetamask(),
     showInList: () => true,
     listPriority: () => 0,
-    installURL: 'https://metamask.app.link/',
+    installURL: isMobile
+      ? 'https://metamask.app.link/dapp/' +
+        window.location.href.replace(/^https?:\/\//, '')
+      : 'https://metamask.app.link/',
   },
   [SupportedProviders.CeloExtensionWallet]: {
     name: SupportedProviders.CeloExtensionWallet,
