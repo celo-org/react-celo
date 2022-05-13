@@ -44,16 +44,16 @@
     "@types/qrcode.react": "^1.0.2",
     "@types/react": "^17.0.38",
     "@types/react-modal": "^3.13.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-test-renderer": "^17.0.2",
+    "jest-environment-jsdom": "^28.1.0",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
     "tailwindcss": "^3.0.15",
     "web3": "^1.3.6"
   },
   "peerDependencies": {
     "@celo/contractkit": ">=1.5.0 <=3.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": ">=17.0.2 <=^18",
+    "react-dom": ">=17.0.2 <=^18",
     "web3": "^1.3.6"
   }
 }
