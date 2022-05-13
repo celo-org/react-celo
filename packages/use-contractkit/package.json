@@ -35,8 +35,7 @@
     "isomorphic-fetch": "^3.0.0",
     "qrcode": "^1.5.0",
     "react-device-detect": "^2.1.2",
-    "react-modal": "^3.14.4",
-    "unstated-next": "^1.1.0"
+    "react-modal": "^3.14.4"
   },
   "devDependencies": {
     "@types/isomorphic-fetch": "^0.0.35",

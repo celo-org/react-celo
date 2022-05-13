@@ -58,7 +58,6 @@ export default function useProviders(
     [wallets]
   );
 
-  console.log(search);
   const providers = useMemo<[providerKey: string, provider: Provider][]>(() => {
     let _record = Object.entries(record);
     if (search) {
