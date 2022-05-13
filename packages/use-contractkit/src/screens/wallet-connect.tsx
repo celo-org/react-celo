@@ -128,11 +128,6 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
   } else {
     content = (
       <div>
-        {/* {process.env.NODE_ENV === 'development' && (
-          <div className={styles.desktopCopyContainer}>
-            <CopyText text="Copy to clipboard (dev-only)" payload={uri} />
-          </div>
-        )} */}
         <PrettyQrCode value={uri} size={isMobile ? 200 : 340} />
       </div>
     );
