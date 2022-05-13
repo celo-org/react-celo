@@ -107,8 +107,8 @@ export default function Home(): React.ReactElement {
             Web3.utils.toWei('0.00000001', 'ether')
           )
           .sendAndWaitForReceipt({
-            from: k.defaultAccount,
-            gasPrice: k.gasPrice,
+            from: k.connection.defaultAccount,
+            gasPrice: k.connection.defaultGasPrice,
           });
       });
 
@@ -125,8 +125,11 @@ export default function Home(): React.ReactElement {
     setSending(true);
     try {
       await performActions(async (k) => {
-        if (k.defaultAccount) {
-          return await k.signTypedData(k.defaultAccount, TYPED_DATA);
+        if (k.connection.defaultAccount) {
+          return await k.connection.signTypedData(
+            k.connection.defaultAccount,
+            TYPED_DATA
+          );
         } else {
           throw new Error('No default account');
         }
@@ -143,12 +146,12 @@ export default function Home(): React.ReactElement {
     setSending(true);
     try {
       await performActions(async (k) => {
-        if (!k.defaultAccount) {
+        if (!k.connection.defaultAccount) {
           throw new Error('No default account');
         }
         return await k.connection.sign(
           ensureLeading0x(Buffer.from('Hello').toString('hex')),
-          k.defaultAccount
+          k.connection.defaultAccount
         );
       });
       toast.success('sign_personal succeeded');

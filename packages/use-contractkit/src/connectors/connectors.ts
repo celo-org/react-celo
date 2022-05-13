@@ -1,11 +1,10 @@
 import { ReadOnlyWallet } from '@celo/connect/lib';
+import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import {
-  CeloContract,
-  CeloTokenContract,
-  ContractKit,
+  MiniContractKit,
   newKit,
   newKitFromWeb3,
-} from '@celo/contractkit';
+} from '@celo/contractkit/lib/mini-kit';
 import { LocalWallet } from '@celo/wallet-local';
 // Uncomment with WCV2 support
 // import {
@@ -36,7 +35,7 @@ type Web3Type = Parameters<typeof newKitFromWeb3>[0];
 export class UnauthenticatedConnector implements Connector {
   public initialised = true;
   public type = WalletTypes.Unauthenticated;
-  public kit: ContractKit;
+  public kit: MiniContractKit;
   public account: string | null = null;
   public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
   constructor(n: Network) {
@@ -61,7 +60,7 @@ export class UnauthenticatedConnector implements Connector {
 export class PrivateKeyConnector implements Connector {
   public initialised = true;
   public type = WalletTypes.PrivateKey;
-  public kit: ContractKit;
+  public kit: MiniContractKit;
   public account: string | null = null;
 
   constructor(
@@ -83,8 +82,8 @@ export class PrivateKeyConnector implements Connector {
     wallet.addAccount(privateKey);
 
     this.kit = newKit(n.rpcUrl, wallet);
-    this.kit.defaultAccount = wallet.getAccounts()[0];
-    this.account = this.kit.defaultAccount ?? null;
+    this.kit.connection.defaultAccount = wallet.getAccounts()[0];
+    this.account = this.kit.connection.defaultAccount ?? null;
   }
 
   async initialise(): Promise<this> {
@@ -108,7 +107,7 @@ export class PrivateKeyConnector implements Connector {
 export class LedgerConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.Ledger;
-  public kit: ContractKit;
+  public kit: MiniContractKit;
   public account: string | null = null;
 
   constructor(
@@ -137,10 +136,10 @@ export class LedgerConnector implements Connector {
     const transport = await TransportUSB.create();
     const wallet = await newLedgerWalletWithSetup(transport, [this.index]);
     this.kit = newKit(this.network.rpcUrl, wallet);
-    this.kit.defaultAccount = wallet.getAccounts()[0];
+    this.kit.connection.defaultAccount = wallet.getAccounts()[0];
 
     this.initialised = true;
-    this.account = this.kit.defaultAccount ?? null;
+    this.account = this.kit.connection.defaultAccount ?? null;
     await this.updateFeeCurrency(this.feeCurrency);
     return this;
   }
@@ -168,7 +167,7 @@ export class UnsupportedChainIdError extends Error {
 export class InjectedConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
-  public kit: ContractKit;
+  public kit: MiniContractKit;
   public account: string | null = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
   private onAddressChangeCallback?: (address: string | null) => void;
@@ -208,8 +207,8 @@ export class InjectedConnector implements Connector {
     ethereum.on('accountsChanged', this.onAccountsChanged);
 
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
-    const [defaultAccount] = await this.kit.web3.eth.getAccounts();
-    this.kit.defaultAccount = defaultAccount;
+    const [defaultAccount] = await this.kit.connection.web3.eth.getAccounts();
+    this.kit.connection.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
     this.initialised = true;
 
@@ -225,7 +224,7 @@ export class InjectedConnector implements Connector {
 
   private onAccountsChanged = (accounts: string[]) => {
     if (this.onAddressChangeCallback) {
-      this.kit.defaultAccount = accounts[0];
+      this.kit.connection.defaultAccount = accounts[0];
       this.onAddressChangeCallback(accounts[0] ?? null);
     }
   };
@@ -269,7 +268,7 @@ export class MetaMaskConnector extends InjectedConnector {
 export class CeloExtensionWalletConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
-  public kit: ContractKit;
+  public kit: MiniContractKit;
   public account: string | null = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
 
@@ -312,8 +311,8 @@ export class CeloExtensionWalletConnector implements Connector {
     });
 
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
-    const [defaultAccount] = await this.kit.web3.eth.getAccounts();
-    this.kit.defaultAccount = defaultAccount;
+    const [defaultAccount] = await this.kit.connection.web3.eth.getAccounts();
+    this.kit.connection.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
 
     this.initialised = true;
@@ -338,7 +337,7 @@ export class CeloExtensionWalletConnector implements Connector {
 export class WalletConnectConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.WalletConnect;
-  public kit: ContractKit;
+  public kit: MiniContractKit;
   public account: string | null = null;
 
   private onUriCallback?: (uri: string) => void;
@@ -402,7 +401,7 @@ export class WalletConnectConnector implements Connector {
     await wallet.init();
     const [address] = wallet.getAccounts();
     const defaultAccount = await this.fetchWalletAddressForAccount(address);
-    this.kit.defaultAccount = defaultAccount;
+    this.kit.connection.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
 
     await this.updateFeeCurrency(this.feeCurrency);
@@ -446,5 +445,10 @@ async function updateFeeCurrency(
     return;
   }
   this.feeCurrency = feeContract;
-  await this.kit.setFeeCurrency(feeContract);
+  const address =
+    feeContract === CeloContract.GoldToken
+      ? undefined
+      : await this.kit.registry.addressFor(feeContract);
+
+  this.kit.connection.defaultFeeCurrency = address;
 }
