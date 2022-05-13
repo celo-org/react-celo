@@ -68,14 +68,7 @@ export const ProviderSelect: React.FC<Props> = ({
   return (
     <button
       className={`${styles.button} ${selected ? styles.selectedButton : ''}`}
-      onClick={
-        provider.canConnect()
-          ? onClick
-          : provider.installURL
-          ? () =>
-              window.open(provider.installURL, '_blank', 'noopener,noreferrer')
-          : undefined
-      }
+      onClick={onClick}
     >
       <div className={styles.rowContainer}>
         <span className={styles.iconContainer}>
@@ -94,7 +87,7 @@ export const ProviderSelect: React.FC<Props> = ({
         <div
           className={`${styles.name} ${selected ? styles.selectedName : ''}`}
         >
-          {provider.canConnect() ? provider.name : `Install ${provider.name}`}
+          {provider.name}
         </div>
         {isMobile && (
           <div className={styles.description}>{provider.description}</div>

@@ -12,34 +12,37 @@ const styles = cls({
   disclaimer: `
     tw-mt-3
     tw-text-sm
-    tw-text-slate-600
+    tw-text-slate-800
     dark:tw-text-slate-400`,
   container: `
     tw-list-disc
     tw-text-sm
-    tw-text-slate-600
     tw-list-inside
-    tw-mt-4`,
+    tw-mt-4
+    tw-text-slate-800
+    dark:tw-text-slate-400`,
   accountInfo: `
     tw-text-sm
-    tw-text-slate-600
+    tw-text-slate-800
     dark:tw-text-slate-400
     tw-mt-4`,
   error: `
     tw-mt-4
     tw-text-xs
     tw-text-red-600`,
-  input: `tw-ml-1
+  input: `
+    tw-ml-1
     tw-text-center
-    tw-text-slate-700
+    tw-text-slate-800
     dark:tw-text-slate-300
     tw-border
-    border-light-slate-700
+    border-light-slate-800
     dark:border-light-slate-300
     tw-rounded
     tw-outline-none
     focus:tw-outline-none`,
-  button: `tw-mt-6
+  button: `
+    tw-mt-6
     tw-px-4
     tw-py-2
     tw-border
@@ -54,9 +57,8 @@ const styles = cls({
     tw-to-indigo-600
     hover:tw-from-purple-700
     hover:tw-to-indigo-700`,
-  spinnerContainer: `tw-flex
-    tw-items-center
-    tw-justify-center`,
+  spinnerContainer: `
+    tw-mt-5`,
 });
 
 export const Ledger = ({ onSubmit }: ConnectorProps) => {
@@ -125,19 +127,19 @@ export const Ledger = ({ onSubmit }: ConnectorProps) => {
 
           {error && <p className={styles.error}>{error.message}</p>}
 
-          <button
-            className={styles.button}
-            onClick={submit}
-            disabled={submitting}
-          >
-            {submitting ? (
-              <div className={styles.spinnerContainer}>
-                <Spinner />
-              </div>
-            ) : (
-              'Connect'
-            )}
-          </button>
+          {submitting ? (
+            <div className={styles.spinnerContainer}>
+              <Spinner />
+            </div>
+          ) : (
+            <button
+              className={styles.button}
+              onClick={submit}
+              disabled={submitting}
+            >
+              Connect
+            </button>
+          )}
         </div>
       }
       footer={{

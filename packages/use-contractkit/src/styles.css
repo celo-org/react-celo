@@ -587,8 +587,6 @@ Spinner
 */
 .use-ck .use-ck-spinner {
   animation: use-ck-spinner-rotate 2s linear infinite;
-  z-index: 2;
-  position: absolute;
   width: 50px;
   height: 50px;
 }

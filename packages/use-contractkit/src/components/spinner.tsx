@@ -4,11 +4,13 @@ import cls from '../utils/tailwind';
 
 const styles = cls({
   // see styles.css
-  svg: `use-ck-spinner`,
+  svg: `
+    use-ck-spinner
+    tw-text-indigo-500 
+    dark:tw-text-indigo-500`,
   circle: `
     use-ck-spinner-path
-    tw-stroke-indigo-500 
-    dark:tw-stroke-indigo-500`,
+    tw-stroke-current`,
 });
 
 interface Props {
