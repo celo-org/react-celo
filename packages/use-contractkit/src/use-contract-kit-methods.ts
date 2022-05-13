@@ -1,4 +1,5 @@
-import { CeloTokenContract, ContractKit } from '@celo/contractkit';
+import { CeloTokenContract } from '@celo/contractkit/lib/base';
+import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
@@ -9,6 +10,10 @@ import {
   WalletTypes,
 } from './constants';
 import { Dispatcher } from './contract-kit-provider';
+import {
+  ContractCacheBuilder,
+  useContractsCache,
+} from './ContractCacheBuilder';
 import { Connector, Network } from './types';
 
 export function useContractKitMethods(
@@ -21,7 +26,8 @@ export function useContractKitMethods(
     networks: Network[];
     network: Network;
   },
-  dispatch: Dispatcher
+  dispatch: Dispatcher,
+  buildContractsCache?: ContractCacheBuilder
 ): ContractKitMethods {
   const destroy = useCallback(async () => {
     await connector.close();
@@ -36,7 +42,8 @@ export function useContractKitMethods(
 
         // If the new wallet already has a specific network it's
         // using then we should go with that one.
-        const netId = await initialisedConnector.kit.web3.eth.net.getId();
+        const netId =
+          await initialisedConnector.kit.connection.web3.eth.net.getId();
         const newNetwork = networks.find((n) => netId === n.chainId);
         if (newNetwork !== network) {
           dispatch('setNetwork', network);
@@ -145,7 +152,7 @@ export function useContractKitMethods(
     return newConnector;
   }, [dispatch]);
 
-  const getConnectedKit = useCallback(async (): Promise<ContractKit> => {
+  const getConnectedKit = useCallback(async (): Promise<MiniContractKit> => {
     let initialisedConnection = connector;
     if (connector.type === WalletTypes.Unauthenticated) {
       initialisedConnection = await connect();
@@ -175,7 +182,7 @@ export function useContractKitMethods(
 
   const performActions = useCallback(
     async (
-      ...operations: ((kit: ContractKit) => unknown | Promise<unknown>)[]
+      ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
     ) => {
       const kit = await getConnectedKit();
       dispatch('setPendingActionCount', operations.length);
@@ -200,6 +207,8 @@ export function useContractKitMethods(
     [getConnectedKit, dispatch, connector]
   );
 
+  const contractsCache = useContractsCache(buildContractsCache, connector);
+
   return {
     destroy,
     initConnector,
@@ -208,6 +217,7 @@ export function useContractKitMethods(
     getConnectedKit,
     performActions,
     updateFeeCurrency,
+    contractsCache,
   };
 }
 
@@ -216,9 +226,10 @@ export interface ContractKitMethods {
   initConnector: (connector: Connector) => Promise<void>;
   updateNetwork: (network: Network) => Promise<void>;
   connect: () => Promise<Connector>;
-  getConnectedKit: () => Promise<ContractKit>;
+  getConnectedKit: () => Promise<MiniContractKit>;
   performActions: (
-    ...operations: ((kit: ContractKit) => unknown | Promise<unknown>)[]
+    ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
   ) => Promise<unknown[]>;
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
+  contractsCache?: undefined | unknown;
 }

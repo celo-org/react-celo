@@ -1,4 +1,4 @@
-import { CeloTokenContract } from '@celo/contractkit';
+import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
 import { UnauthenticatedConnector } from './connectors';
 import { localStorageKeys } from './constants';
@@ -62,7 +62,7 @@ export function contractKitReducer(
       return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
       const newConnector = action.payload;
-      const address = newConnector.kit.defaultAccount ?? null;
+      const address = newConnector.kit.connection.defaultAccount ?? null;
       if (address) {
         localStorage.setItem(localStorageKeys.lastUsedAddress, address);
       }

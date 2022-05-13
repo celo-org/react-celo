@@ -1,5 +1,6 @@
 import { trimLeading0x } from '@celo/base';
-import { newKitFromWeb3, StableToken } from '@celo/contractkit';
+import { StableToken } from '@celo/contractkit/lib/celo-tokens';
+import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import {
   AccountsProposal,
@@ -31,8 +32,7 @@ const kit = newKitFromWeb3(web3);
 const account = web3.eth.accounts.privateKeyToAccount(
   'e2d7138baa3a5600ac37984e40981591d7cf857bcadd7dc6f7d14023a17b0787'
 );
-kit.addAccount(account.privateKey);
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+kit.connection.addAccount(account.privateKey);
 const wallet = kit.getWallet()!;
 
 const defaultSummary = {

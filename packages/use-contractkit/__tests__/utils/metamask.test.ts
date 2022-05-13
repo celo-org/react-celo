@@ -1,4 +1,4 @@
-import { ContractKit, newKit } from '@celo/contractkit';
+import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 
 import { Alfajores } from '../../src';
@@ -20,7 +20,7 @@ import {
   tokenToParam,
 } from '../../src/utils/metamask';
 
-let kit: ContractKit;
+let kit: MiniContractKit;
 let CELO: GoldTokenWrapper;
 let tokens: StableTokens;
 

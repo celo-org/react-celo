@@ -1,4 +1,5 @@
-import { CeloTokenContract, ContractKit } from '@celo/contractkit';
+import { CeloTokenContract } from '@celo/contractkit/lib/base';
+import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import React from 'react';
 
 import { Priorities, WalletTypes } from './constants';
@@ -57,7 +58,7 @@ export interface WalletConnectProvider extends Provider {
  * Connects to the blockchain.
  */
 export interface Connector {
-  kit: ContractKit;
+  kit: MiniContractKit;
   type: WalletTypes;
   account: Maybe<string>;
   feeCurrency: CeloTokenContract;

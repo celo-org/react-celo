@@ -1,4 +1,5 @@
-import { CeloTokenContract, ContractKit } from '@celo/contractkit';
+import { CeloTokenContract } from '@celo/contractkit/lib/base';
+import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from './constants';
 import { useContractKitContext } from './contract-kit-provider';
@@ -6,7 +7,7 @@ import { Connector, Dapp, Maybe, Network } from './types';
 
 export interface UseContractKit {
   dapp: Dapp;
-  kit: ContractKit;
+  kit: MiniContractKit;
   walletType: WalletTypes;
   feeCurrency: CeloTokenContract;
 
@@ -29,7 +30,7 @@ export interface UseContractKit {
    * - handle multiple transactions in order
    */
   performActions: (
-    ...operations: ((kit: ContractKit) => unknown | Promise<unknown>)[]
+    ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
   ) => Promise<unknown[]>;
 
   /**
@@ -42,13 +43,15 @@ export interface UseContractKit {
   initError: Maybe<Error>;
 
   /**
-   * Gets the connected instance of ContractKit.
+   * Gets the connected instance of MiniContractKit.
    * If the user is not connected, this opens up the connection modal.
    */
-  getConnectedKit: () => Promise<ContractKit>;
+  getConnectedKit: () => Promise<MiniContractKit>;
+
+  contractsCache?: unknown;
 }
 
-export const useContractKit = (): UseContractKit => {
+export function useContractKit<CC = undefined>(): UseContractKit {
   const [
     {
       dapp,
@@ -67,6 +70,7 @@ export const useContractKit = (): UseContractKit => {
       getConnectedKit,
       performActions,
       updateFeeCurrency,
+      contractsCache,
     },
   ] = useContractKitContext();
 
@@ -78,6 +82,7 @@ export const useContractKit = (): UseContractKit => {
     networks: networks.map((net) => ({ ...net })),
     updateNetwork,
     kit: connector.kit,
+    contractsCache: contractsCache as CC,
     walletType: connector.type,
     account: connector.account,
     initialised: connector.initialised,
@@ -91,7 +96,7 @@ export const useContractKit = (): UseContractKit => {
 
     initError: connectorInitError,
   };
-};
+}
 
 interface UseContractKitInternal extends UseContractKit {
   connectionCallback: Maybe<(connector: Connector | false) => void>;

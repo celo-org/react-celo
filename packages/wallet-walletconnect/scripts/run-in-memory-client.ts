@@ -1,4 +1,4 @@
-import { newKit } from '@celo/contractkit';
+import { newKit } from '@celo/contractkit/lib/mini-kit';
 // import {
 //   // ensureLeading0x,
 //   privateKeyToPublicKey,

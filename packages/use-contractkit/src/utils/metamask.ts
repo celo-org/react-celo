@@ -1,4 +1,4 @@
-import { ContractKit, newKit } from '@celo/contractkit';
+import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 import Web3 from 'web3';
@@ -210,7 +210,7 @@ export async function addNetworksToMetamask(ethereum: Ethereum): Promise<void> {
 }
 
 export async function switchToCeloNetwork(
-  kit: ContractKit,
+  kit: MiniContractKit,
   network: Network,
   ethereum: Ethereum
 ): Promise<void> {
