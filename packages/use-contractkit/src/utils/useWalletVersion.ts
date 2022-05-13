@@ -3,7 +3,7 @@
 // import fetchWCWallets from './fetchWCWallets';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function useWalletVersion(walletId?: string): number {
+export function useWalletVersion(_walletId?: string): number {
   return 1;
 }
 

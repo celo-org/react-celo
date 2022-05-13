@@ -59,17 +59,11 @@ export default function useProviders(
   );
 
   const providers = useMemo<[providerKey: string, provider: Provider][]>(() => {
-    let _record = Object.entries(record);
-    if (search) {
-      _record = _record.filter(([providerKey, _]) =>
-        providerKey.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    return _record
+    return Object.entries(record)
       .filter(
-        ([_, provider]) =>
-          typeof window !== 'undefined' && provider.showInList()
+        ([providerKey, provider]) =>
+          provider.showInList() &&
+          (!search || providerKey.toLowerCase().includes(search.toLowerCase()))
       )
       .sort(([, a], [, b]) => sort(a, b));
   }, [record, sort, search]);

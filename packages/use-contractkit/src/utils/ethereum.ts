@@ -3,7 +3,8 @@ import type Web3 from 'web3';
 import { Ethereum } from '../global';
 import { Maybe } from '../types';
 
-const getEthereum = (): Ethereum | undefined => window.ethereum;
+const getEthereum = (): Ethereum | undefined =>
+  typeof window !== 'undefined' ? window.ethereum : undefined;
 const isEthereumPresent = (): boolean => Boolean(getEthereum());
 const isEthereumFromMetamask = (): boolean =>
   Boolean(isEthereumPresent() && window.ethereum?.isMetaMask);
