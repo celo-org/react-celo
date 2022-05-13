@@ -22,8 +22,44 @@ import {
 } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
 import { defaultProviderSort, SortingPredicate } from '../utils/sort';
+import cls from '../utils/tailwind';
 import useProviders, { walletToProvider } from '../utils/useProviders';
-import { defaultModalStyles, mobileModalStyles } from './styles';
+
+export const styles = cls({
+  overlay: isMobile
+    ? `
+      tw-fixed 
+      tw-bg-white 
+      dark:tw-bg-slate-800 
+      tw-inset-0`
+    : `
+      tw-fixed 
+      tw-bg-slate-100 
+      dark:tw-bg-slate-700 
+      tw-bg-opacity-75 
+      tw-inset-0`,
+  modal: isMobile
+    ? `
+      tw-h-screen 
+      tw-w-screen`
+    : `
+      tw-overflow-hidden
+      tw-absolute
+      tw-top-1/2
+      tw-right-auto
+      tw-bottom-auto
+      tw-left-1/2
+      tw--translate-x-1/2
+      tw--translate-y-1/2
+      tw-border-none
+      tw-bg-none
+      tw-padding-0
+      tw-rounded-lg 
+      tw-drop-shadow
+      dark:tw-drop-shadow`,
+  portal: `
+    tw-overflow-hidden`,
+});
 
 export interface ConnectModalProps {
   screens?: {
@@ -126,27 +162,22 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   const providers = useProviders(wallets, sort, search);
 
   const ProviderElement = adding && allScreens?.[adding];
-  const content = !ProviderElement ? (
-    <Placeholder />
-  ) : (
+  const content = ProviderElement ? (
     <ProviderElement
       onSubmit={onSubmit}
       provider={PROVIDERS[adding] as WalletConnectProvider}
     />
+  ) : (
+    <Placeholder />
   );
 
   return (
     <ReactModal
-      portalClassName="tw-overflow-hidden"
+      portalClassName={styles.portal}
       isOpen={!!connectionCallback}
-      // isOpen
       onRequestClose={close}
-      style={isMobile ? mobileModalStyles : defaultModalStyles}
-      overlayClassName={
-        isMobile
-          ? 'tw-fixed tw-bg-white dark:tw-bg-slate-800 tw-inset-0'
-          : 'tw-fixed tw-bg-slate-100 dark:tw-bg-slate-700 tw-bg-opacity-75 tw-inset-0'
-      }
+      className={styles.modal}
+      overlayClassName={styles.overlay}
       {...reactModalProps}
       shouldCloseOnOverlayClick={!isMobile}
       ariaHideApp={false}

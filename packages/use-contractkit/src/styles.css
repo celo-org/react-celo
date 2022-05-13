@@ -618,18 +618,9 @@ Spinner
   }
 }
 
-/*
-Connect Modal
-===========
-*/
-
-.use-ck-connect-container {
-  overflow: hidden !important;
-}
-
 @media (min-width: 900px) {
   .use-ck-connect-container {
-    min-width: 800px;
+    width: 800px;
     height: 550px;
   }
 }

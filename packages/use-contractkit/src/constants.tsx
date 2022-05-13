@@ -164,8 +164,9 @@ export const PROVIDERS: {
     ),
     icon: METAMASK,
     canConnect: () => isEthereumFromMetamask(),
-    showInList: () => true
-    listPriority: () => Priorities.Popular
+    showInList: () => true,
+    listPriority: () => Priorities.Popular,
+    installURL: isMobile
       ? 'https://metamask.app.link/dapp/' +
         window.location.href.replace(/^https?:\/\//, '')
       : 'https://metamask.app.link/',

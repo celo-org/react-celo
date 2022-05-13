@@ -11,6 +11,7 @@ const styles = cls({
     dark:tw-bg-slate-800`,
   innerContainer: `
     tw-relative
+    tw-overflow-hidden
     ${isMobile ? 'tw-h-screen' : ''}`,
   closeButton: `
     tw-absolute

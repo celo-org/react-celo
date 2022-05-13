@@ -23,8 +23,9 @@ const styles = cls({
     tw-transition
     tw-rounded-md
     focus:tw-outline-none
+    tw-scale-100
     active:tw-scale-95
-    hover:tw-bg-slate-100 
+    hover:tw-bg-slate-100
     dark:hover:tw-bg-slate-700`,
   selectedButton: `
       tw-bg-indigo-500
@@ -47,7 +48,8 @@ const styles = cls({
     tw-w-full`,
   name: `
     tw-font-medium 
-    tw-text-sm 
+    tw-text-sm
+    tw-antialiased
     dark:tw-text-slate-300`,
   selectedName: `
     tw-text-white
