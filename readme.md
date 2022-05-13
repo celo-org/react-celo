@@ -41,7 +41,7 @@ You can use any `@celo/contractkit` version at least as recent as `1.5.1` includ
 
 ### Wrap your application with ContractKitProvider
 
-use-contractkit uses [unstated-next](https://github.com/jamiebuilds/unstated-next) under the hood to inject state throughout your application. unstated-next is built on top of the React Context API so you need to make sure your application is wrapped with the provider before usage.
+use-contractkit uses [React's Context.Provider](https://reactjs.org/docs/context.html#contextprovider) under the hood to inject state throughout your application. You need to make sure your application is wrapped with the provider in order to be able to access all the goodies use-contractkit provides.
 
 ```javascript
 import { ContractKitProvider } from '@celo-tools/use-contractkit';
@@ -91,6 +91,9 @@ use-contractkit provides a list of default wallets (CeloExtensionWallet, Injecte
 
       // This option hides all default wallets
       hideFromDefaults: true,
+
+      // This option toggles on and off the searchbar
+      searchable: true,
     },
   }}
 >

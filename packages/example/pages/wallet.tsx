@@ -471,9 +471,9 @@ export default function Wallet(): React.ReactElement {
         <div className={error ? '' : 'hidden'}>
           <span className="text-red-500">{error}</span>
         </div>
-        <div className="w-64 md:w-96 space-y-4 text-gray-700">
+        <div className="w-64 md:w-96 space-y-4 text-slate-700">
           <div className="mb-4">
-            <div className="text-lg font-bold mb-2 text-gray-900">
+            <div className="text-lg font-bold mb-2 text-slate-900">
               Account summary
             </div>
             <div className="space-y-2">
@@ -496,7 +496,9 @@ export default function Wallet(): React.ReactElement {
             </div>
           </div>
           <div>
-            <div className="text-lg font-bold mb-2 text-gray-900">Balances</div>
+            <div className="text-lg font-bold mb-2 text-slate-900">
+              Balances
+            </div>
             <div className="space-y-2">
               <div>CELO: {Web3.utils.fromWei(summary.celo.toFixed())}</div>
               <div>cUSD: {Web3.utils.fromWei(summary.cusd.toFixed())}</div>

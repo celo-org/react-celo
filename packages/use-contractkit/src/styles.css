@@ -538,14 +538,17 @@ Scrollbar overrides
 
 .use-ck {
   --scrollbarBG: rgba(255, 255, 255, 0);
-  --thumbBG: #dddddd;
+  --thumbBG: rgb(243, 244, 246);
   scrollbar-width: thin;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
 }
 
+.tw-dark .use-ck,
+.dark .use-ck {
+  --thumbBG: rgb(55, 65, 81);
+}
 .use-ck ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 4px;
   background-color: var(--scrollbarBG);
 }
 .use-ck ::-webkit-scrollbar-track {
@@ -580,14 +583,44 @@ Number Input spinner overrides
 }
 
 /*
-Connect Modal
-===========
+Spinner
 */
+.use-ck .use-ck-spinner {
+  animation: use-ck-spinner-rotate 2s linear infinite;
+  width: 50px;
+  height: 50px;
+}
+.use-ck .use-ck-spinner .use-ck-spinner-path {
+  stroke-linecap: round;
+  animation: use-ck-spinner-dash 1.5s ease-in-out infinite;
+}
 
-.use-ck-connect-container {
-  max-width: calc(min(90vw, 28rem));
-  max-height: calc(min(80vh, 35rem));
-  overflow: auto;
+@keyframes use-ck-spinner-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes use-ck-spinner-dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+@media (min-width: 900px) {
+  .use-ck-connect-container {
+    width: 800px;
+    height: 550px;
+  }
 }
 
 @tailwind components;

@@ -18,7 +18,7 @@ import {
 import { BigNumber } from 'bignumber.js';
 
 import { localStorageKeys, WalletTypes } from '../constants';
-import { Connector, Network } from '../types';
+import { Connector, Maybe, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
 import { clearPreviousConfig } from '../utils/helpers';
 import localStorage from '../utils/localStorage';
@@ -36,14 +36,21 @@ export class UnauthenticatedConnector implements Connector {
   public initialised = true;
   public type = WalletTypes.Unauthenticated;
   public kit: MiniContractKit;
-  public account: string | null = null;
+  public account: Maybe<string> = null;
   public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
   constructor(n: Network) {
     this.kit = newKit(n.rpcUrl);
   }
 
+  persist() {
+    localStorage.removeItem(localStorageKeys.lastUsedWalletType);
+    localStorage.removeItem(localStorageKeys.lastUsedWalletArguments);
+    localStorage.removeItem(localStorageKeys.lastUsedNetwork);
+  }
+
   initialise(): this {
     this.initialised = true;
+    this.persist();
     return this;
   }
 
@@ -61,34 +68,35 @@ export class PrivateKeyConnector implements Connector {
   public initialised = true;
   public type = WalletTypes.PrivateKey;
   public kit: MiniContractKit;
-  public account: string | null = null;
+  public account: Maybe<string> = null;
 
   constructor(
-    n: Network,
-    privateKey: string,
+    private network: Network,
+    private privateKey: string,
     public feeCurrency: CeloTokenContract
   ) {
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletType,
-      WalletTypes.PrivateKey
-    );
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([privateKey])
-    );
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, n.name);
-
     const wallet = new LocalWallet();
     wallet.addAccount(privateKey);
 
-    this.kit = newKit(n.rpcUrl, wallet);
+    this.kit = newKit(network.rpcUrl, wallet);
     this.kit.connection.defaultAccount = wallet.getAccounts()[0];
     this.account = this.kit.connection.defaultAccount ?? null;
+  }
+
+  persist() {
+    persist({
+      walletType: WalletTypes.PrivateKey,
+      network: this.network,
+      options: [this.privateKey],
+    });
   }
 
   async initialise(): Promise<this> {
     await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
+
+    this.persist();
+
     return this;
   }
 
@@ -108,7 +116,7 @@ export class LedgerConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.Ledger;
   public kit: MiniContractKit;
-  public account: string | null = null;
+  public account: Maybe<string> = null;
 
   constructor(
     private network: Network,
@@ -127,6 +135,14 @@ export class LedgerConnector implements Connector {
     this.kit = newKit(network.rpcUrl);
   }
 
+  persist() {
+    persist({
+      walletType: WalletTypes.Ledger,
+      network: this.network,
+      options: [this.index],
+    });
+  }
+
   async initialise(): Promise<this> {
     const { default: TransportUSB } = await import(
       '@ledgerhq/hw-transport-webusb'
@@ -141,6 +157,9 @@ export class LedgerConnector implements Connector {
     this.initialised = true;
     this.account = this.kit.connection.defaultAccount ?? null;
     await this.updateFeeCurrency(this.feeCurrency);
+
+    this.persist();
+
     return this;
   }
 
@@ -168,9 +187,9 @@ export class InjectedConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: MiniContractKit;
-  public account: string | null = null;
+  public account: Maybe<string> = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
-  private onAddressChangeCallback?: (address: string | null) => void;
+  private onAddressChangeCallback?: (address: Maybe<string>) => void;
   private network: Network;
 
   constructor(
@@ -179,14 +198,15 @@ export class InjectedConnector implements Connector {
     defaultType: WalletTypes = WalletTypes.Injected
   ) {
     this.type = defaultType;
-    localStorage.setItem(localStorageKeys.lastUsedWalletType, defaultType);
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([])
-    );
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
     this.kit = newKit(network.rpcUrl);
     this.network = network;
+  }
+
+  persist() {
+    persist({
+      walletType: this.type,
+      network: this.network,
+    });
   }
 
   async initialise(): Promise<this> {
@@ -211,6 +231,8 @@ export class InjectedConnector implements Connector {
     this.kit.connection.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
     this.initialised = true;
+
+    this.persist();
 
     return this;
   }
@@ -242,7 +264,7 @@ export class InjectedConnector implements Connector {
     this.onNetworkChangeCallback = callback;
   }
 
-  onAddressChange(callback: (address: string | null) => void): void {
+  onAddressChange(callback: (address: Maybe<string>) => void): void {
     this.onAddressChangeCallback = callback;
   }
 
@@ -269,20 +291,19 @@ export class CeloExtensionWalletConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: MiniContractKit;
-  public account: string | null = null;
+  public account: Maybe<string> = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
 
-  constructor(network: Network, public feeCurrency: CeloTokenContract) {
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletType,
-      WalletTypes.CeloExtensionWallet
-    );
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([feeCurrency])
-    );
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+  constructor(private network: Network, public feeCurrency: CeloTokenContract) {
     this.kit = newKit(network.rpcUrl);
+  }
+
+  persist() {
+    persist({
+      walletType: WalletTypes.CeloExtensionWallet,
+      network: this.network,
+      options: [this.feeCurrency],
+    });
   }
 
   async initialise(): Promise<this> {
@@ -317,6 +338,8 @@ export class CeloExtensionWalletConnector implements Connector {
 
     this.initialised = true;
 
+    this.persist();
+
     return this;
   }
 
@@ -338,30 +361,22 @@ export class WalletConnectConnector implements Connector {
   public initialised = false;
   public type = WalletTypes.WalletConnect;
   public kit: MiniContractKit;
-  public account: string | null = null;
+  public account: Maybe<string> = null;
 
   private onUriCallback?: (uri: string) => void;
+  private onConnectCallback?: (account: string) => void;
   private onCloseCallback?: () => void;
 
   constructor(
     readonly network: Network,
     public feeCurrency: CeloTokenContract,
     // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
-    options: WalletConnectWalletOptionsV1,
+    readonly options: WalletConnectWalletOptionsV1,
     readonly autoOpen = false,
     public getDeeplinkUrl?: (uri: string) => string,
-    readonly version?: number
+    readonly version?: number,
+    readonly walletId?: string
   ) {
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletType,
-      WalletTypes.WalletConnect
-    );
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([options])
-    );
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
-
     const wallet = new WalletConnectWalletV1(options);
     // Uncomment with WCV2 support
     // version == 1
@@ -371,8 +386,21 @@ export class WalletConnectConnector implements Connector {
     this.version = version;
   }
 
+  persist() {
+    persist({
+      walletType: WalletTypes.WalletConnect,
+      walletId: this.walletId,
+      network: this.network,
+      options: [this.options],
+    });
+  }
+
   onUri(callback: (uri: string) => void): void {
     this.onUriCallback = callback;
+  }
+
+  onConnect(callback: (account: string) => void): void {
+    this.onConnectCallback = callback;
   }
 
   onClose(callback: () => void): void {
@@ -386,6 +414,12 @@ export class WalletConnectConnector implements Connector {
       // Uncomment with WCV2 support
       // wallet.onPairingDeleted = () => this.onCloseCallback?.();
       wallet.onSessionDeleted = () => this.onCloseCallback?.();
+    }
+
+    if (this.onConnectCallback) {
+      wallet.onSessionCreated = (error, session) => {
+        this.onConnectCallback?.(session.params as string);
+      };
     }
 
     const uri = await wallet.getUri();
@@ -406,6 +440,8 @@ export class WalletConnectConnector implements Connector {
 
     await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
+
+    this.persist();
 
     return this;
   }
@@ -430,10 +466,10 @@ export class WalletConnectConnector implements Connector {
 
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
-  close(): Promise<void> {
+  close(message?: string): Promise<void> {
     clearPreviousConfig();
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
-    return wallet.close();
+    return wallet.close(message);
   }
 }
 
@@ -451,4 +487,30 @@ async function updateFeeCurrency(
       : await this.kit.registry.addressFor(feeContract);
 
   this.kit.connection.defaultFeeCurrency = address;
+}
+
+function persist({
+  walletType,
+  walletId,
+  options = [],
+  network,
+}: {
+  walletType?: WalletTypes;
+  walletId?: string;
+  options?: unknown[];
+  network?: Network;
+}): void {
+  if (walletType) {
+    localStorage.setItem(localStorageKeys.lastUsedWalletType, walletType);
+  }
+  if (walletId) {
+    localStorage.setItem(localStorageKeys.lastUsedWalletId, walletId);
+  }
+  if (network) {
+    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+  }
+  localStorage.setItem(
+    localStorageKeys.lastUsedWalletArguments,
+    JSON.stringify(options)
+  );
 }

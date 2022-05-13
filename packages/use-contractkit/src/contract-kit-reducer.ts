@@ -2,7 +2,7 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
 import { UnauthenticatedConnector } from './connectors';
 import { localStorageKeys } from './constants';
-import { Connector, Dapp, Network } from './types';
+import { Connector, Dapp, Maybe, Network } from './types';
 import { clearPreviousConfig } from './utils/helpers';
 import localStorage from './utils/localStorage';
 
@@ -106,15 +106,15 @@ export function contractKitReducer(
 
 export interface ReducerState {
   connector: Connector;
-  connectorInitError: Error | null;
+  connectorInitError: Maybe<Error>;
   dapp: Dapp;
   network: Network;
   networks: Network[];
   pendingActionCount: number;
-  address: string | null;
+  address: Maybe<string>;
   feeCurrency: CeloTokenContract;
 
-  connectionCallback: ((connector: Connector | false) => void) | null;
+  connectionCallback: Maybe<(connector: Connector | false) => void>;
 }
 
 // This creates `set<field>` actions out of the possible fields in ReducerState

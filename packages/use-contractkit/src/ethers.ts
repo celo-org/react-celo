@@ -2,6 +2,7 @@ import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { ExternalProvider } from '@ethersproject/providers/lib/web3-provider';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { Maybe } from './types';
 import { useContractKit } from './use-contractkit';
 import { useIsMounted } from './utils/useIsMounted';
 
@@ -45,13 +46,13 @@ export const useGetConnectedSigner = (): (() => Promise<JsonRpcSigner>) => {
 };
 
 export const useLazyConnectedSigner = (): {
-  signer: JsonRpcSigner | null;
-  address: string | null;
+  signer: Maybe<JsonRpcSigner>;
+  address: Maybe<string>;
   getConnectedSigner: () => Promise<JsonRpcSigner>;
 } => {
   const isMountedRef = useIsMounted();
   const getConnectedSigner = useGetConnectedSigner();
-  const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
+  const [signer, setSigner] = useState<Maybe<JsonRpcSigner>>(null);
   const getConnectedSignerCb = useCallback(async () => {
     const theSigner = await getConnectedSigner();
     if (isMountedRef.current) {
@@ -66,9 +67,9 @@ export const useLazyConnectedSigner = (): {
   };
 };
 
-export const useConnectedSigner = (): JsonRpcSigner | null => {
+export const useConnectedSigner = (): Maybe<JsonRpcSigner> => {
   const getConnectedSigner = useGetConnectedSigner();
-  const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
+  const [signer, setSigner] = useState<Maybe<JsonRpcSigner>>(null);
   useEffect(() => {
     let stale;
     void (async () => {

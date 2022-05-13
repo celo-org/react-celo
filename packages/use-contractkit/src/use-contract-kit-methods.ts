@@ -86,13 +86,21 @@ export function useContractKitMethods(
         initialisedConnector.onAddressChange?.((address) => {
           dispatch('setAddress', address);
         });
-        return initialisedConnector;
       } catch (e) {
+        if (typeof e === 'symbol') {
+          console.info(
+            '[use-contractkit] Ignoring error initializing connector with reason',
+            e.description
+          );
+          throw e;
+        }
+
         console.error(
           '[use-contractkit] Error initializing connector',
           nextConnector.type,
           e
         );
+
         const error =
           e instanceof Error ? e : new Error('Failed to initialise connector');
         dispatch('setConnectorInitError', error);
@@ -215,7 +223,7 @@ export function useContractKitMethods(
 
 export interface ContractKitMethods {
   destroy: () => Promise<void>;
-  initConnector: (connector: Connector) => Promise<Connector>;
+  initConnector: (connector: Connector) => Promise<void>;
   updateNetwork: (network: Network) => Promise<void>;
   connect: () => Promise<Connector>;
   getConnectedKit: () => Promise<MiniContractKit>;

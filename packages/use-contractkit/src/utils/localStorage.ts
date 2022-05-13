@@ -1,10 +1,9 @@
-class MockedLocalStorage {
+class MockedLocalStorage implements Storage {
   private storage = new Map<string, string>();
 
   getItem(key: string): string | null {
-    const _key = String(key);
-    if (this.storage.has(_key)) {
-      this.storage.get(_key) as string;
+    if (this.storage.has(key)) {
+      this.storage.get(key) as string;
     }
     return null;
   }
@@ -25,23 +24,23 @@ class MockedLocalStorage {
   }
 
   setItem(key: string, value: string): void {
-    this.storage.set(String(key), String(value));
+    this.storage.set(key, value);
   }
 
   removeItem(key: string): void {
-    this.storage.delete(String(key));
+    this.storage.delete(key);
   }
 
   clear(): void {
     this.storage.clear();
   }
 
-  get length() {
+  get length(): number {
     return this.storage.size;
   }
 }
 
-const localStorage: Storage =
+const localStorage =
   typeof window === 'undefined'
     ? new MockedLocalStorage()
     : window.localStorage;

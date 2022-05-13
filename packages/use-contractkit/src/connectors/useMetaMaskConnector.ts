@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 
-import { Connector, Dapp, Network } from '../types';
+import { Connector, Dapp, Maybe, Network } from '../types';
 import { useContractKitInternal } from '../use-contractkit';
 import { CeloTokens } from '../utils/metamask';
 import { InjectedConnector, MetaMaskConnector } from './connectors';
@@ -48,7 +48,7 @@ export function useInjectedConnector(
 }
 
 export interface UseInjectedConnector {
-  error: Error | null;
+  error: Maybe<Error>;
   network: Network;
   dapp: Dapp;
   getTokens: () => Promise<CeloTokens>;

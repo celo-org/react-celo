@@ -1,9 +1,46 @@
 import React, { ReactNode } from 'react';
-import { TailSpin } from 'react-loader-spinner';
 import ReactModal from 'react-modal';
 
+import Spinner from '../components/spinner';
 import { useContractKitInternal } from '../use-contractkit';
-import { defaultModalStyles } from './styles';
+import cls from '../utils/tailwind';
+import { styles as modalStyles } from './connect';
+
+const styles = cls({
+  ...modalStyles,
+  actionModalContainer: `
+    tw-px-5 
+    tw-py-6`,
+  actionTitle: `
+    tw-text-xl 
+    tw-text-center 
+    tw-text-slate-800 dark:
+    tw-text-slate-200 
+    tw-mb-4`,
+  dappName: `
+      tw-text-indigo-500`,
+  actionDescription: `
+    tw-text-slate-900
+    tw-text-sm
+    dark:tw-text-slate-300
+    tw-text-sm 
+    tw-text-center`,
+  actionSpinnerContainer: `
+    tw-my-8 
+    tw-flex 
+    tw-items-center 
+    tw-justify-center`,
+  contentContainer: `
+    tw-max-h-screen
+  `,
+  content: `
+    tw-relative 
+    tw-bg-white 
+    dark:tw-bg-slate-800 
+    tw-w-80 
+    md:tw-w-96
+  `,
+});
 
 export interface ActionModalProps {
   dappName: string;
@@ -15,19 +52,17 @@ const defaultActionModalComponent = ({
   pendingActionCount,
 }: ActionModalProps) => {
   return (
-    <div className="tw-px-5 tw-py-6">
-      <div className="tw-text-xl tw-text-center tw-text-gray-800 dark:tw-text-gray-200 tw-mb-4">
-        Check your wallet
-      </div>
-      <p className="tw-text-gray-700 dark:tw-text-gray-400 tw-text-sm tw-text-center">
-        {dappName} is trying to{' '}
+    <div className={styles.actionModalContainer}>
+      <div className={styles.actionTitle}>Check your wallet</div>
+      <p className={styles.actionDescription}>
+        <strong>{dappName}</strong> is trying to{' '}
         {pendingActionCount > 1
           ? `perform ${pendingActionCount} actions`
           : 'perform an action'}
         . Please check your wallet to confirm.
       </p>
-      <div className="tw-my-8 tw-flex tw-items-center tw-justify-center">
-        <TailSpin color="#666666" height="60px" width="60px" />
+      <div className={styles.actionSpinnerContainer}>
+        <Spinner />
       </div>
     </div>
   );
@@ -46,18 +81,18 @@ export const ActionModal: React.FC<Props> = ({
 
   return (
     <ReactModal
+      portalClassName={styles.portal}
       isOpen={pendingActionCount > 0}
       ariaHideApp={false}
       {...(reactModalProps
         ? reactModalProps
         : {
-            style: defaultModalStyles,
-            overlayClassName:
-              'tw-fixed tw-bg-gray-100 dark:tw-bg-gray-700 tw-bg-opacity-75 tw-inset-0',
+            className: styles.modal,
+            overlayClassName: styles.overlay,
           })}
     >
-      <div className="use-ck tw-max-h-screen">
-        <div className="tw-relative tw-bg-white dark:tw-bg-gray-800 tw-w-80 md:tw-w-96">
+      <div className={`use-ck ${styles.contentContainer}`}>
+        <div className={styles.content}>
           {render({ dappName: dapp.name, pendingActionCount })}
         </div>
       </div>

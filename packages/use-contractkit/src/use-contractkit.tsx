@@ -3,7 +3,7 @@ import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from './constants';
 import { useContractKitContext } from './contract-kit-provider';
-import { Connector, Dapp, Network } from './types';
+import { Connector, Dapp, Maybe, Network } from './types';
 
 export interface UseContractKit {
   dapp: Dapp;
@@ -14,9 +14,9 @@ export interface UseContractKit {
   /**
    * Name of the account.
    */
-  account: string | null;
+  account: Maybe<string>;
 
-  address: string | null;
+  address: Maybe<string>;
   connect: () => Promise<Connector>;
   destroy: () => Promise<void>;
   network: Network;
@@ -40,7 +40,7 @@ export interface UseContractKit {
   /**
    * Initialisation error, if applicable.
    */
-  initError: Error | null;
+  initError: Maybe<Error>;
 
   /**
    * Gets the connected instance of MiniContractKit.
@@ -99,8 +99,8 @@ export function useContractKit<CC = undefined>(): UseContractKit {
 }
 
 interface UseContractKitInternal extends UseContractKit {
-  connectionCallback: ((connector: Connector | false) => void) | null;
-  initConnector: (connector: Connector) => Promise<Connector>;
+  connectionCallback: Maybe<(connector: Connector | false) => void>;
+  initConnector: (connector: Connector) => Promise<void>;
   pendingActionCount: number;
 }
 

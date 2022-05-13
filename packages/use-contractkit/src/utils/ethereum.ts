@@ -1,8 +1,10 @@
 import type Web3 from 'web3';
 
 import { Ethereum } from '../global';
+import { Maybe } from '../types';
 
-const getEthereum = (): Ethereum | undefined => window.ethereum;
+const getEthereum = (): Ethereum | undefined =>
+  typeof window !== 'undefined' ? window.ethereum : undefined;
 const isEthereumPresent = (): boolean => Boolean(getEthereum());
 const isEthereumFromMetamask = (): boolean =>
   Boolean(isEthereumPresent() && window.ethereum?.isMetaMask);
@@ -13,7 +15,7 @@ export interface InjectedEthereum {
   isMetaMask: boolean;
 }
 
-const getInjectedEthereum = async (): Promise<InjectedEthereum | null> => {
+const getInjectedEthereum = async (): Promise<Maybe<InjectedEthereum>> => {
   const { default: Web3 } = await import('web3');
 
   const ethereum = getEthereum();

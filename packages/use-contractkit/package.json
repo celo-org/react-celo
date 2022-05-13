@@ -3,6 +3,7 @@
   "version": "3.1.1-dev",
   "private": false,
   "scripts": {
+    "prebuild": "mkdir -p lib && node ./scripts/json-to-ts.js package.json lib",
     "build": "tsc -b && yarn run build-styles",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -32,16 +33,14 @@
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "isomorphic-fetch": "^3.0.0",
-    "qrcode.react": "^1.0.1",
+    "qrcode": "^1.5.0",
     "react-device-detect": "^2.1.2",
-    "react-loader-spinner": "^5.0.10",
-    "react-modal": "^3.14.4",
-    "unstated-next": "^1.1.0"
+    "react-modal": "^3.14.4"
   },
   "devDependencies": {
     "@types/isomorphic-fetch": "^0.0.35",
     "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
-    "@types/qrcode.react": "^1.0.2",
+    "@types/qrcode": "^1.4.2",
     "@types/react": "^17.0.38",
     "@types/react-modal": "^3.13.1",
     "jest-environment-jsdom": "^28.1.0",

@@ -2,7 +2,7 @@ import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 import { localStorageKeys, WalletTypes } from '../constants';
-import { Connector, Network } from '../types';
+import { Connector, Maybe, Network } from '../types';
 import localStorage from './localStorage';
 
 export const loadPreviousConfig = (
@@ -10,13 +10,13 @@ export const loadPreviousConfig = (
   defaultFeeCurrencyProp: CeloTokenContract,
   networks: Network[]
 ): {
-  address: string | null;
-  network: Network | null;
+  address: Maybe<string>;
+  network: Maybe<Network>;
   connector: Connector;
-  feeCurrency: CeloTokenContract | null;
+  feeCurrency: Maybe<CeloTokenContract>;
 } => {
-  let lastUsedNetworkName = defaultNetworkProp.name;
-  let lastUsedAddress: string | null = null;
+  let lastUsedNetworkName: Maybe<string> = null;
+  let lastUsedAddress: Maybe<string> = null;
   let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
   let lastUsedWalletArguments: unknown[] = [];
   let lastUsedFeeCurrency: CeloContract = defaultFeeCurrencyProp;
@@ -90,12 +90,14 @@ export const loadPreviousConfig = (
 };
 
 export function clearPreviousConfig(): void {
-  Object.values(localStorageKeys).forEach((val) =>
-    localStorage.removeItem(val)
-  );
+  Object.values(localStorageKeys).forEach((val) => {
+    if (val === localStorageKeys.lastUsedWalletId) return;
+    if (val === localStorageKeys.lastUsedWalletType) return;
+    localStorage.removeItem(val);
+  });
 }
 
-export function isValidFeeCurrency(currency: string | null): boolean {
+export function isValidFeeCurrency(currency: Maybe<string>): boolean {
   switch (currency) {
     case CeloContract.GoldToken:
     case CeloContract.StableToken:
