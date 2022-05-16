@@ -13,6 +13,7 @@ export const defaultScreens = {
   [SupportedProviders.Ledger]: Ledger,
   [SupportedProviders.CeloWallet]: WalletConnect,
   [SupportedProviders.CeloDance]: WalletConnect,
+  [SupportedProviders.NodeWallet]: WalletConnect,
   [SupportedProviders.CeloTerminal]: WalletConnect,
   [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.Steakwallet]: WalletConnect,

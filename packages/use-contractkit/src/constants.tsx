@@ -20,6 +20,7 @@ import {
   STEAKWALLET,
   VALORA,
   WALLETCONNECT,
+  NODEWALLET
 } from './walletIcons';
 
 export const localStorageKeys = {
@@ -43,6 +44,7 @@ export enum SupportedProviders {
   Valora = 'Valora',
   WalletConnect = 'WalletConnect',
   Steakwallet = 'Steakwallet',
+  NodeWallet = 'NodeWallet',
 }
 export enum WalletTypes {
   Valora = 'Valora',
@@ -56,6 +58,7 @@ export enum WalletTypes {
   Injected = 'Injected',
   PrivateKey = 'PrivateKey',
   Unauthenticated = 'Unauthenticated',
+  NodeWallet = 'NodeWallet',
 }
 
 export enum Priorities {
@@ -69,6 +72,7 @@ export const WalletIds = {
   CeloWallet:
     '36d854b702817e228d5c853c528d7bdb46f4bb041d255f67b82eb47111e5676b',
   CeloDance: 'TODO',
+  NodeWallet: 'TODO',
   CeloTerminal:
     '8f8506b7f191a8ab95a8295fc8ca147aa152b1358bee4283d6ad2468d97e0ca4',
   Steakwallet:
@@ -224,6 +228,18 @@ export const PROVIDERS: {
     installURL: 'https://steakwallet.fi/',
     walletConnectId: WalletIds.Steakwallet,
     getDeepLink: (uri: string) => `steakwallet://wallet/wc?uri=${uri}`,
+  },
+  [SupportedProviders.NodeWallet]: {
+    name: SupportedProviders.NodeWallet,
+    description: 'Earn interest on stablecoins, send, swap and connect your bank account.',
+    type: WalletTypes.WalletConnect,
+    icon: NODEWALLET,
+    canConnect: () => true,
+    showInList: () => true,
+    listPriority: () => Priorities.Recent,
+    installURL: 'https://www.nodewallet.xyz/',
+    walletConnectId: WalletIds.NodeWallet,
+    getDeepLink: (uri: string) => `nodewallet://wallet/wc?uri=${uri}`,
   },
 };
 

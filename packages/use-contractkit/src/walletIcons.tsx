@@ -526,3 +526,6 @@ export const CELO_DANCE: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 export const STEAKWALLET =
   'https://res.cloudinary.com/helpkit/image/upload/v1637141229/steakwallet_logo_dark_6703a6b026.png';
+
+  export const NODEWALLET =
+  'https://res.cloudinary.com/areevo/image/upload/v1652689140/node-wallet-icon_ybvwhp.png';
