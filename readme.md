@@ -36,10 +36,10 @@ You can use any `@celo/contractkit` version at least as recent as `1.5.1` includ
 | [Ledger](https://www.ledger.com/)                                                          |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [WalletConnect](https://walletconnect.org/)                                                |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Celo Extension Wallet (Metamask fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
-| [Valora](https://valoraapp.com/)                                                           |                    |                    |                    |                    |
+| [Valora](https://valoraapp.com/)                                                           |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Celo Wallet](https://celowallet.app/)                                                     |                    |                    |                    |                    |
 | [Celo Terminal](https://celoterminal.com/)                                                 |                    |                    |                    |                    |
-| [MetaMask](https://metamask.io/)                                                           |                    |                    |                    |                    |
+| [MetaMask](https://metamask.io/)                                                           | :white_check_mark: |                    |                    |                    |
 | [Celo Dance](https://celo.dance/)                                                          |                    |                    |                    |                    |
 | [Steakwallet](https://steakwallet.fi/)                                                     |                    |                    |                    |                    |
 
