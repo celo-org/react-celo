@@ -16,7 +16,7 @@ interface Summary {
   address: string;
   wallet: string;
   celo: BigNumber;
-  balances: { symbol: StableToken; value: string }[];
+  balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
 }
 
 const defaultSummary: Summary = {
@@ -386,7 +386,10 @@ export default function Home(): React.ReactElement {
                     </div>
                     {summary.balances.map((token) => (
                       <div key={token.symbol}>
-                        {token.symbol}: {token.value}
+                        {token.symbol}:{' '}
+                        {token.value
+                          ? Web3.utils.fromWei(token.value.toFixed())
+                          : token.error}
                       </div>
                     ))}
                   </div>
@@ -425,16 +428,16 @@ async function getBalances(
 ) {
   return Promise.all(
     stableTokens.map(async (stable) => {
-      let value;
+      let value, error;
       if (stable.contract) {
-        const balance = await stable.contract.balanceOf(address);
-        value = Web3.utils.fromWei(balance.toFixed());
+        value = await stable.contract.balanceOf(address);
       } else {
-        value = 'not deployed in network';
+        error = 'not deployed in network';
       }
       return {
         symbol: stable.symbol,
         value: value,
+        error: error,
       };
     })
   );
