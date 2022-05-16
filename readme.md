@@ -30,12 +30,18 @@ You can use any `@celo/contractkit` version at least as recent as `1.5.1` includ
 
 ## Supported wallets
 
-| Wallet                                                                                     |  sendTransaction   |    signTransaction | signTypedData      | signPersonal       |
-| ------------------------------------------------------------------------------------------ | :----------------: | -----------------: | ------------------ | ------------------ |
+| Wallet                                                                                     | sendTransaction    | signTransaction    | signTypedData      | signPersonal       |
+| ------------------------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
 | Plaintext private key                                                                      |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Ledger](https://www.ledger.com/)                                                          |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [WalletConnect](https://walletconnect.org/)                                                |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Celo Extension Wallet (Metamask fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
+| [Valora](https://valoraapp.com/)                                                           |                    |                    |                    |                    |
+| [Celo Wallet](https://celowallet.app/)                                                     |                    |                    |                    |                    |
+| [Celo Terminal](https://celoterminal.com/)                                                 |                    |                    |                    |                    |
+| [MetaMask](https://metamask.io/)                                                           |                    |                    |                    |                    |
+| [Celo Dance](https://celo.dance/)                                                          |                    |                    |                    |                    |
+| [Steakwallet](https://steakwallet.fi/)                                                     |                    |                    |                    |                    |
 
 ## Basic Usage
 
