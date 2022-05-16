@@ -16,7 +16,7 @@ interface Summary {
   address: string;
   wallet: string;
   celo: BigNumber;
-  balances: { symbol: string; value: BigNumber }[];
+  balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
 }
 
 const defaultSummary: Summary = {
@@ -33,7 +33,7 @@ const feeTokenMap: FeeTokenMap = {
   [CeloContract.GoldToken]: 'Celo',
   [CeloContract.StableToken]: 'cUSD',
   [CeloContract.StableTokenEUR]: 'cEUR',
-  [CeloContract.StableTokenBRL]: 'cBRL',
+  [CeloContract.StableTokenBRL]: 'cREAL',
 };
 
 function truncateAddress(address: string) {
@@ -70,9 +70,16 @@ export default function Home(): React.ReactElement {
       kit.contracts.getGoldToken(),
       Promise.all(
         Object.values(StableToken).map(async (stable) => {
+          let contract;
+          try {
+            contract = await kit.contracts.getStableToken(stable);
+          } catch (e) {
+            contract = null;
+            console.error(e);
+          }
           return {
             symbol: stable,
-            contract: await kit.contracts.getStableToken(stable),
+            contract: contract,
           };
         })
       ),
@@ -400,7 +407,9 @@ export default function Home(): React.ReactElement {
                     {summary.balances.map((token) => (
                       <div key={token.symbol}>
                         {token.symbol}:{' '}
-                        {Web3.utils.fromWei(token.value.toFixed())}
+                        {token.value
+                          ? Web3.utils.fromWei(token.value.toFixed())
+                          : token.error}
                       </div>
                     ))}
                   </div>
@@ -434,13 +443,22 @@ export default function Home(): React.ReactElement {
   );
 }
 async function getBalances(
-  stableTokens: { symbol: StableToken; contract: StableTokenWrapper }[],
+  stableTokens: { symbol: StableToken; contract: StableTokenWrapper | null }[],
   address: string
 ) {
   return Promise.all(
-    stableTokens.map(async (stable) => ({
-      symbol: stable.symbol,
-      value: await stable.contract.balanceOf(address),
-    }))
+    stableTokens.map(async (stable) => {
+      let value, error;
+      if (stable.contract) {
+        value = await stable.contract.balanceOf(address);
+      } else {
+        error = 'not deployed in network';
+      }
+      return {
+        symbol: stable.symbol,
+        value: value,
+        error: error,
+      };
+    })
   );
 }
