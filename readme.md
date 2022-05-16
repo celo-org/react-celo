@@ -123,9 +123,8 @@ You can also add new custom wallets that don't exist in the registry or aren't i
           homepage: 'https://example.com',
           chains: ['eip:4220'],
           // IMPORTANT
-          // This is the version of WC. If more than one version is provided
-          // use-contractkit will use the highest one
-          versions: ['1', '2'],
+          // This is the version of WC. We only support version 1 at the moment.
+          versions: ['1'],
           logos: {
             sm: 'https://via.placeholder.com/40/000000/FFFFFF',
             md: 'https://via.placeholder.com/80/000000/FFFFFF',
