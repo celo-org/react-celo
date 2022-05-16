@@ -32,8 +32,8 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
           },
         }}
       />
-      <div suppressHydrationWarning>
-        {typeof window === 'undefined' ? null : <Component {...pageProps} />}
+      <div>
+        <Component {...pageProps} />
       </div>
     </ContractKitProvider>
   );
