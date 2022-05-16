@@ -84,8 +84,8 @@ use-contractkit provides a list of default wallets (CeloExtensionWallet, Injecte
       // This option hides specific wallets from the default list
       hideFromDefaults: [
         SupportedProvider.MetaMask,
-        SupportedProvider.Private key,
-        SupportedProvider.Celo Extension Wallet,
+        SupportedProvider.PrivateKey,
+        SupportedProvider.CeloExtensionWallet,
         SupportedProvider.Valora,
       ],
 
