@@ -336,10 +336,27 @@ use-contrackit uses Tailwind for styling, to use the modal in dark mode simply a
 
 ## Development
 
-To run use-contractkit locally, simply clone this repository and run:
+To develop locally and see your changes reflected immediately, you can run `use-contractkit` and the `example` app in parallel.
 
-- `yarn`
-- `yarn dev`
+The steps for that are:
+
+1. Clone the repo
+
+2. Run `yarn` on the root of the project
+
+3. Run `use-contractkit`:
+
+```sh
+cd packages/use-contractkit
+yarn dev
+```
+
+4. Lastly, run the `example` app:
+
+```sh
+cd packages/example
+yarn dev
+```
 
 A hot reloading server should come up on `localhost:3000`, it's the exact same as what's at [use-contractkit-c-labs.vercel.app](https://use-contractkit-c-labs.vercel.app).
 
