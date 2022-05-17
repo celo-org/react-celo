@@ -29,16 +29,17 @@ yarn add @celo-tools/use-contractkit @celo/contractkit
 You can use any `@celo/contractkit` version at least as recent as `1.5.1` including `2.0`.
 
 ## Supported wallets
-- Plaintext private key                                                                      
-- Ledger
-- WalletConnect
-- Celo Extension Wallet (Metamask fork)
-- Valora
-- Celo Wallet
-- Celo Terminal
-- MetaMask
+
 - Celo Dance
+- Celo Extension Wallet (Metamask fork)
+- Celo Terminal
+- Celo Wallet
+- Ledger
+- MetaMask
+- Plaintext private key
 - Steakwallet
+- Valora
+- WalletConnect
 
 ## Basic Usage
 
