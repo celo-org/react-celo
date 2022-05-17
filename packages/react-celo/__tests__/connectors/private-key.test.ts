@@ -1,0 +1,81 @@
+import { CeloContract } from '@celo/contractkit';
+
+import { Alfajores, localStorageKeys } from '../../src';
+import { PrivateKeyConnector } from '../../src/connectors';
+
+const TEST_KEY =
+  '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abbdef';
+
+describe('PrivateKeyConnector', () => {
+  let connector: PrivateKeyConnector;
+  describe('initialise()', () => {
+    beforeEach(() => {
+      connector = new PrivateKeyConnector(
+        Alfajores,
+        TEST_KEY,
+        CeloContract.StableTokenEUR
+      );
+    });
+    it('sets the account', async () => {
+      await connector.initialise();
+
+      expect(connector.account).toEqual(
+        '0x6df18c5837718a83581ead5e26bfcdb8a548e409'
+      );
+    });
+
+    it('sets and uses the fee currency', async () => {
+      await connector.initialise();
+
+      expect(connector.feeCurrency).toEqual(CeloContract.StableTokenEUR);
+    });
+
+    it('sets the private key in locale storage', () => {
+      expect(
+        localStorage.getItem(localStorageKeys.lastUsedWalletArguments)
+      ).toEqual(JSON.stringify([TEST_KEY]));
+    });
+
+    it('sets the last network in local storage', () => {
+      expect(localStorage.getItem(localStorageKeys.lastUsedNetwork)).toEqual(
+        Alfajores.name
+      );
+    });
+  });
+
+  describe('close()', () => {
+    it('clears out localStorage', async () => {
+      connector = new PrivateKeyConnector(
+        Alfajores,
+        TEST_KEY,
+        CeloContract.StableTokenEUR
+      );
+      await connector.initialise();
+
+      connector.close();
+
+      expect(
+        localStorage.getItem(localStorageKeys.lastUsedFeeCurrency)
+      ).toEqual(null);
+
+      expect(
+        localStorage.getItem(localStorageKeys.lastUsedWalletArguments)
+      ).toEqual(null);
+
+      expect(localStorage.getItem(localStorageKeys.lastUsedNetwork)).toEqual(
+        null
+      );
+    });
+  });
+  describe('updateFeeCurrency', () => {
+    it('sets fee currency and in fact uses it', async () => {
+      await connector.updateFeeCurrency(CeloContract.StableToken);
+
+      expect(connector.feeCurrency).toEqual(CeloContract.StableToken);
+
+      expect(connector.kit.connection.defaultFeeCurrency).toEqual(
+        '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1'
+      );
+    });
+  });
+});

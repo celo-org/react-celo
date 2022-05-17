@@ -11,7 +11,7 @@ const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 describe('MetaMaskConnector', () => {
   const testingUtils = generateTestingUtils({
     providerType: 'MetaMask',
-    verbose: true,
+    verbose: false,
   });
   beforeAll(() => {
     // Manually inject the mocked provider in the window as MetaMask does
