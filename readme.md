@@ -30,12 +30,18 @@ You can use any `@celo/contractkit` version at least as recent as `1.5.1` includ
 
 ## Supported wallets
 
-| Wallet                                                                                     |  sendTransaction   |    signTransaction | signTypedData      | signPersonal       |
-| ------------------------------------------------------------------------------------------ | :----------------: | -----------------: | ------------------ | ------------------ |
+| Wallet                                                                                     | sendTransaction    | signTransaction    | signTypedData      | signPersonal       |
+| ------------------------------------------------------------------------------------------ | ------------------ | ------------------ | ------------------ | ------------------ |
 | Plaintext private key                                                                      |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Ledger](https://www.ledger.com/)                                                          |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [WalletConnect](https://walletconnect.org/)                                                |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | [Celo Extension Wallet (Metamask fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
+| [Valora](https://valoraapp.com/)                                                           |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| [Celo Wallet](https://celowallet.app/)                                                     |                    |                    |                    |                    |
+| [Celo Terminal](https://celoterminal.com/)                                                 |                    |                    |                    |                    |
+| [MetaMask](https://metamask.io/)                                                           | :white_check_mark: |                    |                    |                    |
+| [Celo Dance](https://celo.dance/)                                                          |                    |                    |                    |                    |
+| [Steakwallet](https://steakwallet.fi/)                                                     |                    |                    |                    |                    |
 
 ## Basic Usage
 
@@ -84,8 +90,8 @@ use-contractkit provides a list of default wallets (CeloExtensionWallet, Injecte
       // This option hides specific wallets from the default list
       hideFromDefaults: [
         SupportedProvider.MetaMask,
-        SupportedProvider.Private key,
-        SupportedProvider.Celo Extension Wallet,
+        SupportedProvider.PrivateKey,
+        SupportedProvider.CeloExtensionWallet,
         SupportedProvider.Valora,
       ],
 
@@ -123,9 +129,8 @@ You can also add new custom wallets that don't exist in the registry or aren't i
           homepage: 'https://example.com',
           chains: ['eip:4220'],
           // IMPORTANT
-          // This is the version of WC. If more than one version is provided
-          // use-contractkit will use the highest one
-          versions: ['1', '2'],
+          // This is the version of WC. We only support version 1 at the moment.
+          versions: ['1'],
           logos: {
             sm: 'https://via.placeholder.com/40/000000/FFFFFF',
             md: 'https://via.placeholder.com/80/000000/FFFFFF',
@@ -336,12 +341,33 @@ use-contrackit uses Tailwind for styling, to use the modal in dark mode simply a
 
 ## Development
 
-To run use-contractkit locally, simply clone this repository and run:
+To run all the packages locally at once, simply clone this repository and run:
 
-- `yarn`
-- `yarn dev`
+```sh
+yarn;
+yarn build;  #only needs to be run the first time
+yarn dev;
+```
 
-A hot reloading server should come up on `localhost:3000`, it's the exact same as what's at [use-contractkit-c-labs.vercel.app](https://use-contractkit-c-labs.vercel.app).
+A hot reloading server should come up on localhost:3000, it's the exact same as what's at use-contractkit-c-labs.vercel.app.
+
+Alternatively, you can individually run `use-contractkit` and the `example` app in parallel.
+
+For that, you still need to have run `yarn` in the root.
+
+Then, you can run `use-contractkit` in one tab:
+
+```sh
+cd packages/use-contractkit
+yarn dev
+```
+
+and run the `example` app in another:
+
+```sh
+cd packages/example
+yarn dev
+```
 
 ## Support
 
