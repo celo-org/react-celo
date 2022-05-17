@@ -14,7 +14,6 @@
   display: flex;
   top: 1rem;
   right: 1rem;
-  z-index: 99999999999;
 }
 .toggle-dark span:first-child {
   padding-right: 1rem;
