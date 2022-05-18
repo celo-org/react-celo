@@ -15,7 +15,7 @@ const styles = cls({
     ${isMobile ? 'tw-h-screen' : ''}`,
   closeButton: `
     tw-absolute
-    tw-top-3
+    tw-top-5
     tw-right-2
     tw-text-slate-700
     dark:tw-text-slate-400
@@ -23,20 +23,20 @@ const styles = cls({
     dark:hover:tw-text-slate-300
     hover:tw-bg-slate-100
     dark:hover:tw-bg-slate-700
-    tw-p-1
-    tw-rounded`,
+    tw-rounded
+    tw-z-20`,
   backButton: `
     tw-absolute
-    tw-top-3
-    tw-left-5
+    tw-top-5
+    tw-left-2
     tw-text-slate-700
     dark:tw-text-slate-400
     hover:tw-text-slate-800
     dark:hover:tw-text-slate-300
     hover:tw-bg-slate-100
     dark:hover:tw-bg-slate-700
-    tw-p-1
-    tw-rounded`,
+    tw-rounded
+    tw-z-20`,
   svg: `
     tw-h-5
     tw-w-5

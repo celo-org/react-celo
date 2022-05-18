@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
 import Spinner from '../components/spinner';
@@ -14,11 +15,11 @@ const styles = cls({
   actionTitle: `
     tw-text-xl
     tw-text-center
-    tw-text-slate-800 dark:
-    tw-text-slate-200
+    tw-text-slate-800
+    dark:tw-text-slate-200
     tw-mb-4`,
   dappName: `
-      tw-text-indigo-500`,
+    tw-text-indigo-500`,
   actionDescription: `
     tw-text-slate-900
     tw-text-sm
@@ -39,6 +40,18 @@ const styles = cls({
     dark:tw-bg-slate-800
     tw-w-80
     md:tw-w-96
+    ${
+      isMobile
+        ? `
+      tw-flex
+      tw-flex-col
+      tw-justify-center
+      tw-self-center
+      tw-h-screen
+      tw-mx-auto
+    `
+        : ''
+    }
   `,
 });
 
