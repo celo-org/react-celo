@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 
 import { Connector, Dapp, Maybe, Network } from '../types';
-import { useContractKitInternal } from '../use-contractkit';
+import { useCeloInternal } from '../use-celo';
 import { CeloTokens } from '../utils/metamask';
 import { InjectedConnector, MetaMaskConnector } from './connectors';
 
@@ -16,7 +16,7 @@ export function useInjectedConnector(
     initError: error,
     dapp,
     kit,
-  } = useContractKitInternal();
+  } = useCeloInternal();
 
   useEffect(() => {
     let stale;

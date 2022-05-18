@@ -3,11 +3,11 @@ import { ExternalProvider } from '@ethersproject/providers/lib/web3-provider';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Maybe } from './types';
-import { useContractKit } from './use-contractkit';
+import { useCelo } from './use-celo';
 import { useIsMounted } from './utils/useIsMounted';
 
 export const useProvider = (): Web3Provider => {
-  const { kit, network } = useContractKit();
+  const { kit, network } = useCelo();
   const provider = kit.connection.web3
     .currentProvider as unknown as ExternalProvider;
   const { chainId, name } = network;
@@ -17,7 +17,7 @@ export const useProvider = (): Web3Provider => {
 };
 
 export const useProviderOrSigner = (): Web3Provider | JsonRpcSigner => {
-  const { kit } = useContractKit();
+  const { kit } = useCelo();
   const provider = useProvider();
   return useMemo(() => {
     return kit.connection.defaultAccount
@@ -27,7 +27,7 @@ export const useProviderOrSigner = (): Web3Provider | JsonRpcSigner => {
 };
 
 export const useGetConnectedSigner = (): (() => Promise<JsonRpcSigner>) => {
-  const { kit, getConnectedKit, network } = useContractKit();
+  const { kit, getConnectedKit, network } = useCelo();
   const signer = useProviderOrSigner();
   const { chainId, name } = network;
 

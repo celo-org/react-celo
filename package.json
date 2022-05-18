@@ -1,5 +1,5 @@
 {
-  "name": "use-contractkit",
+  "name": "react-celo-root",
   "private": true,
   "workspaces": [
     "packages/*"

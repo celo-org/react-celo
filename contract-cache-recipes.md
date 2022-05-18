@@ -1,6 +1,6 @@
 # Building a Contracts Cache
 
-With version 4 the full ContractKit is no longer provided instead MiniContractKit is returned from the hook. For dapps that were accessing contract wrappers not provided on MiniContractKit getting the full contractsCache back can be done by providing a buildContractsCache function that takes in a `Connection` and an `AddressRegistry`. The return value of this function will be memoized and returned on `useContractKit` hook as `contractsCache`.
+With version 4 the full ContractKit is no longer provided instead MiniContractKit is returned from the hook. For dapps that were accessing contract wrappers not provided on MiniContractKit getting the full contractsCache back can be done by providing a buildContractsCache function that takes in a `Connection` and an `AddressRegistry`. The return value of this function will be memoized and returned on `useCelo` hook as `contractsCache`.
 
 ## Getting back the full cache
 
@@ -22,20 +22,20 @@ function fullContractsCache(
 
 ```tsx
 //
-<ContractKitProvider
+<CeloProvider
   // The result of this function will be memoized. it will be recalculated when `fullContractsCache`, `connection` or `addressRegistry` changes
   buildContractsCache={fullContractsCache}
 >
   {/* etc */}
-</ContractKitProvider>
+</CeloProvider>
 
 //
 ```
 
 ```ts
-import { useContractKit } from '@celo-tools/use-contractkit';
+import { useCelo } from '@celo/react-celo';
 
-const { contractsCache } = useContractKit();
+const { contractsCache } = useCelo();
 
 const contracts = contractsCache as WrapperCache;
 

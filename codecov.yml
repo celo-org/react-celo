@@ -8,9 +8,9 @@ coverage:
         if_ci_failed: error
 
 flags:
-  use-contractkit:
+  react-celo:
     paths:
-      - packages/use-contractkit/
+      - packages/react-celo/
   walletconnect-v1:
     paths:
       - packages/walletconnect-v1/

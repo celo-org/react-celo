@@ -1,6 +1,6 @@
 export * from './constants';
-export * from './contract-kit-provider';
 export * from './ethers';
+export * from './react-celo-provider';
 export { defaultScreens as Screens } from './screens';
 export * from './types';
-export * from './use-contractkit';
+export { UseCelo, useCelo } from './use-celo';

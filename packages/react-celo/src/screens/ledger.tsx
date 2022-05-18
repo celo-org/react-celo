@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import ConnectorScreen from '../components/connector-screen';
 import Spinner from '../components/spinner';
 import { LedgerConnector } from '../connectors';
-import { useContractKitInternal } from '../use-contractkit';
+import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
 import { useIsMounted } from '../utils/useIsMounted';
 import { ConnectorProps } from '.';
@@ -67,7 +67,7 @@ export const Ledger = ({ onSubmit }: ConnectorProps) => {
     initConnector,
     initError: error,
     feeCurrency,
-  } = useContractKitInternal();
+  } = useCeloInternal();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
   const isMountedRef = useIsMounted();

@@ -5,18 +5,15 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 
 import { Mainnet } from '../src/constants';
-import {
-  ContractKitProvider,
-  ContractKitProviderProps,
-} from '../src/contract-kit-provider';
+import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
 import { Network } from '../src/types';
-import { UseContractKit, useContractKit } from '../src/use-contractkit';
+import { UseCelo, useCelo } from '../src/use-celo';
 
 interface RenderArgs {
-  providerProps: Partial<ContractKitProviderProps>;
+  providerProps: Partial<CeloProviderProps>;
 }
 
-const defaultProps: ContractKitProviderProps = {
+const defaultProps: CeloProviderProps = {
   dapp: {
     name: 'Testing Celo React',
     description: 'Test it well',
@@ -33,12 +30,12 @@ function customRender<R>(
   return renderHook<R, unknown>(hook, {
     wrapper: ({ children }) => {
       const props = { ...defaultProps, ...providerProps };
-      return <ContractKitProvider {...props}>{children}</ContractKitProvider>;
+      return <CeloProvider {...props}>{children}</CeloProvider>;
     },
   });
 }
 
-describe('ContractKitProvider', () => {
+describe('CeloProvider', () => {
   describe('with networks', () => {
     const networks: Network[] = [
       {
@@ -65,8 +62,8 @@ describe('ContractKitProvider', () => {
       },
     ];
 
-    const renderUseCK = (props: Partial<ContractKitProviderProps>) =>
-      customRender<UseContractKit>(useContractKit, {
+    const renderUseCK = (props: Partial<CeloProviderProps>) =>
+      customRender<UseCelo>(useCelo, {
         providerProps: props,
       });
 

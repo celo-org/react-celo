@@ -20,7 +20,7 @@ import {
   WalletConnectProvider,
   WalletEntry,
 } from '../types';
-import { useContractKitInternal } from '../use-contractkit';
+import { useCeloInternal } from '../use-celo';
 import { defaultProviderSort, SortingPredicate } from '../utils/sort';
 import cls from '../utils/tailwind';
 import useProviders, { walletToProvider } from '../utils/useProviders';
@@ -28,19 +28,19 @@ import useProviders, { walletToProvider } from '../utils/useProviders';
 export const styles = cls({
   overlay: isMobile
     ? `
-      tw-fixed 
-      tw-bg-white 
-      dark:tw-bg-slate-800 
+      tw-fixed
+      tw-bg-white
+      dark:tw-bg-slate-800
       tw-inset-0`
     : `
-      tw-fixed 
-      tw-bg-slate-100 
-      dark:tw-bg-slate-700 
-      tw-bg-opacity-75 
+      tw-fixed
+      tw-bg-slate-100
+      dark:tw-bg-slate-700
+      tw-bg-opacity-75
       tw-inset-0`,
   modal: isMobile
     ? `
-      tw-h-screen 
+      tw-h-screen
       tw-w-screen`
     : `
       tw-overflow-hidden
@@ -54,7 +54,7 @@ export const styles = cls({
       tw-border-none
       tw-bg-none
       tw-padding-0
-      tw-rounded-lg 
+      tw-rounded-lg
       tw-drop-shadow
       dark:tw-drop-shadow`,
   portal: `
@@ -99,7 +99,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   title = 'Connect a wallet',
   providersOptions = {},
 }: ConnectModalProps) => {
-  const { connectionCallback } = useContractKitInternal();
+  const { connectionCallback } = useCeloInternal();
   const [search, setSearch] = useState<string>('');
   const [adding, setAdding] = useState<Maybe<SupportedProviders>>(null);
 

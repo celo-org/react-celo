@@ -1,7 +1,7 @@
-import '@celo-tools/use-contractkit/lib/styles.css';
+import '@celo/react-celo/lib/styles.css';
 import '../styles/global.css';
 
-import { Alfajores, ContractKitProvider } from '@celo-tools/use-contractkit';
+import { Alfajores, CeloProvider } from '@celo/react-celo';
 import { AppProps } from 'next/app';
 import { Toaster } from 'react-hot-toast';
 
@@ -11,12 +11,12 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
   }
 
   return (
-    <ContractKitProvider
+    <CeloProvider
       dapp={{
-        name: 'use-contractkit demo',
+        name: 'react-celo demo',
         description: 'A demo DApp to showcase functionality',
-        url: 'https://use-contractkit.vercel.app',
-        icon: 'https://use-contractkit.vercel.app/favicon.ico',
+        url: 'https://react-celo.vercel.app',
+        icon: 'https://react-celo.vercel.app/favicon.ico',
       }}
       network={Alfajores}
       connectModal={{
@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
       <div>
         <Component {...pageProps} />
       </div>
-    </ContractKitProvider>
+    </CeloProvider>
   );
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ConnectorScreen from '../components/connector-screen';
-import { useContractKitInternal } from '../use-contractkit';
+import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
 
 const styles = cls({
@@ -18,7 +18,7 @@ const styles = cls({
 });
 
 export default function Placeholder() {
-  const { dapp } = useContractKitInternal();
+  const { dapp } = useCeloInternal();
   return (
     <ConnectorScreen
       title="Choose your wallet"

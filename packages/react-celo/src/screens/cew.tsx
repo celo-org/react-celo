@@ -4,22 +4,22 @@ import ConnectorScreen from '../components/connector-screen';
 import Spinner from '../components/spinner';
 import { CeloExtensionWalletConnector } from '../connectors';
 import { PROVIDERS } from '../constants';
-import { useContractKitInternal } from '../use-contractkit';
+import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
 import { ConnectorProps } from '.';
 
 const styles = cls({
   container: `
-    tw-my-8 
-    tw-flex 
-    tw-flex-col 
-    tw-items-center 
-    tw-justify-center 
-    grid tw-gap-8 
+    tw-my-8
+    tw-flex
+    tw-flex-col
+    tw-items-center
+    tw-justify-center
+    grid tw-gap-8
     tw-flex-grow`,
   error: `
-    tw-text-red-500 
-    tw-text-md 
+    tw-text-red-500
+    tw-text-md
     tw-pb-4`,
   spinnerContainer: `
     tw-relative
@@ -29,7 +29,7 @@ const styles = cls({
     tw-flex-col`,
   disclaimer: `
     tw-text-center
-    tw-text-slate-500 
+    tw-text-slate-500
     tw-text-sm`,
 });
 
@@ -40,7 +40,7 @@ export const CeloExtensionWallet = ({ onSubmit }: ConnectorProps) => {
     initConnector,
     initError: error,
     feeCurrency,
-  } = useContractKitInternal();
+  } = useCeloInternal();
 
   const initialiseConnection = useCallback(async () => {
     const connector = new CeloExtensionWalletConnector(network, feeCurrency);

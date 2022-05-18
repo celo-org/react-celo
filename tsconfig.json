@@ -17,6 +17,6 @@
   "include": [
     "**/*.tsx",
     "**/*.ts",
-    "packages/use-contractkit/scripts/json-to-ts.js"
+    "packages/react-celo/scripts/json-to-ts.js"
   ]
 }
