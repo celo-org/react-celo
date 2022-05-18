@@ -259,6 +259,7 @@ export class InjectedConnector implements Connector {
 
   async updateKitWithNetwork(network: Network): Promise<void> {
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+    this.network = network;
     await this.initialise();
   }
 
