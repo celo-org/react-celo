@@ -3,10 +3,10 @@ import React from 'react';
 import ConnectorScreen from '../components/connector-screen';
 import Spinner from '../components/spinner';
 import { useInjectedConnector } from '../connectors/useMetaMaskConnector';
+import { PROVIDERS } from '../constants';
 import { isEthereumFromMetamask } from '../utils/ethereum';
 import cls from '../utils/tailwind';
 import { ConnectorProps } from '.';
-import { PROVIDERS } from '../constants';
 
 const styles = cls({
   container: `

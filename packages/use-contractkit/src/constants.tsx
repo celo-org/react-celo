@@ -16,11 +16,11 @@ import {
   ETHEREUM,
   LEDGER,
   METAMASK,
+  NODEWALLET,
   PRIVATE_KEY,
   STEAKWALLET,
   VALORA,
   WALLETCONNECT,
-  NODEWALLET
 } from './walletIcons';
 
 export const localStorageKeys = {
@@ -231,7 +231,8 @@ export const PROVIDERS: {
   },
   [SupportedProviders.NodeWallet]: {
     name: SupportedProviders.NodeWallet,
-    description: 'Earn interest on stablecoins, send, swap and connect your bank account.',
+    description:
+      'Earn interest on stablecoins, send, swap and connect your bank account.',
     type: WalletTypes.WalletConnect,
     icon: NODEWALLET,
     canConnect: () => true,
