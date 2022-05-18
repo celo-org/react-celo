@@ -1,6 +1,6 @@
 # react-celo
 
-(Formerly knowm as use-contractkit )
+(Formerly known as use-contractkit)
 
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-org/react-celo/blob/master/LICENSEs)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/celo-org/react-celo/issues)
