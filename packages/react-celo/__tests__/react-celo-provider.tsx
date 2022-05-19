@@ -1,13 +1,7 @@
 import '@testing-library/jest-dom';
 
 import { CeloContract } from '@celo/contractkit';
-import {
-  act,
-  fireEvent,
-  render,
-  renderHook,
-  waitFor,
-} from '@testing-library/react';
+import { act, fireEvent, render, renderHook } from '@testing-library/react';
 import React, { ReactElement } from 'react';
 
 import { Mainnet } from '../src/constants';
@@ -42,7 +36,7 @@ function renderHookInCKProvider<R>(
 }
 
 function renderComponentInCKProvider(
-  ui: ReactElement<any, string>,
+  ui: ReactElement<unknown, string>,
   { providerProps }: RenderArgs
 ) {
   return render(ui, {
@@ -82,23 +76,6 @@ describe('CeloProvider', () => {
         expect(modal).toBeVisible();
       });
     });
-
-    describe('when a wallet is selected', () => {
-      it.skip('changes to the screen for that wallet', async () => {
-        const dom = await stepsToOpenModal();
-        const celoWalletButton = await dom.findByText('Celo Wallet');
-        await waitFor(
-          () => {
-            fireEvent.click(celoWalletButton);
-          },
-          {
-            timeout: 5,
-          }
-        );
-
-        dom.debug();
-      });
-    });
   });
 
   describe('hook interface', () => {
@@ -136,6 +113,7 @@ describe('CeloProvider', () => {
       it('defaults to Celo Mainnet', () => {
         const hookReturn = renderUseCK({});
         expect(hookReturn.result.current.network).toEqual(Mainnet);
+        hookReturn.unmount();
       });
 
       it('supports passing other networks', () => {
@@ -143,10 +121,11 @@ describe('CeloProvider', () => {
         expect(hookReturn.result.current.networks).toEqual(networks);
 
         expect(hookReturn.result.current.network).toEqual(networks[0]);
+        hookReturn.unmount();
       });
 
       it('updates the Current network', async () => {
-        const { result, rerender } = renderUseCK({ networks });
+        const { result, rerender, unmount } = renderUseCK({ networks });
 
         // FIXME Need to determine behavior when network is not in networks
         expect(result.current.network).toEqual(Mainnet);
@@ -158,21 +137,24 @@ describe('CeloProvider', () => {
         rerender();
 
         expect(result.current.network).toEqual(networks[1]);
+        unmount();
       });
     });
 
     describe('regarding feeCurrency', () => {
       describe('when none given', () => {
         it('defaults to CELO', () => {
-          const { result } = renderUseCK({});
+          const { result, unmount } = renderUseCK({});
           expect(result.current.feeCurrency).toEqual(CeloContract.GoldToken);
+          unmount();
         });
         it('does not set on the kit as connector is Unauthenticated', () => {
-          const { result } = renderUseCK({});
+          const { result, unmount } = renderUseCK({});
           expect(result.current.walletType).toEqual('Unauthenticated');
           expect(result.current.kit.connection.defaultFeeCurrency).toEqual(
             undefined
           );
+          unmount();
         });
       });
 
