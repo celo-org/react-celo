@@ -185,7 +185,7 @@ export class UnsupportedChainIdError extends Error {
 
 export class InjectedConnector implements Connector {
   public initialised = false;
-  public type = WalletTypes.CeloExtensionWallet;
+  public type = WalletTypes.Injected;
   public kit: MiniContractKit;
   public account: Maybe<string> = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
@@ -218,7 +218,9 @@ export class InjectedConnector implements Connector {
 
     this.type = isMetaMask ? WalletTypes.MetaMask : WalletTypes.Injected;
 
-    void (await ethereum.request({ method: 'eth_requestAccounts' }));
+    const [defaultAccount] = await ethereum.request({
+      method: 'eth_requestAccounts',
+    });
 
     ethereum.removeListener('chainChanged', this.onChainChanged);
     ethereum.removeListener('accountsChanged', this.onAccountsChanged);
@@ -227,7 +229,7 @@ export class InjectedConnector implements Connector {
     ethereum.on('accountsChanged', this.onAccountsChanged);
 
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
-    const [defaultAccount] = await this.kit.connection.web3.eth.getAccounts();
+
     this.kit.connection.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
     this.initialised = true;
@@ -257,6 +259,7 @@ export class InjectedConnector implements Connector {
 
   async updateKitWithNetwork(network: Network): Promise<void> {
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+    this.network = network;
     await this.initialise();
   }
 
