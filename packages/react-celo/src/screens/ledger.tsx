@@ -116,6 +116,7 @@ export const Ledger = ({ onSubmit }: ConnectorProps) => {
             </div>
           ) : (
             <Button
+              as="button"
               className={styles.button}
               onClick={submit}
               disabled={submitting}

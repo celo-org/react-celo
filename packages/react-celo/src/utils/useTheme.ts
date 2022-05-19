@@ -61,7 +61,6 @@ if (typeof MutationObserver !== 'undefined') {
 
 export default function useTheme(): Theme {
   const [{ theme }] = useReactCeloContext();
-  console.log(theme);
   const [mode, setMode] = useState(state.mode);
 
   useEffect(() => {

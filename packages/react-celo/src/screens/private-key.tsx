@@ -58,7 +58,11 @@ export const PrivateKey = ({ onSubmit }: ConnectorProps) => {
               value={value}
               onChange={(e) => setValue(e.target.value)}
             />
-            <Button className={styles.button} onClick={handleSubmit}>
+            <Button
+              as="button"
+              className={styles.button}
+              onClick={handleSubmit}
+            >
               Submit
             </Button>
           </div>

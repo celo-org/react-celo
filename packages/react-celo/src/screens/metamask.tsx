@@ -50,6 +50,7 @@ export const MetaMaskOrInjectedWallet = ({ onSubmit }: ConnectorProps) => {
   if (isMobile) {
     content = (
       <Button
+        as="a"
         href={provider.installURL}
         target="_blank"
         rel="noreferrer"
