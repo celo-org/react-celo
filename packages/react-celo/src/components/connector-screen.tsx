@@ -31,6 +31,8 @@ const styles = cls({
     tw-text-xl
     tw-text-center
     dark:tw-text-slate-200
+    tw-w-4/5
+    tw-self-center
     tw-font-medium`,
   contentContainer: `
     tw-flex

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -24,17 +25,21 @@ function priorityToText(priority: Priorities) {
 
 const styles = cls({
   title: `
-    ${isMobile ? 'tw-pb-8' : 'tw-pb-2'}
+    tw-pb-2
     tw-text-md
     tw-font-medium
     tw-text-slate-900
-    dark:tw-text-slate-300`,
+    dark:tw-text-slate-300
+    tw-sticky
+    tw-top-0
+    tw-bg-white
+    dark:tw-bg-slate-800
+    tw-z-10`,
   verticalContainer: `
     tw-flex
     tw-flex-col
     tw-overflow-hidden
     tw-flex-grow
-    tw-flex-height-full
     tw-justify-between
     ${isMobile ? 'tw-gap-y-4' : 'tw-gap-y-1'}
     ${isMobile ? 'tw-w-80' : 'tw-w-48'}
@@ -57,6 +62,11 @@ const styles = cls({
     tw-flex-col`,
   columnFooter: `
     tw-flex
+    tw-sticky
+    ${isMobile ? 'tw-py-4' : ''}
+    tw-bg-white
+    dark:tw-bg-slate-800
+    tw-bottom-0
     ${isMobile ? 'tw-justify-center' : 'tw-justify-end'}
     tw-gap-x-2`,
   columnSearchableFooter: `
@@ -82,7 +92,8 @@ const styles = cls({
     tw-align-center`,
   inputContainer: `
     tw-flex
-    tw-self-end`,
+    tw-self-end
+    tw-sticky`,
   input: `
     tw-text-sm
     tw-font-medium
@@ -117,16 +128,42 @@ export default function Tray({
     return acc;
   }, [] as Priorities[]);
 
-  return (
-    <>
-      <h1 className={styles.title}>{title}</h1>
-      <div className={styles.verticalContainer}>
-        {!providers.length && (
-          <div className={styles.noMatchesContainer}>
-            <span className={styles.noMatchesSpan}>No matches</span>
+  const searchElem = useMemo(
+    () => (
+      <div
+        className={`${styles.columnFooter} ${
+          onSearch ? styles.columnSearchableFooter : ''
+        }`}
+      >
+        {onSearch && (
+          <div className={styles.inputContainer}>
+            <input
+              className={styles.input}
+              placeholder="Search for a wallet"
+              value={search || ''}
+              onChange={(event) => onSearch(event.target?.value)}
+            />
           </div>
         )}
+        <span className={styles.version}>{version}</span>
+      </div>
+    ),
+    [search, onSearch]
+  );
+
+  return (
+    <>
+      <div className={styles.verticalContainer}>
         <div className={styles.scrollableList}>
+          <div className={styles.title}>
+            <h1>{title}</h1>
+          </div>
+          {isMobile && searchElem}
+          {!providers.length && (
+            <div className={styles.noMatchesContainer}>
+              <span className={styles.noMatchesSpan}>No matches</span>
+            </div>
+          )}
           {providers.map(([priority, providers]) => (
             <div key={priority}>
               {!isMobile && nPriorities.length !== 1 && (
@@ -150,23 +187,7 @@ export default function Tray({
               </div>
             </div>
           ))}
-        </div>
-        <div
-          className={`${styles.columnFooter} ${
-            onSearch ? styles.columnSearchableFooter : ''
-          }`}
-        >
-          {onSearch && (
-            <div className={styles.inputContainer}>
-              <input
-                className={styles.input}
-                placeholder="Search for a wallet"
-                value={search || ''}
-                onChange={(event) => onSearch(event.target?.value)}
-              />
-            </div>
-          )}
-          <span className={styles.version}>{version}</span>
+          {!isMobile && searchElem}
         </div>
       </div>
     </>

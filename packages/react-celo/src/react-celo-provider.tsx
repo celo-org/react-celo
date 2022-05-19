@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
+import IOSViewportFix from './components/ios-viewport-fix';
 
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
 import { DEFAULT_NETWORKS, Mainnet } from './constants';
@@ -137,6 +138,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
 
   return (
     <ContextProvider value={[state, dispatch, methods]}>
+      <IOSViewportFix />
       <ConnectModal {...connectModal} />
       <ActionModal {...actionModal} />
       {children}

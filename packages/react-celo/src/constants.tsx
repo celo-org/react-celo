@@ -163,7 +163,7 @@ export const PROVIDERS: {
       </>
     ),
     icon: METAMASK,
-    canConnect: () => isEthereumFromMetamask(),
+    canConnect: () => isMobile || isEthereumFromMetamask(),
     showInList: () => true,
     listPriority: () => Priorities.Popular,
     installURL: isMobile
