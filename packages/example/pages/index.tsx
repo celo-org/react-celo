@@ -213,7 +213,7 @@ export default function Home(): React.ReactElement {
         </label>
       </div>
 
-      <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
+      <main>
         <div className="font-semibold text-2xl">react-celo</div>
         <div className="text-slate-600 mt-2">
           A{' '}
