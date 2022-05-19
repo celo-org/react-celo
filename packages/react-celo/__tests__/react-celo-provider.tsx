@@ -127,7 +127,7 @@ describe('CeloProvider', () => {
       it('updates the Current network', async () => {
         const { result, rerender, unmount } = renderUseCK({ networks });
 
-        // FIXME Need to determine behavior when network is not in networks
+        // TODO Need to determine behavior when network is not in networks
         expect(result.current.network).toEqual(Mainnet);
 
         await act(async () => {
@@ -148,7 +148,7 @@ describe('CeloProvider', () => {
           expect(result.current.feeCurrency).toEqual(CeloContract.GoldToken);
           unmount();
         });
-        it('does not set on the kit as connector is Unauthenticated', () => {
+        it('does not set any feeCurrency on the kit', () => {
           const { result, unmount } = renderUseCK({});
           expect(result.current.walletType).toEqual('Unauthenticated');
           expect(result.current.kit.connection.defaultFeeCurrency).toEqual(

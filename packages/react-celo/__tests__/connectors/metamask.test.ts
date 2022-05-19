@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { CeloContract } from '@celo/contractkit/lib/base';
 import { generateTestingUtils } from 'eth-testing';
 
@@ -15,6 +14,7 @@ describe('MetaMaskConnector', () => {
   });
   beforeAll(() => {
     // Manually inject the mocked provider in the window as MetaMask does
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     global.window.ethereum = testingUtils.getProvider();
     testingUtils.mockNotConnectedWallet();
@@ -47,7 +47,7 @@ describe('MetaMaskConnector', () => {
       );
     });
 
-    const callback = jest.fn(console.log);
+    const callback = jest.fn();
 
     it('reacts to network being changed from metamask side', async () => {
       connector.onNetworkChange(callback);
