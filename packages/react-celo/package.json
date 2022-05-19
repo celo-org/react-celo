@@ -1,6 +1,6 @@
 {
-  "name": "@celo-tools/use-contractkit",
-  "version": "3.1.1-dev",
+  "name": "@celo/react-celo",
+  "version": "4.0.0-dev",
   "private": false,
   "scripts": {
     "prebuild": "mkdir -p lib && node ./scripts/json-to-ts.js package.json lib",
@@ -20,7 +20,7 @@
     "lib",
     "README.md"
   ],
-  "homepage": "https://use-contractkit-gamma.vercel.app",
+  "homepage": "https://react-celo.vercel.app",
   "readme": "../../readme.md",
   "license": "MIT",
   "dependencies": {
@@ -50,7 +50,7 @@
     "web3": "^1.3.6"
   },
   "peerDependencies": {
-    "@celo/contractkit": ">=1.5.0 <=3.0.0",
+    "@celo/contractkit": ">=2.0.0 <=3.0.0",
     "react": ">=17.0.2 <=^18",
     "react-dom": ">=17.0.2 <=^18",
     "web3": "^1.3.6"

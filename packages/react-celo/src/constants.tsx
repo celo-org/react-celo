@@ -24,12 +24,12 @@ import {
 } from './walletIcons';
 
 export const localStorageKeys = {
-  lastUsedAddress: 'use-contractkit/last-used-address',
-  lastUsedNetwork: 'use-contractkit/last-used-network',
-  lastUsedWalletType: 'use-contractkit/last-used-wallet',
-  lastUsedWalletId: 'use-contractkit/last-used-wallet-id',
-  lastUsedWalletArguments: 'use-contractkit/last-used-wallet-arguments',
-  lastUsedFeeCurrency: 'use-contractkit/last-used-fee-currency',
+  lastUsedAddress: 'react-celo/last-used-address',
+  lastUsedNetwork: 'react-celo/last-used-network',
+  lastUsedWalletType: 'react-celo/last-used-wallet',
+  lastUsedWalletId: 'react-celo/last-used-wallet-id',
+  lastUsedWalletArguments: 'react-celo/last-used-wallet-arguments',
+  lastUsedFeeCurrency: 'react-celo/last-used-fee-currency',
 };
 
 export enum SupportedProviders {
@@ -281,7 +281,7 @@ export const Localhost: Network = {
 
 /**
  * These wallets cannot have their networks
- * updated via use-contractkit
+ * updated via react-celo
  */
 export const STATIC_NETWORK_WALLETS = [WalletTypes['CeloExtensionWallet']];
 

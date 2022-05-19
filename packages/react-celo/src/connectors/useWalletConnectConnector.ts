@@ -4,7 +4,7 @@ import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useEffect, useState } from 'react';
 
 import { Connector, Maybe } from '../types';
-import { useContractKitInternal } from '../use-contractkit';
+import { useCeloInternal } from '../use-celo';
 import { useWalletVersion } from '../utils/useWalletVersion';
 import { WalletConnectConnector } from './connectors';
 
@@ -14,7 +14,7 @@ export function useWalletConnectConnector(
   getDeeplinkUrl?: (uri: string) => string,
   walletId?: string
 ): { error: Maybe<string>; uri: Maybe<string>; loading: boolean } {
-  const { network, feeCurrency, initConnector } = useContractKitInternal();
+  const { network, feeCurrency, initConnector } = useCeloInternal();
   const [uri, setUri] = useState<Maybe<string>>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Maybe<string>>(null);

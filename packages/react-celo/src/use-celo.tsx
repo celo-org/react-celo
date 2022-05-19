@@ -2,10 +2,10 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from './constants';
-import { useContractKitContext } from './contract-kit-provider';
+import { useReactCeloContext } from './react-celo-provider';
 import { Connector, Dapp, Maybe, Network } from './types';
 
-export interface UseContractKit {
+export interface UseCelo {
   dapp: Dapp;
   kit: MiniContractKit;
   walletType: WalletTypes;
@@ -51,7 +51,7 @@ export interface UseContractKit {
   contractsCache?: unknown;
 }
 
-export function useContractKit<CC = undefined>(): UseContractKit {
+export function useCelo<CC = undefined>(): UseCelo {
   const [
     {
       dapp,
@@ -72,7 +72,7 @@ export function useContractKit<CC = undefined>(): UseContractKit {
       updateFeeCurrency,
       contractsCache,
     },
-  ] = useContractKitContext();
+  ] = useReactCeloContext();
 
   return {
     address,
@@ -98,24 +98,24 @@ export function useContractKit<CC = undefined>(): UseContractKit {
   };
 }
 
-interface UseContractKitInternal extends UseContractKit {
+interface UseCeloInternal extends UseCelo {
   connectionCallback: Maybe<(connector: Connector | false) => void>;
   initConnector: (connector: Connector) => Promise<void>;
   pendingActionCount: number;
 }
 
 /**
- * useContractKit with internal methods exposed. Package use only.
+ * useCelo with internal methods exposed. Package use only.
  */
-export const useContractKitInternal = (): UseContractKitInternal => {
+export const useCeloInternal = (): UseCeloInternal => {
   const [
     { pendingActionCount, connectionCallback },
     _dispatch,
     { initConnector },
-  ] = useContractKitContext();
+  ] = useReactCeloContext();
 
   return {
-    ...useContractKit(),
+    ...useCelo(),
     connectionCallback,
     initConnector,
     pendingActionCount,

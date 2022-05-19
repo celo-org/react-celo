@@ -1,8 +1,8 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
+import { useCelo } from '@celo/react-celo';
 import { ensureLeading0x } from '@celo/utils/lib/address';
-import { useContractKit } from '@celo-tools/use-contractkit';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
@@ -54,7 +54,7 @@ export default function Home(): React.ReactElement {
     walletType,
     feeCurrency,
     updateFeeCurrency,
-  } = useContractKit();
+  } = useCelo();
 
   const [summary, setSummary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
@@ -185,7 +185,7 @@ export default function Home(): React.ReactElement {
   return (
     <div>
       <Head>
-        <title>use-contractkit</title>
+        <title>react-celo</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -198,7 +198,7 @@ export default function Home(): React.ReactElement {
       </div>
 
       <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
-        <div className="font-semibold text-2xl">use-contractkit</div>
+        <div className="font-semibold text-2xl">react-celo</div>
         <div className="text-slate-600 mt-2">
           A{' '}
           <a
@@ -249,7 +249,7 @@ export default function Home(): React.ReactElement {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://www.npmjs.com/package/@celo-tools/use-contractkit"
+                href="https://www.npmjs.com/package/@celo/react-celo"
                 rel="noreferrer"
               >
                 NPM
@@ -259,7 +259,7 @@ export default function Home(): React.ReactElement {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://github.com/celo-tools/use-contractkit"
+                href="https://github.com/celo-tools/react-celo"
                 rel="noreferrer"
               >
                 GitHub
@@ -294,7 +294,7 @@ export default function Home(): React.ReactElement {
               },
               {
                 name: 'Add yours to the list...',
-                url: 'https://github.com/celo-tools/use-contractkit',
+                url: 'https://github.com/celo-tools/react-celo',
               },
             ].map(({ name, url }) => (
               <li key={name}>

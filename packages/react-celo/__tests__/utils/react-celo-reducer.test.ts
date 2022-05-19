@@ -2,19 +2,16 @@ import { CeloContract } from '@celo/contractkit';
 
 import { UnauthenticatedConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
-import {
-  contractKitReducer,
-  ReducerState,
-} from '../../src/contract-kit-reducer';
+import { celoReactReducer, ReducerState } from '../../src/react-celo-reducer';
 
 const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Alfajores),
   connectorInitError: null,
   dapp: {
-    name: 'use-contractkit demo',
+    name: 'react-celo demo',
     description: 'A demo DApp to showcase functionality',
-    url: 'https://use-contractkit.vercel.app',
-    icon: 'https://use-contractkit.vercel.app/favicon.ico',
+    url: 'https://react-celo.vercel.app',
+    icon: 'https://react-celo.vercel.app/favicon.ico',
   },
   network: Alfajores,
   networks: [Alfajores, Baklava],
@@ -26,7 +23,7 @@ const initialState: ReducerState = {
 
 describe('reducer', () => {
   it('works', () => {
-    const newState = contractKitReducer(initialState, {
+    const newState = celoReactReducer(initialState, {
       type: 'setAddress',
       payload: 'test-address',
     });

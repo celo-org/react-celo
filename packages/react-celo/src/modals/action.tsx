@@ -2,20 +2,20 @@ import React, { ReactNode } from 'react';
 import ReactModal from 'react-modal';
 
 import Spinner from '../components/spinner';
-import { useContractKitInternal } from '../use-contractkit';
+import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
 import { styles as modalStyles } from './connect';
 
 const styles = cls({
   ...modalStyles,
   actionModalContainer: `
-    tw-px-5 
+    tw-px-5
     tw-py-6`,
   actionTitle: `
-    tw-text-xl 
-    tw-text-center 
+    tw-text-xl
+    tw-text-center
     tw-text-slate-800 dark:
-    tw-text-slate-200 
+    tw-text-slate-200
     tw-mb-4`,
   dappName: `
       tw-text-indigo-500`,
@@ -23,21 +23,21 @@ const styles = cls({
     tw-text-slate-900
     tw-text-sm
     dark:tw-text-slate-300
-    tw-text-sm 
+    tw-text-sm
     tw-text-center`,
   actionSpinnerContainer: `
-    tw-my-8 
-    tw-flex 
-    tw-items-center 
+    tw-my-8
+    tw-flex
+    tw-items-center
     tw-justify-center`,
   contentContainer: `
     tw-max-h-screen
   `,
   content: `
-    tw-relative 
-    tw-bg-white 
-    dark:tw-bg-slate-800 
-    tw-w-80 
+    tw-relative
+    tw-bg-white
+    dark:tw-bg-slate-800
+    tw-w-80
     md:tw-w-96
   `,
 });
@@ -77,7 +77,7 @@ export const ActionModal: React.FC<Props> = ({
   reactModalProps,
   render = defaultActionModalComponent,
 }: Props) => {
-  const { pendingActionCount, dapp } = useContractKitInternal();
+  const { pendingActionCount, dapp } = useCeloInternal();
 
   return (
     <ReactModal

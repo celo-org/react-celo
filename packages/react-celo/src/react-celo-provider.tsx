@@ -9,12 +9,6 @@ import React, {
 
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
 import { DEFAULT_NETWORKS, Mainnet } from './constants';
-import {
-  Actions,
-  ActionsMap,
-  contractKitReducer,
-  ReducerState,
-} from './contract-kit-reducer';
 import { ContractCacheBuilder } from './ContractCacheBuilder';
 import {
   ActionModal,
@@ -22,11 +16,14 @@ import {
   ConnectModal,
   ConnectModalProps,
 } from './modals';
-import { Dapp, Network } from './types';
 import {
-  ContractKitMethods,
-  useContractKitMethods,
-} from './use-contract-kit-methods';
+  Actions,
+  ActionsMap,
+  celoReactReducer,
+  ReducerState,
+} from './react-celo-reducer';
+import { Dapp, Network } from './types';
+import { CeloMethods, useCeloMethods } from './use-celo-methods';
 import { loadPreviousConfig } from './utils/helpers';
 import { useIsMounted } from './utils/useIsMounted';
 
@@ -44,10 +41,10 @@ export type Dispatcher = <
   ...payload: Payload extends undefined ? [undefined?] : [Payload]
 ) => void;
 
-type ContractKitContextInterface = readonly [
+type ReactCeloContextInterface = readonly [
   ReducerState,
   Dispatcher,
-  ContractKitMethods
+  CeloMethods
 ];
 
 const initialState = {
@@ -67,28 +64,27 @@ const initialState = {
   feeCurrency: CeloContract.GoldToken,
 };
 
-export const [useContractKitContext, ContextProvider] =
-  createContractKitContext();
+export const [useReactCeloContext, ContextProvider] = createReactCeloContext();
 
 // This makes it so we don't have to provide defaults for our context
 // and also so that if our hooks are used outside of the Provider it
 // will throw an error.
-function createContractKitContext() {
+function createReactCeloContext() {
   const contractKitContext = React.createContext<
-    ContractKitContextInterface | undefined
+    ReactCeloContextInterface | undefined
   >(undefined);
   const useCtx = () => {
     const c = React.useContext(contractKitContext);
     if (!c)
       throw new Error(
-        'Components using the use-contractkit hook must be a child of a ContractKitProvider'
+        'Components using the react-celo hook must be a child of a CeloProvider'
       );
     return c;
   };
   return [useCtx, contractKitContext.Provider] as const;
 }
 
-export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
+export const CeloProvider: React.FC<CeloProviderProps> = ({
   children,
   connectModal,
   actionModal,
@@ -97,7 +93,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   networks = DEFAULT_NETWORKS,
   feeCurrency = CeloContract.GoldToken,
   buildContractsCache,
-}: ContractKitProviderProps) => {
+}: CeloProviderProps) => {
   const isMountedRef = useIsMounted();
   const previousConfig = useMemo(
     () => loadPreviousConfig(network, feeCurrency, networks),
@@ -105,7 +101,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
     /* eslint-disable-next-line */
     []
   );
-  const [state, _dispatch] = useReducer(contractKitReducer, {
+  const [state, _dispatch] = useReducer(celoReactReducer, {
     ...initialState,
     ...previousConfig,
     network: previousConfig.network || network,
@@ -126,7 +122,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
     [isMountedRef]
   );
 
-  const methods = useContractKitMethods(state, dispatch, buildContractsCache);
+  const methods = useCeloMethods(state, dispatch, buildContractsCache);
 
   useEffect(() => {
     if (CONNECTOR_TYPES[state.connector.type] !== UnauthenticatedConnector) {
@@ -148,7 +144,7 @@ export const ContractKitProvider: React.FC<ContractKitProviderProps> = ({
   );
 };
 
-export interface ContractKitProviderProps {
+export interface CeloProviderProps {
   children: ReactNode;
   dapp: Dapp;
   network?: Network;

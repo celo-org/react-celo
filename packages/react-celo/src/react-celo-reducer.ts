@@ -6,7 +6,7 @@ import { Connector, Dapp, Maybe, Network } from './types';
 import { clearPreviousConfig } from './utils/helpers';
 import localStorage from './utils/localStorage';
 
-export function contractKitReducer(
+export function celoReactReducer(
   state: ReducerState,
   action: Actions
 ): ReducerState {

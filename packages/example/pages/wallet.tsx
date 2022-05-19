@@ -1,6 +1,7 @@
 import { trimLeading0x } from '@celo/base';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
+import { Alfajores } from '@celo/react-celo';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import {
   AccountsProposal,
@@ -14,7 +15,6 @@ import {
   SignTypedSignProposal,
   SupportedMethods,
 } from '@celo/wallet-walletconnect-v1';
-import { Alfajores } from '@celo-tools/use-contractkit';
 import WalletConnect from '@walletconnect/client-v1';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
@@ -439,12 +439,12 @@ export default function Wallet(): React.ReactElement {
   return (
     <>
       <Head>
-        <title>use-contractkit wallet</title>
+        <title>react-celo wallet</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
-        <div className="font-semibold text-2xl">use-contractkit wallet</div>
+        <div className="font-semibold text-2xl">react-celo wallet</div>
 
         <input
           style={{
