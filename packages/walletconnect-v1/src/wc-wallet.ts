@@ -9,7 +9,6 @@ import {
   IInternalEvent,
   IWalletConnectSDKOptions,
 } from '@walletconnect/types';
-import debugConfig from 'debug';
 
 import { CANCELED, defaultBridge } from './constants';
 import {
@@ -25,8 +24,6 @@ import {
 } from './types';
 import Canceler from './utils/canceler';
 import { WalletConnectSigner } from './wc-signer';
-
-const debug = debugConfig('kit:wallet:wallet-connect-wallet-v1');
 
 /**
  * Session establishment happens out of band so after somehow

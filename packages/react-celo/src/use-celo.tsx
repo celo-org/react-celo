@@ -3,7 +3,7 @@ import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from './constants';
 import { useReactCeloContext } from './react-celo-provider';
-import { Connector, Dapp, Maybe, Network } from './types';
+import { Connector, Dapp, Maybe, Network, Theme } from './types';
 
 export interface UseCelo {
   dapp: Dapp;
@@ -23,6 +23,7 @@ export interface UseCelo {
   networks: readonly Network[];
   updateNetwork: (network: Network) => Promise<void>;
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
+  updateTheme: (theme: Theme) => void;
   supportsFeeCurrency: boolean;
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will
@@ -71,6 +72,7 @@ export function useCelo<CC = undefined>(): UseCelo {
       performActions,
       updateFeeCurrency,
       contractsCache,
+      updateTheme,
     },
   ] = useReactCeloContext();
 
@@ -93,6 +95,7 @@ export function useCelo<CC = undefined>(): UseCelo {
     getConnectedKit,
     connect,
     destroy,
+    updateTheme,
 
     initError: connectorInitError,
   };

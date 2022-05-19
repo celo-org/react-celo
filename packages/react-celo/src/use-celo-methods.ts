@@ -14,7 +14,9 @@ import {
   useContractsCache,
 } from './ContractCacheBuilder';
 import { Dispatcher } from './react-celo-provider';
-import { Connector, Network } from './types';
+import defaultTheme from './theme/default';
+import { Connector, Network, Theme } from './types';
+import { RGBToHex } from './utils/helpers';
 
 export function useCeloMethods(
   {
@@ -180,6 +182,30 @@ export function useCeloMethods(
     [connector, dispatch]
   );
 
+  const updateTheme = useCallback(
+    (theme: Theme) => {
+      Object.entries(theme).forEach(([key, value]: [string, string]) => {
+        if (!(key in defaultTheme.light)) {
+          console.warn(`Theme key ${key} is not valid.`);
+        }
+        const _key = key as keyof Theme;
+        if (value.startsWith('rgb')) {
+          theme[_key] = RGBToHex(value);
+          console.warn(
+            `RGB values not officially supported, but were translated to hex (${value} -> ${theme[_key]})`
+          );
+        } else if (!value.startsWith('#')) {
+          theme[_key] = `#${value}`;
+          console.warn(
+            `Malformed hex value was missing # (${value} -> ${theme[_key]})`
+          );
+        }
+      });
+      dispatch('setTheme', theme);
+    },
+    [dispatch]
+  );
+
   const performActions = useCallback(
     async (
       ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
@@ -218,6 +244,7 @@ export function useCeloMethods(
     performActions,
     updateFeeCurrency,
     contractsCache,
+    updateTheme,
   };
 }
 
@@ -232,4 +259,5 @@ export interface CeloMethods {
   ) => Promise<unknown[]>;
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
   contractsCache?: undefined | unknown;
+  updateTheme: (theme: Theme) => void;
 }

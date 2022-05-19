@@ -114,6 +114,18 @@ You can also add new custom wallets that don't exist in the registry or aren't i
     description: 'My awesome description',
     url: 'https://example.com',
   }}
+  // Use the theme to customize the colors.
+  // If you provide a theme, you must provide all values below!
+  theme={{
+    primary: '#6366f1',
+    secondary: '#eef2ff',
+    text: '#000000',
+    textSecondary: '#1f2937',
+    textTertiary: '#64748b',
+    muted: '#e2e8f0',
+    background: '#ffffff',
+    error: '#ef4444',
+  }}
   connectModal={{
     title: <span>Connect your ExampleWallet</span>,
     providersOptions: {
@@ -333,9 +345,24 @@ react-celo provides a `feeCurrency` variable and an `updateFeeCurrency` function
 
 `import { CeloTokenContract } from '@celo/contractkit'`
 
-### Dark mode
+### Themes and dark-mode
 
-use-contrackit uses Tailwind for styling, to use the modal in dark mode simply add the class `tw-dark` to the root `<html />` tag of the web page.
+Currently react-celo supports dark mode and light (aka default) mode via tailwind out of the box, to use the modal in dark mode simply add the class `tw-dark` to the root `<html />` tag of the web page.
+
+If you default styles aren't to your taste, you can provide a theme object defined as such. You can do it during the setup of your dapp, at the `Provider` level. Or on the fly (let's say, if your users can change the theme of your dapp), via `updateTheme`.
+
+```ts
+interface Theme {
+  primary: string;
+  secondary: string;
+  text: string;
+  textSecondary: string;
+  textTertiary: string;
+  muted: string;
+  background: string;
+  error: string;
+}
+```
 
 ## Development
 

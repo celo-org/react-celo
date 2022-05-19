@@ -6,8 +6,8 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import IOSViewportFix from './components/ios-viewport-fix';
 
+import IOSViewportFix from './components/ios-viewport-fix';
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
 import { DEFAULT_NETWORKS, Mainnet } from './constants';
 import { ContractCacheBuilder } from './ContractCacheBuilder';
@@ -23,7 +23,7 @@ import {
   celoReactReducer,
   ReducerState,
 } from './react-celo-reducer';
-import { Dapp, Network } from './types';
+import { Dapp, Network, Theme } from './types';
 import { CeloMethods, useCeloMethods } from './use-celo-methods';
 import { loadPreviousConfig } from './utils/helpers';
 import { useIsMounted } from './utils/useIsMounted';
@@ -63,6 +63,7 @@ const initialState = {
   address: null,
   connectionCallback: null,
   feeCurrency: CeloContract.GoldToken,
+  theme: null,
 };
 
 export const [useReactCeloContext, ContextProvider] = createReactCeloContext();
@@ -91,6 +92,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   actionModal,
   dapp,
   network = Mainnet,
+  theme,
   networks = DEFAULT_NETWORKS,
   feeCurrency = CeloContract.GoldToken,
   buildContractsCache,
@@ -108,6 +110,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
     network: previousConfig.network || network,
     feeCurrency: previousConfig.feeCurrency || feeCurrency,
     networks,
+    theme,
     dapp: {
       ...dapp,
       icon: dapp.icon ?? `${dapp.url}/favicon.ico`,
@@ -151,6 +154,7 @@ export interface CeloProviderProps {
   dapp: Dapp;
   network?: Network;
   networks?: Network[];
+  theme?: Theme;
   feeCurrency?: CeloTokenContract;
   buildContractsCache?: ContractCacheBuilder;
   connectModal?: ConnectModalProps;

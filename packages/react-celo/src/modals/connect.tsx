@@ -21,22 +21,19 @@ import {
   WalletEntry,
 } from '../types';
 import { useCeloInternal } from '../use-celo';
+import { hexToRGB } from '../utils/helpers';
 import { defaultProviderSort, SortingPredicate } from '../utils/sort';
 import cls from '../utils/tailwind';
 import useProviders, { walletToProvider } from '../utils/useProviders';
+import useTheme from '../utils/useTheme';
 
 export const styles = cls({
   overlay: isMobile
     ? `
       tw-fixed
-      tw-bg-white
-      dark:tw-bg-slate-800
       tw-inset-0`
     : `
       tw-fixed
-      tw-bg-slate-100
-      dark:tw-bg-slate-700
-      tw-bg-opacity-75
       tw-inset-0`,
   modal: isMobile
     ? `
@@ -52,7 +49,6 @@ export const styles = cls({
       tw--translate-x-1/2
       tw--translate-y-1/2
       tw-border-none
-      tw-bg-none
       tw-padding-0
       tw-rounded-lg
       tw-drop-shadow
@@ -99,6 +95,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   title = 'Connect a wallet',
   providersOptions = {},
 }: ConnectModalProps) => {
+  const theme = useTheme();
   const { connectionCallback } = useCeloInternal();
   const [search, setSearch] = useState<string>('');
   const [adding, setAdding] = useState<Maybe<SupportedProviders>>(null);
@@ -178,6 +175,14 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
       onRequestClose={close}
       className={styles.modal}
       overlayClassName={styles.overlay}
+      style={{
+        content: {
+          background: theme.background,
+        },
+        overlay: {
+          background: hexToRGB(theme.background, 0.75),
+        },
+      }}
       {...reactModalProps}
       shouldCloseOnOverlayClick={!isMobile}
       ariaHideApp={false}

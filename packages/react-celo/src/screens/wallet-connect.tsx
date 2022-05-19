@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
-import { CopyText } from '../components';
 import ConnectorScreen from '../components/connector-screen';
+import { CopyText } from '../components/copy';
 import PrettyQrCode from '../components/qrcode';
 import Spinner from '../components/spinner';
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { Connector, WalletConnectProvider } from '../types';
 import cls from '../utils/tailwind';
+import useTheme from '../utils/useTheme';
 
 const styles = cls({
   contentContainer: `
@@ -17,14 +18,11 @@ const styles = cls({
     tw-flex-grow
     justify-center`,
   error: `
-    tw-text-red-500
     tw-text-md
     tw-pb-4`,
   desktopContainer: `
     tw-flex
-    tw-items-center
-    tw-text-slate-700
-    dark:tw-text-slate-400`,
+    tw-items-center`,
   desktopSectionName: `
     tw-text-lg
     tw-mt-4`,
@@ -37,11 +35,11 @@ const styles = cls({
     tw-flex-col
     tw-items-center
     tw-rounded-md
-    hover:tw-bg-slate-100
-    dark:hover:tw-bg-slate-700
     tw-transition
-    hover:
-    focus:tw-outline-none`,
+    focus:tw-outline-none
+    tw-will-change-transform
+    tw-scale-100
+    active:tw-scale-95`,
   desktopButtonApp: `
     tw-px-6
     tw-py-4
@@ -49,11 +47,11 @@ const styles = cls({
     tw-flex-col
     tw-items-center
     tw-rounded-md
-    hover:tw-bg-slate-100
-    dark:hover:tw-bg-slate-700
     tw-transition
-    hover:
-    focus:tw-outline-none`,
+    focus:tw-outline-none
+    tw-will-change-transform
+    tw-scale-100
+    active:tw-scale-95`,
   desktopCopyContainer: `
     tw-flex
     tw-items-center
@@ -66,6 +64,7 @@ export interface Props {
 }
 
 export const WalletConnect = ({ onSubmit, provider }: Props) => {
+  const theme = useTheme();
   const { uri, error, loading } = useWalletConnectConnector(
     onSubmit,
     isMobile,
@@ -96,7 +95,11 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
   let content = null;
   if (!uri || loading) {
     if (error) {
-      content = <p className={styles.error}>{error}</p>;
+      content = (
+        <p className={styles.error} style={{ color: theme.error }}>
+          {error}
+        </p>
+      );
     } else {
       content = <Spinner />;
     }

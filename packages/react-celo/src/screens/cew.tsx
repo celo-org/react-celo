@@ -6,6 +6,7 @@ import { CeloExtensionWalletConnector } from '../connectors';
 import { PROVIDERS } from '../constants';
 import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
+import useTheme from '../utils/useTheme';
 import { ConnectorProps } from '.';
 
 const styles = cls({
@@ -18,7 +19,6 @@ const styles = cls({
     grid tw-gap-8
     tw-flex-grow`,
   error: `
-    tw-text-red-500
     tw-text-md
     tw-pb-4`,
   spinnerContainer: `
@@ -29,12 +29,12 @@ const styles = cls({
     tw-flex-col`,
   disclaimer: `
     tw-text-center
-    tw-text-slate-500
     tw-text-sm`,
 });
 
 const provider = PROVIDERS['Celo Extension Wallet'];
 export const CeloExtensionWallet = ({ onSubmit }: ConnectorProps) => {
+  const theme = useTheme();
   const {
     network,
     initConnector,
@@ -60,7 +60,9 @@ export const CeloExtensionWallet = ({ onSubmit }: ConnectorProps) => {
       content={
         <div className={styles.container}>
           {error ? (
-            <p className={styles.error}>{error.message}</p>
+            <p className={styles.error} style={{ color: theme.error }}>
+              {error.message}
+            </p>
           ) : provider.canConnect() ? (
             <div className={styles.spinnerContainer}>
               <Spinner />
@@ -70,7 +72,10 @@ export const CeloExtensionWallet = ({ onSubmit }: ConnectorProps) => {
             </div>
           ) : (
             <div>
-              <p className={styles.disclaimer}>
+              <p
+                className={styles.disclaimer}
+                style={{ color: theme.textSecondary }}
+              >
                 {provider.name} not detected.
                 <br />
                 Are you sure it is installed in this browser?

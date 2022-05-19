@@ -1,64 +1,48 @@
 import React, { useState } from 'react';
 
+import Button from '../components/button';
 import ConnectorScreen from '../components/connector-screen';
 import Spinner from '../components/spinner';
 import { LedgerConnector } from '../connectors';
 import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
 import { useIsMounted } from '../utils/useIsMounted';
+import useTheme from '../utils/useTheme';
 import { ConnectorProps } from '.';
 
 const styles = cls({
   disclaimer: `
     tw-mt-3
-    tw-text-sm
-    tw-text-slate-800
-    dark:tw-text-slate-400`,
+    tw-text-sm`,
   container: `
     tw-list-disc
     tw-text-sm
     tw-list-inside
-    tw-mt-4
-    tw-text-slate-800
-    dark:tw-text-slate-400`,
+    tw-mt-4`,
   accountInfo: `
     tw-text-sm
-    tw-text-slate-800
-    dark:tw-text-slate-400
     tw-mt-4`,
   error: `
     tw-mt-4
-    tw-text-xs
-    tw-text-red-600`,
+    tw-text-xs`,
   input: `
     tw-ml-1
     tw-text-center
-    tw-text-slate-800
-    dark:tw-text-slate-300
     tw-border
-    border-light-slate-800
-    dark:border-light-slate-300
     tw-rounded
     tw-outline-none
-    focus:tw-outline-none`,
+    focus:tw-outline-none
+    tw-text-current`,
   button: `
     tw-mt-6
     tw-px-4
     tw-py-2
-    tw-border
-    tw-border-transparent
-    tw-rounded-md
-    tw-shadow-sm
-    tw-text-base
-    tw-font-medium
-    tw-text-white
-    tw-bg-gradient-to-r
-    tw-from-purple-600
-    tw-to-indigo-600
-    hover:tw-from-purple-700
-    hover:tw-to-indigo-700`,
+    tw-w-full`,
   spinnerContainer: `
-    tw-mt-5`,
+    tw-mt-5
+    tw-w-full
+    tw-flex
+    tw-justify-center`,
 });
 
 export const Ledger = ({ onSubmit }: ConnectorProps) => {
@@ -68,6 +52,7 @@ export const Ledger = ({ onSubmit }: ConnectorProps) => {
     initError: error,
     feeCurrency,
   } = useCeloInternal();
+  const theme = useTheme();
   const [submitting, setSubmitting] = useState(false);
   const [index, setIndex] = useState('0');
   const isMountedRef = useIsMounted();
@@ -93,7 +78,7 @@ export const Ledger = ({ onSubmit }: ConnectorProps) => {
     <ConnectorScreen
       title="Connect with your Ledger device"
       content={
-        <div>
+        <div style={{ color: theme.textSecondary }}>
           <p className={styles.disclaimer}>
             Securely connect to your ledger device. Before proceeding, please
             ensure you have:
@@ -125,20 +110,24 @@ export const Ledger = ({ onSubmit }: ConnectorProps) => {
             />
           </p>
 
-          {error && <p className={styles.error}>{error.message}</p>}
-
           {submitting ? (
             <div className={styles.spinnerContainer}>
               <Spinner />
             </div>
           ) : (
-            <button
+            <Button
               className={styles.button}
               onClick={submit}
               disabled={submitting}
             >
               Connect
-            </button>
+            </Button>
+          )}
+
+          {error && (
+            <p className={styles.error} style={{ color: theme.error }}>
+              {error.message}
+            </p>
           )}
         </div>
       }

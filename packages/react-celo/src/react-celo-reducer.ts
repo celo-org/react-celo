@@ -2,7 +2,7 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
 import { UnauthenticatedConnector } from './connectors';
 import { localStorageKeys } from './constants';
-import { Connector, Dapp, Maybe, Network } from './types';
+import { Connector, Dapp, Maybe, Network, Theme } from './types';
 import { clearPreviousConfig } from './utils/helpers';
 import localStorage from './utils/localStorage';
 
@@ -113,6 +113,7 @@ export interface ReducerState {
   pendingActionCount: number;
   address: Maybe<string>;
   feeCurrency: CeloTokenContract;
+  theme: Maybe<Theme>;
 
   connectionCallback: Maybe<(connector: Connector | false) => void>;
 }
