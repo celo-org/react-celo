@@ -32,7 +32,7 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
           },
         }}
       />
-      <div>
+      <div className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
         <Component {...pageProps} />
       </div>
     </CeloProvider>

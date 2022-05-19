@@ -443,7 +443,7 @@ export default function Wallet(): React.ReactElement {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
+      <main>
         <div className="font-semibold text-2xl">react-celo wallet</div>
 
         <input
