@@ -527,7 +527,7 @@ export const CELO_DANCE: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 export const NODEWALLET: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
     width="300"
     height="300"
     viewBox="0 0 300 300"
@@ -590,7 +590,6 @@ export const NODEWALLET: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
           id="Group_1727"
           data-name="Group 1727"
           transform="translate(1.279 1.279)"
-          style="mix-blend-mode: overlay;isolation: isolate"
         >
           <image
             id="Rectangle_759"
@@ -604,7 +603,6 @@ export const NODEWALLET: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
           id="Group_1728"
           data-name="Group 1728"
           transform="translate(38.275 27.752)"
-          style="mix-blend-mode: overlay;isolation: isolate"
         >
           <circle
             id="Ellipse_690"
