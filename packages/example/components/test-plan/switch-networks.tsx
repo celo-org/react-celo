@@ -8,8 +8,9 @@ import { useTestStatus } from './useTestStatus';
 
 export function SwitchNetwork() {
   const { updateNetwork, network, address } = useCelo();
-  const [disabled, setDisabled] = useState(true);
   const { status, errorMessage, wrapActionWithStatus } = useTestStatus();
+  const [disabled, setDisabled] = useState(true);
+  const [connectedNetwork, setConnectedNetwork] = useState('');
 
   const onSwitchNetworks = wrapActionWithStatus(async () => {
     await updateNetwork(Alfajores);
@@ -18,6 +19,10 @@ export function SwitchNetwork() {
   useEffect(() => {
     setDisabled(!address);
   }, [address]);
+
+  useEffect(() => {
+    setConnectedNetwork(network.name);
+  }, [network.name]);
 
   return (
     <TestBlock status={status}>
@@ -28,7 +33,7 @@ export function SwitchNetwork() {
       <Result status={status}>
         <Result.Default>
           <>
-            <p>Currently connected to {network.name}.</p>
+            <p>Currently connected to {connectedNetwork}.</p>
             <br />
             <p>Press the button above to connect to Alfajores network.</p>
           </>
