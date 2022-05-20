@@ -146,6 +146,12 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   );
 };
 
+/**
+ *
+ * @deprecated Use the alias {@link CeloProvider} Component instead.
+ */
+export const ContractKitProvider = CeloProvider;
+
 export interface CeloProviderProps {
   children: ReactNode;
   dapp: Dapp;

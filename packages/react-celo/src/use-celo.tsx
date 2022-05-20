@@ -98,6 +98,12 @@ export function useCelo<CC = undefined>(): UseCelo {
   };
 }
 
+/**
+ *
+ * @deprecated Use the alias {@link useCelo} hook instead.
+ */
+export const useContractKit = useCelo;
+
 interface UseCeloInternal extends UseCelo {
   connectionCallback: Maybe<(connector: Connector | false) => void>;
   initConnector: (connector: Connector) => Promise<void>;
@@ -105,7 +111,7 @@ interface UseCeloInternal extends UseCelo {
 }
 
 /**
- * useCelo with internal methods exposed. Package use only.
+ * @internal useCelo with internal methods exposed. Package use only.
  */
 export const useCeloInternal = (): UseCeloInternal => {
   const [
