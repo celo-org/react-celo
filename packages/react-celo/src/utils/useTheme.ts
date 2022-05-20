@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { useReactCeloContext } from '../react-celo-provider';
 import defaultTheme from '../theme/default';
 import { Mode, Theme } from '../types';
+import { useCeloInternal } from '../use-celo';
 
 class ModeState {
   private _mode = Mode.Light;
@@ -60,7 +60,7 @@ if (typeof MutationObserver !== 'undefined') {
 }
 
 export default function useTheme(): Theme {
-  const [{ theme }] = useReactCeloContext();
+  const { theme } = useCeloInternal();
   const [mode, setMode] = useState(state.mode);
 
   useEffect(() => {
