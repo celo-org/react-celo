@@ -2,22 +2,20 @@ import React, { useCallback, useState } from 'react';
 
 import cls from '../utils/tailwind';
 import { useIsMounted } from '../utils/useIsMounted';
+import useTheme from '../utils/useTheme';
 
 const styles = cls({
   button: `
     tw-flex
     tw-items-center
-    tw-text-slate-700
-    dark:tw-text-slate-400
-    hover:tw-text-slate-500
+    hover:tw-opacity-80
     focus:tw-outline-none`,
   text: `
     tw-mr-2`,
   svg: `
     tw-h-4
-    tw-w-4`,
-  copiedSvg: `
-    tw-text-green-500`,
+    tw-w-4
+    tw-text-current`,
 });
 
 interface Props {
@@ -28,6 +26,7 @@ interface Props {
 export const CopyText: React.FC<Props> = ({ text, payload }: Props) => {
   const [copied, setCopied] = useState(false);
   const isMountedRef = useIsMounted();
+  const theme = useTheme();
 
   const onClick = useCallback(async () => {
     await navigator.clipboard.writeText(payload);
@@ -41,11 +40,17 @@ export const CopyText: React.FC<Props> = ({ text, payload }: Props) => {
   }, [payload, isMountedRef]);
 
   return (
-    <button onClick={onClick} className={styles.button}>
+    <button
+      onClick={onClick}
+      className={styles.button}
+      style={{
+        color: theme.textTertiary,
+      }}
+    >
       <span className={styles.text}>{text}</span>
       {copied ? (
         <svg
-          className={`${styles.svg} ${styles.copiedSvg}`}
+          className={styles.svg}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

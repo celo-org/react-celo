@@ -1,4 +1,3 @@
-import React from 'react';
 import { isMobile } from 'react-device-detect';
 
 import {
@@ -139,29 +138,11 @@ export const PROVIDERS: {
   [SupportedProviders.MetaMask]: {
     name: SupportedProviders.MetaMask,
     type: WalletTypes.MetaMask,
-    description: isMobile ? (
-      isEthereumFromMetamask() ? (
-        'Connect with MetaMask Mobile App'
-      ) : (
-        'Open MetaMask Mobile App'
-      )
-    ) : (
-      <>
-        Use the Metamask browser extension. Celo support is limited.{' '}
-        <a
-          href="https://docs.celo.org/getting-started/wallets/using-metamask-with-celo"
-          target="_blank"
-          onClick={(e) => {
-            e.stopPropagation();
-            e.nativeEvent.stopPropagation();
-          }}
-          className="tw-underline tw-text-slate-900 dark:tw-text-slate-200 tw-font-medium"
-          rel="noopener noreferrer"
-        >
-          Learn more
-        </a>
-      </>
-    ),
+    description: isMobile
+      ? isEthereumFromMetamask()
+        ? 'Connect with MetaMask Mobile App'
+        : 'Open MetaMask Mobile App'
+      : 'Use the Metamask browser extension. Celo support is limited.',
     icon: METAMASK,
     canConnect: () => isMobile || isEthereumFromMetamask(),
     showInList: () => true,

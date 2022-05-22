@@ -129,3 +129,23 @@ export interface WalletEntry {
 }
 
 export type AppRegistry = Record<string, WalletEntry>;
+
+export enum Mode {
+  Dark = 'dark',
+  Light = 'light',
+}
+
+export interface Theme {
+  primary: string;
+  secondary: string;
+  text: string;
+  textSecondary: string;
+  textTertiary: string;
+  muted: string;
+  background: string;
+  error: string;
+}
+
+export type AppTheme = {
+  [K in Mode]: Theme;
+};

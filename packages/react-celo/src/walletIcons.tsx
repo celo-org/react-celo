@@ -74,7 +74,6 @@ export const ETHEREUM: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 export const PRIVATE_KEY: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
-    className="dark:tw-text-slate-300"
     style={{ height: '24px', width: '24px' }}
     aria-hidden="true"
     focusable="false"

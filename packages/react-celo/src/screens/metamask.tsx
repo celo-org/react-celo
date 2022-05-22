@@ -1,12 +1,14 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
 
+import Button from '../components/button';
 import ConnectorScreen from '../components/connector-screen';
 import Spinner from '../components/spinner';
 import { useInjectedConnector } from '../connectors/useMetaMaskConnector';
 import { PROVIDERS } from '../constants';
 import { isEthereumFromMetamask } from '../utils/ethereum';
 import cls from '../utils/tailwind';
+import useTheme from '../utils/useTheme';
 import { ConnectorProps } from '.';
 
 const styles = cls({
@@ -20,7 +22,6 @@ const styles = cls({
     tw-gap-8
     tw-flex-grow`,
   error: `
-    tw-text-red-500
     tw-text-md
     tw-pb-4`,
   spinnerContainer: `
@@ -31,28 +32,16 @@ const styles = cls({
     tw-flex-col`,
   disclaimer: `
     tw-text-center
-    tw-text-slate-500
     tw-text-sm`,
   button: `
     tw-mt-6
     tw-px-4
-    tw-py-2
-    tw-border
-    tw-border-transparent
-    tw-rounded-md
-    tw-shadow-sm
-    tw-text-base
-    tw-font-medium
-    tw-text-white
-    tw-bg-gradient-to-r
-    tw-from-purple-600
-    tw-to-indigo-600
-    hover:tw-from-purple-700
-    hover:tw-to-indigo-700`,
+    tw-py-2`,
 });
 
 const provider = PROVIDERS['MetaMask'];
 export const MetaMaskOrInjectedWallet = ({ onSubmit }: ConnectorProps) => {
+  const theme = useTheme();
   const isMetaMask = isEthereumFromMetamask();
   const { error } = useInjectedConnector(onSubmit, isMetaMask);
 
@@ -60,18 +49,23 @@ export const MetaMaskOrInjectedWallet = ({ onSubmit }: ConnectorProps) => {
 
   if (isMobile) {
     content = (
-      <a
+      <Button
+        as="a"
         href={provider.installURL}
         target="_blank"
         rel="noreferrer"
         className={styles.button}
       >
         {provider.description}
-      </a>
+      </Button>
     );
   } else {
     if (error) {
-      content = <p className={styles.error}>{error.message}</p>;
+      content = (
+        <p className={styles.error} style={{ color: theme.error }}>
+          {error.message}
+        </p>
+      );
     } else if (provider.canConnect()) {
       content = (
         <div className={styles.spinnerContainer}>
@@ -84,7 +78,10 @@ export const MetaMaskOrInjectedWallet = ({ onSubmit }: ConnectorProps) => {
     } else {
       content = (
         <div>
-          <p className={styles.disclaimer}>
+          <p
+            className={styles.disclaimer}
+            style={{ color: theme.textSecondary }}
+          >
             {provider.name} not detected.
             <br />
             Are you sure it is installed in this browser?

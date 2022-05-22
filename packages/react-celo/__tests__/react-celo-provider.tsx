@@ -6,8 +6,8 @@ import React, { ReactElement } from 'react';
 
 import { Mainnet } from '../src/constants';
 import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
-import { Network } from '../src/types';
-import { UseCelo, useCelo } from '../src/use-celo';
+import { Maybe, Network, Theme } from '../src/types';
+import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
 
 interface RenderArgs {
   providerProps: Partial<CeloProviderProps>;
@@ -79,10 +79,18 @@ describe('CeloProvider', () => {
   });
 
   describe('hook interface', () => {
-    const renderUseCK = (props: Partial<CeloProviderProps>) =>
+    const renderUseCelo = (props: Partial<CeloProviderProps>) =>
       renderHookInCKProvider<UseCelo>(useCelo, {
         providerProps: props,
       });
+
+    const renderUseCeloInternal = (props: Partial<CeloProviderProps>) =>
+      renderHookInCKProvider<UseCelo & { theme: Maybe<Theme> }>(
+        useCeloInternal,
+        {
+          providerProps: props,
+        }
+      );
 
     describe('regarding networks', () => {
       const networks: Network[] = [
@@ -111,13 +119,13 @@ describe('CeloProvider', () => {
       ];
 
       it('defaults to Celo Mainnet', () => {
-        const hookReturn = renderUseCK({});
+        const hookReturn = renderUseCelo({});
         expect(hookReturn.result.current.network).toEqual(Mainnet);
         hookReturn.unmount();
       });
 
       it('supports passing other networks', () => {
-        const hookReturn = renderUseCK({ networks, network: networks[0] });
+        const hookReturn = renderUseCelo({ networks, network: networks[0] });
         expect(hookReturn.result.current.networks).toEqual(networks);
 
         expect(hookReturn.result.current.network).toEqual(networks[0]);
@@ -125,7 +133,7 @@ describe('CeloProvider', () => {
       });
 
       it('updates the Current network', async () => {
-        const { result, rerender, unmount } = renderUseCK({ networks });
+        const { result, rerender, unmount } = renderUseCelo({ networks });
 
         // TODO Need to determine behavior when network is not in networks
         expect(result.current.network).toEqual(Mainnet);
@@ -144,12 +152,12 @@ describe('CeloProvider', () => {
     describe('regarding feeCurrency', () => {
       describe('when none given', () => {
         it('defaults to CELO', () => {
-          const { result, unmount } = renderUseCK({});
+          const { result, unmount } = renderUseCelo({});
           expect(result.current.feeCurrency).toEqual(CeloContract.GoldToken);
           unmount();
         });
         it('does not set any feeCurrency on the kit', () => {
-          const { result, unmount } = renderUseCK({});
+          const { result, unmount } = renderUseCelo({});
           expect(result.current.walletType).toEqual('Unauthenticated');
           expect(result.current.kit.connection.defaultFeeCurrency).toEqual(
             undefined
@@ -160,7 +168,7 @@ describe('CeloProvider', () => {
 
       describe('when feeCurrency WhitelistToken passed', () => {
         it('sets that as the feeCurrency', () => {
-          const { result } = renderUseCK({
+          const { result } = renderUseCelo({
             feeCurrency: CeloContract.StableTokenBRL,
           });
 
@@ -172,10 +180,43 @@ describe('CeloProvider', () => {
         it.todo('sets on the kit');
 
         it('allows updating feeCurrency', () => {
-          const { result } = renderUseCK({});
+          const { result } = renderUseCelo({});
 
           expect(result.current.supportsFeeCurrency).toBe(false);
         });
+      });
+    });
+
+    it('updates the current theme', () => {
+      const { result, rerender } = renderUseCeloInternal({ theme: null });
+
+      // FIXME Need to determine behavior when network is not in networks
+      expect(result.current.network).toEqual(Mainnet);
+
+      act(() => {
+        result.current.updateTheme({
+          background: '#000',
+          primary: '#000',
+          secondary: '#000',
+          muted: '#000',
+          error: '#000',
+          text: '#000',
+          textSecondary: '#000',
+          textTertiary: '#000',
+        });
+      });
+
+      rerender();
+
+      expect(result.current.theme).toEqual({
+        background: '#000',
+        primary: '#000',
+        secondary: '#000',
+        muted: '#000',
+        error: '#000',
+        text: '#000',
+        textSecondary: '#000',
+        textTertiary: '#000',
       });
     });
   });

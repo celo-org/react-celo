@@ -4,11 +4,10 @@ import { isMobile } from 'react-device-detect';
 import { SupportedProviders } from '../constants';
 import { Maybe } from '../types';
 import cls from '../utils/tailwind';
+import useTheme from '../utils/useTheme';
 
 const styles = cls({
-  container: `
-    tw-bg-white
-    dark:tw-bg-slate-800`,
+  container: ``,
   innerContainer: `
     tw-relative
     tw-overflow-hidden
@@ -16,25 +15,15 @@ const styles = cls({
   closeButton: `
     tw-absolute
     tw-top-5
-    tw-right-2
-    tw-text-slate-700
-    dark:tw-text-slate-400
-    hover:tw-text-slate-800
-    dark:hover:tw-text-slate-300
-    hover:tw-bg-slate-100
-    dark:hover:tw-bg-slate-700
+    ${isMobile ? 'tw-right-2' : 'tw-right-5'}
+    hover:tw-opacity-80
     tw-rounded
     tw-z-20`,
   backButton: `
     tw-absolute
     tw-top-5
-    tw-left-2
-    tw-text-slate-700
-    dark:tw-text-slate-400
-    hover:tw-text-slate-800
-    dark:hover:tw-text-slate-300
-    hover:tw-bg-slate-100
-    dark:hover:tw-bg-slate-700
+    ${isMobile ? 'tw-left-2' : 'tw-left-5'}
+    hover:tw-opacity-80
     tw-rounded
     tw-z-20`,
   svg: `
@@ -46,8 +35,6 @@ const styles = cls({
     tw-flex-row
     tw-border-solid
     tw-divide-x
-    tw-divide-slate-100
-    dark:tw-divide-slate-700
     tw-h-full`,
   trayContainer: `
     tw-flex
@@ -79,6 +66,7 @@ export default function ModalContainer({
   tray,
   content,
 }: Props) {
+  const theme = useTheme();
   let contentToRender = null;
 
   if (isMobile) {
@@ -91,14 +79,25 @@ export default function ModalContainer({
     contentToRender = (
       <div className={styles.layout}>
         <div className={styles.trayContainer}>{tray}</div>
-        <div className={styles.contentContainer}>{content}</div>
+        <div
+          className={styles.contentContainer}
+          style={{ borderColor: theme.muted }}
+        >
+          {content}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={`use-ck ${styles.container}`}>
-      <div className={`use-ck-connect-container ${styles.innerContainer}`}>
+    <div
+      className={`use-ck ${styles.container}`}
+      style={{ background: theme.background }}
+    >
+      <div
+        className={`use-ck-connect-container ${styles.innerContainer}`}
+        style={{ color: theme.textSecondary }}
+      >
         <button onClick={onClose} className={styles.closeButton}>
           {/* https://fontawesome.com/icons/xmark?s=solid */}
           <svg

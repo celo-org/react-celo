@@ -19,6 +19,7 @@ const initialState: ReducerState = {
   address: null,
   feeCurrency: CeloContract.GoldToken,
   connectionCallback: null,
+  theme: null,
 };
 
 describe('reducer', () => {

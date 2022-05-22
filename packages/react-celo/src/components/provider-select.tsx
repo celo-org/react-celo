@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { Provider } from '../types';
 import cls from '../utils/tailwind';
+import useTheme from '../utils/useTheme';
 
 interface Props {
   provider: Provider;
@@ -23,15 +24,9 @@ const styles = cls({
     tw-transition
     tw-rounded-md
     focus:tw-outline-none
+    tw-will-change-transform
     tw-scale-100
-    active:tw-scale-95
-    hover:tw-bg-slate-100
-    dark:hover:tw-bg-slate-700`,
-  selectedButton: `
-      tw-bg-indigo-500
-      hover:tw-bg-indigo-500
-      dark:hover:tw-bg-indigo-500
-    `,
+    active:tw-scale-95`,
   rowContainer: `
     tw-flex 
     tw-flex-shrink-0 
@@ -41,7 +36,6 @@ const styles = cls({
     tw-my-auto 
     tw-rounded
     tw-p-0.5
-    tw-bg-slate-100
     ${isMobile ? 'tw-h-10 tw-w-10' : 'tw-h-7 tw-w-7'}`,
   icon: `
     tw-h-full 
@@ -49,15 +43,9 @@ const styles = cls({
   name: `
     tw-font-medium 
     tw-text-sm
-    tw-antialiased
-    dark:tw-text-slate-300`,
-  selectedName: `
-    tw-text-white
-    dark:tw-text-white`,
+    tw-antialiased`,
   description: `
-    tw-text-sm 
-    tw-text-slate-600 
-    dark:tw-text-slate-400`,
+    tw-text-sm`,
 });
 
 export const ProviderSelect: React.FC<Props> = ({
@@ -65,13 +53,25 @@ export const ProviderSelect: React.FC<Props> = ({
   selected,
   onClick,
 }: Props) => {
+  const theme = useTheme();
+  const [hover, setHover] = useState(false);
+
   return (
     <button
-      className={`${styles.button} ${selected ? styles.selectedButton : ''}`}
+      className={styles.button}
+      style={{
+        background: selected ? theme.primary : hover ? theme.muted : '',
+        color: selected ? theme.secondary : theme.text,
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       onClick={onClick}
     >
       <div className={styles.rowContainer}>
-        <span className={styles.iconContainer}>
+        <span
+          className={styles.iconContainer}
+          style={{ background: theme.muted }}
+        >
           {typeof provider.icon === 'string' ? (
             <img
               src={provider.icon}
@@ -85,12 +85,20 @@ export const ProviderSelect: React.FC<Props> = ({
       </div>
       <div>
         <div
-          className={`${styles.name} ${selected ? styles.selectedName : ''}`}
+          className={styles.name}
+          style={{
+            color: selected ? theme.secondary : theme.text,
+          }}
         >
           {provider.name}
         </div>
         {isMobile && (
-          <div className={styles.description}>{provider.description}</div>
+          <div
+            className={styles.description}
+            style={{ color: theme.textSecondary }}
+          >
+            {provider.description}
+          </div>
         )}
       </div>
     </button>

@@ -1,7 +1,7 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
-import { useCelo } from '@celo/react-celo';
+import { Theme, useCelo } from '@celo/react-celo';
 import { ensureLeading0x } from '@celo/utils/lib/address';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 
 import { PrimaryButton, SecondaryButton, toast } from '../components';
+import { ThemeButton, themes } from '../components/theme-button';
 import { TYPED_DATA } from '../utils';
 
 interface Summary {
@@ -39,6 +40,12 @@ const feeTokenMap: FeeTokenMap = {
 function truncateAddress(address: string) {
   return `${address.slice(0, 8)}...${address.slice(36)}`;
 }
+const html =
+  typeof document !== 'undefined' &&
+  (document.getElementsByTagName('html')[0] as HTMLElement);
+function isDark() {
+  return html && html.classList.contains('tw-dark');
+}
 
 export default function Home(): React.ReactElement {
   const {
@@ -54,8 +61,10 @@ export default function Home(): React.ReactElement {
     walletType,
     feeCurrency,
     updateFeeCurrency,
+    updateTheme,
   } = useCelo();
 
+  const [_theme, selectTheme] = useState<Theme | null>(null);
   const [summary, setSummary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
 
@@ -170,11 +179,10 @@ export default function Home(): React.ReactElement {
   };
 
   const toggleDarkMode = useCallback(() => {
-    const html = document.getElementsByTagName('html')[0] as HTMLElement;
-    if (html.classList.contains('tw-dark')) {
-      html.classList.remove('tw-dark');
+    if (isDark()) {
+      html && html.classList.remove('tw-dark');
     } else {
-      html.classList.add('tw-dark');
+      html && html.classList.add('tw-dark');
     }
   }, []);
 
@@ -196,7 +204,11 @@ export default function Home(): React.ReactElement {
       <div className="toggle-dark">
         <span>Toggle modal's dark mode</span>
         <label className="switch">
-          <input type="checkbox" onChange={toggleDarkMode} />
+          <input
+            type="checkbox"
+            onChange={toggleDarkMode}
+            defaultValue={isDark() ? 'checked' : 'unchecked'}
+          />
           <span className="slider round"></span>
         </label>
       </div>
@@ -324,6 +336,21 @@ export default function Home(): React.ReactElement {
             <a target="_blank" className="text-blue-500" href="/wallet">
               Example wallet
             </a>
+          </div>
+          <div className="text-slate-600 mb-4">
+            <div className="grid grid-flow-col gap-4 my-4">
+              {themes.map((theme, i) => (
+                <ThemeButton
+                  key={i}
+                  theme={theme}
+                  currentTheme={_theme}
+                  onClick={(theme) => {
+                    updateTheme(theme);
+                    selectTheme(theme);
+                  }}
+                />
+              ))}
+            </div>
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center space-x-8 mb-4">

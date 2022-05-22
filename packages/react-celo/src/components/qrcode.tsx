@@ -9,6 +9,7 @@ import React, { ReactElement, useMemo } from 'react';
 
 import { QRCodeClass } from '../global';
 import cls from '../utils/tailwind';
+import useTheme from '../utils/useTheme';
 
 // From https://github.com/soldair/node-qrcode#qr-code-capacity
 const qrCodeCapacity: [QRCodeErrorCorrectionLevel, number][] = [
@@ -127,9 +128,7 @@ function matrixToDots(matrix: ReturnType<typeof generateMatrix>, size: number) {
 
 const styles = cls({
   container: `
-    tw-border-slate-100
     tw-border
-    dark:tw-border-slate-700
     tw-relative
     tw-select-none
     tw-p-5
@@ -143,12 +142,13 @@ type Props = {
 };
 
 const PrettyQrCode = ({ size = 200, value }: Props) => {
+  const theme = useTheme();
   const matrix = useMemo(() => generateMatrix(value), [value]);
   const corners = useMemo(() => matrixToCorners(matrix, size), [size, matrix]);
   const dots = useMemo(() => matrixToDots(matrix, size), [size, matrix]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={{ borderColor: theme.muted }}>
       <svg height={size} style={{ all: 'revert' }} width={size}>
         <rect fill="transparent" height={size} width={size} />
         {corners}
