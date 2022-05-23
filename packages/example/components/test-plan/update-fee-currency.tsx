@@ -8,17 +8,18 @@ import { useDisabledTest } from './useDisabledTest';
 import { useTestStatus } from './useTestStatus';
 
 export function UpdateFeeCurrency() {
-  const { updateFeeCurrency, feeCurrency, supportsFeeCurrency } = useCelo();
+  const { updateFeeCurrency, feeCurrency, supportsFeeCurrency, address } =
+    useCelo();
   const [disabledTest, setDisabledTest] = useDisabledTest();
   const { status, errorMessage, wrapActionWithStatus, setStatus } =
     useTestStatus();
 
   useEffect(() => {
-    if (supportsFeeCurrency !== undefined && !supportsFeeCurrency) {
+    if (address && supportsFeeCurrency !== undefined && !supportsFeeCurrency) {
       setDisabledTest(true);
       setStatus.error('Wallet does not support updating fee currency.');
     }
-  }, [supportsFeeCurrency, setStatus, setDisabledTest]);
+  }, [address, supportsFeeCurrency, setStatus, setDisabledTest]);
 
   const onUpdateCurrency = wrapActionWithStatus(async () => {
     setDisabledTest(true);
