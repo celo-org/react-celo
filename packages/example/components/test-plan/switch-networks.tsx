@@ -2,26 +2,29 @@ import { Alfajores, useCelo } from '@celo/react-celo';
 import { useEffect, useState } from 'react';
 
 import { SuccessIcon } from './success-icon';
-import { useTestStatus } from './useTestStatus';
 import { Result, TestBlock } from './ui';
+import { useDisabledTest } from './useDisabledTest';
+import { Status, useTestStatus } from './useTestStatus';
 
 export function SwitchNetwork() {
-  const { updateNetwork, network, address } = useCelo();
-  const { status, errorMessage, wrapActionWithStatus } = useTestStatus();
-  const [disabled, setDisabled] = useState(true);
+  const { updateNetwork, network } = useCelo();
+  const { status, errorMessage, wrapActionWithStatus, setStatus } =
+    useTestStatus();
+  const [disabledTest, setDisabledTest] = useDisabledTest();
   const [connectedNetwork, setConnectedNetwork] = useState('');
 
   const onSwitchNetworks = wrapActionWithStatus(async () => {
+    setDisabledTest(true);
     await updateNetwork(Alfajores);
   });
 
   useEffect(() => {
-    setDisabled(!address);
-  }, [address]);
-
-  useEffect(() => {
     setConnectedNetwork(network.name);
-  }, [network.name]);
+    if (status === Status.NotStarted && network.name === Alfajores.name) {
+      setStatus.error('Already set to Alfajores');
+      setDisabledTest(true);
+    }
+  }, [network.name, setStatus, status, setDisabledTest]);
 
   return (
     <TestBlock
@@ -32,11 +35,7 @@ export function SwitchNetwork() {
     >
       <Result status={status}>
         <Result.Default>
-          <>
-            <p>Currently connected to {connectedNetwork}.</p>
-            <br />
-            <p>Press the button above to connect to Alfajores network.</p>
-          </>
+          <p>Currently connected to {connectedNetwork}.</p>
         </Result.Default>
         <Result.Success>
           <SuccessIcon /> Switched to Alfajores
