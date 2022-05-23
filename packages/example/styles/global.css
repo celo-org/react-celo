@@ -80,3 +80,60 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+.test-tag {
+  text-transform: lowercase;
+  display: inline-block;
+  border-radius: 10px;
+  padding: 2px 10px;
+  height: max-content;
+  transform: translate(0, 9px);
+  font-size: 14px;
+}
+
+.success {
+  background: #43aa8b;
+  color: white;
+}
+
+.success-text {
+  color: #43aa8b;
+}
+
+.not-started {
+  background: #577590;
+  color: white;
+}
+
+.error {
+  background: #f94144;
+  color: white;
+}
+
+.pending {
+  background-color: #f9c74f;
+  color: black;
+}
+
+.test-block {
+  display: flex;
+  margin-top: 20px;
+}
+
+.test-instructions {
+  margin-left: 20px;
+}
+
+.test-result {
+  display: inline-block;
+  padding: 10px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid #dbdbdb;
+  width: 100%;
+}
+
+.tag-column {
+  min-width: 100px;
+  text-align: right;
+}
