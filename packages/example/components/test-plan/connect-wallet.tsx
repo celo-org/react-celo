@@ -1,5 +1,5 @@
 import { Mainnet, useCelo } from '@celo/react-celo';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { SuccessIcon } from './success-icon';
 import { Result, TestBlock } from './ui';
@@ -7,12 +7,19 @@ import { Status, useTestStatus } from './useTestStatus';
 
 export function ConnectWalletCheck() {
   const { connect, address, updateNetwork } = useCelo();
-  const { status, errorMessage, wrapActionWithStatus } = useTestStatus();
+  const { status, errorMessage, wrapActionWithStatus, setStatus } =
+    useTestStatus();
 
   const onConnectWallet = wrapActionWithStatus(async () => {
     await updateNetwork(Mainnet);
     await connect();
   });
+
+  useEffect(() => {
+    if (address) {
+      setStatus.success();
+    }
+  }, [address, setStatus]);
 
   return (
     <TestBlock
