@@ -1,7 +1,7 @@
 import { UseCelo } from '@celo/react-celo';
 import Web3 from 'web3';
 
-export async function sendTransaction(
+export async function sendTestTransaction(
   performActions: UseCelo['performActions']
 ) {
   await performActions(async (k) => {

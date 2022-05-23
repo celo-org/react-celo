@@ -1,6 +1,6 @@
 import { useCelo } from '@celo/react-celo';
 
-import { sendTransaction } from '../../utils/send-transaction';
+import { sendTestTransaction } from '../../utils/send-test-transaction';
 import { SuccessIcon } from './success-icon';
 import { Result, TestBlock } from './ui';
 import { useDisabledTest } from './useDisabledTest';
@@ -13,7 +13,7 @@ export function SendTransaction() {
 
   const onRunTest = wrapActionWithStatus(async () => {
     setDisabled(true);
-    await sendTransaction(performActions);
+    await sendTestTransaction(performActions);
   });
 
   return (
