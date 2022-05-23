@@ -1,10 +1,9 @@
 import { Alfajores, useCelo } from '@celo/react-celo';
 import { useEffect, useState } from 'react';
 
-import { PrimaryButton } from '../buttons';
 import { SuccessIcon } from './success-icon';
-import { Header, Result, TestBlock } from './ui';
 import { useTestStatus } from './useTestStatus';
+import { Result, TestBlock } from './ui';
 
 export function SwitchNetwork() {
   const { updateNetwork, network, address } = useCelo();
@@ -25,11 +24,12 @@ export function SwitchNetwork() {
   }, [network.name]);
 
   return (
-    <TestBlock status={status}>
-      <Header>Switch network</Header>
-      <PrimaryButton onClick={onSwitchNetworks} disabled={disabled}>
-        Test switching networks
-      </PrimaryButton>
+    <TestBlock
+      status={status}
+      title="Switch network"
+      disabledTest={disabledTest}
+      onRunTest={onSwitchNetworks}
+    >
       <Result status={status}>
         <Result.Default>
           <>

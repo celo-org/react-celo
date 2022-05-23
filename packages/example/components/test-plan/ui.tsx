@@ -1,5 +1,6 @@
 import React from 'react';
 import { ErrorIcon } from './error-icon';
+import { SecondaryButton } from '../buttons';
 
 import { Status } from './useTestStatus';
 
@@ -13,15 +14,34 @@ export function TestTag({ type }: { type: Status }) {
 
 export function TestBlock({
   status,
+  title,
+  onRunTest,
+  disabledTest,
   children,
-}: React.PropsWithChildren<{ status: Status }>) {
+}: React.PropsWithChildren<{
+  title: string;
+  status: Status;
+  disabledTest: boolean;
+  onRunTest: () => void;
+}>) {
   return (
     <div className="test-block">
       <div className="tag-column">
         <TestTag type={status} />
       </div>
-
-      <div className="test-instructions">{children}</div>
+      <div className="test-instructions">
+        <div className="flex items-center">
+          <Header>{title}</Header>
+          <SecondaryButton
+            className="underline"
+            onClick={onRunTest}
+            disabled={disabledTest}
+          >
+            Run
+          </SecondaryButton>
+        </div>
+        {children}
+      </div>
     </div>
   );
 }

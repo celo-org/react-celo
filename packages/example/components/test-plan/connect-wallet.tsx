@@ -1,9 +1,8 @@
 import { Mainnet, useCelo } from '@celo/react-celo';
 import React from 'react';
 
-import { PrimaryButton } from '..';
 import { SuccessIcon } from './success-icon';
-import { Header, Result, TestBlock } from './ui';
+import { Result, TestBlock } from './ui';
 import { Status, useTestStatus } from './useTestStatus';
 
 export function ConnectWalletCheck() {
@@ -16,14 +15,12 @@ export function ConnectWalletCheck() {
   });
 
   return (
-    <TestBlock status={status}>
-      <Header>Connect wallet (Mainnet)</Header>
-      <PrimaryButton
-        onClick={onConnectWallet}
-        disabled={status !== Status.NotStarted}
-      >
-        Connect wallet
-      </PrimaryButton>
+    <TestBlock
+      status={status}
+      title="Connect wallet (Mainnet)"
+      disabledTest={status !== Status.NotStarted}
+      onRunTest={onConnectWallet}
+    >
       <Result status={status}>
         <Result.Default>
           <p>Press the button above to choose a wallet to connect to.</p>
