@@ -31,6 +31,8 @@ export const useTestStatus = () => {
 
         if (hasMessage(error)) {
           setErrorMessage(error.message);
+        } else if (typeof error === 'string') {
+          setErrorMessage(error);
         } else {
           setErrorMessage(JSON.stringify(error));
         }
