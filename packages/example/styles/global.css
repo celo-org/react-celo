@@ -87,7 +87,8 @@ input:checked + .slider:before {
   border-radius: 10px;
   padding: 2px 10px;
   height: max-content;
-  transform: translate(0, 6px);
+  transform: translate(0, 9px);
+  font-size: 14px;
 }
 
 .success {
@@ -130,7 +131,6 @@ input:checked + .slider:before {
   border-radius: 4px;
   border: 1px solid #dbdbdb;
   width: 100%;
-  margin-top: 20px;
 }
 
 .tag-column {

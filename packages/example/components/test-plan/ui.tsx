@@ -1,7 +1,7 @@
 import React from 'react';
-import { ErrorIcon } from './error-icon';
 import { SecondaryButton } from '../buttons';
 
+import { ErrorIcon } from './error-icon';
 import { Status } from './useTestStatus';
 
 export function TestTag({ type }: { type: Status }) {
@@ -47,7 +47,7 @@ export function TestBlock({
 }
 
 export const Header: React.FC = (props) => (
-  <h3 className="font-semibold text-2xl" {...props} />
+  <h3 className="font-semibold text-base" {...props} />
 );
 
 export const Text: React.FC = (props) => (
@@ -75,14 +75,16 @@ export function Result(props: React.PropsWithChildren<{ status: Status }>) {
 export const Success: React.FC = (props) => {
   const context = useResultContext();
   return context === Status.Success ? (
-    <p className="text-[#43aa8b]">{props.children}</p>
+    <p className="text-[#43aa8b] flex items-center gap-[5px]">
+      {props.children}
+    </p>
   ) : null;
 };
 
 export const ErrorText: React.FC = (props) => {
   const context = useResultContext();
   return context === Status.Error ? (
-    <p className="text-[#f94144]">
+    <p className="text-[#f94144] flex items-center gap-[5px]">
       <ErrorIcon /> {props.children}
     </p>
   ) : null;
