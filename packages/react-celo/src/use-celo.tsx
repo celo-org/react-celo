@@ -2,7 +2,7 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from './constants';
-import { Dispatcher, useReactCeloContext } from './react-celo-provider';
+import { useReactCeloContext } from './react-celo-provider';
 import { Connector, Dapp, Maybe, Network, Theme } from './types';
 
 export interface UseCelo {
