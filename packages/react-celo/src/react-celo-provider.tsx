@@ -101,6 +101,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   const previousConfig = useMemo(
     () => loadPreviousConfig(network, feeCurrency, networks),
     // We only want this to run on mount so the deps array is empty.
+    // This is OK because the previousConfig is only used to create the initial reducer state
     /* eslint-disable-next-line */
     []
   );
