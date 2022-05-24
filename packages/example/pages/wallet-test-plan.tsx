@@ -1,13 +1,13 @@
-import { CeloProvider, Mainnet, useCelo } from '@celo/react-celo';
+import { CeloProvider, Mainnet } from '@celo/react-celo';
 import React from 'react';
 
 import { ConnectWalletCheck } from '../components/test-plan/connect-wallet';
+import DisconnectButton from '../components/test-plan/disconnect-button';
 import { SendTransaction } from '../components/test-plan/send-transaction';
 import { SwitchNetwork } from '../components/test-plan/switch-networks';
 import { UpdateFeeCurrency } from '../components/test-plan/update-fee-currency';
 
 export default function WalletTestPlan(): React.ReactElement {
-  const { destroy } = useCelo();
   return (
     <CeloProvider
       dapp={{
@@ -31,12 +31,7 @@ export default function WalletTestPlan(): React.ReactElement {
           test.
         </div>
         <div>
-          <button
-            className="inline underline text-purple-700"
-            onClick={destroy}
-          >
-            Disconnect wallet
-          </button>
+          <DisconnectButton />
         </div>
         <ConnectWalletCheck />
         <SwitchNetwork />
