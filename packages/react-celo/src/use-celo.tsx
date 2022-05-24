@@ -2,7 +2,7 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from './constants';
-import { useReactCeloContext } from './react-celo-provider';
+import { Dispatcher, useReactCeloContext } from './react-celo-provider';
 import { Connector, Dapp, Maybe, Network, Theme } from './types';
 
 export interface UseCelo {
@@ -112,6 +112,7 @@ interface UseCeloInternal extends UseCelo {
   initConnector: (connector: Connector) => Promise<void>;
   pendingActionCount: number;
   theme: Maybe<Theme>;
+  resetInitError: () => void;
 }
 
 /**
@@ -121,7 +122,7 @@ export const useCeloInternal = (): UseCeloInternal => {
   const [
     { pendingActionCount, connectionCallback, theme },
     _dispatch,
-    { initConnector },
+    { initConnector, resetInitError },
   ] = useReactCeloContext();
 
   return {
@@ -130,5 +131,6 @@ export const useCeloInternal = (): UseCeloInternal => {
     initConnector,
     pendingActionCount,
     theme,
+    resetInitError,
   };
 };

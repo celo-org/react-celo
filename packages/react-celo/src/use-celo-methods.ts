@@ -236,9 +236,14 @@ export function useCeloMethods(
 
   const contractsCache = useContractsCache(buildContractsCache, connector);
 
+  const resetInitError = useCallback(() => {
+    dispatch('setConnectorInitError', null);
+  }, [dispatch]);
+
   return {
     destroy,
     initConnector,
+    resetInitError,
     updateNetwork,
     connect,
     getConnectedKit,
@@ -250,6 +255,7 @@ export function useCeloMethods(
 }
 
 export interface CeloMethods {
+  resetInitError: () => void;
   destroy: () => Promise<void>;
   initConnector: (connector: Connector) => Promise<void>;
   updateNetwork: (network: Network) => Promise<void>;
