@@ -1,7 +1,7 @@
 import { CeloContract } from '@celo/contractkit';
 
 import { UnauthenticatedConnector } from '../../src/connectors';
-import { Alfajores, Baklava } from '../../src/constants';
+import { Alfajores, Baklava, localStorageKeys } from '../../src/constants';
 import { celoReactReducer, ReducerState } from '../../src/react-celo-reducer';
 
 const initialState: ReducerState = {
@@ -22,13 +22,42 @@ const initialState: ReducerState = {
   theme: null,
 };
 
-describe('reducer', () => {
-  it('works', () => {
-    const newState = celoReactReducer(initialState, {
+describe('setAddress', () => {
+  let newState: ReducerState;
+  beforeEach(() => {
+    newState = celoReactReducer(initialState, {
       type: 'setAddress',
       payload: 'test-address',
     });
-
+  });
+  it('adds new address', () => {
     expect(newState).toEqual({ ...initialState, address: 'test-address' });
+  });
+  it('saves the address in localStorage', () => {
+    expect(localStorage.getItem(localStorageKeys.lastUsedAddress)).toEqual(
+      'test-address'
+    );
+  });
+});
+
+describe('destroy', () => {
+  let newState: ReducerState;
+  beforeEach(() => {
+    newState = celoReactReducer(
+      { ...initialState, address: '0x0123456789abcdf' },
+      { type: 'destroy', payload: undefined }
+    );
+  });
+  it('removes the address from state', () => {
+    expect(newState.address).toEqual(null);
+  });
+
+  it('removes the address from localStorage', () => {
+    newState = celoReactReducer(
+      { ...initialState, address: '0x0123456789abcdf' },
+      { type: 'destroy', payload: undefined }
+    );
+
+    expect(newState.address).toEqual(null);
   });
 });

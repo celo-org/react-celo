@@ -96,7 +96,7 @@ export function celoReactReducer(
       } else {
         console.error(
           new Error(
-            `Unrecognized action type ${action.type} in contractKitReducer`
+            `Unrecognized action type ${action.type} in celoReactReducer`
           )
         );
       }

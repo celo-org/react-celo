@@ -188,7 +188,7 @@ describe('CeloProvider', () => {
     });
 
     it('updates the current theme', () => {
-      const { result, rerender } = renderUseCeloInternal({ theme: null });
+      const { result, rerender } = renderUseCeloInternal({});
 
       // FIXME Need to determine behavior when network is not in networks
       expect(result.current.network).toEqual(Mainnet);
