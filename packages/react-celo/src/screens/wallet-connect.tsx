@@ -79,9 +79,7 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
       let url;
       if (platform === 'web') {
         if (!provider?.getDesktopLink) return;
-        url = `${provider.getDesktopLink(uri)}/wc?uri=${encodeURIComponent(
-          uri
-        )}`;
+        url = provider.getDesktopLink(uri);
       } else {
         if (!provider?.getDeepLink) return;
         url = provider.getDeepLink(uri);
