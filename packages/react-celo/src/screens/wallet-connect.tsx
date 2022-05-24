@@ -6,6 +6,7 @@ import { CopyText } from '../components/copy';
 import PrettyQrCode from '../components/qrcode';
 import Spinner from '../components/spinner';
 import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
+import { Platform } from '../constants';
 import { Connector, WalletConnectProvider } from '../types';
 import cls from '../utils/tailwind';
 import useTheme from '../utils/useTheme';
@@ -22,36 +23,27 @@ const styles = cls({
     tw-pb-4`,
   desktopContainer: `
     tw-flex
-    tw-items-center`,
+    tw-items-center
+    tw-gap-9`,
   desktopSectionName: `
     tw-text-lg
     tw-mt-4`,
-  desktopButtonWeb: `
+  desktopButton: `
     tw-px-6
     tw-py-4
-    tw-mr-9
-    md:tw-mr-12
     tw-flex
     tw-flex-col
     tw-items-center
+    tw-grow
     tw-rounded-md
     tw-transition
     focus:tw-outline-none
     tw-will-change-transform
     tw-scale-100
     active:tw-scale-95`,
-  desktopButtonApp: `
-    tw-px-6
-    tw-py-4
-    tw-flex
-    tw-flex-col
-    tw-items-center
-    tw-rounded-md
-    tw-transition
-    focus:tw-outline-none
-    tw-will-change-transform
-    tw-scale-100
-    active:tw-scale-95`,
+  desktopDisclaimer: `
+      tw-text-sm
+      tw-pb-4`,
   desktopCopyContainer: `
     tw-flex
     tw-items-center
@@ -68,23 +60,18 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
   const { uri, error, loading } = useWalletConnectConnector(
     onSubmit,
     isMobile,
-    provider?.getDeepLink,
+    provider?.getLink &&
+      ((uri: string) =>
+        provider.getLink!(uri, isMobile ? Platform.Mobile : Platform.Desktop)),
     provider?.walletConnectId
   );
 
   const onClickPlatform = useCallback(
-    (platform: 'web' | 'desktop'): void => {
+    (platform: Platform): void => {
       if (!uri) return;
 
-      let url;
-      if (platform === 'web') {
-        if (!provider?.getWebLink) return;
-        url = provider.getWebLink(uri);
-      } else {
-        if (!provider?.getDeepLink) return;
-        url = provider.getDeepLink(uri);
-      }
-      window.open(url, '_blank');
+      const url = provider?.getLink?.(uri, platform);
+      if (url) window.open(url, '_blank');
     },
     [provider, uri]
   );
@@ -101,30 +88,42 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
     } else {
       content = <Spinner />;
     }
-  } else if (provider?.getWebLink && !isMobile) {
-    content = (
-      <div>
-        <div className={styles.desktopContainer}>
-          <button
-            onClick={() => onClickPlatform('web')}
-            className={styles.desktopButtonWeb}
-          >
-            <WebIcon />
-            <div className={styles.desktopSectionName}>Web</div>
-          </button>
-          <button
-            onClick={() => onClickPlatform('desktop')}
-            className={styles.desktopButtonApp}
-          >
-            <DesktopIcon />
-            <div className={styles.desktopSectionName}>Desktop</div>
-          </button>
+  } else if (!isMobile) {
+    if (!provider.supportedPlatforms || !provider.supportedPlatforms.length) {
+      content = (
+        <div>
+          <div className={styles.desktopContainer}>
+            <span className={styles.desktopDisclaimer}>
+              {provider.name} doesn't seem to support deeplinking, but you can
+              still copy the wallet-connect URI to connect.
+            </span>
+          </div>
+          <div className={styles.desktopCopyContainer}>
+            <CopyText text="Copy to clipboard" payload={uri} />
+          </div>
         </div>
-        <div className={styles.desktopCopyContainer}>
-          <CopyText text="Copy to clipboard" payload={uri} />
+      );
+    } else {
+      content = (
+        <div>
+          <div className={styles.desktopContainer}>
+            {(provider.supportedPlatforms || []).map((platform) => (
+              <button
+                onClick={() => onClickPlatform(platform)}
+                className={styles.desktopButton}
+                key={platform}
+              >
+                {platform === Platform.Web ? <WebIcon /> : <DesktopIcon />}
+                <div className={styles.desktopSectionName}>{platform}</div>
+              </button>
+            ))}
+          </div>
+          <div className={styles.desktopCopyContainer}>
+            <CopyText text="Copy to clipboard" payload={uri} />
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   } else {
     content = (
       <div>

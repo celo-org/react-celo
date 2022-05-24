@@ -378,7 +378,7 @@ export class WalletConnectConnector implements Connector {
     // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     readonly options: WalletConnectWalletOptionsV1,
     readonly autoOpen = false,
-    public getDeeplinkUrl?: (uri: string) => string,
+    public getDeeplinkUrl?: (uri: string) => string | false,
     readonly version?: number,
     readonly walletId?: string
   ) {
@@ -434,7 +434,9 @@ export class WalletConnectConnector implements Connector {
 
     if (uri && this.autoOpen) {
       const deepLink = this.getDeeplinkUrl ? this.getDeeplinkUrl(uri) : uri;
-      location.href = deepLink;
+      if (deepLink) {
+        location.href = deepLink;
+      }
     }
 
     await wallet.init();

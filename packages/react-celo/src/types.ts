@@ -2,7 +2,7 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import React from 'react';
 
-import { Priorities, WalletTypes } from './constants';
+import { Platform, Priorities, WalletTypes } from './constants';
 
 export type Maybe<T> = T | null | undefined;
 
@@ -50,8 +50,8 @@ export interface Provider {
 
 export interface WalletConnectProvider extends Provider {
   walletConnectId?: string;
-  getDeepLink?: (uri: string) => string;
-  getWebLink?: (uri: string) => string;
+  supportedPlatforms?: Platform[];
+  getLink?: (uri: string, platform: Platform) => string | false;
 }
 
 /**
@@ -67,7 +67,7 @@ export interface Connector {
   close: () => Promise<void> | void;
   updateFeeCurrency?: (token: CeloTokenContract) => Promise<void>;
   supportsFeeCurrency: () => boolean;
-  getDeeplinkUrl?: (uri: string) => string;
+  getDeeplinkUrl?: (uri: string) => string | false;
   updateKitWithNetwork?: (network: Network) => Promise<void>;
   onNetworkChange?: (callback: (chainId: number) => void) => void;
   onAddressChange?: (callback: (address: Maybe<string>) => void) => void;
