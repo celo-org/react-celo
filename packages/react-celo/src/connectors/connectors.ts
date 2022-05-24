@@ -148,7 +148,6 @@ export class LedgerConnector implements Connector {
       '@ledgerhq/hw-transport-webusb'
     );
     const { newLedgerWalletWithSetup } = await import('@celo/wallet-ledger');
-
     const transport = await TransportUSB.create();
     const wallet = await newLedgerWalletWithSetup(transport, [this.index]);
     this.kit = newKit(this.network.rpcUrl, wallet);
@@ -156,7 +155,10 @@ export class LedgerConnector implements Connector {
 
     this.initialised = true;
     this.account = this.kit.connection.defaultAccount ?? null;
-    await this.updateFeeCurrency(this.feeCurrency);
+
+    if (this.feeCurrency) {
+      await this.updateFeeCurrency(this.feeCurrency);
+    }
 
     this.persist();
 
