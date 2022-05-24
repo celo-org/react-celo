@@ -51,7 +51,7 @@ export interface Provider {
 export interface WalletConnectProvider extends Provider {
   walletConnectId?: string;
   getDeepLink?: (uri: string) => string;
-  getDesktopLink?: (uri: string) => string;
+  getWebLink?: (uri: string) => string;
 }
 
 /**

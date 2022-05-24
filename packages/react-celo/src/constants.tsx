@@ -121,7 +121,7 @@ export const PROVIDERS: {
     installURL: 'https://celowallet.app/',
     getDeepLink: (uri: string) =>
       `celowallet://wc?uri=${encodeURIComponent(uri)}`,
-    getDesktopLink: (uri: string) =>
+    getWebLink: (uri: string) =>
       `https://celowallet.app/wc?uri=${encodeURIComponent(uri)}`,
   },
   [SupportedProviders.CeloTerminal]: {

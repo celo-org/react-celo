@@ -78,10 +78,8 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
 
       let url;
       if (platform === 'web') {
-        if (!provider?.getDesktopLink) return;
-        url = `${provider.getDesktopLink(uri)}/wc?uri=${encodeURIComponent(
-          uri
-        )}`;
+        if (!provider?.getWebLink) return;
+        url = provider.getWebLink(uri);
       } else {
         if (!provider?.getDeepLink) return;
         url = provider.getDeepLink(uri);
@@ -103,7 +101,7 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
     } else {
       content = <Spinner />;
     }
-  } else if (provider?.getDesktopLink && !isMobile) {
+  } else if (provider?.getWebLink && !isMobile) {
     content = (
       <div>
         <div className={styles.desktopContainer}>
