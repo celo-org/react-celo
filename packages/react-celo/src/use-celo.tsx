@@ -23,7 +23,7 @@ export interface UseCelo {
   networks: readonly Network[];
   updateNetwork: (network: Network) => Promise<void>;
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
-  updateTheme: (theme: Theme) => void;
+  updateTheme: (theme: Theme | null) => void;
   supportsFeeCurrency: boolean;
   /**
    * Helper function for handling any interaction with a Celo wallet. Perform action will

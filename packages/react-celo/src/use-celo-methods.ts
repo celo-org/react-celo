@@ -183,7 +183,8 @@ export function useCeloMethods(
   );
 
   const updateTheme = useCallback(
-    (theme: Theme) => {
+    (theme: Theme | null) => {
+      if (!theme) return dispatch('setTheme', null);
       Object.entries(theme).forEach(([key, value]: [string, string]) => {
         if (!(key in defaultTheme.light)) {
           console.warn(`Theme key ${key} is not valid.`);
@@ -259,5 +260,5 @@ export interface CeloMethods {
   ) => Promise<unknown[]>;
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
   contractsCache?: undefined | unknown;
-  updateTheme: (theme: Theme) => void;
+  updateTheme: (theme: Theme | null) => void;
 }
