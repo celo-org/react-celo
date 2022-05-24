@@ -68,8 +68,8 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     super();
 
     this.canceler = new Canceler();
-    this.initOptions = { ...defaultInitOptions, ...init };
-    this.connectOptions = { ...defaultConnectOptions, ...connect };
+    this.initOptions = { ...defaultInitOptions, ...(init ?? {}) };
+    this.connectOptions = { ...defaultConnectOptions, ...(connect ?? {}) };
   }
 
   /**
