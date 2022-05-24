@@ -218,7 +218,8 @@ export function useCeloMethods(
         try {
           // When on mobile direct user to their wallet app.
           if (isMobile && connector.getDeeplinkUrl) {
-            window.open(connector.getDeeplinkUrl(''), '_blank');
+            const url = connector.getDeeplinkUrl('');
+            if (url) window.open(url, '_blank');
           }
           results.push(await op(kit));
         } catch (e) {

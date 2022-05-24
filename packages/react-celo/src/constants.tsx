@@ -64,6 +64,12 @@ export enum Priorities {
   Recent = 2,
 }
 
+export enum Platform {
+  Mobile = 'Mobile',
+  Desktop = 'Desktop',
+  Web = 'Web',
+}
+
 export const WalletIds = {
   Valora: 'd01c7758d741b363e637a817a09bcf579feae4db9f5bb16f599fdd1f66e2f974',
   CeloWallet:
@@ -89,7 +95,15 @@ export const PROVIDERS: {
     listPriority: () => Priorities.Popular,
     installURL: 'https://valoraapp.com/',
     walletConnectId: WalletIds.Valora,
-    getDeepLink: (uri: string) => `celo://wallet/wc?uri=${uri}`,
+    supportedPlatforms: [Platform.Mobile],
+    getLink: (uri: string, platform = Platform.Mobile) => {
+      switch (platform) {
+        case Platform.Mobile:
+          return `celo://wallet/wc?uri=${uri}`;
+        default:
+          return false;
+      }
+    },
   },
   [SupportedProviders.WalletConnect]: {
     name: SupportedProviders.WalletConnect,
@@ -99,6 +113,7 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => Priorities.Popular,
+    supportedPlatforms: [Platform.Mobile],
   },
   [SupportedProviders.Ledger]: {
     name: SupportedProviders.Ledger,
@@ -119,10 +134,17 @@ export const PROVIDERS: {
     listPriority: () => (!isMobile ? 0 : 1),
     walletConnectId: WalletIds.CeloWallet,
     installURL: 'https://celowallet.app/',
-    getDeepLink: (uri: string) =>
-      `celowallet://wc?uri=${encodeURIComponent(uri)}`,
-    getWebLink: (uri: string) =>
-      `https://celowallet.app/wc?uri=${encodeURIComponent(uri)}`,
+    supportedPlatforms: [Platform.Desktop, Platform.Web],
+    getLink: (uri: string, platform = Platform.Mobile) => {
+      switch (platform) {
+        case Platform.Desktop:
+          return `celowallet://wc?uri=${encodeURIComponent(uri)}`;
+        case Platform.Web:
+          return `https://celowallet.app/wc?uri=${encodeURIComponent(uri)}`;
+        default:
+          return false;
+      }
+    },
   },
   [SupportedProviders.CeloTerminal]: {
     name: SupportedProviders.CeloTerminal,
@@ -134,6 +156,7 @@ export const PROVIDERS: {
     listPriority: () => Priorities.Default,
     installURL: 'https://celoterminal.com/',
     walletConnectId: WalletIds.CeloTerminal,
+    supportedPlatforms: [],
   },
   [SupportedProviders.MetaMask]: {
     name: SupportedProviders.MetaMask,
@@ -192,7 +215,15 @@ export const PROVIDERS: {
     listPriority: () => Priorities.Default,
     installURL: 'https://celo.dance/',
     walletConnectId: WalletIds.CeloDance,
-    getDeepLink: (uri: string) => `celo://wallet/wc?uri=${uri}`,
+    supportedPlatforms: [Platform.Mobile],
+    getLink: (uri: string, platform = Platform.Mobile) => {
+      switch (platform) {
+        case Platform.Mobile:
+          return `celo://wallet/wc?uri=${uri}`;
+        default:
+          return false;
+      }
+    },
   },
   [SupportedProviders.Steakwallet]: {
     name: SupportedProviders.Steakwallet,
@@ -204,7 +235,15 @@ export const PROVIDERS: {
     listPriority: () => Priorities.Popular,
     installURL: 'https://steakwallet.fi/',
     walletConnectId: WalletIds.Steakwallet,
-    getDeepLink: (uri: string) => `steakwallet://wallet/wc?uri=${uri}`,
+    supportedPlatforms: [Platform.Mobile],
+    getLink: (uri: string, platform = Platform.Mobile) => {
+      switch (platform) {
+        case Platform.Mobile:
+          return `steakwallet://wallet/wc?uri=${uri}`;
+        default:
+          return false;
+      }
+    },
   },
 };
 

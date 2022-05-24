@@ -11,7 +11,7 @@ import { WalletConnectConnector } from './connectors';
 export function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
   autoOpen: boolean,
-  getDeeplinkUrl?: (uri: string) => string,
+  getDeeplinkUrl?: (uri: string) => string | false,
   walletId?: string
 ): { error: Maybe<string>; uri: Maybe<string>; loading: boolean } {
   const { network, feeCurrency, initConnector } = useCeloInternal();
