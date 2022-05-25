@@ -3,7 +3,7 @@ import { Theme } from '@celo/react-celo';
 interface Props {
   theme: Theme;
   currentTheme: Theme | null;
-  onClick: (theme: Theme) => void;
+  onClick: (theme: Theme | null) => void;
 }
 
 export function ThemeButton({ theme, currentTheme, onClick }: Props) {
@@ -17,7 +17,7 @@ export function ThemeButton({ theme, currentTheme, onClick }: Props) {
         padding: selected ? 3 : 4,
         borderColor: selected ? theme.primary : theme.muted,
       }}
-      onClick={() => onClick(theme)}
+      onClick={() => onClick(selected ? null : theme)}
     >
       <div className="flex flex-col gap-y-2 w-full">
         <div

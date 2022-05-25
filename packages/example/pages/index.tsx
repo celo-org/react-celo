@@ -338,6 +338,7 @@ export default function Home(): React.ReactElement {
             </a>
           </div>
           <div className="text-slate-600 mb-4">
+            <p>Try out some of the pre-made themes below</p>
             <div className="grid grid-flow-col gap-4 my-4">
               {themes.map((theme, i) => (
                 <ThemeButton
