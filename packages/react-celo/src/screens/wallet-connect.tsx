@@ -94,7 +94,7 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
     } else {
       content = <Spinner />;
     }
-  } else if (!isMobile) {
+  } else if (!provider.supportedPlatforms?.includes(Platform.Mobile)) {
     if (!provider.supportedPlatforms || !provider.supportedPlatforms.length) {
       content = (
         <div>
