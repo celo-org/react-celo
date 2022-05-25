@@ -43,8 +43,12 @@ const styles = cls({
     tw-scale-100
     active:tw-scale-95`,
   desktopDisclaimer: `
-      tw-text-sm
-      tw-pb-4`,
+    tw-text-sm
+    tw-pb-4`,
+  mobileDisclaimer: `
+    tw-text-center
+    tw-text-md
+    tw-pb-4`,
   desktopCopyContainer: `
     tw-flex
     tw-items-center
@@ -130,6 +134,27 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
         </div>
       );
     }
+  } else if (
+    isMobile &&
+    provider.supportedPlatforms?.includes(Platform.Mobile)
+  ) {
+    content = (
+      <div className={styles.contentContainer}>
+        <span className={styles.mobileDisclaimer}>
+          Switching to {provider.name}…
+          <br />
+          If it doesn't open automatically, please use the button below
+        </span>
+        <Button
+          as="a"
+          href={provider.getLink?.(uri, Platform.Mobile) as string}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Open in {provider.name}
+        </Button>
+      </div>
+    );
   } else {
     content = (
       <div>
