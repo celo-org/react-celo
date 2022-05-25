@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
+import Button from '../components/button';
 import ConnectorScreen from '../components/connector-screen';
 import { CopyText } from '../components/copy';
 import PrettyQrCode from '../components/qrcode';
@@ -42,8 +43,12 @@ const styles = cls({
     tw-scale-100
     active:tw-scale-95`,
   desktopDisclaimer: `
-      tw-text-sm
-      tw-pb-4`,
+    tw-text-sm
+    tw-pb-4`,
+  mobileDisclaimer: `
+    tw-text-center
+    tw-text-md
+    tw-pb-4`,
   desktopCopyContainer: `
     tw-flex
     tw-items-center
@@ -57,7 +62,7 @@ export interface Props {
 
 export const WalletConnect = ({ onSubmit, provider }: Props) => {
   const theme = useTheme();
-  const { uri, error, loading } = useWalletConnectConnector(
+  const { uri, error, loading, retry } = useWalletConnectConnector(
     onSubmit,
     isMobile,
     provider?.getLink &&
@@ -81,14 +86,19 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
   if (!uri || loading) {
     if (error) {
       content = (
-        <p className={styles.error} style={{ color: theme.error }}>
-          {error}
-        </p>
+        <div className={styles.contentContainer}>
+          <p className={styles.error} style={{ color: theme.error }}>
+            {error}
+          </p>
+          <Button as="button" onClick={retry}>
+            Retry
+          </Button>
+        </div>
       );
     } else {
       content = <Spinner />;
     }
-  } else if (!isMobile) {
+  } else if (!provider.supportedPlatforms?.includes(Platform.Mobile)) {
     if (!provider.supportedPlatforms || !provider.supportedPlatforms.length) {
       content = (
         <div>
@@ -124,6 +134,27 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
         </div>
       );
     }
+  } else if (
+    isMobile &&
+    provider.supportedPlatforms?.includes(Platform.Mobile)
+  ) {
+    content = (
+      <div className={styles.contentContainer}>
+        <span className={styles.mobileDisclaimer}>
+          Switching to {provider.name}…
+          <br />
+          If it doesn't open automatically, please use the button below
+        </span>
+        <Button
+          as="a"
+          href={provider.getLink?.(uri, Platform.Mobile) as string}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Open in {provider.name}
+        </Button>
+      </div>
+    );
   } else {
     content = (
       <div>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { SecondaryButton } from '../buttons';
 
+import { SecondaryButton } from '../buttons';
 import { ErrorIcon } from './error-icon';
 import { Status } from './useTestStatus';
 
