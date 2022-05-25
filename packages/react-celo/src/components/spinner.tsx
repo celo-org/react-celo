@@ -6,9 +6,9 @@ import useTheme from '../utils/useTheme';
 const styles = cls({
   // see styles.css
   svg: `
-    use-ck-spinner`,
+    react-celo-spinner`,
   circle: `
-    use-ck-spinner-path
+    react-celo-spinner-path
     tw-stroke-current`,
 });
 

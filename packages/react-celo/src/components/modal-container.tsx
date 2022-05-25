@@ -91,11 +91,11 @@ export default function ModalContainer({
 
   return (
     <div
-      className={`use-ck ${styles.container}`}
+      className={`react-celo ${styles.container}`}
       style={{ background: theme.background }}
     >
       <div
-        className={`use-ck-connect-container ${styles.innerContainer}`}
+        className={`react-celo-connect-container ${styles.innerContainer}`}
         style={{ color: theme.textSecondary }}
       >
         <button onClick={onClose} className={styles.closeButton}>

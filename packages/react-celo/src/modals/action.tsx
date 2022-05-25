@@ -112,7 +112,7 @@ export const ActionModal: React.FC<Props> = ({
             overlayClassName: styles.overlay,
           })}
     >
-      <div className={`use-ck ${styles.contentContainer}`}>
+      <div className={`react-celo ${styles.contentContainer}`}>
         <div className={styles.content}>
           {render({ dappName: dapp.name, pendingActionCount, theme })}
         </div>
