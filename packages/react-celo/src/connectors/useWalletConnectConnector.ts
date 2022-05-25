@@ -1,8 +1,7 @@
 // Uncomment with WCV2 support
 // import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
 import { CANCELED } from '@celo/wallet-walletconnect-v1';
-import { useCallback } from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';

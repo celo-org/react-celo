@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
-import Button from '../components/button';
 
+import Button from '../components/button';
 import ConnectorScreen from '../components/connector-screen';
 import { CopyText } from '../components/copy';
 import PrettyQrCode from '../components/qrcode';
