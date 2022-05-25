@@ -276,28 +276,20 @@ export default function Home(): React.ReactElement {
           <ul className="list-disc list-inside">
             {[
               {
-                name: 'Plock',
-                url: 'https://plock.fi',
+                name: 'Celo Tracker ',
+                url: 'https://www.celotracker.com/',
               },
               {
-                name: 'Web multi sig interface',
-                url: 'https://celo-data.nambrot.com/multisig',
+                name: 'Mobius Money',
+                url: 'https://mobius.money/',
               },
               {
-                name: 'Poof Cash',
-                url: 'https://poof.cash',
-              },
-              {
-                name: 'Nomspace',
-                url: 'https://www.nom.space/',
-              },
-              {
-                name: 'Romulus',
-                url: 'https://romulus.page/',
+                name: 'Impact Market',
+                url: 'https://mobius.money/',
               },
               {
                 name: 'Add yours to the list...',
-                url: 'https://github.com/celo-tools/react-celo',
+                url: 'https://github.com/celo-org/react-celo/',
               },
             ].map(({ name, url }) => (
               <li key={name}>
