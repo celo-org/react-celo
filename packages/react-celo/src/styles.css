@@ -11,9 +11,9 @@ Document
 Use a better box model (opinionated).
 */
 
-.use-ck *,
-.use-ck *::before,
-.use-ck *::after {
+.react-celo *,
+.react-celo *::before,
+.react-celo *::after {
   box-sizing: border-box;
 }
 
@@ -21,7 +21,7 @@ Use a better box model (opinionated).
 Use a more readable tab size (opinionated).
 */
 
-.use-ck {
+.react-celo {
   -moz-tab-size: 4;
   tab-size: 4;
 }
@@ -31,7 +31,7 @@ Use a more readable tab size (opinionated).
 2. Prevent adjustments of font size after orientation changes in iOS.
 */
 
-.use-ck {
+.react-celo {
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
 }
@@ -45,7 +45,7 @@ Sections
 Remove the margin in all browsers.
 */
 
-.use-ck {
+.react-celo {
   margin: 0;
 }
 
@@ -53,7 +53,7 @@ Remove the margin in all browsers.
 Improve consistency of default fonts in all browsers. (https://github.com/sindresorhus/modern-normalize/issues/3)
 */
 
-.use-ck {
+.react-celo {
   font-family: system-ui, -apple-system,
     /* Firefox supports this but not yet `system-ui` */ 'Segoe UI', Roboto,
     Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
@@ -69,7 +69,7 @@ Grouping content
 2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
 */
 
-.use-ck hr {
+.react-celo hr {
   height: 0; /* 1 */
   color: inherit; /* 2 */
 }
@@ -83,7 +83,7 @@ Text-level semantics
 Add the correct text decoration in Chrome, Edge, and Safari.
 */
 
-.use-ck abbr[title] {
+.react-celo abbr[title] {
   -webkit-text-decoration: underline dotted;
   text-decoration: underline dotted;
 }
@@ -92,8 +92,8 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 Add the correct font weight in Edge and Safari.
 */
 
-.use-ck b,
-.use-ck strong {
+.react-celo b,
+.react-celo strong {
   font-weight: bolder;
 }
 
@@ -102,10 +102,10 @@ Add the correct font weight in Edge and Safari.
 2. Correct the odd 'em' font sizing in all browsers.
 */
 
-.use-ck code,
-.use-ck kbd,
-.use-ck samp,
-.use-ck pre {
+.react-celo code,
+.react-celo kbd,
+.react-celo samp,
+.react-celo pre {
   font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo,
     monospace; /* 1 */
   font-size: 1em; /* 2 */
@@ -115,7 +115,7 @@ Add the correct font weight in Edge and Safari.
 Add the correct font size in all browsers.
 */
 
-.use-ck small {
+.react-celo small {
   font-size: 80%;
 }
 
@@ -123,19 +123,19 @@ Add the correct font size in all browsers.
 Prevent 'sub' and 'sup' elements from affecting the line height in all browsers.
 */
 
-.use-ck sub,
-.use-ck sup {
+.react-celo sub,
+.react-celo sup {
   font-size: 75%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
-.use-ck sub {
+.react-celo sub {
   bottom: -0.25em;
 }
 
-.use-ck sup {
+.react-celo sup {
   top: -0.5em;
 }
 
@@ -149,7 +149,7 @@ Tabular data
 2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
 */
 
-.use-ck table {
+.react-celo table {
   text-indent: 0; /* 1 */
   border-color: inherit; /* 2 */
 }
@@ -164,11 +164,11 @@ Forms
 2. Remove the margin in Firefox and Safari.
 */
 
-.use-ck button,
-.use-ck input,
-.use-ck optgroup,
-.use-ck select,
-.use-ck textarea {
+.react-celo button,
+.react-celo input,
+.react-celo optgroup,
+.react-celo select,
+.react-celo textarea {
   font-family: inherit; /* 1 */
   font-size: 100%; /* 1 */
   line-height: 1.15; /* 1 */
@@ -180,8 +180,8 @@ Remove the inheritance of text transform in Edge and Firefox.
 1. Remove the inheritance of text transform in Firefox.
 */
 
-.use-ck button,
-.use-ck select {
+.react-celo button,
+.react-celo select {
   /* 1 */
   text-transform: none;
 }
@@ -190,10 +190,10 @@ Remove the inheritance of text transform in Edge and Firefox.
 Correct the inability to style clickable types in iOS and Safari.
 */
 
-.use-ck button,
-.use-ck [type='button'],
-.use-ck [type='reset'],
-.use-ck [type='submit'] {
+.react-celo button,
+.react-celo [type='button'],
+.react-celo [type='reset'],
+.react-celo [type='submit'] {
   -webkit-appearance: button;
 }
 
@@ -201,7 +201,7 @@ Correct the inability to style clickable types in iOS and Safari.
 Remove the inner border and padding in Firefox.
 */
 
-.use-ck ::-moz-focus-inner {
+.react-celo ::-moz-focus-inner {
   border-style: none;
   padding: 0;
 }
@@ -210,7 +210,7 @@ Remove the inner border and padding in Firefox.
 Restore the focus styles unset by the previous rule.
 */
 
-.use-ck :-moz-focusring {
+.react-celo :-moz-focusring {
   outline: 1px dotted ButtonText;
 }
 
@@ -219,7 +219,7 @@ Remove the additional ':invalid' styles in Firefox.
 See: https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737
 */
 
-.use-ck :-moz-ui-invalid {
+.react-celo :-moz-ui-invalid {
   box-shadow: none;
 }
 
@@ -227,7 +227,7 @@ See: https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d4
 Remove the padding so developers are not caught out when they zero out 'fieldset' elements in all browsers.
 */
 
-.use-ck legend {
+.react-celo legend {
   padding: 0;
 }
 
@@ -235,7 +235,7 @@ Remove the padding so developers are not caught out when they zero out 'fieldset
 Add the correct vertical alignment in Chrome and Firefox.
 */
 
-.use-ck progress {
+.react-celo progress {
   vertical-align: baseline;
 }
 
@@ -243,8 +243,8 @@ Add the correct vertical alignment in Chrome and Firefox.
 Correct the cursor style of increment and decrement buttons in Safari.
 */
 
-.use-ck ::-webkit-inner-spin-button,
-.use-ck ::-webkit-outer-spin-button {
+.react-celo ::-webkit-inner-spin-button,
+.react-celo ::-webkit-outer-spin-button {
   height: auto;
 }
 
@@ -253,7 +253,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 2. Correct the outline style in Safari.
 */
 
-.use-ck [type='search'] {
+.react-celo [type='search'] {
   -webkit-appearance: textfield; /* 1 */
   outline-offset: -2px; /* 2 */
 }
@@ -262,7 +262,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 Remove the inner padding in Chrome and Safari on macOS.
 */
 
-.use-ck ::-webkit-search-decoration {
+.react-celo ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
@@ -271,7 +271,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 2. Change font properties to 'inherit' in Safari.
 */
 
-.use-ck ::-webkit-file-upload-button {
+.react-celo ::-webkit-file-upload-button {
   -webkit-appearance: button; /* 1 */
   font: inherit; /* 2 */
 }
@@ -285,7 +285,7 @@ Interactive
 Add the correct display in Chrome and Safari.
 */
 
-.use-ck summary {
+.react-celo summary {
   display: list-item;
 }
 
@@ -299,23 +299,23 @@ Add the correct display in Chrome and Safari.
  * Removes the default spacing and border for appropriate elements.
  */
 
-.use-ck blockquote,
-.use-ck dl,
-.use-ck dd,
-.use-ck h1,
-.use-ck h2,
-.use-ck h3,
-.use-ck h4,
-.use-ck h5,
-.use-ck h6,
-.use-ck hr,
-.use-ck figure,
-.use-ck p,
-.use-ck pre {
+.react-celo blockquote,
+.react-celo dl,
+.react-celo dd,
+.react-celo h1,
+.react-celo h2,
+.react-celo h3,
+.react-celo h4,
+.react-celo h5,
+.react-celo h6,
+.react-celo hr,
+.react-celo figure,
+.react-celo p,
+.react-celo pre {
   margin: 0;
 }
 
-.use-ck button {
+.react-celo button {
   background-color: transparent;
   background-image: none;
 }
@@ -325,18 +325,18 @@ Add the correct display in Chrome and Safari.
  * results in a loss of the default `button` focus styles.
  */
 
-.use-ck button:focus {
+.react-celo button:focus {
   outline: 1px dotted;
   outline: 5px auto -webkit-focus-ring-color;
 }
 
-.use-ck fieldset {
+.react-celo fieldset {
   margin: 0;
   padding: 0;
 }
 
-.use-ck ol,
-.use-ck ul {
+.react-celo ol,
+.react-celo ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -353,7 +353,7 @@ Add the correct display in Chrome and Safari.
  *    to override it to ensure consistency even when using the default theme.
  */
 
-.use-ck {
+.react-celo {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; /* 1 */
@@ -364,7 +364,7 @@ Add the correct display in Chrome and Safari.
  * Inherit font-family and line-height from `html` so users can set them as
  * a class directly on the `html` element.
  */
-/* .use-ck {
+/* .react-celo {
   font-family: inherit;
   line-height: inherit;
 } */
@@ -395,9 +395,9 @@ Add the correct display in Chrome and Safari.
  *    https://github.com/tailwindcss/tailwindcss/pull/116
  */
 
-.use-ck *,
-.use-ck ::before,
-.use-ck ::after {
+.react-celo *,
+.react-celo ::before,
+.react-celo ::after {
   box-sizing: border-box; /* 1 */
   border-width: 0; /* 2 */
   border-style: solid; /* 2 */
@@ -408,7 +408,7 @@ Add the correct display in Chrome and Safari.
  * Ensure horizontal rules are visible by default
  */
 
-.use-ck hr {
+.react-celo hr {
   border-top-width: 1px;
 }
 
@@ -422,35 +422,35 @@ Add the correct display in Chrome and Safari.
  * https://github.com/tailwindcss/tailwindcss/issues/362
  */
 
-.use-ck img {
+.react-celo img {
   border-style: solid;
 }
 
-.use-ck textarea {
+.react-celo textarea {
   resize: vertical;
 }
 
-.use-ck input::placeholder,
-.use-ck textarea::placeholder {
+.react-celo input::placeholder,
+.react-celo textarea::placeholder {
   opacity: 1;
   color: #9ca3af;
 }
 
-.use-ck button,
-.use-ck [role='button'] {
+.react-celo button,
+.react-celo [role='button'] {
   cursor: pointer;
 }
 
-.use-ck table {
+.react-celo table {
   border-collapse: collapse;
 }
 
-.use-ck h1,
-.use-ck h2,
-.use-ck h3,
-.use-ck h4,
-.use-ck h5,
-.use-ck h6 {
+.react-celo h1,
+.react-celo h2,
+.react-celo h3,
+.react-celo h4,
+.react-celo h5,
+.react-celo h6 {
   font-size: inherit;
   font-weight: inherit;
 }
@@ -460,7 +460,7 @@ Add the correct display in Chrome and Safari.
  * opt-out.
  */
 
-.use-ck a {
+.react-celo a {
   color: inherit;
   text-decoration: inherit;
 }
@@ -473,11 +473,11 @@ Add the correct display in Chrome and Safari.
  * normalize.css.
  */
 
-.use-ck button,
-.use-ck input,
-.use-ck optgroup,
-.use-ck select,
-.use-ck textarea {
+.react-celo button,
+.react-celo input,
+.react-celo optgroup,
+.react-celo select,
+.react-celo textarea {
   padding: 0;
   line-height: inherit;
   color: inherit;
@@ -490,10 +490,10 @@ Add the correct display in Chrome and Safari.
  * 'mono' font family.
  */
 
-.use-ck pre,
-.use-ck code,
-.use-ck kbd,
-.use-ck samp {
+.react-celo pre,
+.react-celo code,
+.react-celo kbd,
+.react-celo samp {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     'Liberation Mono', 'Courier New', monospace;
 }
@@ -506,14 +506,14 @@ Add the correct display in Chrome and Safari.
  * https://github.com/mozdevs/cssremedy/issues/14
  */
 
-.use-ck img,
-.use-ck svg,
-.use-ck video,
-.use-ck canvas,
-.use-ck audio,
-.use-ck iframe,
-.use-ck embed,
-.use-ck object {
+.react-celo img,
+.react-celo svg,
+.react-celo video,
+.react-celo canvas,
+.react-celo audio,
+.react-celo iframe,
+.react-celo embed,
+.react-celo object {
   display: block;
   vertical-align: middle;
 }
@@ -525,8 +525,8 @@ Add the correct display in Chrome and Safari.
  * https://github.com/mozdevs/cssremedy/issues/14
  */
 
-.use-ck img,
-.use-ck video {
+.react-celo img,
+.react-celo video {
   max-width: 100%;
   height: auto;
 }
@@ -536,32 +536,32 @@ Scrollbar overrides
 ===================
 */
 
-.use-ck {
+.react-celo {
   --scrollbarBG: rgba(255, 255, 255, 0);
   --thumbBG: rgb(243, 244, 246);
   scrollbar-width: thin;
   scrollbar-color: var(--thumbBG) var(--scrollbarBG);
 }
 
-.tw-dark .use-ck,
-.dark .use-ck {
+.tw-dark .react-celo,
+.dark .react-celo {
   --thumbBG: rgb(55, 65, 81);
 }
-.use-ck ::-webkit-scrollbar {
+.react-celo ::-webkit-scrollbar {
   width: 4px;
   background-color: var(--scrollbarBG);
 }
-.use-ck ::-webkit-scrollbar-track {
+.react-celo ::-webkit-scrollbar-track {
   background-color: var(--scrollbarBG);
 }
-.use-ck ::-webkit-scrollbar-thumb {
+.react-celo ::-webkit-scrollbar-thumb {
   background-color: var(--thumbBG);
   border-radius: 6px;
   border: 3px solid var(--scrollbarBG);
 }
 /* phones */
 @media only screen and (max-width: 767px) {
-  .use-ck ::-webkit-scrollbar {
+  .react-celo ::-webkit-scrollbar {
     width: 0;
   }
 }
@@ -571,37 +571,37 @@ Number Input spinner overrides
 ===============================
 */
 /* Chrome, Safari, Edge, Opera */
-.use-ck input::-webkit-outer-spin-button,
-.use-ck input::-webkit-inner-spin-button {
+.react-celo input::-webkit-outer-spin-button,
+.react-celo input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* Firefox */
-.use-ck input[type='number'] {
+.react-celo input[type='number'] {
   -moz-appearance: textfield;
 }
 
 /*
 Spinner
 */
-.use-ck .use-ck-spinner {
-  animation: use-ck-spinner-rotate 2s linear infinite;
+.react-celo .react-celo-spinner {
+  animation: react-celo-spinner-rotate 2s linear infinite;
   width: 50px;
   height: 50px;
 }
-.use-ck .use-ck-spinner .use-ck-spinner-path {
+.react-celo .react-celo-spinner .react-celo-spinner-path {
   stroke-linecap: round;
-  animation: use-ck-spinner-dash 1.5s ease-in-out infinite;
+  animation: react-celo-spinner-dash 1.5s ease-in-out infinite;
 }
 
-@keyframes use-ck-spinner-rotate {
+@keyframes react-celo-spinner-rotate {
   100% {
     transform: rotate(360deg);
   }
 }
 
-@keyframes use-ck-spinner-dash {
+@keyframes react-celo-spinner-dash {
   0% {
     stroke-dasharray: 1, 150;
     stroke-dashoffset: 0;
@@ -617,12 +617,13 @@ Spinner
 }
 
 @media (min-width: 900px) {
-  .use-ck-connect-container {
+  .react-celo-connect-container {
     width: 800px;
     height: 550px;
   }
 }
 
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -634,4 +635,14 @@ body {
 
 html {
   height: -webkit-fill-available;
+}
+
+* {
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
 }
