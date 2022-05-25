@@ -96,14 +96,21 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   providersOptions = {},
 }: ConnectModalProps) => {
   const theme = useTheme();
-  const { connectionCallback } = useCeloInternal();
+
+  const { connectionCallback, resetInitError } = useCeloInternal();
   const [search, setSearch] = useState<string>('');
   const [adding, setAdding] = useState<Maybe<SupportedProviders>>(null);
 
+  const onClickProvider = (provider: SupportedProviders) => {
+    resetInitError();
+    setAdding(provider);
+  };
+
   const back = useCallback((): void => {
+    resetInitError();
     setSearch('');
     setAdding(null);
-  }, []);
+  }, [resetInitError, setSearch, setAdding]);
 
   const close = useCallback((): void => {
     back();
@@ -195,7 +202,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
           <Tray
             providers={providers}
             title={title}
-            onClickProvider={setAdding}
+            onClickProvider={onClickProvider}
             selectedProvider={adding}
             {...(searchable && {
               search: search,

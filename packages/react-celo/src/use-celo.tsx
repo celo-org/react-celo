@@ -112,6 +112,7 @@ interface UseCeloInternal extends UseCelo {
   initConnector: (connector: Connector) => Promise<void>;
   pendingActionCount: number;
   theme: Maybe<Theme>;
+  resetInitError: () => void;
 }
 
 /**
@@ -121,7 +122,7 @@ export const useCeloInternal = (): UseCeloInternal => {
   const [
     { pendingActionCount, connectionCallback, theme },
     _dispatch,
-    { initConnector },
+    { initConnector, resetInitError },
   ] = useReactCeloContext();
 
   return {
@@ -130,5 +131,6 @@ export const useCeloInternal = (): UseCeloInternal => {
     initConnector,
     pendingActionCount,
     theme,
+    resetInitError,
   };
 };
