@@ -419,6 +419,16 @@ export class WalletConnectConnector implements Connector {
       // Uncomment with WCV2 support
       // wallet.onPairingDeleted = () => this.onCloseCallback?.();
       wallet.onSessionDeleted = () => this.onCloseCallback?.();
+      wallet.onWcSessionUpdate = (_error, session) => {
+        if (session.params[0].chainId == null) {
+          this.onCloseCallback?.();
+        }
+      };
+      wallet.onSessionUpdated = (_error, session) => {
+        if (session.params[0].chainId == null) {
+          this.onCloseCallback?.();
+        }
+      };
     }
 
     if (this.onConnectCallback) {

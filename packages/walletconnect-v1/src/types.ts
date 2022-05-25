@@ -57,6 +57,8 @@ export type SessionProposal = Request<
   [
     {
       chainId: number;
+      approved: boolean;
+      networkId: number | null;
       peerId: string;
       peerMeta: {
         description: string;

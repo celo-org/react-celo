@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
+import Button from '../components/button';
 
 import ConnectorScreen from '../components/connector-screen';
 import { CopyText } from '../components/copy';
@@ -57,7 +58,7 @@ export interface Props {
 
 export const WalletConnect = ({ onSubmit, provider }: Props) => {
   const theme = useTheme();
-  const { uri, error, loading } = useWalletConnectConnector(
+  const { uri, error, loading, retry } = useWalletConnectConnector(
     onSubmit,
     isMobile,
     provider?.getLink &&
@@ -81,9 +82,14 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
   if (!uri || loading) {
     if (error) {
       content = (
-        <p className={styles.error} style={{ color: theme.error }}>
-          {error}
-        </p>
+        <div className={styles.contentContainer}>
+          <p className={styles.error} style={{ color: theme.error }}>
+            {error}
+          </p>
+          <Button as="button" onClick={retry}>
+            Retry
+          </Button>
+        </div>
       );
     } else {
       content = <Spinner />;

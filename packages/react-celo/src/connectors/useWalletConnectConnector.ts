@@ -1,6 +1,7 @@
 // Uncomment with WCV2 support
 // import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
 import { CANCELED } from '@celo/wallet-walletconnect-v1';
+import { useCallback } from 'react';
 import { useEffect, useState } from 'react';
 
 import { Connector, Maybe } from '../types';
@@ -8,17 +9,32 @@ import { useCeloInternal } from '../use-celo';
 import { useWalletVersion } from '../utils/useWalletVersion';
 import { WalletConnectConnector } from './connectors';
 
+interface UseWalletConnectConnector {
+  error: Maybe<string>;
+  uri: Maybe<string>;
+  loading: boolean;
+  retry: () => void;
+}
+
 export function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
   autoOpen: boolean,
   getDeeplinkUrl?: (uri: string) => string | false,
   walletId?: string
-): { error: Maybe<string>; uri: Maybe<string>; loading: boolean } {
-  const { network, feeCurrency, initConnector } = useCeloInternal();
+): UseWalletConnectConnector {
+  const { network, feeCurrency, initConnector, destroy } = useCeloInternal();
   const [uri, setUri] = useState<Maybe<string>>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Maybe<string>>(null);
   const version = useWalletVersion(walletId);
+  const [retryValue, setRetry] = useState(0);
+
+  const retry = useCallback(() => {
+    setUri(null);
+    setError(null);
+    setLoading(false);
+    setRetry((x) => x + 1);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -68,8 +84,10 @@ export function useWalletConnectConnector(
         setLoading(true);
       });
       connector.onClose(() => {
-        setError('Connection with wallet was closed.');
-        setUri(null);
+        void destroy().then(() => {
+          setError('Connection with wallet was closed.');
+          setUri(null);
+        });
       });
       try {
         await initConnector(connector);
@@ -95,7 +113,7 @@ export function useWalletConnectConnector(
       mounted = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version, network.chainId]);
+  }, [version, network.chainId, retryValue]);
 
-  return { uri, error, loading };
+  return { uri, error, loading, retry };
 }
