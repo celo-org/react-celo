@@ -200,19 +200,6 @@ export default function Home(): React.ReactElement {
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
       </Head>
-
-      <div className="toggle-dark">
-        <span>Toggle modal's dark mode</span>
-        <label className="switch">
-          <input
-            type="checkbox"
-            onChange={toggleDarkMode}
-            defaultValue={isDark() ? 'checked' : 'unchecked'}
-          />
-          <span className="slider round"></span>
-        </label>
-      </div>
-
       <main>
         <div className="font-semibold text-2xl">react-celo</div>
         <div className="text-slate-600 mt-2">
@@ -289,28 +276,20 @@ export default function Home(): React.ReactElement {
           <ul className="list-disc list-inside">
             {[
               {
-                name: 'Plock',
-                url: 'https://plock.fi',
+                name: 'Celo Tracker ',
+                url: 'https://www.celotracker.com/',
               },
               {
-                name: 'Web multi sig interface',
-                url: 'https://celo-data.nambrot.com/multisig',
+                name: 'Mobius Money',
+                url: 'https://mobius.money/',
               },
               {
-                name: 'Poof Cash',
-                url: 'https://poof.cash',
-              },
-              {
-                name: 'Nomspace',
-                url: 'https://www.nom.space/',
-              },
-              {
-                name: 'Romulus',
-                url: 'https://romulus.page/',
+                name: 'Impact Market',
+                url: 'https://mobius.money/',
               },
               {
                 name: 'Add yours to the list...',
-                url: 'https://github.com/celo-tools/react-celo',
+                url: 'https://github.com/celo-org/react-celo/',
               },
             ].map(({ name, url }) => (
               <li key={name}>
@@ -338,7 +317,27 @@ export default function Home(): React.ReactElement {
             </a>
           </div>
           <div className="text-slate-600 mb-4">
-            <p>Try out some of the pre-made themes below</p>
+            <h2 className="mb-2 text-lg">Styling</h2>
+            <p className="text-slate-600 mb-4">
+              React Celo will go dark when tailwinds tw-dark class is on body or
+              you can provide a theme
+            </p>
+            <label className="toggle-dark">
+              <span className="toggle-title">
+                Toggle modal's dark mode (tw-dark)
+              </span>
+              <div className="switch">
+                <input
+                  type="checkbox"
+                  onChange={toggleDarkMode}
+                  defaultValue={isDark() ? 'checked' : 'unchecked'}
+                />
+                <span className="slider round"></span>
+              </div>
+            </label>
+            <h3 className="mb-2 text-lg">
+              Try out some of the pre-made themes below
+            </h3>
             <div className="grid grid-flow-col gap-4 my-4">
               {themes.map((theme, i) => (
                 <ThemeButton
