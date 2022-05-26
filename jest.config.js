@@ -7,7 +7,7 @@ module.exports = {
     },
   },
   testEnvironment: 'jsdom',
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
+  testRegex: '(/__tests__/.*|(\\.|/))(test|spec)\\.[jt]sx?$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   collectCoverage: Boolean(process.env.COVERAGE),
   coveragePathIgnorePatterns: ['__tests__', 'lib'],
