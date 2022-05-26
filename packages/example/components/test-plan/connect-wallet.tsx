@@ -24,7 +24,7 @@ export function ConnectWalletCheck() {
   return (
     <TestBlock
       status={status}
-      title="Connect wallet (Mainnet)"
+      title="Connect wallet to mainnet"
       disabledTest={status !== Status.NotStarted}
       onRunTest={onConnectWallet}
     >

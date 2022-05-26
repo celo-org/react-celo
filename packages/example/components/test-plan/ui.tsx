@@ -9,7 +9,11 @@ export function TestTag({ type }: { type: Status }) {
     return type.replace('-', ' ');
   };
 
-  return <span className={`test-tag ${type}`}>{getText(type)}</span>;
+  return (
+    <span role="status" className={`test-tag ${type}`}>
+      {getText(type)}
+    </span>
+  );
 }
 
 export function TestBlock({
@@ -36,6 +40,7 @@ export function TestBlock({
             className="underline"
             onClick={onRunTest}
             disabled={disabledTest}
+            aria-label={`Run ${title}`}
           >
             Run
           </SecondaryButton>
