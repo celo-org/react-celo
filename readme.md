@@ -401,4 +401,4 @@ Struggling with anything react-celo related? Jump into the [GitHub Discussions](
 
 ### Guides
 
-More Specialized use can be found in out [Guides](/guides/)
+More specialized use case info can be found in our [Guides](https://github.com/celo-org/react-celo/tree/master/guides)
