@@ -2,7 +2,7 @@
 
 This guide covers moving from @celo-tools/use-contractkit@3.x to @celo/react-celo@4.x
 
-Do Not be thrown thrown off by the name change. This is the same code base (with a few breaking changes).
+Do Not be thrown thrown off by the name change. This is the same code base (with a few [breaking changes](#link-to-release-notes)).
 
 ## Step 1
 
@@ -18,6 +18,8 @@ Install @celo/react-celo and at least version 2 of @celo/contractkit
 
 `yarn add @celo/react-celo @celo/contractkit@latest`
 
+_If your app directly imports any other @celo sdks such as @celo/utils update them as well_
+
 ## Step 3
 
 Using your favorite find–replace–tool replace all `@celo-tools/use-contractkit` with `@celo/react-celo`
@@ -28,4 +30,4 @@ Using your next favorite find–replace–tool replace all `useContractKit` with
 
 ## Step 5 (If needed)
 
-If you were using `kit.contracts` in your dApp to obtain celo contracts other than `Accounts`, `StableToken`, `Exchange` or `GoldToken`. You will need to [follow the contract-cache-recipe](contract-cache-recipes.md) for an alternative.
+If you were using `kit.contracts` in your dApp to obtain celo contracts other than `Accounts`, `StableToken`, `Exchange` or `GoldToken`, you will need to [follow the contract-cache-recipe](contract-cache-recipes.md) for an alternative.
