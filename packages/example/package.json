@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "next start",
-    "export": "next export"
+    "export": "next export",
+    "test": "jest"
   },
   "license": "MIT",
   "dependencies": {
