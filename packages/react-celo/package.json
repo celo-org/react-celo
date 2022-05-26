@@ -29,7 +29,7 @@
     "@celo/wallet-ledger": "^2.0.0",
     "@celo/wallet-local": "^2.0.0",
     "@celo/wallet-remote": "^2.0.0",
-    "@celo/wallet-walletconnect-v1": "4.0.0-alpha.2",
+    "@celo/wallet-walletconnect-v1": "4.0.0-alpha.2-dev",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "isomorphic-fetch": "^3.0.0",
