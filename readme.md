@@ -1,6 +1,6 @@
 # react-celo
 
-(Formerly known as use-contractkit)
+(_Formerly known as use-contractkit. [read the upgrade guide](/guides/migrate-to-v4.md)_)
 
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-org/react-celo/blob/master/LICENSEs)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/celo-org/react-celo/issues)
@@ -21,6 +21,7 @@ By default react-celo is styled so that you can drop it into your application an
 - [Usage](#usage)
 - [Notes](#notes)
 - [Support](#support)
+- [Guides](#guides)
 
 ## Install
 
@@ -397,3 +398,7 @@ yarn dev
 ## Support
 
 Struggling with anything react-celo related? Jump into the [GitHub Discussions](https://github.com/celo-org/react-celo/discussions) or [celo-org discord channel](https://chat.celo.org) and ask for help any time.
+
+### Guides
+
+More specialized use case info can be found in our [Guides](https://github.com/celo-org/react-celo/tree/master/guides)
