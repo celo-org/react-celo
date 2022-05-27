@@ -10,15 +10,13 @@ Remove @celo-tools/use-contractkit
 
 `yarn remove @celo-tools/use-contractkit`
 
-or
-
 ## Step 2
 
-Install @celo/react-celo and at least version 2 of @celo/contractkit
+Install @celo/react-celo and at least version 2.0.0 of @celo/contractkit
 
 `yarn add @celo/react-celo @celo/contractkit@latest`
 
-_If your app directly imports any other @celo sdks such as @celo/utils update them as well_
+_If your app directly imports any other @celo sdks such as @celo/utils, @celo/wallet-\*\*, update them to 2.0.0 as well_
 
 ## Step 3
 
