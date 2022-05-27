@@ -365,36 +365,6 @@ interface Theme {
 }
 ```
 
-## Development
-
-To run all the packages locally at once, simply clone this repository and run:
-
-```sh
-yarn;
-yarn build;  #only needs to be run the first time
-yarn dev;
-```
-
-A hot reloading server should come up on localhost:3000, it's the exact same as what's at react-celo-c-labs.vercel.app.
-
-Alternatively, you can individually run `react-celo` and the `example` app in parallel.
-
-For that, you still need to have run `yarn` in the root.
-
-Then, you can run `react-celo` in one tab:
-
-```sh
-cd packages/react-celo
-yarn dev
-```
-
-and run the `example` app in another:
-
-```sh
-cd packages/example
-yarn dev
-```
-
 ## Support
 
 Struggling with anything react-celo related? Jump into the [GitHub Discussions](https://github.com/celo-org/react-celo/discussions) or [celo-org discord channel](https://chat.celo.org) and ask for help any time.
