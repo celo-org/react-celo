@@ -256,13 +256,11 @@ export function useCeloMethods(
 }
 
 export interface CeloMethods {
-  resetInitError: () => void;
   /**
    * `destroy` removes the connection to the wallet from state and from
    * localStorage where it's persisted.
    */
   destroy: () => Promise<void>;
-  initConnector: (connector: Connector) => Promise<void>;
   /**
    * `updateNetwork` changes the network used in the wallet.
    *
@@ -303,4 +301,17 @@ export interface CeloMethods {
    * the user the option to change the theme.
    */
   updateTheme: (theme: Theme | null) => void;
+  /**
+   * @internal
+   * resetInitError cleans up the error that occurred
+   * when trying to initialize a wallet connector.
+   */
+  resetInitError: () => void;
+  /**
+   * @internal
+   *
+   * `initConnector` is used to initialize a connector
+   *  for the wallet chosen by the user.
+   */
+  initConnector: (connector: Connector) => Promise<void>;
 }
