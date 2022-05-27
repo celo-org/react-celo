@@ -1,6 +1,6 @@
 # Migrating from @celo-tools/use-contractkit
 
-This guide covers moving from @celo-tools/use-contractkit@3.x to @celo/react-celo@4.x
+This guide covers moving from `@celo-tools/use-contractkit@3.x` to `@celo/react-celo@4.x`.
 
 Do not be thrown off by the name change. This is the same code base (with a few [breaking changes](#link-to-release-notes)).
 
