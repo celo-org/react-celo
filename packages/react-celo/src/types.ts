@@ -61,13 +61,14 @@ export interface Connector {
   kit: MiniContractKit;
   type: WalletTypes;
   /**
-   * Name of the account.
+   * `account` is the address of the account connected
+   * when there is one. Otherwise, it's null.
    */
   account: Maybe<string>;
   feeCurrency: CeloTokenContract;
   initialised: boolean;
   /**
-   * Whether or not the connector has been fully loaded.
+   * `initialise` indicates whether a connector has been fully loaded.
    */
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
