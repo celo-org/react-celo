@@ -258,30 +258,30 @@ export function useCeloMethods(
 export interface CeloMethods {
   resetInitError: () => void;
   /**
-   * destroy removes the connection to the wallet from state and from
+   * `destroy` removes the connection to the wallet from state and from
    * localStorage where it's persisted.
    */
   destroy: () => Promise<void>;
   initConnector: (connector: Connector) => Promise<void>;
   /**
-   * updateNetwork changes the network used in the wallet.
+   * `updateNetwork` changes the network used in the wallet.
    *
    * Note: _not compatible with all wallets_
    */
   updateNetwork: (network: Network, forceUpdate?: boolean) => Promise<void>;
   /**
-   * connect initiates the connection to a wallet and
+   * `connect` initiates the connection to a wallet and
    * opens a modal from which the user can choose a
    * wallet to connect to.
    */
   connect: () => Promise<Connector>;
   /**
-   * getConnectedKit gets the connected instance of MiniContractKit.
+   * `getConnectedKit` gets the connected instance of MiniContractKit.
    * If the user is not connected, this opens up the connection modal.
    */
   getConnectedKit: () => Promise<MiniContractKit>;
   /**
-   * performActions is a helper function for handling any interaction with a Celo wallet.
+   * `performActions` is a helper function for handling any interaction with a Celo wallet.
    * Perform action will:
    * - open the action modal
    * - handle multiple transactions in order
@@ -290,7 +290,7 @@ export interface CeloMethods {
     ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
   ) => Promise<unknown[]>;
   /**
-   * updateFeeCurrency updates the currency that will be used
+   * `updateFeeCurrency` updates the currency that will be used
    * in future transactions.
    *
    * Note: _not compatible with all wallets_
@@ -298,7 +298,7 @@ export interface CeloMethods {
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
   contractsCache?: unknown;
   /**
-   * updateTheme programmaticaly updates the theme used in the
+   * `updateTheme` programmaticaly updates the theme used in the
    * wallet connection modal. This is useful if you want to give
    * the user the option to change the theme.
    */
