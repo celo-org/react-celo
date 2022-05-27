@@ -66,9 +66,14 @@ export interface Connector {
    */
   account: Maybe<string>;
   feeCurrency: CeloTokenContract;
+  /**
+   * `initialised` indicates if the connector
+   * has been fully loaded.
+   */
   initialised: boolean;
   /**
-   * `initialise` indicates whether a connector has been fully loaded.
+   * `initialise` loads the connector
+   *  and saves it to local storage.
    */
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
