@@ -48,7 +48,7 @@ type ReactCeloContextInterface = readonly [
   CeloMethods
 ];
 
-const initialState = {
+const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Mainnet),
   connectorInitError: null,
   dapp: {
