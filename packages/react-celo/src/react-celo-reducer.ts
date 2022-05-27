@@ -106,6 +106,9 @@ export function celoReactReducer(
 
 export interface ReducerState {
   connector: Connector;
+  /**
+   * Initialisation error, if applicable.
+   */
   connectorInitError: Maybe<Error>;
   dapp: Dapp;
   network: Network;
