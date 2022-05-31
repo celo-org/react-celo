@@ -3,7 +3,7 @@ import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import WalletConnect from '@walletconnect/client-v1';
 
 import { SupportedMethods, WCSession } from './types';
-import { ECDSASignature, fromRpcSig } from './utils/fromRPCsig';
+import { ECDSASignature, fromRpcSig } from './utils/from-rpc-sig';
 
 /**
  * Implements the signer interface on top of the WalletConnect interface.

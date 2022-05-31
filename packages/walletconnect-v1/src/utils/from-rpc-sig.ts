@@ -10,6 +10,7 @@ export interface ECDSASignature {
  *
  * Convert signature format of the `eth_sign` RPC method to signature parameters
  * Borrowed from ethereumjs https://github.com/ethereumjs/ethereumjs-monorepo/blob/ade4233ddffffdd146b386de701762196a8c941c/packages/util/src/signature.ts
+ * Copyright ethereumjs License: https://github.com/ethereumjs/ethereumjs-monorepo/blob/master/packages/util/LICENSE
  * NOTE: all because of a bug in geth: https://github.com/ethereum/go-ethereum/issues/2053
  */
 export const fromRpcSig = function (sig: string): ECDSASignature {
