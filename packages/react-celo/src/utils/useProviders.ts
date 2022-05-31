@@ -1,14 +1,9 @@
 import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 
-import {
-  localStorageKeys,
-  Priorities,
-  PROVIDERS,
-  WalletTypes,
-} from '../constants';
+import { Priorities, PROVIDERS, WalletTypes } from '../constants';
 import { Maybe, Provider, WalletConnectProvider, WalletEntry } from '../types';
-import localStorage from './localStorage';
+import { getLastUsedWalletId, getLastUsedWalletType } from './localStorage';
 import { defaultProviderSort } from './sort';
 
 export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
@@ -26,8 +21,8 @@ export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
 }
 
 export function getRecent(): Maybe<Provider> {
-  const type = localStorage.getItem(localStorageKeys.lastUsedWalletType);
-  const id = localStorage.getItem(localStorageKeys.lastUsedWalletId);
+  const type = getLastUsedWalletType();
+  const id = getLastUsedWalletId();
   let provider;
 
   if (id && WalletTypes.WalletConnect === type) {

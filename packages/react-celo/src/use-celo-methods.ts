@@ -17,6 +17,7 @@ import { Dispatcher } from './react-celo-provider';
 import defaultTheme from './theme/default';
 import { Connector, Network, Theme } from './types';
 import { RGBToHex } from './utils/helpers';
+import { getLastUsedWalletArgs } from './utils/localStorage';
 
 export function useCeloMethods(
   {
@@ -123,9 +124,7 @@ export function useCeloMethods(
       }
       if (network === newNetwork) return;
       if (connector.initialised) {
-        const connectorArgs = JSON.parse(
-          localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
-        ) as unknown[];
+        const connectorArgs = getLastUsedWalletArgs() || [];
         await connector.close();
         const ConnectorConstructor = CONNECTOR_TYPES[connector.type];
         const newConnector = new ConnectorConstructor(

@@ -17,11 +17,18 @@ import {
 } from '@celo/wallet-walletconnect-v1';
 import { BigNumber } from 'bignumber.js';
 
-import { localStorageKeys, WalletTypes } from '../constants';
+import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
-import { clearPreviousConfig } from '../utils/helpers';
-import localStorage from '../utils/localStorage';
+import {
+  clearPreviousConfig,
+  forgetConnection,
+  setLastUsedNetwork,
+  setLastUsedWalletArgs,
+  setLastUsedWalletId,
+  setLastUsedWalletType,
+  WalletArgs,
+} from '../utils/localStorage';
 import { switchToCeloNetwork } from '../utils/metamask';
 
 type Web3Type = Parameters<typeof newKitFromWeb3>[0];
@@ -43,9 +50,7 @@ export class UnauthenticatedConnector implements Connector {
   }
 
   persist() {
-    localStorage.removeItem(localStorageKeys.lastUsedWalletType);
-    localStorage.removeItem(localStorageKeys.lastUsedWalletArguments);
-    localStorage.removeItem(localStorageKeys.lastUsedNetwork);
+    forgetConnection();
   }
 
   initialise(): this {
@@ -123,15 +128,9 @@ export class LedgerConnector implements Connector {
     private index: number,
     public feeCurrency: CeloTokenContract
   ) {
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletType,
-      WalletTypes.Ledger
-    );
-    localStorage.setItem(
-      localStorageKeys.lastUsedWalletArguments,
-      JSON.stringify([index])
-    );
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+    setLastUsedWalletType(WalletTypes.Ledger);
+    setLastUsedWalletArgs([index]);
+    setLastUsedNetwork(network.name);
     this.kit = newKit(network.rpcUrl);
   }
 
@@ -260,7 +259,7 @@ export class InjectedConnector implements Connector {
   }
 
   async updateKitWithNetwork(network: Network): Promise<void> {
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+    setLastUsedNetwork(network.name);
     this.network = network;
     await this.initialise();
   }
@@ -514,20 +513,17 @@ function persist({
 }: {
   walletType?: WalletTypes;
   walletId?: string;
-  options?: unknown[];
+  options?: WalletArgs;
   network?: Network;
 }): void {
   if (walletType) {
-    localStorage.setItem(localStorageKeys.lastUsedWalletType, walletType);
+    setLastUsedWalletType(walletType);
   }
   if (walletId) {
-    localStorage.setItem(localStorageKeys.lastUsedWalletId, walletId);
+    setLastUsedWalletId(walletId);
   }
   if (network) {
-    localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
+    setLastUsedNetwork(network.name);
   }
-  localStorage.setItem(
-    localStorageKeys.lastUsedWalletArguments,
-    JSON.stringify(options)
-  );
+  setLastUsedWalletArgs(options);
 }

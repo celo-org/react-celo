@@ -1,7 +1,13 @@
 import { CeloContract } from '@celo/contractkit';
 
-import { Alfajores, localStorageKeys, WalletTypes } from '../../src';
+import { Alfajores, WalletTypes } from '../../src';
 import { LedgerConnector } from '../../src/connectors';
+import {
+  getLastUsedFeeCurrency,
+  getLastUsedNetwork,
+  getLastUsedWalletArgs,
+  getLastUsedWalletType,
+} from '../../src/utils/localStorage';
 
 describe('LedgerConnector', () => {
   let connector: LedgerConnector;
@@ -10,38 +16,24 @@ describe('LedgerConnector', () => {
   });
 
   it('remembers info in localStorage', () => {
-    expect(localStorage.getItem(localStorageKeys.lastUsedFeeCurrency)).toEqual(
-      null
-    );
+    expect(getLastUsedFeeCurrency()).toEqual(null);
 
-    expect(localStorage.getItem(localStorageKeys.lastUsedWalletType)).toEqual(
-      WalletTypes.Ledger
-    );
+    expect(getLastUsedWalletType()).toEqual(WalletTypes.Ledger);
 
-    expect(
-      localStorage.getItem(localStorageKeys.lastUsedWalletArguments)
-    ).toEqual('[0]');
+    expect(getLastUsedWalletArgs()).toEqual([0]);
 
-    expect(localStorage.getItem(localStorageKeys.lastUsedNetwork)).toEqual(
-      'Alfajores'
-    );
+    expect(getLastUsedNetwork()).toEqual('Alfajores');
   });
 
   describe('close()', () => {
     it('clears out localStorage', () => {
       connector.close();
 
-      expect(
-        localStorage.getItem(localStorageKeys.lastUsedFeeCurrency)
-      ).toEqual(null);
+      expect(getLastUsedFeeCurrency()).toEqual(null);
 
-      expect(
-        localStorage.getItem(localStorageKeys.lastUsedWalletArguments)
-      ).toEqual(null);
+      expect(getLastUsedWalletArgs()).toEqual(null);
 
-      expect(localStorage.getItem(localStorageKeys.lastUsedNetwork)).toEqual(
-        null
-      );
+      expect(getLastUsedNetwork()).toEqual(null);
     });
   });
   describe('updateFeeCurrency', () => {

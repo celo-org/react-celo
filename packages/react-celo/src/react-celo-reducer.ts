@@ -1,10 +1,14 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
 import { UnauthenticatedConnector } from './connectors';
-import { localStorageKeys } from './constants';
 import { Connector, Dapp, Maybe, Network, Theme } from './types';
-import { clearPreviousConfig } from './utils/helpers';
-import localStorage from './utils/localStorage';
+import {
+  clearPreviousConfig,
+  removeLastUsedAddress,
+  setLastUsedAddress,
+  setLastUsedFeeCurrency,
+  setLastUsedNetwork,
+} from './utils/localStorage';
 
 export function celoReactReducer(
   state: ReducerState,
@@ -22,9 +26,9 @@ export function celoReactReducer(
         return state;
       }
       if (action.payload) {
-        localStorage.setItem(localStorageKeys.lastUsedAddress, action.payload);
+        setLastUsedAddress(action.payload);
       } else {
-        localStorage.removeItem(localStorageKeys.lastUsedAddress);
+        removeLastUsedAddress();
       }
       return {
         ...state,
@@ -34,17 +38,14 @@ export function celoReactReducer(
       if (action.payload === state.network) {
         return state;
       }
-      localStorage.setItem(
-        localStorageKeys.lastUsedNetwork,
-        action.payload.name
-      );
+      setLastUsedNetwork(action.payload.name);
       return {
         ...state,
         network: action.payload,
       };
 
     case 'setConnector':
-      localStorage.removeItem(localStorageKeys.lastUsedAddress);
+      removeLastUsedAddress();
       return {
         ...state,
         connector: action.payload,
@@ -55,16 +56,13 @@ export function celoReactReducer(
       if (action.payload === state.feeCurrency) {
         return state;
       }
-      localStorage.setItem(
-        localStorageKeys.lastUsedFeeCurrency,
-        action.payload
-      );
+      setLastUsedFeeCurrency(action.payload);
       return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
       const newConnector = action.payload;
       const address = newConnector.kit.connection.defaultAccount ?? null;
       if (address) {
-        localStorage.setItem(localStorageKeys.lastUsedAddress, address);
+        setLastUsedAddress(address);
       }
       return {
         ...state,

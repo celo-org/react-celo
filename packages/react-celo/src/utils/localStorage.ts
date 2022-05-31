@@ -1,3 +1,8 @@
+import { CeloTokenContract } from '@celo/contractkit';
+import { WalletConnectWalletOptions } from '@celo/wallet-walletconnect-v1';
+
+import { localStorageKeys, WalletTypes } from '../constants';
+
 class MockedLocalStorage implements Storage {
   private storage = new Map<string, string>();
 
@@ -45,4 +50,93 @@ const localStorage =
     ? new MockedLocalStorage()
     : window.localStorage;
 
-export default localStorage;
+export function getLastUsedAddress(): string | null {
+  return localStorage.getItem(localStorageKeys.lastUsedAddress);
+}
+
+export function setLastUsedAddress(address: string) {
+  localStorage.setItem(localStorageKeys.lastUsedAddress, address);
+}
+
+export function removeLastUsedAddress() {
+  localStorage.removeItem(localStorageKeys.lastUsedAddress);
+}
+
+export function getLastUsedNetwork(): string | null {
+  return localStorage.getItem(localStorageKeys.lastUsedNetwork);
+}
+
+export function setLastUsedNetwork(networkName: string) {
+  localStorage.setItem(localStorageKeys.lastUsedNetwork, networkName);
+}
+
+export function getLastUsedFeeCurrency(): CeloTokenContract | null {
+  return localStorage.getItem(
+    localStorageKeys.lastUsedFeeCurrency
+  ) as CeloTokenContract;
+}
+
+export function setLastUsedFeeCurrency(feeCurrency: CeloTokenContract) {
+  localStorage.setItem(localStorageKeys.lastUsedFeeCurrency, feeCurrency);
+}
+
+export function setLastUsedWalletId(id: string) {
+  localStorage.setItem(localStorageKeys.lastUsedWalletId, id);
+}
+
+export function getLastUsedWalletId() {
+  return localStorage.getItem(localStorageKeys.lastUsedWalletId);
+}
+
+export function getLastUsedWalletType(): WalletTypes | null {
+  return localStorage.getItem(
+    localStorageKeys.lastUsedWalletType
+  ) as WalletTypes;
+}
+
+export function setLastUsedWalletType(type: WalletTypes) {
+  localStorage.setItem(localStorageKeys.lastUsedWalletType, type);
+}
+
+export type WalletArgs =
+  | [string]
+  | [CeloTokenContract]
+  | [WalletConnectWalletOptions]
+  | [number]
+  | [];
+
+export function getLastUsedWalletArgs(): WalletArgs | null {
+  const args = localStorage.getItem(localStorageKeys.lastUsedWalletArguments);
+  if (args && args.length) {
+    const parsed = JSON.parse(args) as WalletArgs;
+
+    return parsed;
+  }
+
+  return null;
+}
+
+export function setLastUsedWalletArgs(params: WalletArgs) {
+  const args = JSON.stringify(params);
+  localStorage.setItem(localStorageKeys.lastUsedWalletArguments, args);
+}
+
+export function forgetConnection() {
+  [
+    localStorageKeys.lastUsedWalletType,
+    localStorageKeys.lastUsedWalletArguments,
+    localStorageKeys.lastUsedNetwork,
+  ].forEach((key) => localStorage.removeItem(key));
+}
+
+export function clearPreviousConfig(): void {
+  Object.values(localStorageKeys).forEach((val) => {
+    if (val === localStorageKeys.lastUsedWalletId) return;
+    if (val === localStorageKeys.lastUsedWalletType) return;
+    localStorage.removeItem(val);
+  });
+}
+
+export function localStorageAvailable() {
+  return typeof localStorage !== 'undefined';
+}

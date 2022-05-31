@@ -1,8 +1,9 @@
 import { CeloContract } from '@celo/contractkit';
 
 import { UnauthenticatedConnector } from '../../src/connectors';
-import { Alfajores, Baklava, localStorageKeys } from '../../src/constants';
+import { Alfajores, Baklava } from '../../src/constants';
 import { celoReactReducer, ReducerState } from '../../src/react-celo-reducer';
+import { getLastUsedAddress } from '../../src/utils/localStorage';
 
 const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Alfajores),
@@ -34,9 +35,7 @@ describe('setAddress', () => {
     expect(newState).toEqual({ ...initialState, address: 'test-address' });
   });
   it('saves the address in localStorage', () => {
-    expect(localStorage.getItem(localStorageKeys.lastUsedAddress)).toEqual(
-      'test-address'
-    );
+    expect(getLastUsedAddress()).toEqual('test-address');
   });
 });
 
