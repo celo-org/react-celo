@@ -10,7 +10,7 @@ yarn build;  #only needs to be run the first time
 yarn dev;
 ```
 
-A hot reloading server should come up on localhost:3000, it's the exact same as what's at react-celo-c-labs.vercel.app.
+A hot reloading server should come up on localhost:3000, it's the exact same as what's at react-celo-canary.vercel.app.
 
 Alternatively, you can individually run `react-celo` and the `example` app in parallel.
 
