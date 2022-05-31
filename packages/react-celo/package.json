@@ -24,7 +24,6 @@
   "readme": "../../readme.md",
   "license": "MIT",
   "dependencies": {
-    "@celo/utils": "^2.0.0",
     "@celo/wallet-base": "^2.0.0",
     "@celo/wallet-ledger": "^2.0.0",
     "@celo/wallet-local": "^2.0.0",
