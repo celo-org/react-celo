@@ -1,9 +1,9 @@
 import { CeloTx, EncodedTransaction, Signer } from '@celo/connect';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import WalletConnect from '@walletconnect/client-v1';
-import * as ethUtil from 'ethereumjs-util';
 
 import { SupportedMethods, WCSession } from './types';
+import { ECDSASignature, fromRpcSig } from './utils/from-rpc-sig';
 
 /**
  * Implements the signer interface on top of the WalletConnect interface.
@@ -38,24 +38,20 @@ export class WalletConnectSigner implements Signer {
     return signedTx;
   }
 
-  async signTypedData(
-    data: EIP712TypedData
-  ): Promise<ReturnType<typeof ethUtil.fromRpcSig>> {
+  async signTypedData(data: EIP712TypedData): Promise<ECDSASignature> {
     const signature = await this.request<string>(
       SupportedMethods.signTypedData,
       [this.getNativeKey(), JSON.stringify(data)]
     );
-    return ethUtil.fromRpcSig(signature);
+    return fromRpcSig(signature);
   }
 
-  async signPersonalMessage(
-    data: string
-  ): Promise<ReturnType<typeof ethUtil.fromRpcSig>> {
+  async signPersonalMessage(data: string): Promise<ECDSASignature> {
     const signature = await this.request<string>(
       SupportedMethods.personalSign,
       [data, this.getNativeKey()]
     );
-    return ethUtil.fromRpcSig(signature);
+    return fromRpcSig(signature);
   }
 
   getNativeKey = (): string => this.account;
