@@ -1,5 +1,6 @@
 import defaultTheme from '../theme/default';
 import { Theme } from '../types';
+import { getApplicationLogger } from './logger';
 
 const minmax = (value: number, lowerBound = 0, higherBound = 1) =>
   Math.max(lowerBound, Math.min(higherBound, value));
@@ -46,8 +47,9 @@ export class Color {
         this.a = round2(minmax(parseFloat(values[3])));
       }
 
-      console.error(
-        `[react-celo] RGB(A) values not officially supported, but were translated to hex (${color} -> ${this.toHex()})`
+      getApplicationLogger().warn(
+        '[colors]',
+        `RGB(A) values not officially supported, but were translated to hex (${color} -> ${this.toHex()})`
       );
     } else if (color.startsWith('hsl')) {
       // eg: hsl(100, 50%, 75%)
@@ -75,11 +77,12 @@ export class Color {
         this.a = round2(minmax(parseFloat(values[3])));
       }
 
-      console.error(
-        `[react-celo] HSL(A) values not officially supported, but were translated to hex (${color} -> ${this.toHex()})`
+      getApplicationLogger().warn(
+        '[colors]',
+        `HSL(A) values not officially supported, but were translated to hex (${color} -> ${this.toHex()})`
       );
     } else {
-      throw new Error(`[react-celo] Malformed color (${color})`);
+      throw new Error(`Malformed color (${color})`);
     }
   }
 
@@ -157,8 +160,9 @@ export function contrastCheck(theme: Theme) {
 
   const textToBg = contrast(new Color(theme.background), new Color(theme.text));
   if (textToBg <= 4) {
-    console.error(
-      `[react-celo] potential accessibility error between text and background colors (${textToBg})`
+    getApplicationLogger().warn(
+      '[colors]',
+      `Potential accessibility issue between text and background colors (${textToBg})`
     );
   }
   const textSecondaryToBg = contrast(
@@ -166,8 +170,9 @@ export function contrastCheck(theme: Theme) {
     new Color(theme.textSecondary)
   );
   if (textSecondaryToBg <= 4) {
-    console.error(
-      `[react-celo] potential accessibility error between textSecondary and background colors (${textSecondaryToBg})`
+    getApplicationLogger().warn(
+      '[colors]',
+      `Potential accessibility issue between textSecondary and background colors (${textSecondaryToBg})`
     );
   }
   const primaryToSecondary = contrast(
@@ -175,8 +180,9 @@ export function contrastCheck(theme: Theme) {
     new Color(theme.secondary)
   );
   if (primaryToSecondary <= 3) {
-    console.error(
-      `[react-celo] potential accessibility error between primary and secondary colors (${primaryToSecondary})`
+    getApplicationLogger().warn(
+      '[colors]',
+      `Potential accessibility issue between primary and secondary colors (${primaryToSecondary})`
     );
   }
 }
@@ -184,7 +190,10 @@ export function contrastCheck(theme: Theme) {
 export function fixTheme(theme: Theme) {
   Object.entries(theme).forEach(([key, value]: [string, string]) => {
     if (!(key in defaultTheme.light)) {
-      console.error(`[react-celo] Theme key ${key} is not valid.`);
+      getApplicationLogger().error(
+        '[colors]',
+        `Theme key ${key} is not valid.`
+      );
     }
     const _key = key as keyof Theme;
     try {
@@ -192,8 +201,9 @@ export function fixTheme(theme: Theme) {
       theme[_key] = color.toHex();
     } catch (e) {
       theme[_key] = '#FF0000';
-      console.error(
-        `[react-celo] Could not parse theme.${_key} with value ${value}. Replaced it with red!`
+      getApplicationLogger().error(
+        '[colors]',
+        `Could not parse theme. ${_key} with value ${value}. Replaced it with red!`
       );
     }
   });

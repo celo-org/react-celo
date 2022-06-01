@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { WalletConnectConnector } from '../connectors';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
+import { getApplicationLogger } from '../utils/logger';
 import { useWalletVersion } from './use-wallet-version';
 
 interface UseWalletConnectConnector {
@@ -41,8 +42,9 @@ export default function useWalletConnectConnector(
 
     void (async () => {
       if (version == null) {
-        console.warn(
-          'WalletconnectConnector initialization awaiting for registry'
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Initialization awaiting for registry'
         );
         return;
       }
@@ -75,14 +77,26 @@ export default function useWalletConnectConnector(
         version
       );
       connector.onUri((newUri) => {
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Generated WC URI'
+        );
         if (mounted) {
           setUri(newUri);
         }
       });
       connector.onConnect(() => {
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Connected to WC servers'
+        );
         setLoading(true);
       });
       connector.onClose(() => {
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Lost connection to WC servers'
+        );
         void destroy().then(() => {
           setError('Connection with wallet was closed.');
           setUri(null);
@@ -94,8 +108,17 @@ export default function useWalletConnectConnector(
         onSubmit(connector);
       } catch (reason) {
         if (reason === CANCELED) {
+          getApplicationLogger().debug(
+            '[useWalletConnectConnector]',
+            'User canceled connection'
+          );
           return;
         }
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'WC error',
+          reason
+        );
         setError((reason as Error).message);
       }
     })();

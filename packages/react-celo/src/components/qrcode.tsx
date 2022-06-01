@@ -9,6 +9,7 @@ import React, { ReactElement, useMemo } from 'react';
 
 import { QRCodeClass } from '../global';
 import useTheme from '../hooks/use-theme';
+import { getApplicationLogger } from '../utils/logger';
 import cls from '../utils/tailwind';
 
 // From https://github.com/soldair/node-qrcode#qr-code-capacity
@@ -143,7 +144,11 @@ type Props = {
 
 const PrettyQrCode = ({ size = 200, value }: Props) => {
   const theme = useTheme();
-  const matrix = useMemo(() => generateMatrix(value), [value]);
+  const matrix = useMemo(() => {
+    const _matrix = generateMatrix(value);
+    getApplicationLogger().debug('[PrettyQrCode]', 'Generated matrix');
+    return _matrix;
+  }, [value]);
   const corners = useMemo(() => matrixToCorners(matrix, size), [size, matrix]);
   const dots = useMemo(() => matrixToDots(matrix, size), [size, matrix]);
 

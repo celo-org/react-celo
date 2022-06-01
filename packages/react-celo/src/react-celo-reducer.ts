@@ -8,6 +8,7 @@ import {
   removeLastUsedAddress,
   setTypedStorageKey,
 } from './utils/local-storage';
+import { getApplicationLogger } from './utils/logger';
 
 export function celoReactReducer(
   state: ReducerState,
@@ -91,10 +92,9 @@ export function celoReactReducer(
           [key]: action.payload,
         };
       } else {
-        console.error(
-          new Error(
-            `Unrecognized action type ${action.type} in celoReactReducer`
-          )
+        getApplicationLogger().error(
+          '[reducer]',
+          new Error(`Unrecognized action type ${action.type}`)
         );
       }
       return state;
