@@ -1,4 +1,3 @@
-import { ReadOnlyWallet } from '@celo/connect/lib';
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import {
   MiniContractKit,
@@ -386,7 +385,7 @@ export class WalletConnectConnector implements Connector {
     // version == 1
     //   ? new WalletConnectWalletV1(options as WalletConnectWalletOptionsV1)
     //   : new WalletConnectWallet(options as WalletConnectWalletOptions);
-    this.kit = newKit(network.rpcUrl, wallet as ReadOnlyWallet);
+    this.kit = newKit(network.rpcUrl, wallet);
     this.version = version;
   }
 

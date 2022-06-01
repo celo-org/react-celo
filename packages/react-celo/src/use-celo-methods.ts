@@ -4,11 +4,7 @@ import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { CONNECTOR_TYPES } from './connectors';
-import {
-  localStorageKeys,
-  STATIC_NETWORK_WALLETS,
-  WalletTypes,
-} from './constants';
+import { STATIC_NETWORK_WALLETS, WalletTypes } from './constants';
 import {
   ContractCacheBuilder,
   useContractsCache,
