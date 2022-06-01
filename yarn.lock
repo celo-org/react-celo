@@ -642,10 +642,10 @@
     eth-lib "^0.2.8"
     ethereumjs-util "^5.2.0"
 
-"@clabs/packages-publisher@^0.0.1-alpha.2":
-  version "0.0.1-alpha.2"
-  resolved "https://registry.npmjs.org/@clabs/packages-publisher/-/packages-publisher-0.0.1-alpha.2.tgz#e1a8b3958d8a87397e7f2b0bbf6ed177a561bd95"
-  integrity sha512-ynm7U6Y8Cu63mHQKdGODlX51oPBxSCnkQBDNcpNVFNEbjLD5KJkvGCtWjG+ESBZU7oK4BGnHkYjDqHkZG5wDIQ==
+"@clabs/packages-publisher@0.0.1-alpha.3":
+  version "0.0.1-alpha.3"
+  resolved "https://registry.npmjs.org/@clabs/packages-publisher/-/packages-publisher-0.0.1-alpha.3.tgz#fbaf6866e3751ada30cb6e2e8d622bfa97c86a4b"
+  integrity sha512-ooxBTiRStigZFaGSF4SlAW20t7aA/y22D04QcEN0aAMR3JUFfOZ4CDBw/zZjmt94dbM315I+cfAZF2aJjwyENA==
   dependencies:
     execa "5.1.1"
     kleur "^4.1.4"
