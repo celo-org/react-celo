@@ -1,16 +1,18 @@
-# use-contractkit
+# react-celo
 
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-tools/use-contractkit/blob/master/LICENSEs)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/celo-org/use-contractkit/issues)
+(_Formerly known as use-contractkit. [read the upgrade guide](/guides/migrate-to-v4.md)_)
+
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-org/react-celo/blob/master/LICENSEs)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/celo-org/react-celo/issues)
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
-[![npm version](https://badge.fury.io/js/%40celo-tools%2Fuse-contractkit.png)](https://badge.fury.io/js/%40celo-tools%2Fuse-contractkit)
-[![codecov](https://codecov.io/gh/celo-org/use-contractkit/branch/master/graph/badge.svg?token=vy6ALIKLwt)](https://codecov.io/gh/celo-org/use-contractkit)
+[![npm version](https://badge.fury.io/js/%40celo-tools%2Freact-celo.png)](https://badge.fury.io/js/%40celo-tools%2Freact-celo)
+[![codecov](https://codecov.io/gh/celo-org/react-celo/branch/master/graph/badge.svg?token=vy6ALIKLwt)](https://codecov.io/gh/celo-org/react-celo)
 
-The easiest way to access [ContractKit](https://www.npmjs.com/package/@celo/contractkit) in your React applications 🔥. `use-contractkit` is a [React hook](https://reactjs.org/docs/hooks-intro.html) for managing access to ContractKit with a built-in headless modal system for connecting to your users wallet of choice.
+The easiest way to access [ContractKit](https://www.npmjs.com/package/@celo/contractkit) in your React applications 🔥. `react-celo` is a [React hook](https://reactjs.org/docs/hooks-intro.html) for managing access to ContractKit with a built-in headless modal system for connecting to your users wallet of choice.
 
 Now your DApp can be made available to everyone in the Celo ecosystem, from Valora users to self custodied Ledger users.
 
-By default use-contractkit is styled so that you can drop it into your application and go, however it's fully customisable so you can maintain a consistent UX throughout your application.
+By default react-celo is styled so that you can drop it into your application and go, however it's fully customisable so you can maintain a consistent UX throughout your application.
 
 ## Table of Contents
 
@@ -19,37 +21,40 @@ By default use-contractkit is styled so that you can drop it into your applicati
 - [Usage](#usage)
 - [Notes](#notes)
 - [Support](#support)
+- [Guides](#guides)
 
 ## Install
 
 ```
-yarn add @celo-tools/use-contractkit @celo/contractkit
+yarn add @celo/react-celo @celo/contractkit
 ```
-
-You can use any `@celo/contractkit` version at least as recent as `1.5.1` including `2.0`.
 
 ## Supported wallets
 
-| Wallet                                                                                     |  sendTransaction   |    signTransaction | signTypedData      | signPersonal       |
-| ------------------------------------------------------------------------------------------ | :----------------: | -----------------: | ------------------ | ------------------ |
-| Plaintext private key                                                                      |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [Ledger](https://www.ledger.com/)                                                          |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [WalletConnect](https://walletconnect.org/)                                                |                    | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| [Celo Extension Wallet (Metamask fork)](https://github.com/dsrvlabs/celo-extension-wallet) | :white_check_mark: |                    |                    |                    |
+- Celo Dance
+- Celo Extension Wallet (Metamask fork)
+- Celo Terminal
+- Celo Wallet
+- Ledger
+- MetaMask
+- Plaintext private key
+- Steakwallet
+- Valora
+- WalletConnect
 
 ## Basic Usage
 
-### Wrap your application with ContractKitProvider
+### Wrap your application with CeloProvider
 
-use-contractkit uses [unstated-next](https://github.com/jamiebuilds/unstated-next) under the hood to inject state throughout your application. unstated-next is built on top of the React Context API so you need to make sure your application is wrapped with the provider before usage.
+react-celo uses [React's Context.Provider](https://reactjs.org/docs/context.html#contextprovider) under the hood to inject state throughout your application. You need to make sure your application is wrapped with the provider in order to be able to access all the goodies react-celo provides.
 
 ```javascript
-import { ContractKitProvider } from '@celo-tools/use-contractkit';
-import '@celo-tools/use-contractkit/lib/styles.css';
+import { CeloProvider } from '@celo/react-celo';
+import '@celo/react-celo/lib/styles.css';
 
 function WrappedApp() {
   return (
-    <ContractKitProvider
+    <CeloProvider
       dapp={{
         name: 'My awesome dApp',
         description: 'My awesome description',
@@ -57,7 +62,7 @@ function WrappedApp() {
       }}
     >
       <App />
-    </ContractKitProvider>
+    </CeloProvider>
   );
 }
 
@@ -68,10 +73,10 @@ function App() {
 
 ### Default wallets and customization
 
-use-contractkit provides a list of default wallets (CeloExtensionWallet, Injected, Ledger, MetaMask, PrivateKey (dev only) and WalletConnect). It can be configured as shown below.
+react-celo provides a list of default wallets (CeloExtensionWallet, Injected, Ledger, MetaMask, PrivateKey (dev only) and WalletConnect). It can be configured as shown below.
 
 ```javascript
-<ContractKitProvider
+<CeloProvider
   dapp={{
     name: 'My awesome dApp',
     description: 'My awesome description',
@@ -84,28 +89,43 @@ use-contractkit provides a list of default wallets (CeloExtensionWallet, Injecte
       // This option hides specific wallets from the default list
       hideFromDefaults: [
         SupportedProvider.MetaMask,
-        SupportedProvider.Private key,
-        SupportedProvider.Celo Extension Wallet,
+        SupportedProvider.PrivateKey,
+        SupportedProvider.CeloExtensionWallet,
         SupportedProvider.Valora,
       ],
 
       // This option hides all default wallets
       hideFromDefaults: true,
+
+      // This option toggles on and off the searchbar
+      searchable: true,
     },
   }}
 >
   <App />
-</ContractKitProvider>
+</CeloProvider>
 ```
 
 You can also add new custom wallets that don't exist in the registry or aren't in our defaults. For now, we only support custom wallets that implement the walletconnect protocol, but more may come in the future. In the example below, we're hiding all wallets except a new custom wallet.
 
 ```javascript
-<ContractKitProvider
+<CeloProvider
   dapp={{
     name: 'My awesome dApp',
     description: 'My awesome description',
     url: 'https://example.com',
+  }}
+  // Use the theme to customize the colors.
+  // If you provide a theme, you must provide all values below!
+  theme={{
+    primary: '#6366f1',
+    secondary: '#eef2ff',
+    text: '#000000',
+    textSecondary: '#1f2937',
+    textTertiary: '#64748b',
+    muted: '#e2e8f0',
+    background: '#ffffff',
+    error: '#ef4444',
   }}
   connectModal={{
     title: <span>Connect your ExampleWallet</span>,
@@ -120,9 +140,8 @@ You can also add new custom wallets that don't exist in the registry or aren't i
           homepage: 'https://example.com',
           chains: ['eip:4220'],
           // IMPORTANT
-          // This is the version of WC. If more than one version is provided
-          // use-contractkit will use the highest one
-          versions: ['1', '2'],
+          // This is the version of WC. We only support version 1 at the moment.
+          versions: ['1'],
           logos: {
             sm: 'https://via.placeholder.com/40/000000/FFFFFF',
             md: 'https://via.placeholder.com/80/000000/FFFFFF',
@@ -163,18 +182,18 @@ You can also add new custom wallets that don't exist in the registry or aren't i
   }}
 >
   <App />
-</ContractKitProvider>
+</CeloProvider>
 ```
 
 ### Prompt users to connect their wallet
 
-use-contractkit provides a `connect` function that will open a modal with a list of wallets your user can connect to.
+react-celo provides a `connect` function that will open a modal with a list of wallets your user can connect to.
 
 ```javascript
-import { useContractKit } from '@celo-tools/use-contractkit';
+import { useCelo } from '@celo/react-celo';
 
 function App() {
-  const { connect, address } = useContractKit();
+  const { connect, address } = useCelo();
 
   return (
     <>
@@ -195,10 +214,10 @@ After connecting to an account the `address` property will be set.
 Now that we've connected to an account and have the users address, we can use the `kit` to query on-chain data:
 
 ```javascript
-import { useContractKit } from '@celo-tools/use-contractkit';
+import { useCelo } from '@celo/react-celo';
 
 function App() {
-  const { kit, address } = useContractKit();
+  const { kit, address } = useCelo();
 
   async function getAccountSummary() {
     const accounts = await kit.contracts.getAccounts();
@@ -213,18 +232,18 @@ function App() {
 
 ### Accessing user accounts
 
-The biggest problem when developing DApps is ensuring a Web2 level experience while managing the flaky and often slow nature of blockchains. To that end we've designed use-contractkit in a way to abstract away most of that pain.
+The biggest problem when developing DApps is ensuring a Web2 level experience while managing the flaky and often slow nature of blockchains. To that end we've designed react-celo in a way to abstract away most of that pain.
 
 Initially connecting to a user's account is one thing, handled via the `connect` function we just mentioned. However once a user has connected to your DApp we can make the experience nicer for them on repeat visits.
 
 #### Last connected account
 
-use-contractkit will remember a user's last connected address when they navigate back to or refresh your DApp. Ensure that when developing your DApp nothing changes in the UI whether or not the user has a `kit.defaultAccount` property set.
+react-celo will remember a user's last connected address when they navigate back to or refresh your DApp. Ensure that when developing your DApp nothing changes in the UI whether or not the user has a `kit.defaultAccount` property set.
 
 ```javascript
-import { useContractKit } from '@celo-tools/use-contractkit';
+import { useCelo } from '@celo/react-celo';
 
-const { address } = useContractKit();
+const { address } = useCelo();
 ```
 
 #### Get a connected account
@@ -234,10 +253,10 @@ When a user refreshes or navigates back to your page, they may not necessarily h
 For that functionality we have the `performActions` and `getConnectedKit` methods. Usage looks a little like this for `getConnectedKit`:
 
 ```javascript
-import { useContractKit } from '@celo-tools/use-contractkit';
+import { useCelo } from '@celo/react-celo';
 
 function App() {
-  const { getConnectedKit } = useContractKit();
+  const { getConnectedKit } = useCelo();
 
   async function transfer() {
     const kit = await getConnectedKit();
@@ -252,10 +271,10 @@ function App() {
 and this for `performActions`:
 
 ```javascript
-import { useContractKit } from '@celo-tools/use-contractkit';
+import { useCelo } from '@celo/react-celo';
 
 function App() {
-  const { performActions } = useContractKit();
+  const { performActions } = useCelo();
 
   async function transfer() {
     await performActions(async (kit) => {
@@ -272,18 +291,18 @@ The `performActions` method will also take care of displaying a modal to the use
 
 ### Network management
 
-use-contractkit provides a `network` variable and an `updateNetwork` function you can use to display the currently connected network as well as switch to a different one (ie. Alfajores, Baklava or Mainnet).
+react-celo provides a `network` variable and an `updateNetwork` function you can use to display the currently connected network as well as switch to a different one (ie. Alfajores, Baklava or Mainnet).
 
 If you'd prefer your DApp to only access a specific network (maybe you're deploying your testnet website at `https://test-app.dapp.name` and your mainnet version at `https://app.dapp.name`) you can pass the network you want to use as a variable into the provider you wrap your application with:
 
-You can also pass in a `network` prop to the `ContractKitProvider` as the default starting network
+You can also pass in a `network` prop to the `CeloProvider` as the default starting network
 
 ```javascript
-import { ContractKitProvider, Alfajores, NetworkNames } from '@celo-tools/use-contractkit';
+import { CeloProvider, Alfajores, NetworkNames } from '@celo/react-celo';
 
 function WrappedApp({ Component, pageProps }) {
   return (
-    <ContractKitProvider
+    <CeloProvider
       ...
       networks={[Alfajores]}
       network={{
@@ -295,46 +314,91 @@ function WrappedApp({ Component, pageProps }) {
       }}
     >
       <App />
-    </ContractKitProvider>
+    </CeloProvider>
   );
 }
 
 function App () {
   ...
 }
+
 ```
 
-Be sure to check the use-contractkit example application for a showcase of how network management works in more depth. Usually you'll want to show a dropdown to your users allowing them to select the network to connect to.
+Be sure to check the react-celo example application for a showcase of how network management works in more depth. Usually you'll want to show a dropdown to your users allowing them to select the network to connect to.
 
 ```javascript
-import { useContractKit } from '@celo-tools/use-contractkit';
+import { useCelo } from '@celo/react-celo';
 
 function App() {
-  const { network, updateNetwork } = useContractKit();
+  const { network, updateNetwork } = useCelo();
 
   return <div>Currently connected to {network}</div>;
 }
 ```
 
+#### Extending Supported Networks
+
+By default Use-Contractkit only supports Celo Blockchain Networks. You can however extend this to include other chains you choose such as Ethereum, Polygon, Avalanche etc by Passing your array of `Network`s into `CeloProvider`. Note this feature is considered experimental and works better with wallets like Metamask.
+
 ### Adjust FeeCurrency
 
-use-contractkit provides a `feeCurrency` variable and an `updateFeeCurrency` function you can use to display the currently selected feeCurrency (cUSD, CELO, cEUR). The feeCurrency can also be passed to the provider component. Valid values are `CeloContract.GoldToken`, `CeloContract.StableToken`, `CeloContract.StableTokenEUR`. CeloContract can be imported like so:
+react-celo provides a `feeCurrency` variable and an `updateFeeCurrency` function you can use to display the currently selected feeCurrency (cUSD, CELO, cEUR). The feeCurrency can also be passed to the provider component. Valid values are `CeloContract.GoldToken`, `CeloContract.StableToken`, `CeloContract.StableTokenEUR`. CeloContract can be imported like so:
 
 `import { CeloTokenContract } from '@celo/contractkit'`
 
-### Dark mode
+### Themes and dark-mode
 
-use-contrackit uses Tailwind for styling, to use the modal in dark mode simply add the class `tw-dark` to the root `<html />` tag of the web page.
+Currently react-celo supports dark mode and light (aka default) mode via tailwind out of the box, to use the modal in dark mode simply add the class `tw-dark` to the root `<html />` tag of the web page.
+
+If you default styles aren't to your taste, you can provide a theme object defined as such. You can do it during the setup of your dapp, at the `Provider` level. Or on the fly (let's say, if your users can change the theme of your dapp), via `updateTheme`.
+
+```ts
+interface Theme {
+  primary: string;
+  secondary: string;
+  text: string;
+  textSecondary: string;
+  textTertiary: string;
+  muted: string;
+  background: string;
+  error: string;
+}
+```
 
 ## Development
 
-To run use-contractkit locally, simply clone this repository and run:
+To run all the packages locally at once, simply clone this repository and run:
 
-- `yarn`
-- `yarn dev`
+```sh
+yarn;
+yarn build;  #only needs to be run the first time
+yarn dev;
+```
 
-A hot reloading server should come up on `localhost:3000`, it's the exact same as what's at [use-contractkit-c-labs.vercel.app](https://use-contractkit-c-labs.vercel.app).
+A hot reloading server should come up on localhost:3000, it's the exact same as what's at react-celo-c-labs.vercel.app.
+
+Alternatively, you can individually run `react-celo` and the `example` app in parallel.
+
+For that, you still need to have run `yarn` in the root.
+
+Then, you can run `react-celo` in one tab:
+
+```sh
+cd packages/react-celo
+yarn dev
+```
+
+and run the `example` app in another:
+
+```sh
+cd packages/example
+yarn dev
+```
 
 ## Support
 
-Struggling with anything use-contractkit related? Jump into the [GitHub Discussions](https://github.com/celo-org/use-contractkit/discussions) or [celo-org discord channel](https://chat.celo.org) and ask for help any time.
+Struggling with anything react-celo related? Jump into the [GitHub Discussions](https://github.com/celo-org/react-celo/discussions) or [celo-org discord channel](https://chat.celo.org) and ask for help any time.
+
+### Guides
+
+More specialized use case info can be found in our [Guides](https://github.com/celo-org/react-celo/tree/master/guides)

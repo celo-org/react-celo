@@ -17,7 +17,7 @@ export enum SupportedMethods {
   computeSharedSecret = 'personal_computeSharedSecret',
 }
 
-// Note: Pulled events from https://docs.walletconnect.com/1.0/client-api#register-event-subscription
+// Note: Pulled events from https://docs.walletconnect.com/client-api#register-event-subscription
 export enum CLIENT_EVENTS {
   connect = 'connect',
   disconnect = 'disconnect',
@@ -57,6 +57,8 @@ export type SessionProposal = Request<
   [
     {
       chainId: number;
+      approved: boolean;
+      networkId: number | null;
       peerId: string;
       peerMeta: {
         description: string;

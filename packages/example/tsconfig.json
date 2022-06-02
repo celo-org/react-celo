@@ -1,13 +1,7 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "./tsconfig.spec.json",
+  "exclude": ["**/*.test.ts"],
   "compilerOptions": {
-    "noEmit": true,
-    "module": "esnext",
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "incremental": true
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+    "jsx": "preserve"
+  }
 }

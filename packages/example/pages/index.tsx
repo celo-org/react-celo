@@ -1,19 +1,15 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
+import { Theme, useCelo } from '@celo/react-celo';
 import { ensureLeading0x } from '@celo/utils/lib/address';
-import {
-  Alfajores,
-  Baklava,
-  Mainnet,
-  useContractKit,
-} from '@celo-tools/use-contractkit';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 
 import { PrimaryButton, SecondaryButton, toast } from '../components';
+import { ThemeButton, themes } from '../components/theme-button';
 import { TYPED_DATA } from '../utils';
 
 interface Summary {
@@ -21,7 +17,7 @@ interface Summary {
   address: string;
   wallet: string;
   celo: BigNumber;
-  balances: { symbol: string; value: BigNumber }[];
+  balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
 }
 
 const defaultSummary: Summary = {
@@ -38,29 +34,37 @@ const feeTokenMap: FeeTokenMap = {
   [CeloContract.GoldToken]: 'Celo',
   [CeloContract.StableToken]: 'cUSD',
   [CeloContract.StableTokenEUR]: 'cEUR',
-  [CeloContract.StableTokenBRL]: 'cBRL',
+  [CeloContract.StableTokenBRL]: 'cREAL',
 };
 
 function truncateAddress(address: string) {
   return `${address.slice(0, 8)}...${address.slice(36)}`;
 }
-
-const networks = [Alfajores, Baklava, Mainnet];
+const html =
+  typeof document !== 'undefined' &&
+  (document.getElementsByTagName('html')[0] as HTMLElement);
+function isDark() {
+  return html && html.classList.contains('tw-dark');
+}
 
 export default function Home(): React.ReactElement {
   const {
     kit,
     address,
     network,
+    networks,
     updateNetwork,
     connect,
+    supportsFeeCurrency,
     destroy,
     performActions,
     walletType,
     feeCurrency,
     updateFeeCurrency,
-  } = useContractKit();
+    updateTheme,
+  } = useCelo();
 
+  const [_theme, selectTheme] = useState<Theme | null>(null);
   const [summary, setSummary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
 
@@ -75,9 +79,16 @@ export default function Home(): React.ReactElement {
       kit.contracts.getGoldToken(),
       Promise.all(
         Object.values(StableToken).map(async (stable) => {
+          let contract;
+          try {
+            contract = await kit.contracts.getStableToken(stable);
+          } catch (e) {
+            contract = null;
+            console.error(e);
+          }
           return {
             symbol: stable,
-            contract: await kit.contracts.getStableToken(stable),
+            contract: contract,
           };
         })
       ),
@@ -112,8 +123,8 @@ export default function Home(): React.ReactElement {
             Web3.utils.toWei('0.00000001', 'ether')
           )
           .sendAndWaitForReceipt({
-            from: k.defaultAccount,
-            gasPrice: k.gasPrice,
+            from: k.connection.defaultAccount,
+            gasPrice: k.connection.defaultGasPrice,
           });
       });
 
@@ -130,8 +141,11 @@ export default function Home(): React.ReactElement {
     setSending(true);
     try {
       await performActions(async (k) => {
-        if (k.defaultAccount) {
-          return await k.signTypedData(k.defaultAccount, TYPED_DATA);
+        if (k.connection.defaultAccount) {
+          return await k.connection.signTypedData(
+            k.connection.defaultAccount,
+            TYPED_DATA
+          );
         } else {
           throw new Error('No default account');
         }
@@ -148,12 +162,12 @@ export default function Home(): React.ReactElement {
     setSending(true);
     try {
       await performActions(async (k) => {
-        if (!k.defaultAccount) {
+        if (!k.connection.defaultAccount) {
           throw new Error('No default account');
         }
         return await k.connection.sign(
           ensureLeading0x(Buffer.from('Hello').toString('hex')),
-          k.defaultAccount
+          k.connection.defaultAccount
         );
       });
       toast.success('sign_personal succeeded');
@@ -164,6 +178,14 @@ export default function Home(): React.ReactElement {
     setSending(false);
   };
 
+  const toggleDarkMode = useCallback(() => {
+    if (isDark()) {
+      html && html.classList.remove('tw-dark');
+    } else {
+      html && html.classList.add('tw-dark');
+    }
+  }, []);
+
   useEffect(() => {
     void fetchSummary();
   }, [fetchSummary]);
@@ -171,13 +193,16 @@ export default function Home(): React.ReactElement {
   return (
     <div>
       <Head>
-        <title>use-contractkit</title>
+        <title>react-celo</title>
         <link rel="icon" href="/favicon.ico" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
-
-      <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
-        <div className="font-semibold text-2xl">use-contractkit</div>
-        <div className="text-gray-600 mt-2">
+      <main>
+        <div className="font-semibold text-2xl">react-celo</div>
+        <div className="text-slate-600 mt-2">
           A{' '}
           <a
             className="underline"
@@ -227,7 +252,7 @@ export default function Home(): React.ReactElement {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://www.npmjs.com/package/@celo-tools/use-contractkit"
+                href="https://www.npmjs.com/package/@celo/react-celo"
                 rel="noreferrer"
               >
                 NPM
@@ -237,7 +262,7 @@ export default function Home(): React.ReactElement {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://github.com/celo-tools/use-contractkit"
+                href="https://github.com/celo-tools/react-celo"
                 rel="noreferrer"
               >
                 GitHub
@@ -251,28 +276,20 @@ export default function Home(): React.ReactElement {
           <ul className="list-disc list-inside">
             {[
               {
-                name: 'Plock',
-                url: 'https://plock.fi',
+                name: 'Celo Tracker ',
+                url: 'https://www.celotracker.com/',
               },
               {
-                name: 'Web multi sig interface',
-                url: 'https://celo-data.nambrot.com/multisig',
+                name: 'Mobius Money',
+                url: 'https://mobius.money/',
               },
               {
-                name: 'Poof Cash',
-                url: 'https://poof.cash',
-              },
-              {
-                name: 'Nomspace',
-                url: 'https://www.nom.space/',
-              },
-              {
-                name: 'Romulus',
-                url: 'https://romulus.page/',
+                name: 'Impact Market',
+                url: 'https://mobius.money/',
               },
               {
                 name: 'Add yours to the list...',
-                url: 'https://github.com/celo-tools/use-contractkit',
+                url: 'https://github.com/celo-org/react-celo/',
               },
             ].map(({ name, url }) => (
               <li key={name}>
@@ -291,7 +308,7 @@ export default function Home(): React.ReactElement {
 
         <div className="mt-6">
           <div className="mb-2 text-lg">Try it out</div>
-          <div className="text-gray-600 mb-4">
+          <div className="text-slate-600 mb-4">
             Connect to your wallet of choice and sign something for send a test
             transaction
             <br />
@@ -299,10 +316,46 @@ export default function Home(): React.ReactElement {
               Example wallet
             </a>
           </div>
+          <div className="text-slate-600 mb-4">
+            <h2 className="mb-2 text-lg">Styling</h2>
+            <p className="text-slate-600 mb-4">
+              React Celo will go dark when tailwinds tw-dark class is on body or
+              you can provide a theme
+            </p>
+            <label className="toggle-dark">
+              <span className="toggle-title">
+                Toggle modal's dark mode (tw-dark)
+              </span>
+              <div className="switch">
+                <input
+                  type="checkbox"
+                  onChange={toggleDarkMode}
+                  defaultValue={isDark() ? 'checked' : 'unchecked'}
+                />
+                <span className="slider round"></span>
+              </div>
+            </label>
+            <h3 className="mb-2 text-lg">
+              Try out some of the pre-made themes below
+            </h3>
+            <div className="grid grid-flow-col gap-4 my-4">
+              {themes.map((theme, i) => (
+                <ThemeButton
+                  key={i}
+                  theme={theme}
+                  currentTheme={_theme}
+                  onClick={(theme) => {
+                    updateTheme(theme);
+                    selectTheme(theme);
+                  }}
+                />
+              ))}
+            </div>
+          </div>
           <div className="flex flex-col items-center">
             <div className="flex items-center justify-center space-x-8 mb-4">
               <select
-                className="border border-gray-300 rounded px-4 py-2"
+                className="border border-slate-300 rounded px-4 py-2"
                 value={network.name}
                 onChange={async (e) => {
                   const newNetwork = networks.find(
@@ -357,10 +410,10 @@ export default function Home(): React.ReactElement {
             </div>
 
             {address && (
-              <div className="w-64 md:w-96 space-y-4 text-gray-700">
+              <div className="w-64 md:w-96 space-y-4 text-slate-700">
                 <div className="mb-4">
-                  <div className="text-lg font-bold mb-2 text-gray-900">
-                    Account summary
+                  <div className="text-lg font-bold mb-2 text-slate-900">
+                    Account Summary on {network.name}
                   </div>
                   <div className="space-y-2">
                     <div>Wallet type: {walletType}</div>
@@ -375,7 +428,7 @@ export default function Home(): React.ReactElement {
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-gray-900">
+                  <div className="text-lg font-bold mb-2 text-slate-900">
                     Balances
                   </div>
                   <div className="space-y-2">
@@ -385,21 +438,25 @@ export default function Home(): React.ReactElement {
                     {summary.balances.map((token) => (
                       <div key={token.symbol}>
                         {token.symbol}:{' '}
-                        {Web3.utils.fromWei(token.value.toFixed())}
+                        {token.value
+                          ? Web3.utils.fromWei(token.value.toFixed())
+                          : token.error}
                       </div>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-gray-900">
-                    Fee Currency
+                  <div className="text-lg font-bold mb-2 text-slate-900">
+                    Fee Currency{' '}
+                    {supportsFeeCurrency || `not supported on ${walletType}`}
                   </div>
                   <select
+                    disabled={!supportsFeeCurrency}
                     value={feeCurrency}
                     onChange={(event) =>
                       updateFeeCurrency(event.target.value as CeloTokenContract)
                     }
-                    className="border border-gray-300 rounded px-4 py-2"
+                    className="border border-slate-300 rounded px-4 py-2"
                   >
                     {Object.keys(feeTokenMap).map((token) => (
                       <option key={token} value={token}>
@@ -417,13 +474,22 @@ export default function Home(): React.ReactElement {
   );
 }
 async function getBalances(
-  stableTokens: { symbol: StableToken; contract: StableTokenWrapper }[],
+  stableTokens: { symbol: StableToken; contract: StableTokenWrapper | null }[],
   address: string
 ) {
   return Promise.all(
-    stableTokens.map(async (stable) => ({
-      symbol: stable.symbol,
-      value: await stable.contract.balanceOf(address),
-    }))
+    stableTokens.map(async (stable) => {
+      let value, error;
+      if (stable.contract) {
+        value = await stable.contract.balanceOf(address);
+      } else {
+        error = 'not deployed in network';
+      }
+      return {
+        symbol: stable.symbol,
+        value: value,
+        error: error,
+      };
+    })
   );
 }

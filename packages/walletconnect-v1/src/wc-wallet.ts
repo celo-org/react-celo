@@ -9,9 +9,8 @@ import {
   IInternalEvent,
   IWalletConnectSDKOptions,
 } from '@walletconnect/types';
-import debugConfig from 'debug';
 
-import { defaultBridge } from './constants';
+import { CANCELED, defaultBridge } from './constants';
 import {
   AccountsProposal,
   CLIENT_EVENTS,
@@ -23,29 +22,24 @@ import {
   SignTypedSignProposal,
   WalletConnectWalletOptions,
 } from './types';
+import Canceler from './utils/canceler';
 import { WalletConnectSigner } from './wc-signer';
-
-const debug = debugConfig('kit:wallet:wallet-connect-wallet-v1');
 
 /**
  * Session establishment happens out of band so after somehow
  * communicating the connection URI (often via QR code) we can
  * continue with the setup process
  */
-async function waitForTruthy(getValue: () => boolean, attempts = 10) {
-  let waitDuration = 500;
-  for (let i = 0; i < attempts; i++) {
-    if (getValue()) {
-      return;
-    }
-
-    await sleep(waitDuration);
-    waitDuration = waitDuration * 1.5;
+async function waitForTruthy(
+  getValue: () => boolean,
+  signal: Canceler['status'],
+  waitDuration = 500
+): Promise<void> {
+  if (signal.canceled || getValue()) {
+    return;
   }
-
-  throw new Error(
-    'Unable to get pairing session, did you lose internet connection?'
-  );
+  await sleep(waitDuration);
+  return waitForTruthy(getValue, signal, waitDuration);
 }
 
 const defaultInitOptions: IWalletConnectSDKOptions = {
@@ -68,12 +62,14 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   private connectOptions: ICreateSessionOptions;
 
   private client?: WalletConnect;
+  private canceler: Canceler;
 
   constructor({ init, connect }: WalletConnectWalletOptions) {
     super();
 
-    this.initOptions = { ...defaultInitOptions, ...init };
-    this.connectOptions = { ...defaultConnectOptions, ...connect };
+    this.canceler = new Canceler();
+    this.initOptions = { ...defaultInitOptions, ...(init ?? {}) };
+    this.connectOptions = { ...defaultConnectOptions, ...(connect ?? {}) };
   }
 
   /**
@@ -107,13 +103,13 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   }
 
   onSessionCreated = (error: Error | null, session: IInternalEvent): void => {
-    debug('onSessionCreated', error, session);
+    console.info('onSessionCreated', error, session);
     if (error) {
       throw error;
     }
   };
   onSessionDeleted = (error: Error | null, session: IInternalEvent): void => {
-    debug('onSessionDeleted', error);
+    console.info('onSessionDeleted', error);
     if (error) {
       throw error;
     }
@@ -128,13 +124,13 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     }
   };
   onSessionRequest = (error: Error | null, session: SessionProposal): void => {
-    debug('onSessionRequest', error, session);
+    console.info('onSessionRequest', error, session);
     if (error) {
       throw error;
     }
   };
   onSessionUpdated = (error: Error | null, session: SessionProposal): void => {
-    debug('onSessionUpdated', error, session);
+    console.info('onSessionUpdated', error, session);
     if (error) {
       throw error;
     }
@@ -149,7 +145,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       | DecryptProposal
       | ComputeSharedSecretProposal
   ): void => {
-    debug('onCallRequest', error, payload);
+    console.info('onCallRequest', error, payload);
     if (error) {
       throw error;
     }
@@ -158,13 +154,13 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     error: Error | null,
     payload: SessionProposal
   ): void => {
-    debug('onWcSessionRequest', error, payload);
+    console.info('onWcSessionRequest', error, payload);
     if (error) {
       throw error;
     }
   };
   onWcSessionUpdate = (error: Error | null, payload: SessionProposal): void => {
-    debug('onWcSessionUpdate', error, payload);
+    console.info('onWcSessionUpdate', error, payload);
     if (error) {
       throw error;
     }
@@ -176,7 +172,12 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
      * communicating the connection URI (often via QR code) we can
      * continue with the setup process
      */
-    await waitForTruthy(() => !!this.client?.connected);
+
+    await waitForTruthy(() => !!this.client?.connected, this.canceler.status);
+    if (this.canceler.status.canceled) {
+      // This will be true if this.canceler.cancel() was called earlier
+      throw CANCELED;
+    }
 
     const addressToSigner = new Map<string, WalletConnectSigner>();
     this.client?.session.accounts.forEach((address) => {
@@ -210,8 +211,11 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     if (!this.client) {
       throw new Error('Wallet must be initialized before calling close()');
     }
+    this.canceler.cancel();
 
     if (this.client.connected) {
+      // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
+      localStorage.removeItem('walletconnect');
       await this.client.killSession({ message });
     }
   }

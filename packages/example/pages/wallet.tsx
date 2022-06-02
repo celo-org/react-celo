@@ -1,5 +1,7 @@
 import { trimLeading0x } from '@celo/base';
-import { newKitFromWeb3, StableToken } from '@celo/contractkit';
+import { StableToken } from '@celo/contractkit/lib/celo-tokens';
+import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
+import { Alfajores } from '@celo/react-celo';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import {
   AccountsProposal,
@@ -13,7 +15,6 @@ import {
   SignTypedSignProposal,
   SupportedMethods,
 } from '@celo/wallet-walletconnect-v1';
-import { Alfajores } from '@celo-tools/use-contractkit';
 import WalletConnect from '@walletconnect/client-v1';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
@@ -31,8 +32,7 @@ const kit = newKitFromWeb3(web3);
 const account = web3.eth.accounts.privateKeyToAccount(
   'e2d7138baa3a5600ac37984e40981591d7cf857bcadd7dc6f7d14023a17b0787'
 );
-kit.addAccount(account.privateKey);
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+kit.connection.addAccount(account.privateKey);
 const wallet = kit.getWallet()!;
 
 const defaultSummary = {
@@ -439,12 +439,12 @@ export default function Wallet(): React.ReactElement {
   return (
     <>
       <Head>
-        <title>use-contractkit wallet</title>
+        <title>react-celo wallet</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
-        <div className="font-semibold text-2xl">use-contractkit wallet</div>
+      <main>
+        <div className="font-semibold text-2xl">react-celo wallet</div>
 
         <input
           style={{
@@ -471,9 +471,9 @@ export default function Wallet(): React.ReactElement {
         <div className={error ? '' : 'hidden'}>
           <span className="text-red-500">{error}</span>
         </div>
-        <div className="w-64 md:w-96 space-y-4 text-gray-700">
+        <div className="w-64 md:w-96 space-y-4 text-slate-700">
           <div className="mb-4">
-            <div className="text-lg font-bold mb-2 text-gray-900">
+            <div className="text-lg font-bold mb-2 text-slate-900">
               Account summary
             </div>
             <div className="space-y-2">
@@ -496,7 +496,9 @@ export default function Wallet(): React.ReactElement {
             </div>
           </div>
           <div>
-            <div className="text-lg font-bold mb-2 text-gray-900">Balances</div>
+            <div className="text-lg font-bold mb-2 text-slate-900">
+              Balances
+            </div>
             <div className="space-y-2">
               <div>CELO: {Web3.utils.fromWei(summary.celo.toFixed())}</div>
               <div>cUSD: {Web3.utils.fromWei(summary.cusd.toFixed())}</div>

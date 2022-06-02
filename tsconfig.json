@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "CommonJS",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
@@ -14,5 +14,9 @@
     "resolveJsonModule": true,
     "jsx": "react"
   },
-  "include": ["**/*.tsx", "**/*.ts"]
+  "include": [
+    "**/*.tsx",
+    "**/*.ts",
+    "packages/react-celo/scripts/json-to-ts.js"
+  ]
 }

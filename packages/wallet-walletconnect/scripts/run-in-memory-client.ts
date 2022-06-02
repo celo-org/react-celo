@@ -1,4 +1,4 @@
-import { newKit } from '@celo/contractkit';
+import { newKit } from '@celo/contractkit/lib/mini-kit';
 // import {
 //   // ensureLeading0x,
 //   privateKeyToPublicKey,
@@ -21,7 +21,7 @@ async function main() {
       metadata: {
         name,
         description: 'A CLI DApp for testing WalletConnect integrations',
-        url: 'https://use-contractkit.vercel.app',
+        url: 'https://react-celo.vercel.app',
         icons: [],
       },
     },
