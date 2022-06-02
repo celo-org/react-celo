@@ -8,6 +8,7 @@ import { Mainnet } from '../src/constants';
 import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
+import defaultTheme from '../src/theme/default';
 
 interface RenderArgs {
   providerProps: Partial<CeloProviderProps>;
@@ -194,29 +195,20 @@ describe('CeloProvider', () => {
       expect(result.current.network).toEqual(Mainnet);
 
       act(() => {
-        result.current.updateTheme({
-          background: '#000',
-          primary: '#000',
-          secondary: '#000',
-          muted: '#000',
-          error: '#000',
-          text: '#000',
-          textSecondary: '#000',
-          textTertiary: '#000',
-        });
+        result.current.updateTheme(defaultTheme.light);
       });
 
       rerender();
 
       expect(result.current.theme).toEqual({
-        background: '#000',
-        primary: '#000',
-        secondary: '#000',
-        muted: '#000',
-        error: '#000',
-        text: '#000',
-        textSecondary: '#000',
-        textTertiary: '#000',
+        background: '#ffffff',
+        primary: '#6366f1',
+        secondary: '#eef2ff',
+        muted: '#e2e8f0',
+        error: '#ef4444',
+        text: '#000000',
+        textSecondary: '#1f2937',
+        textTertiary: '#64748b',
       });
     });
   });
