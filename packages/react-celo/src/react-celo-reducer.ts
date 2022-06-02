@@ -22,6 +22,7 @@ export function celoReactReducer(
         return state;
       }
       if (action.payload) {
+        // Local Storage in reducer is a side effect and hence not kosher
         localStorage.setItem(localStorageKeys.lastUsedAddress, action.payload);
       } else {
         localStorage.removeItem(localStorageKeys.lastUsedAddress);
@@ -43,6 +44,7 @@ export function celoReactReducer(
         network: action.payload,
       };
 
+    // The reducer should not contain the connector. instead the connector should just be stored in some ref, or useMemo
     case 'setConnector':
       localStorage.removeItem(localStorageKeys.lastUsedAddress);
       return {
@@ -60,6 +62,7 @@ export function celoReactReducer(
         action.payload
       );
       return { ...state, feeCurrency: action.payload };
+    // The reducer should not contain the connector. instead the connector should just be stored in some ref, or useMemo
     case 'initialisedConnector': {
       const newConnector = action.payload;
       const address = newConnector.kit.connection.defaultAccount ?? null;
@@ -117,7 +120,7 @@ export interface ReducerState {
   address: Maybe<string>;
   feeCurrency: CeloTokenContract;
   theme: Maybe<Theme>;
-
+  //storing a function in a reducer is odd. Its hard to reason about. this should be elsewhere
   connectionCallback: Maybe<(connector: Connector | false) => void>;
 }
 

@@ -81,6 +81,7 @@ export const WalletIds = {
     'afbd95522f4041c71dd4f1a065f971fd32372865b416f95a0b1db759ae33f2a7',
 };
 
+// This is a large object in a big file. We should move out
 export const PROVIDERS: {
   [K in SupportedProviders]: Provider | WalletConnectProvider;
 } = {
@@ -247,6 +248,7 @@ export const PROVIDERS: {
   },
 };
 
+// This Looks Unused.
 export const images = {
   [SupportedProviders.Valora]: VALORA,
   [SupportedProviders.MetaMask]: METAMASK,

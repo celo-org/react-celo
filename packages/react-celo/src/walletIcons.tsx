@@ -1,5 +1,6 @@
 import React from 'react';
 
+// These should each be there own File.
 export const LEDGER: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     width="24"

@@ -57,6 +57,8 @@ export interface AddERC20TokenParameter {
   options: ERC20Token;
 }
 
+// It seems weird that this is defined in the metamask.ts file
+// I think there is something similar in the celo/base package. or celo/connect
 export interface CeloTokens {
   CELO: GoldTokenWrapper;
   cUSD: StableTokenWrapper;

@@ -6,6 +6,9 @@ import { Maybe } from './types';
 import { useCelo } from './use-celo';
 import { useIsMounted } from './utils/useIsMounted';
 
+// All the hooks in this file will created a new instance of whatever they memoize per component.
+// This isn't the best. Instead these should be using Context to ensure they all access the same object
+
 export const useProvider = (): Web3Provider => {
   const { kit, network } = useCelo();
   const provider = kit.connection.web3

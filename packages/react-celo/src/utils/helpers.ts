@@ -5,6 +5,7 @@ import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import localStorage from './localStorage';
 
+// This shouldnt be in charge of initializing any connector. Just remembering which one was used last.
 export const loadPreviousConfig = (
   defaultNetworkProp: Network,
   defaultFeeCurrencyProp: CeloTokenContract,
@@ -97,6 +98,7 @@ export function clearPreviousConfig(): void {
   });
 }
 
+// We should handle valid fee currencies in a way that doesnt require updating code all over the place when a new cStable drops.
 export function isValidFeeCurrency(currency: Maybe<string>): boolean {
   switch (currency) {
     case CeloContract.GoldToken:

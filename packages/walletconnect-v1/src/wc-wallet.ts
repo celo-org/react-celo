@@ -102,6 +102,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return this.client?.uri;
   }
 
+  // These functions appear to be overwritten elsewhere (at least I dont anything happening in the logs)
   onSessionCreated = (error: Error | null, session: IInternalEvent): void => {
     console.info('onSessionCreated', error, session);
     if (error) {

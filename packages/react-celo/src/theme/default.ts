@@ -1,6 +1,6 @@
 import { AppTheme } from '../types';
 
-const defaultTheme = {
+const defaultTheme: AppTheme = {
   dark: {
     primary: '#eef2ff',
     secondary: '#6366f1',
@@ -21,6 +21,6 @@ const defaultTheme = {
     background: '#ffffff',
     error: '#ef4444',
   },
-} as AppTheme;
+};
 
 export default defaultTheme;

@@ -134,7 +134,7 @@ export class LedgerConnector implements Connector {
     localStorage.setItem(localStorageKeys.lastUsedNetwork, network.name);
     this.kit = newKit(network.rpcUrl);
   }
-
+  // maybe Connectors shouldnt be in charge of remembering persistent state
   persist() {
     persist({
       walletType: WalletTypes.Ledger,

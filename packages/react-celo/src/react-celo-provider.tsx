@@ -129,6 +129,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
 
   const methods = useCeloMethods(state, dispatch, buildContractsCache);
 
+  // Yet another in the list of places connectors get started.
   useEffect(() => {
     if (CONNECTOR_TYPES[state.connector.type] !== UnauthenticatedConnector) {
       methods.initConnector(state.connector).catch(() => {

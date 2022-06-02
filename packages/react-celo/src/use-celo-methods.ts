@@ -36,6 +36,7 @@ export function useCeloMethods(
     dispatch('destroy');
   }, [dispatch, connector]);
 
+  // This function is weird. too much happens. I dont like that onNetWorkChange/onAddressChange are set like this. it feels brittle.
   const initConnector = useCallback(
     async (nextConnector: Connector) => {
       try {
@@ -89,6 +90,7 @@ export function useCeloMethods(
           dispatch('setAddress', address);
         });
       } catch (e) {
+        // Throwing and logging and setting error in the reducer. oh my
         if (typeof e === 'symbol') {
           console.info(
             '[react-celo] Ignoring error initializing connector with reason',
