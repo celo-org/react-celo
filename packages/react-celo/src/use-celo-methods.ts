@@ -121,7 +121,7 @@ export function useCeloMethods(
           "The connected wallet's network must be changed from the wallet."
         );
       }
-      if (network === newNetwork) return;
+
       if (connector.initialised) {
         const connectorArgs = JSON.parse(
           localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
@@ -137,7 +137,7 @@ export function useCeloMethods(
 
       dispatch('setNetwork', newNetwork);
     },
-    [dispatch, connector, network, initConnector]
+    [dispatch, connector, initConnector]
   );
 
   const connect = useCallback(async (): Promise<Connector> => {
