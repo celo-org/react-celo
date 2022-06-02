@@ -15,7 +15,10 @@ export interface ILogger {
   error(...args: unknown[]): void;
 }
 
-class Logger implements ILogger {
+/**
+ * @internal Used the defined the default applicationLogger
+ */
+export class Logger implements ILogger {
   level: Level;
 
   constructor(level: Maybe<Level> = null, private namespace = '[react-celo]') {
