@@ -51,12 +51,6 @@ export function celoReactReducer(
         connectorInitError: null,
         address: null,
       };
-    case 'setFeeCurrency':
-      if (action.payload === state.feeCurrency) {
-        return state;
-      }
-      setTypedStorageKey(lsKeys.lastUsedFeeCurrency, action.payload);
-      return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
       const newConnector = action.payload;
       const address = newConnector.kit.connection.defaultAccount ?? null;

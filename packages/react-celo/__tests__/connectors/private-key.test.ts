@@ -56,10 +56,6 @@ describe('PrivateKeyConnector', () => {
 
       connector.close();
 
-      expect(getTypedStorageKey(localStorageKeys.lastUsedFeeCurrency)).toEqual(
-        null
-      );
-
       expect(
         getTypedStorageKey(localStorageKeys.lastUsedWalletArguments)
       ).toEqual(null);

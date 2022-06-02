@@ -14,10 +14,6 @@ describe('LedgerConnector', () => {
   });
 
   it('remembers info in localStorage', () => {
-    expect(getTypedStorageKey(localStorageKeys.lastUsedFeeCurrency)).toEqual(
-      null
-    );
-
     expect(getTypedStorageKey(localStorageKeys.lastUsedWalletType)).toEqual(
       WalletTypes.Ledger
     );
@@ -32,10 +28,6 @@ describe('LedgerConnector', () => {
   describe('close()', () => {
     it('clears out localStorage', () => {
       connector.close();
-
-      expect(getTypedStorageKey(localStorageKeys.lastUsedFeeCurrency)).toEqual(
-        null
-      );
 
       expect(getLastUsedWalletArgs()).toEqual(null);
 

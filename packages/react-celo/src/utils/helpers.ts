@@ -11,19 +11,16 @@ import {
 
 export const loadPreviousConfig = (
   defaultNetworkProp: Network,
-  defaultFeeCurrencyProp: CeloTokenContract,
   networks: Network[]
 ): {
   address: Maybe<string>;
   network: Maybe<Network>;
   connector: Connector;
-  feeCurrency: Maybe<CeloTokenContract>;
 } => {
   let lastUsedNetworkName: Maybe<string> = null;
   let lastUsedAddress: Maybe<string> = null;
   let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
   let lastUsedWalletArguments: unknown[] = [];
-  let lastUsedFeeCurrency: CeloContract = defaultFeeCurrencyProp;
   if (localStorageAvailable()) {
     const localLastUsedNetworkName = getTypedStorageKey(
       localStorageKeys.lastUsedNetwork
@@ -42,14 +39,6 @@ export const loadPreviousConfig = (
     }
 
     lastUsedWalletArguments = getLastUsedWalletArgs() || [];
-
-    const localLastUsedFeeCurrency = getTypedStorageKey(
-      localStorageKeys.lastUsedFeeCurrency
-    );
-
-    if (isValidFeeCurrency(localLastUsedFeeCurrency)) {
-      lastUsedFeeCurrency = localLastUsedFeeCurrency as CeloTokenContract;
-    }
   }
 
   const lastUsedNetwork = networks.find((n) => n.name === lastUsedNetworkName);
@@ -59,7 +48,6 @@ export const loadPreviousConfig = (
     try {
       initialConnector = new CONNECTOR_TYPES[lastUsedWalletType](
         lastUsedNetwork,
-        lastUsedFeeCurrency,
         ...lastUsedWalletArguments
       );
     } catch (e) {
@@ -77,7 +65,6 @@ export const loadPreviousConfig = (
     address: lastUsedAddress,
     network: lastUsedNetwork || null,
     connector: initialConnector,
-    feeCurrency: lastUsedFeeCurrency,
   };
 };
 
