@@ -1,0 +1,87 @@
+name: Bug report
+description: Create a bug report to help us improve
+labels:
+  - 'bug'
+  - 'triage'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for filling out a report!
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: textarea
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: What are the steps to reproduce the bug?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Screenshot
+      description: If applicable, add screenshots to help explain your problem.
+  - type: dropdown
+    id: version
+    attributes:
+      label: Where is the problem happening?
+      options:
+        - Mobile
+        - Desktop
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Environment
+      description: Please complete the following information
+      placeholder: |
+        Device: [e.g. iPhone6]
+        OS: [e.g. iOS8.1]
+        Browser [e.g. stock browser, safari]
+        Version [e.g. 22]
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: What version of `react-celo` were you using?
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: What wallet were you using?
+      placeholder: e.g. Node Wallet, MetaMask, Valora, etc
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: What is the dApp URL? (if applicable)
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here.
+    validations:
+      required: false
