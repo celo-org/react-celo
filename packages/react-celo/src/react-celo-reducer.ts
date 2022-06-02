@@ -1,13 +1,12 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
 import { UnauthenticatedConnector } from './connectors';
+import { localStorageKeys as lsKeys } from './constants';
 import { Connector, Dapp, Maybe, Network, Theme } from './types';
 import {
   clearPreviousConfig,
   removeLastUsedAddress,
-  setLastUsedAddress,
-  setLastUsedFeeCurrency,
-  setLastUsedNetwork,
+  setTypedStorageKey,
 } from './utils/localStorage';
 
 export function celoReactReducer(
@@ -26,7 +25,7 @@ export function celoReactReducer(
         return state;
       }
       if (action.payload) {
-        setLastUsedAddress(action.payload);
+        setTypedStorageKey(lsKeys.lastUsedAddress, action.payload);
       } else {
         removeLastUsedAddress();
       }
@@ -38,7 +37,7 @@ export function celoReactReducer(
       if (action.payload === state.network) {
         return state;
       }
-      setLastUsedNetwork(action.payload.name);
+      setTypedStorageKey(lsKeys.lastUsedNetwork, action.payload.name);
       return {
         ...state,
         network: action.payload,
@@ -56,13 +55,13 @@ export function celoReactReducer(
       if (action.payload === state.feeCurrency) {
         return state;
       }
-      setLastUsedFeeCurrency(action.payload);
+      setTypedStorageKey(lsKeys.lastUsedFeeCurrency, action.payload);
       return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
       const newConnector = action.payload;
       const address = newConnector.kit.connection.defaultAccount ?? null;
       if (address) {
-        setLastUsedAddress(address);
+        setTypedStorageKey(lsKeys.lastUsedAddress, address);
       }
       return {
         ...state,

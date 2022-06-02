@@ -50,52 +50,27 @@ const localStorage =
     ? new MockedLocalStorage()
     : window.localStorage;
 
-export function getLastUsedAddress(): string | null {
-  return localStorage.getItem(localStorageKeys.lastUsedAddress);
+type ParamType<T> = T extends localStorageKeys.lastUsedFeeCurrency
+  ? CeloTokenContract
+  : T extends localStorageKeys.lastUsedWalletType
+  ? WalletTypes
+  : string;
+
+export function getTypedStorageKey<T extends localStorageKeys>(
+  key: T
+): ParamType<T> | null {
+  return localStorage.getItem(key) as ParamType<T>;
 }
 
-export function setLastUsedAddress(address: string) {
-  localStorage.setItem(localStorageKeys.lastUsedAddress, address);
+export function setTypedStorageKey<
+  T extends localStorageKeys,
+  V extends ParamType<T>
+>(key: T, value: V): void {
+  localStorage.setItem(key, value);
 }
 
 export function removeLastUsedAddress() {
   localStorage.removeItem(localStorageKeys.lastUsedAddress);
-}
-
-export function getLastUsedNetwork(): string | null {
-  return localStorage.getItem(localStorageKeys.lastUsedNetwork);
-}
-
-export function setLastUsedNetwork(networkName: string) {
-  localStorage.setItem(localStorageKeys.lastUsedNetwork, networkName);
-}
-
-export function getLastUsedFeeCurrency(): CeloTokenContract | null {
-  return localStorage.getItem(
-    localStorageKeys.lastUsedFeeCurrency
-  ) as CeloTokenContract;
-}
-
-export function setLastUsedFeeCurrency(feeCurrency: CeloTokenContract) {
-  localStorage.setItem(localStorageKeys.lastUsedFeeCurrency, feeCurrency);
-}
-
-export function setLastUsedWalletId(id: string) {
-  localStorage.setItem(localStorageKeys.lastUsedWalletId, id);
-}
-
-export function getLastUsedWalletId() {
-  return localStorage.getItem(localStorageKeys.lastUsedWalletId);
-}
-
-export function getLastUsedWalletType(): WalletTypes | null {
-  return localStorage.getItem(
-    localStorageKeys.lastUsedWalletType
-  ) as WalletTypes;
-}
-
-export function setLastUsedWalletType(type: WalletTypes) {
-  localStorage.setItem(localStorageKeys.lastUsedWalletType, type);
 }
 
 export type WalletArgs =
@@ -116,7 +91,7 @@ export function getLastUsedWalletArgs(): WalletArgs | null {
   return null;
 }
 
-export function setLastUsedWalletArgs(params: WalletArgs) {
+export function setLastUsedWalletArgs<T>(params: WalletArgs) {
   const args = JSON.stringify(params);
   localStorage.setItem(localStorageKeys.lastUsedWalletArguments, args);
 }

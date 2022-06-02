@@ -16,16 +16,14 @@ import {
 } from '@celo/wallet-walletconnect-v1';
 import { BigNumber } from 'bignumber.js';
 
-import { WalletTypes } from '../constants';
+import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
 import {
   clearPreviousConfig,
   forgetConnection,
-  setLastUsedNetwork,
   setLastUsedWalletArgs,
-  setLastUsedWalletId,
-  setLastUsedWalletType,
+  setTypedStorageKey,
   WalletArgs,
 } from '../utils/localStorage';
 import { switchToCeloNetwork } from '../utils/metamask';
@@ -127,9 +125,9 @@ export class LedgerConnector implements Connector {
     private index: number,
     public feeCurrency: CeloTokenContract
   ) {
-    setLastUsedWalletType(WalletTypes.Ledger);
     setLastUsedWalletArgs([index]);
-    setLastUsedNetwork(network.name);
+    setTypedStorageKey(localStorageKeys.lastUsedWalletType, WalletTypes.Ledger);
+    setTypedStorageKey(localStorageKeys.lastUsedNetwork, network.name);
     this.kit = newKit(network.rpcUrl);
   }
 
@@ -258,7 +256,7 @@ export class InjectedConnector implements Connector {
   }
 
   async updateKitWithNetwork(network: Network): Promise<void> {
-    setLastUsedNetwork(network.name);
+    setTypedStorageKey(localStorageKeys.lastUsedNetwork, network.name);
     this.network = network;
     await this.initialise();
   }
@@ -516,13 +514,13 @@ function persist({
   network?: Network;
 }): void {
   if (walletType) {
-    setLastUsedWalletType(walletType);
+    setTypedStorageKey(localStorageKeys.lastUsedWalletType, walletType);
   }
   if (walletId) {
-    setLastUsedWalletId(walletId);
+    setTypedStorageKey(localStorageKeys.lastUsedWalletId, walletId);
   }
   if (network) {
-    setLastUsedNetwork(network.name);
+    setTypedStorageKey(localStorageKeys.lastUsedNetwork, network.name);
   }
   setLastUsedWalletArgs(options);
 }

@@ -1,14 +1,11 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
-import { WalletTypes } from '../constants';
+import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import {
-  getLastUsedAddress,
-  getLastUsedFeeCurrency,
-  getLastUsedNetwork,
   getLastUsedWalletArgs,
-  getLastUsedWalletType,
+  getTypedStorageKey,
   localStorageAvailable,
 } from './localStorage';
 
@@ -28,21 +25,27 @@ export const loadPreviousConfig = (
   let lastUsedWalletArguments: unknown[] = [];
   let lastUsedFeeCurrency: CeloContract = defaultFeeCurrencyProp;
   if (localStorageAvailable()) {
-    const localLastUsedNetworkName = getLastUsedNetwork();
+    const localLastUsedNetworkName = getTypedStorageKey(
+      localStorageKeys.lastUsedNetwork
+    );
     if (localLastUsedNetworkName) {
       lastUsedNetworkName = localLastUsedNetworkName;
     }
 
-    lastUsedAddress = getLastUsedAddress();
+    lastUsedAddress = getTypedStorageKey(localStorageKeys.lastUsedAddress);
 
-    const localLastUsedWalletType = getLastUsedWalletType();
+    const localLastUsedWalletType = getTypedStorageKey(
+      localStorageKeys.lastUsedWalletType
+    );
     if (localLastUsedWalletType && localLastUsedWalletType in WalletTypes) {
       lastUsedWalletType = localLastUsedWalletType;
     }
 
     lastUsedWalletArguments = getLastUsedWalletArgs() || [];
 
-    const localLastUsedFeeCurrency = getLastUsedFeeCurrency();
+    const localLastUsedFeeCurrency = getTypedStorageKey(
+      localStorageKeys.lastUsedFeeCurrency
+    );
 
     if (isValidFeeCurrency(localLastUsedFeeCurrency)) {
       lastUsedFeeCurrency = localLastUsedFeeCurrency as CeloTokenContract;

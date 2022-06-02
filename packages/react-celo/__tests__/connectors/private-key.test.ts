@@ -1,11 +1,10 @@
 import { CeloContract } from '@celo/contractkit';
 
-import { Alfajores } from '../../src';
+import { Alfajores, localStorageKeys } from '../../src';
 import { PrivateKeyConnector } from '../../src/connectors';
 import {
-  getLastUsedFeeCurrency,
-  getLastUsedNetwork,
   getLastUsedWalletArgs,
+  getTypedStorageKey,
 } from '../../src/utils/localStorage';
 
 const TEST_KEY =
@@ -40,7 +39,9 @@ describe('PrivateKeyConnector', () => {
     });
 
     it('sets the last network in local storage', () => {
-      expect(getLastUsedNetwork()).toEqual(Alfajores.name);
+      expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
+        Alfajores.name
+      );
     });
   });
 
@@ -55,11 +56,17 @@ describe('PrivateKeyConnector', () => {
 
       connector.close();
 
-      expect(getLastUsedFeeCurrency()).toEqual(null);
+      expect(getTypedStorageKey(localStorageKeys.lastUsedFeeCurrency)).toEqual(
+        null
+      );
 
-      expect(getLastUsedWalletArgs()).toEqual(null);
+      expect(
+        getTypedStorageKey(localStorageKeys.lastUsedWalletArguments)
+      ).toEqual(null);
 
-      expect(getLastUsedNetwork()).toEqual(null);
+      expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
+        null
+      );
     });
   });
   describe('updateFeeCurrency', () => {

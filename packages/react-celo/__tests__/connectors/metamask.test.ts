@@ -1,9 +1,10 @@
 import { CeloContract } from '@celo/contractkit/lib/base';
 import { generateTestingUtils } from 'eth-testing';
 
+import { localStorageKeys } from '../../src';
 import { MetaMaskConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
-import { getLastUsedNetwork } from '../../src/utils/localStorage';
+import { getTypedStorageKey } from '../../src/utils/localStorage';
 
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
@@ -42,7 +43,9 @@ describe('MetaMaskConnector', () => {
     it('sets network in local storage and in connection', async () => {
       await connector.updateKitWithNetwork(Baklava);
 
-      expect(getLastUsedNetwork()).toEqual(Baklava.name);
+      expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
+        Baklava.name
+      );
     });
 
     const callback = jest.fn();

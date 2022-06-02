@@ -22,14 +22,14 @@ import {
   WALLETCONNECT,
 } from './walletIcons';
 
-export const localStorageKeys = {
-  lastUsedAddress: 'react-celo/last-used-address',
-  lastUsedNetwork: 'react-celo/last-used-network',
-  lastUsedWalletType: 'react-celo/last-used-wallet',
-  lastUsedWalletId: 'react-celo/last-used-wallet-id',
-  lastUsedWalletArguments: 'react-celo/last-used-wallet-arguments',
-  lastUsedFeeCurrency: 'react-celo/last-used-fee-currency',
-};
+export enum localStorageKeys {
+  lastUsedAddress = 'react-celo/last-used-address',
+  lastUsedNetwork = 'react-celo/last-used-network',
+  lastUsedWalletType = 'react-celo/last-used-wallet',
+  lastUsedWalletId = 'react-celo/last-used-wallet-id',
+  lastUsedWalletArguments = 'react-celo/last-used-wallet-arguments',
+  lastUsedFeeCurrency = 'react-celo/last-used-fee-currency',
+}
 
 export enum SupportedProviders {
   CeloExtensionWallet = 'Celo Extension Wallet',
