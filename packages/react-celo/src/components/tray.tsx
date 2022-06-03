@@ -133,6 +133,8 @@ export default function Tray({
         {onSearch && (
           <div className={styles.inputContainer}>
             <input
+              aria-label="Search by wallet name"
+              role="search"
               className={styles.input}
               style={{
                 background: theme.background,

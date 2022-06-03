@@ -119,6 +119,7 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
           <div className={styles.desktopContainer}>
             {(provider.supportedPlatforms || []).map((platform) => (
               <button
+                aria-label={`Connect with ${provider.name} ${platform}`}
                 onClick={() => onClickPlatform(platform)}
                 className={styles.desktopButton}
                 key={platform}
