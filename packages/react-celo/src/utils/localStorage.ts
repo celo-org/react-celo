@@ -1,3 +1,8 @@
+import { CeloTokenContract } from '@celo/contractkit';
+import { WalletConnectWalletOptions } from '@celo/wallet-walletconnect-v1';
+
+import { localStorageKeys, WalletTypes } from '../constants';
+
 class MockedLocalStorage implements Storage {
   private storage = new Map<string, string>();
 
@@ -45,4 +50,68 @@ const localStorage =
     ? new MockedLocalStorage()
     : window.localStorage;
 
-export default localStorage;
+type ParamType<T> = T extends localStorageKeys.lastUsedFeeCurrency
+  ? CeloTokenContract
+  : T extends localStorageKeys.lastUsedWalletType
+  ? WalletTypes
+  : string;
+
+export function getTypedStorageKey<T extends localStorageKeys>(
+  key: T
+): ParamType<T> | null {
+  return localStorage.getItem(key) as ParamType<T>;
+}
+
+export function setTypedStorageKey<
+  T extends localStorageKeys,
+  V extends ParamType<T>
+>(key: T, value: V): void {
+  localStorage.setItem(key, value);
+}
+
+export function removeLastUsedAddress() {
+  localStorage.removeItem(localStorageKeys.lastUsedAddress);
+}
+
+export type WalletArgs =
+  | [string]
+  | [CeloTokenContract]
+  | [WalletConnectWalletOptions]
+  | [number]
+  | [];
+
+export function getLastUsedWalletArgs(): WalletArgs | null {
+  const args = localStorage.getItem(localStorageKeys.lastUsedWalletArguments);
+  if (args && args.length) {
+    const parsed = JSON.parse(args) as WalletArgs;
+
+    return parsed;
+  }
+
+  return null;
+}
+
+export function setLastUsedWalletArgs(params: WalletArgs) {
+  const args = JSON.stringify(params);
+  localStorage.setItem(localStorageKeys.lastUsedWalletArguments, args);
+}
+
+export function forgetConnection() {
+  [
+    localStorageKeys.lastUsedWalletType,
+    localStorageKeys.lastUsedWalletArguments,
+    localStorageKeys.lastUsedNetwork,
+  ].forEach((key) => localStorage.removeItem(key));
+}
+
+export function clearPreviousConfig(): void {
+  Object.values(localStorageKeys).forEach((val) => {
+    if (val === localStorageKeys.lastUsedWalletId) return;
+    if (val === localStorageKeys.lastUsedWalletType) return;
+    localStorage.removeItem(val);
+  });
+}
+
+export function localStorageAvailable() {
+  return typeof localStorage !== 'undefined';
+}

@@ -3,7 +3,11 @@ import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
-import localStorage from './localStorage';
+import {
+  getLastUsedWalletArgs,
+  getTypedStorageKey,
+  localStorageAvailable,
+} from './localStorage';
 
 export const loadPreviousConfig = (
   defaultNetworkProp: Network,
@@ -20,38 +24,26 @@ export const loadPreviousConfig = (
   let lastUsedWalletType: WalletTypes = WalletTypes.Unauthenticated;
   let lastUsedWalletArguments: unknown[] = [];
   let lastUsedFeeCurrency: CeloContract = defaultFeeCurrencyProp;
-  if (typeof localStorage !== 'undefined') {
-    const localLastUsedNetworkName = localStorage.getItem(
+  if (localStorageAvailable()) {
+    const localLastUsedNetworkName = getTypedStorageKey(
       localStorageKeys.lastUsedNetwork
     );
     if (localLastUsedNetworkName) {
       lastUsedNetworkName = localLastUsedNetworkName;
     }
 
-    lastUsedAddress = localStorage.getItem(localStorageKeys.lastUsedAddress);
+    lastUsedAddress = getTypedStorageKey(localStorageKeys.lastUsedAddress);
 
-    const localLastUsedWalletType = localStorage.getItem(
+    const localLastUsedWalletType = getTypedStorageKey(
       localStorageKeys.lastUsedWalletType
     );
     if (localLastUsedWalletType && localLastUsedWalletType in WalletTypes) {
-      lastUsedWalletType = localLastUsedWalletType as WalletTypes;
+      lastUsedWalletType = localLastUsedWalletType;
     }
 
-    const localLastUsedWalletArguments = localStorage.getItem(
-      localStorageKeys.lastUsedWalletArguments
-    );
+    lastUsedWalletArguments = getLastUsedWalletArgs() || [];
 
-    if (localLastUsedWalletArguments) {
-      try {
-        lastUsedWalletArguments = JSON.parse(
-          localLastUsedWalletArguments
-        ) as unknown[];
-      } catch (e) {
-        lastUsedWalletArguments = [];
-      }
-    }
-
-    const localLastUsedFeeCurrency = localStorage.getItem(
+    const localLastUsedFeeCurrency = getTypedStorageKey(
       localStorageKeys.lastUsedFeeCurrency
     );
 
@@ -88,14 +80,6 @@ export const loadPreviousConfig = (
     feeCurrency: lastUsedFeeCurrency,
   };
 };
-
-export function clearPreviousConfig(): void {
-  Object.values(localStorageKeys).forEach((val) => {
-    if (val === localStorageKeys.lastUsedWalletId) return;
-    if (val === localStorageKeys.lastUsedWalletType) return;
-    localStorage.removeItem(val);
-  });
-}
 
 export function isValidFeeCurrency(currency: Maybe<string>): boolean {
   switch (currency) {

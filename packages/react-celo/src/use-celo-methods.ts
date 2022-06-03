@@ -4,11 +4,7 @@ import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { CONNECTOR_TYPES } from './connectors';
-import {
-  localStorageKeys,
-  STATIC_NETWORK_WALLETS,
-  WalletTypes,
-} from './constants';
+import { STATIC_NETWORK_WALLETS, WalletTypes } from './constants';
 import {
   ContractCacheBuilder,
   useContractsCache,
@@ -16,6 +12,7 @@ import {
 import { Dispatcher } from './react-celo-provider';
 import { Connector, Network, Theme } from './types';
 import { contrastCheck, fixTheme } from './utils/colors';
+import { getLastUsedWalletArgs } from './utils/localStorage';
 
 export function useCeloMethods(
   {
@@ -122,9 +119,7 @@ export function useCeloMethods(
       }
       if (network === newNetwork) return;
       if (connector.initialised) {
-        const connectorArgs = JSON.parse(
-          localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
-        ) as unknown[];
+        const connectorArgs = getLastUsedWalletArgs() || [];
         await connector.close();
         const ConnectorConstructor = CONNECTOR_TYPES[connector.type];
         const newConnector = new ConnectorConstructor(
