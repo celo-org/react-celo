@@ -21,7 +21,7 @@ import {
   WalletEntry,
 } from '../types';
 import { useCeloInternal } from '../use-celo';
-import { hexToRGB } from '../utils/helpers';
+import { hexToRGB } from '../utils/colors';
 import { defaultProviderSort, SortingPredicate } from '../utils/sort';
 import cls from '../utils/tailwind';
 import useProviders, { walletToProvider } from '../utils/useProviders';

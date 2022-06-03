@@ -5,7 +5,7 @@ import ReactModal from 'react-modal';
 import Spinner from '../components/spinner';
 import { Theme } from '../types';
 import { useCeloInternal } from '../use-celo';
-import { hexToRGB } from '../utils/helpers';
+import { hexToRGB } from '../utils/colors';
 import cls from '../utils/tailwind';
 import useTheme from '../utils/useTheme';
 import { styles as modalStyles } from './connect';
