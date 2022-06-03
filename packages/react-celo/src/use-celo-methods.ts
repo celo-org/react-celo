@@ -10,9 +10,8 @@ import {
   useContractsCache,
 } from './ContractCacheBuilder';
 import { Dispatcher } from './react-celo-provider';
-import defaultTheme from './theme/default';
 import { Connector, Network, Theme } from './types';
-import { RGBToHex } from './utils/helpers';
+import { contrastCheck, fixTheme } from './utils/colors';
 import { getLastUsedWalletArgs } from './utils/localStorage';
 
 export function useCeloMethods(
@@ -180,23 +179,14 @@ export function useCeloMethods(
   const updateTheme = useCallback(
     (theme: Theme | null) => {
       if (!theme) return dispatch('setTheme', null);
-      Object.entries(theme).forEach(([key, value]: [string, string]) => {
-        if (!(key in defaultTheme.light)) {
-          console.warn(`Theme key ${key} is not valid.`);
-        }
-        const _key = key as keyof Theme;
-        if (value.startsWith('rgb')) {
-          theme[_key] = RGBToHex(value);
-          console.warn(
-            `RGB values not officially supported, but were translated to hex (${value} -> ${theme[_key]})`
-          );
-        } else if (!value.startsWith('#')) {
-          theme[_key] = `#${value}`;
-          console.warn(
-            `Malformed hex value was missing # (${value} -> ${theme[_key]})`
-          );
-        }
-      });
+
+      if (process.env.NODE_ENV !== 'production') {
+        fixTheme(theme);
+        // minimal recommended contrast ratio is 4.
+        // or 3 for larger font-sizes
+        contrastCheck(theme);
+      }
+
       dispatch('setTheme', theme);
     },
     [dispatch]

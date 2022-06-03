@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.spec.json",
-  "exclude": ["**/*.test.ts"]
+  "exclude": ["**/*.test.ts"],
+  "compilerOptions": {
+    "jsx": "preserve"
+  }
 }

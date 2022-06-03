@@ -64,7 +64,7 @@ const defaultDark = {
 const defaultLight = {
   primary: '#6366f1',
   secondary: '#eef2ff',
-  text: '#000000',
+  text: '#000',
   textSecondary: '#1f2937',
   textTertiary: '#64748b',
   muted: '#e2e8f0',
@@ -74,7 +74,7 @@ const defaultLight = {
 const greenCustom = {
   primary: '#34d399',
   secondary: '#ecfccb',
-  text: '#fff',
+  text: 'hsla(81, 88%, 80%)',
   textSecondary: '#d9f99d',
   textTertiary: '#bef264',
   muted: '#3f6212',
@@ -89,7 +89,7 @@ const roseCustom = {
   textTertiary: '#fecdd3',
   muted: '#3f3f46',
   background: '#27272a',
-  error: '#ef4444',
+  error: 'rgb(255, 0, 0)',
 };
 
 export const themes = [defaultDark, defaultLight, greenCustom, roseCustom];
