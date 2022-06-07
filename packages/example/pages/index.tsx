@@ -10,7 +10,7 @@ import Web3 from 'web3';
 
 import { PrimaryButton, SecondaryButton, toast } from '../components';
 import { ThemeButton, themes } from '../components/theme-button';
-import { TYPED_DATA } from '../utils';
+import { feeTokenMap, TYPED_DATA } from '../utils';
 
 interface Summary {
   name: string;
@@ -26,15 +26,6 @@ const defaultSummary: Summary = {
   wallet: '',
   celo: new BigNumber(0),
   balances: [],
-};
-
-type FeeTokenMap = { [FeeToken in CeloTokenContract]: string };
-
-const feeTokenMap: FeeTokenMap = {
-  [CeloContract.GoldToken]: 'Celo',
-  [CeloContract.StableToken]: 'cUSD',
-  [CeloContract.StableTokenEUR]: 'cEUR',
-  [CeloContract.StableTokenBRL]: 'cREAL',
 };
 
 function truncateAddress(address: string) {
@@ -460,7 +451,7 @@ export default function Home(): React.ReactElement {
                   >
                     {Object.keys(feeTokenMap).map((token) => (
                       <option key={token} value={token}>
-                        {feeTokenMap[token as keyof FeeTokenMap]}
+                        {feeTokenMap[token as keyof typeof feeTokenMap]}
                       </option>
                     ))}
                   </select>

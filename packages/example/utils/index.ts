@@ -1,3 +1,11 @@
+import {
+  CeloContract,
+  CeloTokenContract,
+  CeloTokenType,
+  StableToken,
+  Token,
+} from '@celo/contractkit';
+
 export const TYPED_DATA = {
   types: {
     EIP712Domain: [
@@ -34,4 +42,13 @@ export const TYPED_DATA = {
     },
     contents: 'Hello, Bob!',
   },
+};
+
+type FeeTokenMap = { [FeeToken in CeloTokenContract]: CeloTokenType };
+
+export const feeTokenMap: FeeTokenMap = {
+  [CeloContract.GoldToken]: Token.CELO,
+  [CeloContract.StableToken]: StableToken.cUSD,
+  [CeloContract.StableTokenEUR]: StableToken.cEUR,
+  [CeloContract.StableTokenBRL]: StableToken.cREAL,
 };
