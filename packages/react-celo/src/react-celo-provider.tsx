@@ -10,7 +10,7 @@ import React, {
 import IOSViewportFix from './components/ios-viewport-fix';
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
 import { DEFAULT_NETWORKS, Mainnet } from './constants';
-import { ContractCacheBuilder } from './ContractCacheBuilder';
+import { ContractCacheBuilder } from './hooks/use-contracts-cache';
 import { useIsMounted } from './hooks/use-is-mounted';
 import {
   ActionModal,

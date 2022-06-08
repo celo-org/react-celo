@@ -8,7 +8,7 @@ import { STATIC_NETWORK_WALLETS, WalletTypes } from './constants';
 import {
   ContractCacheBuilder,
   useContractsCache,
-} from './ContractCacheBuilder';
+} from './hooks/use-contracts-cache';
 import { Dispatcher } from './react-celo-provider';
 import { Connector, Network, Theme } from './types';
 import { contrastCheck, fixTheme } from './utils/colors';
