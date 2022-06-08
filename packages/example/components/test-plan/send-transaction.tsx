@@ -28,9 +28,9 @@ export function SendTransaction() {
         })
         .catch((assertError) => {
           if (assertError instanceof Error) {
-            setStatus.error(assertError.message);
+            setStatus.failed(assertError.message);
           } else {
-            setStatus.error(
+            setStatus.failed(
               `Error when checking balance: ${JSON.stringify(assertError)}`
             );
           }

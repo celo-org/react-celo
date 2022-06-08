@@ -44,9 +44,9 @@ export function SwitchNetwork() {
       await hasNetworkUpdated(kit, Mainnet.chainId);
     } catch (error) {
       if (error instanceof Error) {
-        setStatus.error(error.message);
+        setStatus.failed(error.message);
       } else {
-        setStatus.error('Update network did not succeed');
+        setStatus.failed('Update network did not succeed');
       }
     }
   });
