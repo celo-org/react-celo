@@ -2,7 +2,7 @@ import { useCelo } from '@celo/react-celo';
 import { useEffect } from 'react';
 
 import { sendTestTransaction } from '../../utils/send-test-transaction';
-import { assertHasBalance } from './assertHasBalance';
+import { assertHasBalance } from './assert-has-balance';
 import { SuccessIcon } from './success-icon';
 import { Result, TestBlock } from './ui';
 import { useDisabledTest } from './useDisabledTest';
