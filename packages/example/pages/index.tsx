@@ -262,7 +262,7 @@ export default function Home(): React.ReactElement {
               <a
                 className="text-blue-500"
                 target="_blank"
-                href="https://github.com/celo-tools/react-celo"
+                href="https://github.com/celo-org/react-celo"
                 rel="noreferrer"
               >
                 GitHub
