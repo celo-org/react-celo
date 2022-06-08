@@ -1,5 +1,5 @@
 import { UseCelo, useCelo } from '@celo/react-celo';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { sendTestTransaction } from '../../utils/send-test-transaction';
 import { signTest } from '../../utils/sign-test';
@@ -7,12 +7,11 @@ import { signTestTypedData } from '../../utils/sign-test-typed-data';
 import { assertHasBalance } from './assert-has-balance';
 import { SuccessIcon } from './success-icon';
 import { Result, TestBlock } from './ui';
-import { useDisabledTest } from './useDisabledTest';
 import { useTestStatus } from './useTestStatus';
 
 /**
  * PerformActionInWallet is a wrapper component that takes an action
- * that will be performed using a wallet. The common logic of all actions\
+ * that will be performed using a wallet. The common logic of all actions
  * is that we need to check if the wallet has funds.
  */
 export function PerformActionInWallet({
@@ -29,7 +28,7 @@ export function PerformActionInWallet({
   const { performActions, address, kit, feeCurrency } = useCelo();
   const { status, errorMessage, wrapActionWithStatus, setStatus } =
     useTestStatus();
-  const [disabled, setDisabled] = useDisabledTest();
+  const [disabled, setDisabled] = useState(true);
 
   const onRunTest = wrapActionWithStatus(async () => {
     setDisabled(true);
@@ -44,6 +43,7 @@ export function PerformActionInWallet({
           setStatus.notStarted();
         })
         .catch((assertError) => {
+          setDisabled(true);
           if (assertError instanceof Error) {
             setStatus.failed(assertError.message);
           } else {
@@ -52,6 +52,8 @@ export function PerformActionInWallet({
             );
           }
         });
+    } else {
+      setDisabled(true);
     }
   }, [address, feeCurrency, kit, setDisabled, setStatus]);
 
