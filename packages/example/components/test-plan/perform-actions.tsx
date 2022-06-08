@@ -2,6 +2,7 @@ import { UseCelo, useCelo } from '@celo/react-celo';
 import { useEffect } from 'react';
 
 import { sendTestTransaction } from '../../utils/send-test-transaction';
+import { signTest } from '../../utils/sign-test';
 import { signTestTypedData } from '../../utils/sign-test-typed-data';
 import { assertHasBalance } from './assert-has-balance';
 import { SuccessIcon } from './success-icon';
@@ -98,6 +99,19 @@ export const SignTypedData = () => {
       title="Sign typed data"
       successMessage="Signing successful"
       description="This signs a typed data."
+      action={action}
+    />
+  );
+};
+
+export const Sign = () => {
+  const { performActions } = useCelo();
+  const action = () => signTest(performActions);
+  return (
+    <PerformActionInWallet
+      title="Sign"
+      successMessage="Signing successful"
+      description="This signs not typed data."
       action={action}
     />
   );

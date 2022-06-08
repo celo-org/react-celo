@@ -6,6 +6,7 @@ import DisconnectButton from '../components/test-plan/disconnect-button';
 import {
   SendTransaction,
   SignTypedData,
+  Sign,
 } from '../components/test-plan/perform-actions';
 import { SwitchNetwork } from '../components/test-plan/switch-networks';
 import { UpdateFeeCurrency } from '../components/test-plan/update-fee-currency';
@@ -41,6 +42,7 @@ export default function WalletTestPlan(): React.ReactElement {
         <UpdateFeeCurrency />
         <SendTransaction />
         <SignTypedData />
+        <Sign />
       </div>
     </CeloProvider>
   );
