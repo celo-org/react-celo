@@ -3,11 +3,11 @@ import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
 import Spinner from '../components/spinner';
+import useTheme from '../hooks/use-theme';
 import { Theme } from '../types';
 import { useCeloInternal } from '../use-celo';
 import { hexToRGB } from '../utils/colors';
 import cls from '../utils/tailwind';
-import useTheme from '../hooks/use-theme';
 import { styles as modalStyles } from './connect';
 
 const styles = cls({

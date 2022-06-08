@@ -8,8 +8,8 @@ import { create, QRCodeErrorCorrectionLevel } from 'qrcode';
 import React, { ReactElement, useMemo } from 'react';
 
 import { QRCodeClass } from '../global';
-import cls from '../utils/tailwind';
 import useTheme from '../hooks/use-theme';
+import cls from '../utils/tailwind';
 
 // From https://github.com/soldair/node-qrcode#qr-code-capacity
 const qrCodeCapacity: [QRCodeErrorCorrectionLevel, number][] = [

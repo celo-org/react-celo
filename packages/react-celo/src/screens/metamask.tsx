@@ -6,9 +6,9 @@ import ConnectorScreen from '../components/connector-screen';
 import Spinner from '../components/spinner';
 import { PROVIDERS } from '../constants';
 import { useInjectedConnector } from '../hooks/use-injected-connector';
+import useTheme from '../hooks/use-theme';
 import { isEthereumFromMetamask } from '../utils/ethereum';
 import cls from '../utils/tailwind';
-import useTheme from '../hooks/use-theme';
 import { ConnectorProps } from '.';
 
 const styles = cls({
