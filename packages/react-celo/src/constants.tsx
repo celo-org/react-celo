@@ -1,14 +1,6 @@
 import { isMobile } from 'react-device-detect';
 
 import {
-  ChainId,
-  Maybe,
-  Network,
-  Provider,
-  WalletConnectProvider,
-} from './types';
-import { isEthereumFromMetamask, isEthereumPresent } from './utils/ethereum';
-import {
   CELO,
   CELO_DANCE,
   CELO_TERMINAL,
@@ -20,7 +12,15 @@ import {
   STEAKWALLET,
   VALORA,
   WALLETCONNECT,
-} from './walletIcons';
+} from './components/icons';
+import {
+  ChainId,
+  Maybe,
+  Network,
+  Provider,
+  WalletConnectProvider,
+} from './types';
+import { isEthereumFromMetamask, isEthereumPresent } from './utils/ethereum';
 
 export enum localStorageKeys {
   lastUsedAddress = 'react-celo/last-used-address',
