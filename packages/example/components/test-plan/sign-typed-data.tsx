@@ -8,7 +8,7 @@ import { Result, TestBlock } from './ui';
 import { useDisabledTest } from './useDisabledTest';
 import { useTestStatus } from './useTestStatus';
 
-export function SignTypeData() {
+export function SignTypedData() {
   const { performActions, address, kit, feeCurrency } = useCelo();
   const { status, errorMessage, wrapActionWithStatus, setStatus } =
     useTestStatus();
