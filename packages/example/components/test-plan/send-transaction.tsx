@@ -2,11 +2,11 @@ import { useCelo } from '@celo/react-celo';
 import { useEffect } from 'react';
 
 import { sendTestTransaction } from '../../utils/send-test-transaction';
+import { assertHasBalance } from './assertHasBalance';
 import { SuccessIcon } from './success-icon';
 import { Result, TestBlock } from './ui';
 import { useDisabledTest } from './useDisabledTest';
 import { useTestStatus } from './useTestStatus';
-import { assertHasBalance } from './assertHasBalance';
 
 export function SendTransaction() {
   const { performActions, address, kit, feeCurrency } = useCelo();
