@@ -16,8 +16,7 @@ export interface InjectedEthereum {
 }
 
 const getInjectedEthereum = async (): Promise<Maybe<InjectedEthereum>> => {
-  const { default: Web3 } = await import('web3');
-
+  const { default: Web3 } = await import('web3'); // these async imports dont seem to be assisting with
   const ethereum = getEthereum();
   if (!ethereum) return null;
 

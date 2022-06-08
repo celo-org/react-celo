@@ -82,6 +82,7 @@ export const WalletIds = {
 };
 
 // This is a large object in a big file. We should move out
+// Calling these Providers is a bit confusing sense that has a specific meaning in web3
 export const PROVIDERS: {
   [K in SupportedProviders]: Provider | WalletConnectProvider;
 } = {

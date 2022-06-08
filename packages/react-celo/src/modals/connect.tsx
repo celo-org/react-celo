@@ -97,8 +97,12 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
 }: ConnectModalProps) => {
   const theme = useTheme();
 
+  // I still dont get the whole connection callback thing
+  // Why is it stored in the reducer?
+  // It seems to be used mostly for
   const { connectionCallback, resetInitError } = useCeloInternal();
   const [search, setSearch] = useState<string>('');
+  //  adding means "the walletprovider that for which there is a screen currently open"
   const [adding, setAdding] = useState<Maybe<SupportedProviders>>(null);
 
   const onClickProvider = (provider: SupportedProviders) => {

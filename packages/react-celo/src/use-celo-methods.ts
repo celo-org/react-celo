@@ -132,7 +132,7 @@ export function useCeloMethods(
         const ConnectorConstructor = CONNECTOR_TYPES[connector.type];
         const newConnector = new ConnectorConstructor(
           newNetwork,
-          ...connectorArgs
+          ...connectorArgs //connectorArgs will never be correct for WC since it wont have the getLink function
         );
         await initConnector(newConnector);
       }
