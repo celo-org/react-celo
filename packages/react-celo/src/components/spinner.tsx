@@ -1,7 +1,7 @@
 import React from 'react';
 
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
+import useTheme from '../hooks/use-theme';
 
 const styles = cls({
   // see styles.css

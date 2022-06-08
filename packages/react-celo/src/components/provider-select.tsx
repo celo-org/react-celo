@@ -3,7 +3,7 @@ import { isMobile } from 'react-device-detect';
 
 import { Provider } from '../types';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
+import useTheme from '../hooks/use-theme';
 
 interface Props {
   provider: Provider;

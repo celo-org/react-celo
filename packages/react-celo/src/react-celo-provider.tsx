@@ -11,6 +11,7 @@ import IOSViewportFix from './components/ios-viewport-fix';
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
 import { DEFAULT_NETWORKS, Mainnet } from './constants';
 import { ContractCacheBuilder } from './ContractCacheBuilder';
+import { useIsMounted } from './hooks/use-is-mounted';
 import {
   ActionModal,
   ActionModalProps,
@@ -26,7 +27,6 @@ import {
 import { Dapp, Network, Theme } from './types';
 import { CeloMethods, useCeloMethods } from './use-celo-methods';
 import { loadPreviousConfig } from './utils/helpers';
-import { useIsMounted } from './utils/useIsMounted';
 
 // This type lets you call dispatch with one or two arguments:
 // First a type, and second an optional payload that matches an

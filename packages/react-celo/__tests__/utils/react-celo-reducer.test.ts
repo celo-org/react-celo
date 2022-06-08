@@ -4,7 +4,7 @@ import { localStorageKeys } from '../../src';
 import { UnauthenticatedConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
 import { celoReactReducer, ReducerState } from '../../src/react-celo-reducer';
-import { getTypedStorageKey } from '../../src/utils/localStorage';
+import { getTypedStorageKey } from '../../src/utils/local-storage';
 
 const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Alfajores),

@@ -2,9 +2,9 @@ import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { ExternalProvider } from '@ethersproject/providers/lib/web3-provider';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useIsMounted } from './hooks/use-is-mounted';
 import { Maybe } from './types';
 import { useCelo } from './use-celo';
-import { useIsMounted } from './utils/useIsMounted';
 
 export const useProvider = (): Web3Provider => {
   const { kit, network } = useCelo();

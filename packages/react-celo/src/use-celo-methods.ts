@@ -12,7 +12,7 @@ import {
 import { Dispatcher } from './react-celo-provider';
 import { Connector, Network, Theme } from './types';
 import { contrastCheck, fixTheme } from './utils/colors';
-import { getLastUsedWalletArgs } from './utils/localStorage';
+import { getLastUsedWalletArgs } from './utils/local-storage';
 
 export function useCeloMethods(
   {

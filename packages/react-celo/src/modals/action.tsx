@@ -7,7 +7,7 @@ import { Theme } from '../types';
 import { useCeloInternal } from '../use-celo';
 import { hexToRGB } from '../utils/colors';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
+import useTheme from '../hooks/use-theme';
 import { styles as modalStyles } from './connect';
 
 const styles = cls({

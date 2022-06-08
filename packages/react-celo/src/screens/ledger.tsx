@@ -6,8 +6,8 @@ import Spinner from '../components/spinner';
 import { LedgerConnector } from '../connectors';
 import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
-import { useIsMounted } from '../utils/useIsMounted';
-import useTheme from '../utils/useTheme';
+import { useIsMounted } from '../hooks/use-is-mounted';
+import useTheme from '../hooks/use-theme';
 import { ConnectorProps } from '.';
 
 const styles = cls({

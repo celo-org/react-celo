@@ -6,7 +6,7 @@ import { CeloExtensionWalletConnector } from '../connectors';
 import { PROVIDERS } from '../constants';
 import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
+import useTheme from '../hooks/use-theme';
 import { ConnectorProps } from '.';
 
 const styles = cls({

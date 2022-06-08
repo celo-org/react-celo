@@ -4,7 +4,7 @@ import { generateTestingUtils } from 'eth-testing';
 import { localStorageKeys } from '../../src';
 import { MetaMaskConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
-import { getTypedStorageKey } from '../../src/utils/localStorage';
+import { getTypedStorageKey } from '../../src/utils/local-storage';
 
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
