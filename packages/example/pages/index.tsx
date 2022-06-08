@@ -1,8 +1,7 @@
 import { CeloTokenContract } from '@celo/contractkit';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
-import { Theme, useCelo } from '@celo/react-celo';
-import { ensureLeading0x } from '@celo/utils/lib/address';
+import { Theme, UseCelo, useCelo } from '@celo/react-celo';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,8 +9,10 @@ import Web3 from 'web3';
 
 import { PrimaryButton, SecondaryButton, toast } from '../components';
 import { ThemeButton, themes } from '../components/theme-button';
-import { feeTokenMap, TYPED_DATA } from '../utils';
+import { feeTokenMap } from '../utils';
 import { sendTestTransaction } from '../utils/send-test-transaction';
+import { signTest } from '../utils/sign-test';
+import { signTestTypedData } from '../utils/sign-test-typed-data';
 
 interface Summary {
   name: string;
@@ -102,61 +103,32 @@ export default function Home(): React.ReactElement {
     });
   }, [address, kit]);
 
-  const testSendTransaction = async () => {
-    try {
-      setSending(true);
+  const wrapAction =
+    (
+      action: (performActions: UseCelo['performActions']) => Promise<void>,
+      actionName: string
+    ) =>
+    async () => {
+      try {
+        setSending(true);
 
-      await sendTestTransaction(performActions);
+        await action(performActions);
 
-      toast.success('sendTransaction succeeded');
-      await fetchSummary();
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setSending(false);
-    }
-  };
+        toast.success(`${actionName} succeeded`);
+        await fetchSummary();
+      } catch (e) {
+        toast.error((e as Error).message);
+      } finally {
+        setSending(false);
+      }
+    };
 
-  const testSignTypedData = async () => {
-    setSending(true);
-    try {
-      await performActions(async (k) => {
-        if (k.connection.defaultAccount) {
-          return await k.connection.signTypedData(
-            k.connection.defaultAccount,
-            TYPED_DATA
-          );
-        } else {
-          throw new Error('No default account');
-        }
-      });
-      toast.success('signTypedData succeeded');
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
-
-    setSending(false);
-  };
-
-  const testSignPersonal = async () => {
-    setSending(true);
-    try {
-      await performActions(async (k) => {
-        if (!k.connection.defaultAccount) {
-          throw new Error('No default account');
-        }
-        return await k.connection.sign(
-          ensureLeading0x(Buffer.from('Hello').toString('hex')),
-          k.connection.defaultAccount
-        );
-      });
-      toast.success('sign_personal succeeded');
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
-
-    setSending(false);
-  };
+  const testSendTransaction = wrapAction(
+    sendTestTransaction,
+    'sendTransaction'
+  );
+  const testSignTypedData = wrapAction(signTestTypedData, 'sendTransaction');
+  const testSignPersonal = wrapAction(signTest, 'signPersonal');
 
   const toggleDarkMode = useCallback(() => {
     if (isDark()) {
