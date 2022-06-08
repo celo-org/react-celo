@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PRIVATE_KEY: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const PrivateKey: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     style={{ height: '24px', width: '24px' }}
     aria-hidden="true"
@@ -19,4 +19,4 @@ const PRIVATE_KEY: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
-export default PRIVATE_KEY;
+export default PrivateKey;

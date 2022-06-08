@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CELO_DANCE: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const CeloDance: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="42"
@@ -26,4 +26,4 @@ const CELO_DANCE: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
-export default CELO_DANCE;
+export default CeloDance;

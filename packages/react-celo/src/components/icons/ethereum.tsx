@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ETHEREUM: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const Ethereum: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="100%"
@@ -33,4 +33,4 @@ const ETHEREUM: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     </g>
   </svg>
 );
-export default ETHEREUM;
+export default Ethereum;

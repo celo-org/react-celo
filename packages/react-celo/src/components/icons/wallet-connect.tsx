@@ -1,6 +1,6 @@
 import React from 'react';
 
-const WALLETCONNECT: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const WalletConnect: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     width="300px"
     height="185px"
@@ -15,4 +15,4 @@ const WALLETCONNECT: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     />
   </svg>
 );
-export default WALLETCONNECT;
+export default WalletConnect;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LEDGER: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const Ledger: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     width="24"
     height="24"
@@ -17,4 +17,4 @@ const LEDGER: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <path d="M0 76.333V84.127C0 92.7848 7.12876 99.9136 15.7865 99.9136H23.5805V76.333H0Z" />
   </svg>
 );
-export default LEDGER;
+export default Ledger;

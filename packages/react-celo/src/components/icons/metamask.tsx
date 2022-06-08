@@ -1,6 +1,6 @@
 import React from 'react';
 
-const METAMASK: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const MetaMask: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     strokeLinejoin="round"
@@ -63,4 +63,4 @@ const METAMASK: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     ></path>
   </svg>
 );
-export default METAMASK;
+export default MetaMask;

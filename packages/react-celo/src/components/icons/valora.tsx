@@ -1,6 +1,6 @@
 import React from 'react';
 
-const VALORA: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const Valora: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -165,4 +165,4 @@ const VALORA: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     </g>
   </svg>
 );
-export default VALORA;
+export default Valora;

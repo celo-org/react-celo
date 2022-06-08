@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CHROME_EXTENSION_STORE: React.FC<React.SVGProps<SVGSVGElement>> = (
+const ChromeExtensionStore: React.FC<React.SVGProps<SVGSVGElement>> = (
   props
 ) => (
   <svg
@@ -45,4 +45,4 @@ const CHROME_EXTENSION_STORE: React.FC<React.SVGProps<SVGSVGElement>> = (
     />
   </svg>
 );
-export default CHROME_EXTENSION_STORE;
+export default ChromeExtensionStore;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CELO_TERMINAL: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const CeloTerminal: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="11.740361213684082 1.9999980926513672 378.2596435546875 397"
@@ -25,4 +25,4 @@ const CELO_TERMINAL: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   </svg>
 );
 
-export default CELO_TERMINAL;
+export default CeloTerminal;

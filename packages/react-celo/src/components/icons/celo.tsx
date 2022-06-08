@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CELO: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+const Celo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 950" {...props}>
     <path
       d="M375,850c151.88,0,275-123.12,275-275S526.88,300,375,300,100,423.12,100,575,223.12,850,375,850Zm0,100C167.9,950,0,782.1,0,575S167.9,200,375,200,750,367.9,750,575,582.1,950,375,950Z"
@@ -16,4 +16,4 @@ const CELO: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     />
   </svg>
 );
-export default CELO;
+export default Celo;
