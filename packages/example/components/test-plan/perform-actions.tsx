@@ -1,6 +1,7 @@
-import { useCelo } from '@celo/react-celo';
+import { UseCelo, useCelo } from '@celo/react-celo';
 import { useEffect } from 'react';
 
+import { sendTestTransaction } from '../../utils/send-test-transaction';
 import { signTestTypedData } from '../../utils/sign-test-typed-data';
 import { assertHasBalance } from './assert-has-balance';
 import { SuccessIcon } from './success-icon';
@@ -8,7 +9,22 @@ import { Result, TestBlock } from './ui';
 import { useDisabledTest } from './useDisabledTest';
 import { useTestStatus } from './useTestStatus';
 
-export function SignTypedData() {
+/**
+ * PerformActionInWallet is a wrapper component that takes an action
+ * that will be performed using a wallet. The common logic of all actions\
+ * is that we need to check if the wallet has funds.
+ */
+export function PerformActionInWallet({
+  title,
+  action,
+  description,
+  successMessage,
+}: {
+  title: string;
+  description: string;
+  action: (performActions: UseCelo['performActions']) => Promise<void>;
+  successMessage: string;
+}) {
   const { performActions, address, kit, feeCurrency } = useCelo();
   const { status, errorMessage, wrapActionWithStatus, setStatus } =
     useTestStatus();
@@ -16,7 +32,7 @@ export function SignTypedData() {
 
   const onRunTest = wrapActionWithStatus(async () => {
     setDisabled(true);
-    await signTestTypedData(performActions);
+    await action(performActions);
   });
 
   useEffect(() => {
@@ -42,17 +58,17 @@ export function SignTypedData() {
     <>
       <TestBlock
         status={status}
-        title="Sign typed data"
+        title={title}
         disabledTest={disabled}
         onRunTest={onRunTest}
       >
         <Result status={status}>
-          <p>This signs a typed data.</p>
+          <p>{description}</p>
           <Result.Default>
-            <p>You'll need to approve the signing in the wallet.</p>
+            <p>You'll need to approve it in your wallet.</p>
           </Result.Default>
           <Result.Success>
-            <SuccessIcon /> Signing successful
+            <SuccessIcon /> {successMessage}
           </Result.Success>
           <Result.Error>{errorMessage}</Result.Error>
         </Result>
@@ -60,3 +76,29 @@ export function SignTypedData() {
     </>
   );
 }
+
+export const SendTransaction = () => {
+  const { performActions } = useCelo();
+  const action = () => sendTestTransaction(performActions);
+  return (
+    <PerformActionInWallet
+      title="Send transaction"
+      successMessage="Transaction sent"
+      description="This sends a very small transaction to impact market contract."
+      action={action}
+    />
+  );
+};
+
+export const SignTypedData = () => {
+  const { performActions } = useCelo();
+  const action = () => signTestTypedData(performActions);
+  return (
+    <PerformActionInWallet
+      title="Sign typed data"
+      successMessage="Signing successful"
+      description="This signs a typed data."
+      action={action}
+    />
+  );
+};

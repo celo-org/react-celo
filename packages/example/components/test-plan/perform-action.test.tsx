@@ -6,7 +6,7 @@ import { generateTestingUtils } from 'eth-testing';
 import { TestingUtils } from 'eth-testing/lib/testing-utils';
 import Web3 from 'web3';
 
-import { SendTransaction } from './send-transaction';
+import { SendTransaction } from './perform-actions';
 
 declare global {
   interface Window {

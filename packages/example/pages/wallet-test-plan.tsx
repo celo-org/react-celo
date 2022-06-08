@@ -3,8 +3,10 @@ import React from 'react';
 
 import { ConnectWalletCheck } from '../components/test-plan/connect-wallet';
 import DisconnectButton from '../components/test-plan/disconnect-button';
-import { SendTransaction } from '../components/test-plan/send-transaction';
-import { SignTypedData } from '../components/test-plan/sign-typed-data';
+import {
+  SendTransaction,
+  SignTypedData,
+} from '../components/test-plan/perform-actions';
 import { SwitchNetwork } from '../components/test-plan/switch-networks';
 import { UpdateFeeCurrency } from '../components/test-plan/update-fee-currency';
 
