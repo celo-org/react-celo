@@ -6,27 +6,8 @@ import { AppProps } from 'next/app';
 import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
-  if (router.route !== '/') {
-    return (
-      <div className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
-        <Component {...pageProps} />
-      </div>
-    );
-  }
-
   return (
-    <CeloProvider
-      dapp={{
-        name: 'react-celo demo',
-        description: 'A demo DApp to showcase functionality',
-        url: 'https://react-celo.vercel.app',
-        icon: 'https://react-celo.vercel.app/favicon.ico',
-      }}
-      network={Alfajores}
-      connectModal={{
-        providersOptions: { searchable: true },
-      }}
-    >
+    <div>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -36,10 +17,11 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
           },
         }}
       />
+
       <div className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
         <Component {...pageProps} />
       </div>
-    </CeloProvider>
+    </div>
   );
 }
 

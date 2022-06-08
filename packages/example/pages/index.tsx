@@ -1,7 +1,13 @@
 import { CeloTokenContract } from '@celo/contractkit';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
-import { Theme, UseCelo, useCelo } from '@celo/react-celo';
+import {
+  Alfajores,
+  CeloProvider,
+  Theme,
+  UseCelo,
+  useCelo,
+} from '@celo/react-celo';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
@@ -40,7 +46,7 @@ function isDark() {
   return html && html.classList.contains('tw-dark');
 }
 
-export default function Home(): React.ReactElement {
+function HomePage(): React.ReactElement {
   const {
     kit,
     address,
@@ -443,5 +449,24 @@ async function getBalances(
         error: error,
       };
     })
+  );
+}
+
+export default function Home(): React.ReactElement {
+  return (
+    <CeloProvider
+      dapp={{
+        name: 'react-celo demo',
+        description: 'A demo DApp to showcase functionality',
+        url: 'https://react-celo.vercel.app',
+        icon: 'https://react-celo.vercel.app/favicon.ico',
+      }}
+      network={Alfajores}
+      connectModal={{
+        providersOptions: { searchable: true },
+      }}
+    >
+      <HomePage />
+    </CeloProvider>
   );
 }
