@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
         }}
       />
       <div className="max-w-screen-sm mx-auto py-10 px-4">
-        <nav className="flex gap-[40px] mt-[20px] mb-[20px] justify-between items-center">
+        <nav className="flex gap-[40px] mt-[20px] mb-[20px] justify-between items-center flex-col md:flex-row lg:flex-row">
           <div className="flex items-center gap-[5px]">
             <CeloLogo />
             <span className="font-light text-[25px] font-['Philosopher']">
