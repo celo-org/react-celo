@@ -1,11 +1,23 @@
 import '@celo/react-celo/lib/styles.css';
 import '../styles/global.css';
 
-import { Alfajores, CeloProvider } from '@celo/react-celo';
 import { AppProps } from 'next/app';
 import { Toaster } from 'react-hot-toast';
+import Link, { LinkProps } from 'next/link';
+import { PropsWithChildren } from 'react';
+import CeloLogo from '../components/celo-logo';
 
 function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
+  const StyledLink = (props: PropsWithChildren<LinkProps>) => {
+    const active = router.pathname === props.href;
+    const activeClass = active ? 'font-semibold' : '';
+    return (
+      <div className={`hover:text-slate-500 text-slate-900 ${activeClass}`}>
+        <Link {...props} />
+      </div>
+    );
+  };
+
   return (
     <div>
       <Toaster
@@ -18,7 +30,19 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
         }}
       />
 
-      <div className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
+      <div className="max-w-screen-sm mx-auto py-10 px-4">
+        <nav className="flex gap-[40px] mt-[20px] mb-[20px] justify-between">
+          <div className="flex items-center gap-[5px]">
+            <span className="font-light text-[20px]">react-celo</span>
+            <CeloLogo />
+          </div>
+
+          <div className="flex gap-[40px]">
+            <StyledLink href="/">Home</StyledLink>
+            <StyledLink href="/wallet">Wallet example</StyledLink>
+            <StyledLink href="/wallet-test-plan">Test plan</StyledLink>
+          </div>
+        </nav>
         <Component {...pageProps} />
       </div>
     </div>

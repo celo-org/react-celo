@@ -14,6 +14,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 
 import { PrimaryButton, SecondaryButton, toast } from '../components';
+import CeloLogo from '../components/celo-logo';
 import { ThemeButton, themes } from '../components/theme-button';
 import { feeTokenMap } from '../utils';
 import { sendTestTransaction } from '../utils/send-test-transaction';
@@ -177,28 +178,7 @@ function HomePage(): React.ReactElement {
             style={{ color: 'rgba(53,208,127,1.00)' }}
             rel="noreferrer"
           >
-            Celo{' '}
-            <svg
-              data-name="Celo Rings"
-              viewBox="0 0 950 950"
-              className="inline h-4 w-4 mb-1"
-            >
-              <path
-                data-name="Top Ring"
-                d="M575 650c151.88 0 275-123.12 275-275S726.88 100 575 100 300 223.12 300 375s123.12 275 275 275zm0 100c-207.1 0-375-167.9-375-375S367.9 0 575 0s375 167.9 375 375-167.9 375-375 375z"
-                fill="#35d07f"
-              />
-              <path
-                data-name="Bottom Ring"
-                d="M375 850c151.88 0 275-123.12 275-275S526.88 300 375 300 100 423.12 100 575s123.12 275 275 275zm0 100C167.9 950 0 782.1 0 575s167.9-375 375-375 375 167.9 375 375-167.9 375-375 375z"
-                fill="#fbcc5c"
-              />
-              <path
-                data-name="Rings Overlap"
-                d="M587.39 750a274.38 274.38 0 0054.55-108.06A274.36 274.36 0 00750 587.4a373.63 373.63 0 01-29.16 133.45A373.62 373.62 0 01587.39 750zM308.06 308.06A274.36 274.36 0 00200 362.6a373.63 373.63 0 0129.16-133.45A373.62 373.62 0 01362.61 200a274.38 274.38 0 00-54.55 108.06z"
-                fill="#ecff8f"
-              />
-            </svg>
+            Celo <CeloLogo />
           </a>{' '}
           network.
         </div>
