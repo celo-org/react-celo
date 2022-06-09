@@ -10,7 +10,9 @@
     "lint:fix": "eslint . --fix",
     "start": "next start",
     "export": "next export",
-    "test": "jest"
+    "test": "jest",
+    "test:ui": "cypress open",
+    "test:ci": "cypress run"
   },
   "license": "MIT",
   "dependencies": {
