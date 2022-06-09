@@ -5,10 +5,10 @@ import { isMobile } from 'react-device-detect';
 // @ts-expect-error
 import { version } from '../../package';
 import { Priorities, SupportedProviders } from '../constants';
+import useProviders from '../hooks/use-providers';
+import useTheme from '../hooks/use-theme';
 import { Maybe } from '../types';
 import cls from '../utils/tailwind';
-import useProviders from '../utils/useProviders';
-import useTheme from '../utils/useTheme';
 import { ProviderSelect } from './provider-select';
 
 function priorityToText(priority: Priorities) {

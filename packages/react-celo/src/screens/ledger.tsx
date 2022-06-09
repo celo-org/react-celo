@@ -4,10 +4,10 @@ import Button from '../components/button';
 import ConnectorScreen from '../components/connector-screen';
 import Spinner from '../components/spinner';
 import { LedgerConnector } from '../connectors';
+import { useIsMounted } from '../hooks/use-is-mounted';
+import useTheme from '../hooks/use-theme';
 import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
-import { useIsMounted } from '../utils/useIsMounted';
-import useTheme from '../utils/useTheme';
 import { ConnectorProps } from '.';
 
 const styles = cls({

@@ -6,11 +6,11 @@ import ConnectorScreen from '../components/connector-screen';
 import { CopyText } from '../components/copy';
 import PrettyQrCode from '../components/qrcode';
 import Spinner from '../components/spinner';
-import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { Platform } from '../constants';
+import useTheme from '../hooks/use-theme';
+import useWalletConnectConnector from '../hooks/use-wallet-connect-connector';
 import { Connector, WalletConnectProvider } from '../types';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 
 const styles = cls({
   contentContainer: `

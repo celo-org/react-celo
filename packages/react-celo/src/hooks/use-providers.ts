@@ -8,8 +8,8 @@ import {
   WalletTypes,
 } from '../constants';
 import { Maybe, Provider, WalletConnectProvider, WalletEntry } from '../types';
-import { getTypedStorageKey } from './localStorage';
-import { defaultProviderSort } from './sort';
+import { getTypedStorageKey } from '../utils/local-storage';
+import { defaultProviderSort } from '../utils/sort';
 
 export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
   return {

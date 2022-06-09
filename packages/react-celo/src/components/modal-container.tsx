@@ -2,9 +2,9 @@ import React from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { SupportedProviders } from '../constants';
+import useTheme from '../hooks/use-theme';
 import { Maybe } from '../types';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 
 const styles = cls({
   container: ``,

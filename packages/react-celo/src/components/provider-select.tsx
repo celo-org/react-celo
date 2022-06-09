@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
+import useTheme from '../hooks/use-theme';
 import { Provider } from '../types';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 
 interface Props {
   provider: Provider;

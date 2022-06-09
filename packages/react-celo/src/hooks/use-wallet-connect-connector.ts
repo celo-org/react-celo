@@ -3,10 +3,10 @@
 import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useCallback, useEffect, useState } from 'react';
 
+import { WalletConnectConnector } from '../connectors';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
-import { useWalletVersion } from '../utils/useWalletVersion';
-import { WalletConnectConnector } from './connectors';
+import { useWalletVersion } from './use-wallet-version';
 
 interface UseWalletConnectConnector {
   error: Maybe<string>;
@@ -15,7 +15,7 @@ interface UseWalletConnectConnector {
   retry: () => void;
 }
 
-export function useWalletConnectConnector(
+export default function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
   autoOpen: boolean,
   getDeeplinkUrl?: (uri: string) => string | false,

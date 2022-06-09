@@ -5,7 +5,7 @@ import { LedgerConnector } from '../../src/connectors';
 import {
   getLastUsedWalletArgs,
   getTypedStorageKey,
-} from '../../src/utils/localStorage';
+} from '../../src/utils/local-storage';
 
 describe('LedgerConnector', () => {
   let connector: LedgerConnector;

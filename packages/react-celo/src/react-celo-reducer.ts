@@ -7,7 +7,7 @@ import {
   clearPreviousConfig,
   removeLastUsedAddress,
   setTypedStorageKey,
-} from './utils/localStorage';
+} from './utils/local-storage';
 
 export function celoReactReducer(
   state: ReducerState,

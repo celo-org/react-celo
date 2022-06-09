@@ -5,7 +5,7 @@ import { PrivateKeyConnector } from '../../src/connectors';
 import {
   getLastUsedWalletArgs,
   getTypedStorageKey,
-} from '../../src/utils/localStorage';
+} from '../../src/utils/local-storage';
 
 const TEST_KEY =
   '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abbdef';

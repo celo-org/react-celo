@@ -7,7 +7,7 @@ import {
   getLastUsedWalletArgs,
   getTypedStorageKey,
   localStorageAvailable,
-} from './localStorage';
+} from './local-storage';
 
 export const loadPreviousConfig = (
   defaultNetworkProp: Network,

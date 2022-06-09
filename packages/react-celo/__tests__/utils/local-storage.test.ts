@@ -1,6 +1,6 @@
 import { CeloContract } from '@celo/contractkit';
 
-import { localStorageKeys, WalletTypes } from '../constants';
+import { localStorageKeys, WalletTypes } from '../../src/constants';
 import {
   forgetConnection,
   getLastUsedWalletArgs,
@@ -8,7 +8,7 @@ import {
   setLastUsedWalletArgs,
   setTypedStorageKey,
   WalletArgs,
-} from './localStorage';
+} from '../../src/utils/local-storage';
 
 describe('TypedLocalStorage', () => {
   describe('get/setTypedStorageKey', () => {
