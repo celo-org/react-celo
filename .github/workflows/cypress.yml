@@ -1,0 +1,17 @@
+name: UI Tests on Chrome
+on: [push]
+jobs:
+  cypress-run:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        env:
+          BASE_CYPRESS_URL: https://react-celo-git-${{github.head_ref}}-c-labs.vercel.app
+        with:
+          browser: chrome
+          project: './packages/example'

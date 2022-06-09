@@ -1,8 +1,7 @@
 /// <reference types="cypress" />
 /// <reference types="@testing-library/cypress" />
 
-const BASE_URL = 'http://localhost:3000';
-
+const BASE_URL = process.env.BASE_CYPRESS_URL || 'http://localhost:3000';
 function openModal() {
   cy.get('button[aria-label="Run Connect wallet to mainnet"]').click();
 }
