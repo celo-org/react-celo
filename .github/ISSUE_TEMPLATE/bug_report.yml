@@ -65,7 +65,7 @@ body:
       required: true
   - type: input
     attributes:
-      label: What version of `react-celo` were you using?
+      label: What version of `react-celo` were you using? (This can be found in the list of wallets in the "Connect" modal)
     validations:
       required: true
   - type: input
