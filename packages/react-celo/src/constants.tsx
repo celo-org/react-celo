@@ -247,19 +247,6 @@ export const PROVIDERS: {
   },
 };
 
-export const images = {
-  [SupportedProviders.Valora]: Valora,
-  [SupportedProviders.MetaMask]: MetaMask,
-  [SupportedProviders.WalletConnect]: WalletConnect,
-  [SupportedProviders.Ledger]: Ledger,
-  [SupportedProviders.CeloWallet]: Celo,
-  [SupportedProviders.CeloDance]: CeloDance,
-  [SupportedProviders.CeloTerminal]: CeloTerminal,
-  [SupportedProviders.CeloExtensionWallet]: ChromeExtensionStore,
-  [SupportedProviders.PrivateKey]: PrivateKey,
-  [SupportedProviders.Steakwallet]: SteakWallet,
-} as const;
-
 export const NetworkNames = {
   Alfajores: 'Alfajores' as const,
   Baklava: 'Baklava' as const,
