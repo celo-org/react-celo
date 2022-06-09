@@ -160,7 +160,6 @@ function HomePage(): React.ReactElement {
         />
       </Head>
       <main>
-        <div className="font-semibold text-2xl">react-celo</div>
         <div className="text-slate-600 mt-2">
           A{' '}
           <a
