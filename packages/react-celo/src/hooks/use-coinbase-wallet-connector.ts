@@ -18,7 +18,7 @@ export function useCoinbaseWalletConnector(
   useEffect(() => {
     let stale;
     void (async () => {
-      const connector = new CoinbaseWalletConnector(network, feeCurrency);
+      const connector = new CoinbaseWalletConnector(network, feeCurrency, dapp);
       try {
         await initConnector(connector);
         if (!stale) {
@@ -32,7 +32,7 @@ export function useCoinbaseWalletConnector(
     return () => {
       stale = true;
     };
-  }, [initConnector, network, onSubmit, feeCurrency]);
+  }, [initConnector, network, dapp, onSubmit, feeCurrency]);
 
   return { error, dapp, network };
 }

@@ -11,7 +11,7 @@ import {
 
 import { localStorageKeys, WalletTypes } from '../constants';
 import { Ethereum } from '../global';
-import { Connector, Maybe, Network } from '../types';
+import { Connector, Dapp, Maybe, Network } from '../types';
 import {
   clearPreviousConfig,
   setTypedStorageKey,
@@ -30,13 +30,17 @@ export default class CoinbaseWalletConnector implements Connector {
 
   private provider: CoinbaseWalletProvider | null = null;
 
-  constructor(network: Network, public feeCurrency: CeloTokenContract) {
+  constructor(
+    network: Network,
+    public feeCurrency: CeloTokenContract,
+    dapp?: Dapp
+  ) {
     this.kit = newKit(network.rpcUrl);
     this.network = network;
 
     const sdk = new CoinbaseWalletSDK({
-      appName: '',
-      appLogoUrl: '',
+      appName: dapp?.name ?? '',
+      appLogoUrl: dapp?.icon ?? '',
     });
     this.provider = sdk.makeWeb3Provider(network.rpcUrl, network.chainId);
   }
