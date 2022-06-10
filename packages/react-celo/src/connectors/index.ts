@@ -1,4 +1,5 @@
 export { default as CeloExtensionWalletConnector } from './celo-extension-wallet';
+export { default as CoinbaseWalletConnector } from './coinbase-wallet';
 export * from './common';
 export * from './connectors-by-name';
 export { default as InjectedConnector } from './injected';

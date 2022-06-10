@@ -1,6 +1,7 @@
 import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import CeloExtensionWalletConnector from './celo-extension-wallet';
+import CoinbaseWalletConnector from './coinbase-wallet';
 import InjectedConnector from './injected';
 import LedgerConnector from './ledger';
 import MetaMaskConnector from './metamask';
@@ -27,4 +28,5 @@ export const CONNECTOR_TYPES: {
   [WalletTypes.CeloDance]: WalletConnectConnector,
   [WalletTypes.CeloTerminal]: WalletConnectConnector,
   [WalletTypes.CeloWallet]: WalletConnectConnector,
+  [WalletTypes.CoinbaseWallet]: CoinbaseWalletConnector,
 };
