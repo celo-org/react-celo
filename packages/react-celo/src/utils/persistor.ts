@@ -8,7 +8,7 @@ import { clearPreviousConfig, setTypedStorageKey } from './local-storage';
 
 type Updater = (connector: AbstractConnector) => void;
 
-export const persistor: Updater = (connector: AbstractConnector) => {
+const persistor: Updater = (connector: AbstractConnector) => {
   connector.on(ConnectorEvents.ADDRESS_CHANGED, (address) => {
     setTypedStorageKey(localStorageKeys.lastUsedAddress, address);
   });
@@ -43,3 +43,5 @@ export const persistor: Updater = (connector: AbstractConnector) => {
     clearPreviousConfig();
   });
 };
+
+export default persistor;
