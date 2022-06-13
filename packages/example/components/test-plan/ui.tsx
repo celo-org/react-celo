@@ -88,7 +88,7 @@ export const Success: React.FC = (props) => {
 
 export const ErrorText: React.FC = (props) => {
   const context = useResultContext();
-  return context === Status.Error ? (
+  return context === Status.Failed ? (
     <p className="text-[#f94144] flex items-center gap-[5px]">
       <ErrorIcon /> {props.children}
     </p>

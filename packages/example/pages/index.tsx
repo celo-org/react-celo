@@ -1,16 +1,25 @@
-import { CeloContract, CeloTokenContract } from '@celo/contractkit';
+import { CeloTokenContract } from '@celo/contractkit';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
-import { Theme, useCelo } from '@celo/react-celo';
-import { ensureLeading0x } from '@celo/utils/lib/address';
+import {
+  Alfajores,
+  CeloProvider,
+  Theme,
+  UseCelo,
+  useCelo,
+} from '@celo/react-celo';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 
 import { PrimaryButton, SecondaryButton, toast } from '../components';
+import CeloLogo from '../components/celo-logo';
 import { ThemeButton, themes } from '../components/theme-button';
-import { TYPED_DATA } from '../utils';
+import { feeTokenMap } from '../utils';
+import { sendTestTransaction } from '../utils/send-test-transaction';
+import { signTest } from '../utils/sign-test';
+import { signTestTypedData } from '../utils/sign-test-typed-data';
 
 interface Summary {
   name: string;
@@ -28,15 +37,6 @@ const defaultSummary: Summary = {
   balances: [],
 };
 
-type FeeTokenMap = { [FeeToken in CeloTokenContract]: string };
-
-const feeTokenMap: FeeTokenMap = {
-  [CeloContract.GoldToken]: 'Celo',
-  [CeloContract.StableToken]: 'cUSD',
-  [CeloContract.StableTokenEUR]: 'cEUR',
-  [CeloContract.StableTokenBRL]: 'cREAL',
-};
-
 function truncateAddress(address: string) {
   return `${address.slice(0, 8)}...${address.slice(36)}`;
 }
@@ -47,7 +47,7 @@ function isDark() {
   return html && html.classList.contains('tw-dark');
 }
 
-export default function Home(): React.ReactElement {
+function HomePage(): React.ReactElement {
   const {
     kit,
     address,
@@ -110,73 +110,32 @@ export default function Home(): React.ReactElement {
     });
   }, [address, kit]);
 
-  const testSendTransaction = async () => {
-    try {
-      setSending(true);
+  const wrapAction =
+    (
+      action: (performActions: UseCelo['performActions']) => Promise<void>,
+      actionName: string
+    ) =>
+    async () => {
+      try {
+        setSending(true);
 
-      await performActions(async (k) => {
-        const celo = await k.contracts.getGoldToken();
-        await celo
-          .transfer(
-            // impact market contract
-            '0x73D20479390E1acdB243570b5B739655989412f5',
-            Web3.utils.toWei('0.00000001', 'ether')
-          )
-          .sendAndWaitForReceipt({
-            from: k.connection.defaultAccount,
-            gasPrice: k.connection.defaultGasPrice,
-          });
-      });
+        await action(performActions);
 
-      toast.success('sendTransaction succeeded');
-      await fetchSummary();
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setSending(false);
-    }
-  };
+        toast.success(`${actionName} succeeded`);
+        await fetchSummary();
+      } catch (e) {
+        toast.error((e as Error).message);
+      } finally {
+        setSending(false);
+      }
+    };
 
-  const testSignTypedData = async () => {
-    setSending(true);
-    try {
-      await performActions(async (k) => {
-        if (k.connection.defaultAccount) {
-          return await k.connection.signTypedData(
-            k.connection.defaultAccount,
-            TYPED_DATA
-          );
-        } else {
-          throw new Error('No default account');
-        }
-      });
-      toast.success('signTypedData succeeded');
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
-
-    setSending(false);
-  };
-
-  const testSignPersonal = async () => {
-    setSending(true);
-    try {
-      await performActions(async (k) => {
-        if (!k.connection.defaultAccount) {
-          throw new Error('No default account');
-        }
-        return await k.connection.sign(
-          ensureLeading0x(Buffer.from('Hello').toString('hex')),
-          k.connection.defaultAccount
-        );
-      });
-      toast.success('sign_personal succeeded');
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
-
-    setSending(false);
-  };
+  const testSendTransaction = wrapAction(
+    sendTestTransaction,
+    'sendTransaction'
+  );
+  const testSignTypedData = wrapAction(signTestTypedData, 'sendTransaction');
+  const testSignPersonal = wrapAction(signTest, 'signPersonal');
 
   const toggleDarkMode = useCallback(() => {
     if (isDark()) {
@@ -201,7 +160,6 @@ export default function Home(): React.ReactElement {
         />
       </Head>
       <main>
-        <div className="font-semibold text-2xl">react-celo</div>
         <div className="text-slate-600 mt-2">
           A{' '}
           <a
@@ -219,28 +177,7 @@ export default function Home(): React.ReactElement {
             style={{ color: 'rgba(53,208,127,1.00)' }}
             rel="noreferrer"
           >
-            Celo{' '}
-            <svg
-              data-name="Celo Rings"
-              viewBox="0 0 950 950"
-              className="inline h-4 w-4 mb-1"
-            >
-              <path
-                data-name="Top Ring"
-                d="M575 650c151.88 0 275-123.12 275-275S726.88 100 575 100 300 223.12 300 375s123.12 275 275 275zm0 100c-207.1 0-375-167.9-375-375S367.9 0 575 0s375 167.9 375 375-167.9 375-375 375z"
-                fill="#35d07f"
-              />
-              <path
-                data-name="Bottom Ring"
-                d="M375 850c151.88 0 275-123.12 275-275S526.88 300 375 300 100 423.12 100 575s123.12 275 275 275zm0 100C167.9 950 0 782.1 0 575s167.9-375 375-375 375 167.9 375 375-167.9 375-375 375z"
-                fill="#fbcc5c"
-              />
-              <path
-                data-name="Rings Overlap"
-                d="M587.39 750a274.38 274.38 0 0054.55-108.06A274.36 274.36 0 00750 587.4a373.63 373.63 0 01-29.16 133.45A373.62 373.62 0 01587.39 750zM308.06 308.06A274.36 274.36 0 00200 362.6a373.63 373.63 0 0129.16-133.45A373.62 373.62 0 01362.61 200a274.38 274.38 0 00-54.55 108.06z"
-                fill="#ecff8f"
-              />
-            </svg>
+            Celo <CeloLogo />
           </a>{' '}
           network.
         </div>
@@ -460,7 +397,7 @@ export default function Home(): React.ReactElement {
                   >
                     {Object.keys(feeTokenMap).map((token) => (
                       <option key={token} value={token}>
-                        {feeTokenMap[token as keyof FeeTokenMap]}
+                        {feeTokenMap[token as keyof typeof feeTokenMap]}
                       </option>
                     ))}
                   </select>
@@ -491,5 +428,24 @@ async function getBalances(
         error: error,
       };
     })
+  );
+}
+
+export default function Home(): React.ReactElement {
+  return (
+    <CeloProvider
+      dapp={{
+        name: 'react-celo demo',
+        description: 'A demo DApp to showcase functionality',
+        url: 'https://react-celo.vercel.app',
+        icon: 'https://react-celo.vercel.app/favicon.ico',
+      }}
+      network={Alfajores}
+      connectModal={{
+        providersOptions: { searchable: true },
+      }}
+    >
+      <HomePage />
+    </CeloProvider>
   );
 }
