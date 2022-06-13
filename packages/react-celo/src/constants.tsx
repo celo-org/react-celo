@@ -27,6 +27,10 @@ export enum localStorageKeys {
   lastUsedNetwork = 'react-celo/last-used-network',
   lastUsedWalletType = 'react-celo/last-used-wallet',
   lastUsedWalletId = 'react-celo/last-used-wallet-id',
+
+  lastUsedIndex = 'react-celo/last-used-index',
+  lastUsedPrivateKey = 'react-celo/last-used-private-key',
+
   lastUsedWalletArguments = 'react-celo/last-used-wallet-arguments',
   lastUsedFeeCurrency = 'react-celo/last-used-fee-currency',
 }

@@ -54,19 +54,22 @@ type ParamType<T> = T extends localStorageKeys.lastUsedFeeCurrency
   ? CeloTokenContract
   : T extends localStorageKeys.lastUsedWalletType
   ? WalletTypes
+  : T extends localStorageKeys.lastUsedIndex
+  ? number
   : string;
 
 export function getTypedStorageKey<T extends localStorageKeys>(
   key: T
 ): ParamType<T> | null {
-  return localStorage.getItem(key) as ParamType<T>;
+  const item = localStorage.getItem(key) as ParamType<T>;
+  return item;
 }
 
 export function setTypedStorageKey<
   T extends localStorageKeys,
   V extends ParamType<T>
 >(key: T, value: V): void {
-  localStorage.setItem(key, value);
+  localStorage.setItem(key, value.toString());
 }
 
 export function removeLastUsedAddress() {
