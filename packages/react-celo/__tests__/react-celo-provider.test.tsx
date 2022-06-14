@@ -4,11 +4,11 @@ import { CeloContract } from '@celo/contractkit';
 import { act, fireEvent, render, renderHook } from '@testing-library/react';
 import React, { ReactElement } from 'react';
 
-import { Mainnet } from '../src/constants';
+import { Alfajores, Baklava, Mainnet, NetworkNames } from '../src/constants';
 import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
+import defaultTheme from '../src/theme/default';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
-import defaultTheme from '../src/theme/default';
 
 interface RenderArgs {
   providerProps: Partial<CeloProviderProps>;
@@ -134,10 +134,12 @@ describe('CeloProvider', () => {
       });
 
       it('updates the Current network', async () => {
-        const { result, rerender, unmount } = renderUseCelo({ networks });
+        const { result, rerender, unmount } = renderUseCelo({
+          networks,
+          defaultNetwork: networks[0].name,
+        });
 
-        // TODO Need to determine behavior when network is not in networks
-        expect(result.current.network).toEqual(Mainnet);
+        expect(result.current.network).toEqual(networks[0]);
 
         await act(async () => {
           await result.current.updateNetwork(networks[1]);
@@ -147,6 +149,51 @@ describe('CeloProvider', () => {
 
         expect(result.current.network).toEqual(networks[1]);
         unmount();
+      });
+
+      it('still allows old network prop to be used ', () => {
+        const { result } = renderUseCelo({
+          network: Baklava,
+        });
+
+        expect(result.current.network).toEqual(Baklava);
+      });
+
+      describe('when given defaultNetwork prop that exists in networks', () => {
+        it('starts with that network', () => {
+          const { result } = renderUseCelo({
+            defaultNetwork: NetworkNames.Alfajores,
+          });
+
+          expect(result.current.network).toMatchObject(Alfajores);
+        });
+      });
+      describe('when given defaultNetwork prop does not exist in networks', () => {
+        it('throws an error', () => {
+          expect(() => {
+            renderUseCelo({
+              defaultNetwork: 'Solana',
+            });
+          }).toThrowError(
+            `[react-celo] Could not find 'defaultNetwork' (Solana) in 'networks'. 'defaultNetwork' must equal 'network.name' on one of the 'networks' passed to CeloProvider.`
+          );
+        });
+      });
+      describe('when given defaultNetwork and networks array prop', () => {
+        it('starts with the network it found', () => {
+          const customRPCMainnet: Network = {
+            name: NetworkNames.Mainnet,
+            chainId: Mainnet.chainId,
+            rpcUrl: 'https://rpc.ankr.com/celo',
+            explorer: 'https://celoscan.xyz',
+          };
+          const { result } = renderUseCelo({
+            defaultNetwork: NetworkNames.Mainnet,
+            networks: [Alfajores, Baklava, customRPCMainnet],
+          });
+
+          expect(result.current.network).toEqual(customRPCMainnet);
+        });
       });
     });
 
