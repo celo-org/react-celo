@@ -185,9 +185,9 @@ function getInitialNetwork(
   defaultNetwork?: string,
   passedNetwork?: Network // TODO:#246 remove when network prop is removed
 ) {
-  if (passedNetwork) {
+  if (process.env.NODE_ENV !== 'production' && passedNetwork) {
     console.warn(
-      'network prop on CeloProvider has been deprecated, use `defaultNetwork`'
+      '[react-celo] The `network` prop on CeloProvider has been deprecated, use `defaultNetwork`'
     );
   }
   const network = networks.find((net) => {
