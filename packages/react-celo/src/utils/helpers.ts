@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
+import { useEffect } from 'react';
 
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 import { localStorageKeys, WalletTypes } from '../constants';
