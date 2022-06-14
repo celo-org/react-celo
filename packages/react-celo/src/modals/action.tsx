@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
@@ -90,6 +90,16 @@ export const ActionModal: React.FC<Props> = ({
 }: Props) => {
   const theme = useTheme();
   const { pendingActionCount, dapp } = useCeloInternal();
+
+  useEffect(() => {
+    if (pendingActionCount > 0) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '15px';
+    } else {
+      document.body.style.overflow = 'unset';
+      document.body.style.paddingRight = '0px';
+    }
+  }, [pendingActionCount]);
 
   return (
     <ReactModal
