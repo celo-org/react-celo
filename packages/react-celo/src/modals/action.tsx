@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
