@@ -1,6 +1,6 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 
 // Uncomment with WCV2 support
 // import {
@@ -80,23 +80,24 @@ export type ConnectorParams = {
   walletId?: string;
 };
 
+export type EventsMap = {
+  [ConnectorEvents.ADDRESS_CHANGED]: string;
+  [ConnectorEvents.NETWORK_CHANGED]: string;
+  [ConnectorEvents.CONNECTED]: ConnectorParams;
+  [ConnectorEvents.DISCONNECTED]: void;
+};
+
 export class AbstractConnector {
   protected emitter = new EventEmitter();
 
-  on(
-    event: ConnectorEvents.ADDRESS_CHANGED,
-    fn: (address: string) => void
-  ): void;
-  on(
-    event: ConnectorEvents.NETWORK_CHANGED,
-    fn: (networkName: string) => void
-  ): void;
-  on(event: ConnectorEvents.DISCONNECTED, fn: () => void): void;
-  on(
-    event: ConnectorEvents.CONNECTED,
-    fn: (params: ConnectorParams) => void
-  ): void;
-  on<T>(event: ConnectorEvents, fn: (arg: T) => void): void {
+  on<E extends ConnectorEvents>(
+    event: E,
+    fn: (arg: EventsMap[E]) => void
+  ): void {
     this.emitter.on(event, fn);
+  }
+
+  emit<E extends ConnectorEvents>(event: E, data?: EventsMap[E]) {
+    this.emitter.emit(event, data);
   }
 }

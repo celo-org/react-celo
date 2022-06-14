@@ -1,8 +1,4 @@
-import {
-  AbstractConnector,
-  ConnectorEvents,
-  ConnectorParams,
-} from '../connectors/common';
+import { AbstractConnector, ConnectorEvents } from '../connectors/common';
 
 type Updater = (
   connector: AbstractConnector,
@@ -16,7 +12,7 @@ export const updater: Updater = (connector: AbstractConnector, dispatch) => {
   connector.on(ConnectorEvents.NETWORK_CHANGED, (networkName) => {
     dispatch('setNetwork', networkName);
   });
-  connector.on(ConnectorEvents.CONNECTED, (params: ConnectorParams) => {
+  connector.on(ConnectorEvents.CONNECTED, (params) => {
     // TODO create a 'connected' action to dispatch
     dispatch('connect', params);
   });

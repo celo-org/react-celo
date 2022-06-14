@@ -2,14 +2,15 @@ import {
   AbstractConnector,
   ConnectorEvents,
   ConnectorParams,
+  EventsMap,
 } from '../../src/connectors/common';
 import { localStorageKeys, WalletTypes } from '../../src/constants';
 import { getTypedStorageKey } from '../../src/utils/local-storage';
 import persistor from '../../src/utils/persistor';
 
 class ConnectorStub extends AbstractConnector {
-  emit(event: ConnectorEvents, args?: unknown) {
-    this.emitter.emit(event, args);
+  emit<E extends ConnectorEvents>(event: E, args?: EventsMap[E]) {
+    super.emit(event, args);
   }
 }
 
