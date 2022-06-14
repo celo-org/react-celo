@@ -7,6 +7,7 @@ import useTheme from '../hooks/use-theme';
 import { Theme } from '../types';
 import { useCeloInternal } from '../use-celo';
 import { hexToRGB } from '../utils/colors';
+import { useFixedBody } from '../utils/helpers';
 import cls from '../utils/tailwind';
 import { styles as modalStyles } from './connect';
 
@@ -90,16 +91,7 @@ export const ActionModal: React.FC<Props> = ({
 }: Props) => {
   const theme = useTheme();
   const { pendingActionCount, dapp } = useCeloInternal();
-
-  useEffect(() => {
-    if (pendingActionCount > 0) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = '15px';
-    } else {
-      document.body.style.overflow = 'unset';
-      document.body.style.paddingRight = '0px';
-    }
-  }, [pendingActionCount]);
+  useFixedBody(pendingActionCount > 0);
 
   return (
     <ReactModal
