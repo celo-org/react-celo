@@ -11,7 +11,7 @@ import { Connector, Maybe, Network } from '../types';
 import { clearPreviousConfig } from '../utils/local-storage';
 import { persist, updateFeeCurrency } from './common';
 
-export function buildOptions(network: Network) {
+export function buildOptions(network: Network): WalletConnectWalletOptionsV1 {
   return {
     connect: {
       chainId: network.chainId,

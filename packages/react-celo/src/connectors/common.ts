@@ -1,6 +1,6 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
-import { EventEmitter } from 'events';
+import EventEmitter from 'eventemitter3';
 
 // Uncomment with WCV2 support
 // import {

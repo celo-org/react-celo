@@ -31,6 +31,7 @@
     "@celo/wallet-walletconnect-v1": "4.0.0-dev",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
+    "eventemitter3": "^4.0.7",
     "isomorphic-fetch": "^3.0.0",
     "qrcode": "^1.5.0",
     "react-device-detect": "^2.1.2",

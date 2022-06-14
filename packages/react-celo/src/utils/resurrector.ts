@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { CeloContract } from '@celo/contractkit';
-import { WalletConnectWalletOptions } from '@celo/wallet-walletconnect-v1';
 
 import {
   CeloExtensionWalletConnector,
@@ -18,7 +18,7 @@ type Resurrector = (networks: Network[]) => Connector | null;
 
 export const resurrector: Resurrector = function (networks: Network[]) {
   const walletType = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
-  if (!walletType!) return null;
+  if (!walletType) return null;
 
   const networkName = getTypedStorageKey(localStorageKeys.lastUsedNetwork);
   const network = networks.find((net) => net.name === networkName);
@@ -34,7 +34,11 @@ export const resurrector: Resurrector = function (networks: Network[]) {
         if (index === null) {
           return null;
         }
-        return new LedgerConnector(network, index, CeloContract.GoldToken);
+        return new LedgerConnector(
+          network,
+          index as number,
+          CeloContract.GoldToken
+        );
       }
       case WalletTypes.CeloExtensionWallet:
         return new CeloExtensionWalletConnector(
@@ -61,7 +65,7 @@ export const resurrector: Resurrector = function (networks: Network[]) {
       case WalletTypes.CeloWallet:
       case WalletTypes.Valora:
       case WalletTypes.WalletConnect: {
-        const options: WalletConnectWalletOptions = buildOptions(network);
+        const options = buildOptions(network);
         return new WalletConnectConnector(
           network,
           CeloContract.GoldToken,
