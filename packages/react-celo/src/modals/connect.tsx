@@ -127,7 +127,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   );
 
   useEffect(() => {
-    if (!!connectionCallback) {
+    if (connectionCallback) {
       document.body.style.overflow = 'hidden';
       document.body.style.paddingRight = '15px';
     } else {
