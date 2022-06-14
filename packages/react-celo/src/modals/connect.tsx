@@ -1,6 +1,7 @@
 import React, {
   FunctionComponent,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -124,6 +125,16 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     },
     [back, connectionCallback]
   );
+
+  useEffect(() => {
+    if (!!connectionCallback) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '15px';
+    } else {
+      document.body.style.overflow = 'unset';
+      document.body.style.paddingRight = '0px';
+    }
+  }, [connectionCallback]);
 
   const {
     hideFromDefaults,
