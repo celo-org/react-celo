@@ -97,14 +97,13 @@ export function isValidFeeCurrency(currency: Maybe<string>): boolean {
 export function useFixedBody(isOpen: boolean) {
   useEffect(() => {
     if (isOpen) {
-      const x = window.scrollX;
-      const y = window.scrollY;
-      const disableScroll = () => {
-        window.scrollTo(x, y);
-      };
-      window.addEventListener('scroll', disableScroll);
+      const originalOverflow = document.body.style.overflow;
+      const originalPadding = document.body.style.paddingRight;
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '15px';
       return () => {
-        window.removeEventListener('scroll', disableScroll);
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPadding;
       };
     }
   }, [isOpen]);
