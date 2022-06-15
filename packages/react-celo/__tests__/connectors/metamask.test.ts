@@ -2,7 +2,7 @@ import { CeloContract } from '@celo/contractkit/lib/base';
 import { generateTestingUtils } from 'eth-testing';
 
 import { localStorageKeys } from '../../src';
-import { MetaMaskConnector } from '../../src/connectors';
+import { ConnectorEvents, MetaMaskConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
 import { getTypedStorageKey } from '../../src/utils/local-storage';
 
@@ -59,6 +59,18 @@ describe('MetaMaskConnector', () => {
       testingUtils.mockChainChanged('0x1');
 
       expect(callback).toHaveBeenLastCalledWith(1);
+    });
+  });
+  describe('close()', () => {
+    let connector: MetaMaskConnector;
+    beforeEach(() => {
+      connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
+      jest.spyOn(connector, 'emit');
+    });
+
+    it('emits DISCONNECTED event', () => {
+      connector.close();
+      expect(connector.emit).toBeCalledWith(ConnectorEvents.DISCONNECTED);
     });
   });
 });

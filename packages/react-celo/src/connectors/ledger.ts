@@ -8,9 +8,17 @@ import {
   setLastUsedWalletArgs,
   setTypedStorageKey,
 } from '../utils/local-storage';
-import { persist, updateFeeCurrency } from './common';
+import {
+  AbstractConnector,
+  ConnectorEvents,
+  persist,
+  updateFeeCurrency,
+} from './common';
 
-export default class LedgerConnector implements Connector {
+export default class LedgerConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = false;
   public type = WalletTypes.Ledger;
   public kit: MiniContractKit;
@@ -21,6 +29,7 @@ export default class LedgerConnector implements Connector {
     private index: number,
     public feeCurrency: CeloTokenContract
   ) {
+    super();
     setLastUsedWalletArgs([index]);
     setTypedStorageKey(localStorageKeys.lastUsedWalletType, WalletTypes.Ledger);
     setTypedStorageKey(localStorageKeys.lastUsedNetwork, network.name);
@@ -65,6 +74,7 @@ export default class LedgerConnector implements Connector {
 
   close(): void {
     clearPreviousConfig();
+    this.emit(ConnectorEvents.DISCONNECTED);
     return;
   }
 }

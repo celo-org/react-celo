@@ -1,9 +1,4 @@
-import {
-  AbstractConnector,
-  ConnectorEvents,
-  ConnectorParams,
-  EventsMap,
-} from '../../src/connectors/common';
+import { ConnectorEvents, ConnectorParams } from '../../src/connectors/common';
 import {
   localStorageKeys,
   PROVIDERS,
@@ -13,12 +8,7 @@ import {
 import { getRecent } from '../../src/hooks/use-providers';
 import { getTypedStorageKey } from '../../src/utils/local-storage';
 import persistor from '../../src/utils/persistor';
-
-class ConnectorStub extends AbstractConnector {
-  emit<E extends ConnectorEvents>(event: E, args?: EventsMap[E]) {
-    super.emit(event, args);
-  }
-}
+import { ConnectorStub } from './connector-stub';
 
 describe('Persistor', () => {
   let connector: ConnectorStub;
@@ -28,7 +18,7 @@ describe('Persistor', () => {
   });
   describe(`when connector emits ${ConnectorEvents.ADDRESS_CHANGED}`, () => {
     it('dispatches the new address to Reducer', () => {
-      connector.emit(ConnectorEvents.ADDRESS_CHANGED, '0x12312823y471');
+      connector.testEmit(ConnectorEvents.ADDRESS_CHANGED, '0x12312823y471');
       expect(getTypedStorageKey(localStorageKeys.lastUsedAddress)).toEqual(
         '0x12312823y471'
       );
@@ -36,7 +26,7 @@ describe('Persistor', () => {
   });
   describe(`when connector emits ${ConnectorEvents.NETWORK_CHANGED}`, () => {
     it('dispatches the new network to Reducer', () => {
-      connector.emit(ConnectorEvents.NETWORK_CHANGED, 'Polygon');
+      connector.testEmit(ConnectorEvents.NETWORK_CHANGED, 'Polygon');
       expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
         'Polygon'
       );
@@ -52,7 +42,7 @@ describe('Persistor', () => {
       walletId: WalletIds.Steakwallet,
     };
     beforeEach(() => {
-      connector.emit(ConnectorEvents.CONNECTED, params);
+      connector.testEmit(ConnectorEvents.CONNECTED, params);
     });
     it('stores walletType', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedWalletType)).toEqual(
@@ -88,7 +78,7 @@ describe('Persistor', () => {
   });
   describe(`when connector emits ${ConnectorEvents.DISCONNECTED}`, () => {
     it('removes data from local storage', () => {
-      connector.emit(ConnectorEvents.DISCONNECTED);
+      connector.testEmit(ConnectorEvents.DISCONNECTED);
     });
   });
 });

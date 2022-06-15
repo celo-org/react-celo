@@ -8,9 +8,17 @@ import {
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { clearPreviousConfig } from '../utils/local-storage';
-import { persist, Web3Type } from './common';
+import {
+  AbstractConnector,
+  ConnectorEvents,
+  persist,
+  Web3Type,
+} from './common';
 
-export default class CeloExtensionWalletConnector implements Connector {
+export default class CeloExtensionWalletConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: MiniContractKit;
@@ -18,6 +26,7 @@ export default class CeloExtensionWalletConnector implements Connector {
   private onNetworkChangeCallback?: (chainId: number) => void;
 
   constructor(private network: Network, public feeCurrency: CeloTokenContract) {
+    super();
     this.kit = newKit(network.rpcUrl);
   }
 
@@ -76,6 +85,7 @@ export default class CeloExtensionWalletConnector implements Connector {
 
   close(): void {
     clearPreviousConfig();
+    this.emit(ConnectorEvents.DISCONNECTED);
     return;
   }
 }

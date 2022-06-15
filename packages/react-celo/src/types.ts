@@ -2,6 +2,7 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import React from 'react';
 
+import { ConnectorEvents, EventsMap } from './connectors/common';
 import { Platform, Priorities, WalletTypes } from './constants';
 
 export type Maybe<T> = T | null | undefined;
@@ -77,6 +78,7 @@ export interface Connector {
    */
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
+  on<E extends ConnectorEvents>(e: E, fn: (arg: EventsMap[E]) => void): void;
   updateFeeCurrency?: (token: CeloTokenContract) => Promise<void>;
   supportsFeeCurrency: () => boolean;
   getDeeplinkUrl?: (uri: string) => string | false;

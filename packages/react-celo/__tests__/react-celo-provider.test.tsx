@@ -49,6 +49,11 @@ function renderComponentInCKProvider(
 }
 
 describe('CeloProvider', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    jest.spyOn(console, 'warn').mockImplementation(jest.fn());
+    jest.spyOn(console, 'error').mockImplementation(jest.fn());
+  });
   describe('user interface', () => {
     const ConnectButton = () => {
       const { connect } = useCelo();

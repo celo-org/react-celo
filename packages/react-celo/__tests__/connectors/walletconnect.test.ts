@@ -4,7 +4,8 @@ import { WalletConnectWallet } from '@celo/wallet-walletconnect-v1';
 import { generateTestingUtils } from 'eth-testing';
 
 import { Alfajores } from '../../src';
-import { WalletConnectConnector } from '../../src/connectors';
+import { ConnectorEvents, WalletConnectConnector } from '../../src/connectors';
+import { buildOptions } from '../../src/connectors/wallet-connect';
 
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
@@ -13,6 +14,10 @@ jest.createMockFromModule('@celo/wallet-walletconnect-v1');
 const wallet = new WalletConnectWallet({});
 
 jest.spyOn(wallet, 'init').mockImplementation(async function init() {
+  return Promise.resolve(undefined);
+});
+
+jest.spyOn(wallet, 'close').mockImplementation(async function close() {
   return Promise.resolve(undefined);
 });
 
@@ -56,5 +61,22 @@ describe('WalletConnectConnector', () => {
     expect(wallet.getAccounts).toHaveBeenCalled();
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(connector.kit.getWallet).toHaveBeenCalled();
+  });
+  describe('close()', () => {
+    let connector: WalletConnectConnector;
+    beforeEach(() => {
+      connector = new WalletConnectConnector(
+        Alfajores,
+        CeloContract.GoldToken,
+        buildOptions(Alfajores)
+      );
+      jest.spyOn(connector, 'emit');
+      jest.spyOn(connector.kit, 'getWallet').mockImplementation(() => wallet);
+    });
+
+    it('emits DISCONNECTED event', async () => {
+      await connector.close();
+      expect(connector.emit).toBeCalledWith(ConnectorEvents.DISCONNECTED);
+    });
   });
 });

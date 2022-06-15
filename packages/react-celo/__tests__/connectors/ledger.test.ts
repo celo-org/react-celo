@@ -1,7 +1,7 @@
 import { CeloContract } from '@celo/contractkit';
 
 import { Alfajores, localStorageKeys, WalletTypes } from '../../src';
-import { LedgerConnector } from '../../src/connectors';
+import { ConnectorEvents, LedgerConnector } from '../../src/connectors';
 import {
   getLastUsedWalletArgs,
   getTypedStorageKey,
@@ -30,9 +30,11 @@ describe('LedgerConnector', () => {
   });
 
   describe('close()', () => {
-    it('clears out localStorage', () => {
+    beforeEach(() => {
+      jest.spyOn(connector, 'emit');
       connector.close();
-
+    });
+    it('clears out localStorage', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedFeeCurrency)).toEqual(
         null
       );
@@ -42,6 +44,9 @@ describe('LedgerConnector', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
         null
       );
+    });
+    it('emits DISCONNECTED event', () => {
+      expect(connector.emit).toBeCalledWith(ConnectorEvents.DISCONNECTED);
     });
   });
   describe('updateFeeCurrency', () => {

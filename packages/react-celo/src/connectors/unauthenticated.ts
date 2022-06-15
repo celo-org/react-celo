@@ -4,6 +4,7 @@ import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { clearPreviousConfig, forgetConnection } from '../utils/local-storage';
+import { ConnectorEvents, EventsMap } from './common';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
@@ -38,5 +39,8 @@ export default class UnauthenticatedConnector implements Connector {
   close(): void {
     clearPreviousConfig();
     return;
+  }
+  on<E extends ConnectorEvents>(_e: E, _fn: (arg: EventsMap[E]) => void): void {
+    // no op
   }
 }

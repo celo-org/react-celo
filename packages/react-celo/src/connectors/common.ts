@@ -90,14 +90,14 @@ export type EventsMap = {
 export class AbstractConnector {
   protected emitter = new EventEmitter();
 
-  on<E extends ConnectorEvents>(
+  on = <E extends ConnectorEvents>(
     event: E,
     fn: (arg: EventsMap[E]) => void
-  ): void {
+  ) => {
     this.emitter.on(event, fn);
-  }
+  };
 
-  emit<E extends ConnectorEvents>(event: E, data?: EventsMap[E]) {
+  emit = <E extends ConnectorEvents>(event: E, data?: EventsMap[E]) => {
     this.emitter.emit(event, data);
-  }
+  };
 }
