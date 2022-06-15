@@ -1,14 +1,7 @@
-import {
-  AbstractConnector,
-  ConnectorEvents,
-} from '../../src/connectors/common';
+import { WalletTypes } from '../../src';
+import { ConnectorEvents } from '../../src/connectors/common';
 import { updater } from '../../src/utils/updater';
-
-class ConnectorStub extends AbstractConnector {
-  emit(event: ConnectorEvents, args?: unknown) {
-    this.emitter.emit(event, args);
-  }
-}
+import { ConnectorStub } from './connector-stub';
 
 describe('Updater', () => {
   const dispatchStub = jest.fn();
@@ -22,13 +15,13 @@ describe('Updater', () => {
   });
   describe(`when connector emits ${ConnectorEvents.ADDRESS_CHANGED}`, () => {
     it('dispatches the new address to Reducer', () => {
-      connector.emit(ConnectorEvents.ADDRESS_CHANGED, '0x12312823y471');
+      connector.testEmit(ConnectorEvents.ADDRESS_CHANGED, '0x12312823y471');
       expect(dispatchStub).toHaveBeenCalledWith('setAddress', '0x12312823y471');
     });
   });
   describe(`when connector emits ${ConnectorEvents.NETWORK_CHANGED}`, () => {
     it('dispatches the new network to Reducer', () => {
-      connector.emit(ConnectorEvents.NETWORK_CHANGED, 'Polygon');
+      connector.testEmit(ConnectorEvents.NETWORK_CHANGED, 'Polygon');
       expect(dispatchStub).toHaveBeenCalledWith('setNetwork', 'Polygon');
     });
   });
@@ -38,9 +31,10 @@ describe('Updater', () => {
       networkName: 'Celo',
       index: 2,
       privateKey: 'PRIVATE',
+      walletType: WalletTypes.PrivateKey,
     };
     beforeEach(() => {
-      connector.emit(ConnectorEvents.CONNECTED, params);
+      connector.testEmit(ConnectorEvents.CONNECTED, params);
     });
     it('dispatches connect with appropriate params', () => {
       expect(dispatchStub).toHaveBeenCalledWith('connect', params);
@@ -48,7 +42,7 @@ describe('Updater', () => {
   });
   describe(`when connector emits ${ConnectorEvents.DISCONNECTED}`, () => {
     it('dispatches destroy action', () => {
-      connector.emit(ConnectorEvents.DISCONNECTED);
+      connector.testEmit(ConnectorEvents.DISCONNECTED);
       expect(dispatchStub).toHaveBeenCalledWith('destroy');
     });
   });

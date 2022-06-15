@@ -5,9 +5,17 @@ import { LocalWallet } from '@celo/wallet-local';
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { clearPreviousConfig } from '../utils/local-storage';
-import { persist, updateFeeCurrency } from './common';
+import {
+  AbstractConnector,
+  ConnectorEvents,
+  persist,
+  updateFeeCurrency,
+} from './common';
 
-export default class PrivateKeyConnector implements Connector {
+export default class PrivateKeyConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = true;
   public type = WalletTypes.PrivateKey;
   public kit: MiniContractKit;
@@ -18,6 +26,7 @@ export default class PrivateKeyConnector implements Connector {
     private privateKey: string,
     public feeCurrency: CeloTokenContract
   ) {
+    super();
     const wallet = new LocalWallet();
     wallet.addAccount(privateKey);
 
@@ -51,6 +60,7 @@ export default class PrivateKeyConnector implements Connector {
 
   close(): void {
     clearPreviousConfig();
+    this.emit(ConnectorEvents.DISCONNECTED);
     return;
   }
 }

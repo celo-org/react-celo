@@ -1,7 +1,7 @@
 import { CeloContract } from '@celo/contractkit';
 
 import { Alfajores, localStorageKeys } from '../../src';
-import { PrivateKeyConnector } from '../../src/connectors';
+import { ConnectorEvents, PrivateKeyConnector } from '../../src/connectors';
 import {
   getLastUsedWalletArgs,
   getTypedStorageKey,
@@ -46,12 +46,15 @@ describe('PrivateKeyConnector', () => {
   });
 
   describe('close()', () => {
-    it('clears out localStorage', async () => {
+    beforeEach(() => {
       connector = new PrivateKeyConnector(
         Alfajores,
         TEST_KEY,
         CeloContract.StableTokenEUR
       );
+      jest.spyOn(connector, 'emit');
+    });
+    it('clears out localStorage', async () => {
       await connector.initialise();
 
       connector.close();
@@ -67,6 +70,11 @@ describe('PrivateKeyConnector', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
         null
       );
+    });
+
+    it('emits DISCONNECTED event', () => {
+      connector.close();
+      expect(connector.emit).toBeCalledWith(ConnectorEvents.DISCONNECTED);
     });
   });
   describe('updateFeeCurrency', () => {

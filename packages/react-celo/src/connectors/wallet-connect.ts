@@ -9,7 +9,12 @@ import { BigNumber } from 'bignumber.js';
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { clearPreviousConfig } from '../utils/local-storage';
-import { persist, updateFeeCurrency } from './common';
+import {
+  AbstractConnector,
+  ConnectorEvents,
+  persist,
+  updateFeeCurrency,
+} from './common';
 
 export function buildOptions(network: Network): WalletConnectWalletOptionsV1 {
   return {
@@ -19,7 +24,10 @@ export function buildOptions(network: Network): WalletConnectWalletOptionsV1 {
   };
 }
 
-export default class WalletConnectConnector implements Connector {
+export default class WalletConnectConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = false;
   public type = WalletTypes.WalletConnect;
   public kit: MiniContractKit;
@@ -39,6 +47,7 @@ export default class WalletConnectConnector implements Connector {
     readonly version?: number,
     readonly walletId?: string
   ) {
+    super();
     const wallet = new WalletConnectWalletV1(options);
     // Uncomment with WCV2 support
     // version == 1
@@ -140,9 +149,10 @@ export default class WalletConnectConnector implements Connector {
 
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
-  close(message?: string): Promise<void> {
+  async close(message?: string): Promise<void> {
     clearPreviousConfig();
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
-    return wallet.close(message);
+    await wallet.close(message);
+    this.emit(ConnectorEvents.DISCONNECTED);
   }
 }

@@ -6,6 +6,12 @@ import {
   RGBToHex,
 } from '../../src/utils/colors';
 
+beforeAll(() => {
+  jest.spyOn(console, 'log').mockImplementation(jest.fn());
+  jest.spyOn(console, 'debug').mockImplementation(jest.fn());
+  jest.spyOn(console, 'error').mockImplementation(jest.fn());
+});
+
 describe('RGBToHex', () => {
   it('converts rgb to hex', () => {
     expect(RGBToHex('rgb(0, 0, 0)')).toEqual('#000000');

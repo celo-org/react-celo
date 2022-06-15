@@ -13,9 +13,17 @@ import {
   setTypedStorageKey,
 } from '../utils/local-storage';
 import { switchToCeloNetwork } from '../utils/metamask';
-import { persist, Web3Type } from './common';
+import {
+  AbstractConnector,
+  ConnectorEvents,
+  persist,
+  Web3Type,
+} from './common';
 
-export default class InjectedConnector implements Connector {
+export default class InjectedConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = false;
   public type = WalletTypes.Injected;
   public kit: MiniContractKit;
@@ -29,6 +37,7 @@ export default class InjectedConnector implements Connector {
     public feeCurrency: CeloTokenContract,
     defaultType: WalletTypes = WalletTypes.Injected
   ) {
+    super();
     this.type = defaultType;
     this.kit = newKit(network.rpcUrl);
     this.network = network;
@@ -112,6 +121,7 @@ export default class InjectedConnector implements Connector {
     }
     this.onNetworkChangeCallback = undefined;
     this.onAddressChangeCallback = undefined;
+    this.emit(ConnectorEvents.DISCONNECTED);
     return;
   }
 }
