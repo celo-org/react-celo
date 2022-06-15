@@ -18,22 +18,17 @@ type Resurrector = (networks: Network[]) => Connector | null;
 
 export const resurrector: Resurrector = function (networks: Network[]) {
   const walletType = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
-  if (!walletType) return null;
+  const network = getNetwork(networks);
 
-  const networkName = getTypedStorageKey(localStorageKeys.lastUsedNetwork);
-  const network = networks.find((net) => net.name === networkName);
+  if (!walletType || !network) return null;
 
-  if (!network) {
-    console.info('Could not find saved network, aborting resurrection');
-    return null;
-  }
   try {
     switch (walletType) {
       case WalletTypes.Ledger: {
         const index = getTypedStorageKey(localStorageKeys.lastUsedIndex);
-        if (index === null) {
-          return null;
-        }
+
+        if (index === null) return null;
+
         return new LedgerConnector(
           network,
           index as number,
@@ -65,34 +60,24 @@ export const resurrector: Resurrector = function (networks: Network[]) {
       case WalletTypes.CeloWallet:
       case WalletTypes.Valora:
       case WalletTypes.WalletConnect: {
-        const options = buildOptions(network);
         return new WalletConnectConnector(
           network,
           CeloContract.GoldToken,
-          options
+          buildOptions(network)
         );
       }
       case WalletTypes.Unauthenticated:
         return null;
     }
   } catch (e) {
-    console.log('Unknown error in resurrector', e);
+    process.env.NODE_ENV !== 'production' &&
+      console.error('[react-celo] Unknown error in resurrector', e);
     return null;
   }
 };
-
-// function migrate() {
-//   const lastArgs = getLastUsedWalletArgs()
-
-//   if (lastArgs === null || lastArgs === undefined || lastArgs.length === 0) {
-//     return null;
-//   }
-
-//   if (typeof lastArgs[0] === 'number') {
-//     setTypedStorageKey(localStorageKeys.lastUsedIndex, lastArgs[0])
-//   } else if ()
-
-//   switch(lastArgs[0]) {
-//     case
-//   }
-// }
+function getNetwork(networks: Network[]) {
+  const networkName = getTypedStorageKey(localStorageKeys.lastUsedNetwork);
+  if (!networkName) return;
+  const network = networks.find((net) => net.name === networkName);
+  return network;
+}

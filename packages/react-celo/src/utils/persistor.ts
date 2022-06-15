@@ -37,9 +37,6 @@ const persistor: Updater = (connector: AbstractConnector) => {
   });
 
   connector.on(ConnectorEvents.DISCONNECTED, () => {
-    // TODO this and how resurrector work assumes we either force forget or if closed on accident auto reconnect
-    // but there is also `getRecent` in  '../hooks/use-providers' which uses walletId/type to show the recently used
-    // we need to decide behavior
     clearPreviousConfig();
   });
 };

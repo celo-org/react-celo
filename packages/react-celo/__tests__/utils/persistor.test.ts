@@ -4,7 +4,13 @@ import {
   ConnectorParams,
   EventsMap,
 } from '../../src/connectors/common';
-import { localStorageKeys, WalletTypes } from '../../src/constants';
+import {
+  localStorageKeys,
+  PROVIDERS,
+  WalletIds,
+  WalletTypes,
+} from '../../src/constants';
+import { getRecent } from '../../src/hooks/use-providers';
 import { getTypedStorageKey } from '../../src/utils/local-storage';
 import persistor from '../../src/utils/persistor';
 
@@ -43,6 +49,7 @@ describe('Persistor', () => {
       networkName: 'Celo',
       index: 2,
       privateKey: 'PRIVATE',
+      walletId: WalletIds.Steakwallet,
     };
     beforeEach(() => {
       connector.emit(ConnectorEvents.CONNECTED, params);
@@ -71,6 +78,12 @@ describe('Persistor', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedPrivateKey)).toEqual(
         'PRIVATE'
       );
+    });
+    it('remembers walletID so it can be used to find recently used wallet', () => {
+      expect(getTypedStorageKey(localStorageKeys.lastUsedWalletId)).toEqual(
+        WalletIds.Steakwallet
+      );
+      expect(getRecent()).toEqual(PROVIDERS.Steakwallet);
     });
   });
   describe(`when connector emits ${ConnectorEvents.DISCONNECTED}`, () => {
