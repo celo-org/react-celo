@@ -29,11 +29,7 @@ export const resurrector: Resurrector = function (networks: Network[]) {
 
         if (index === null) return null;
 
-        return new LedgerConnector(
-          network,
-          index as number,
-          CeloContract.GoldToken
-        );
+        return new LedgerConnector(network, index, CeloContract.GoldToken);
       }
       case WalletTypes.CeloExtensionWallet:
         return new CeloExtensionWalletConnector(
