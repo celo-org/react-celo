@@ -50,23 +50,33 @@ const localStorage =
     ? new MockedLocalStorage()
     : window.localStorage;
 
-type ParamType<T> = T extends localStorageKeys.lastUsedFeeCurrency
-  ? CeloTokenContract
-  : T extends localStorageKeys.lastUsedWalletType
-  ? WalletTypes
-  : string;
+type ParamType = {
+  [localStorageKeys.lastUsedAddress]: string;
+  [localStorageKeys.lastUsedNetwork]: string;
+  [localStorageKeys.lastUsedPrivateKey]: string;
+  [localStorageKeys.lastUsedWalletId]: string;
+  [localStorageKeys.lastUsedFeeCurrency]: CeloTokenContract;
+  [localStorageKeys.lastUsedIndex]: number;
+  [localStorageKeys.lastUsedWalletType]: WalletTypes;
+  [localStorageKeys.lastUsedWalletArguments]: [];
+};
 
-export function getTypedStorageKey<T extends localStorageKeys>(
-  key: T
-): ParamType<T> | null {
-  return localStorage.getItem(key) as ParamType<T>;
+export function getTypedStorageKey<T extends localStorageKeys>(key: T) {
+  const item = localStorage.getItem(key);
+  if (key === localStorageKeys.lastUsedIndex && item) {
+    return Number(item) as ParamType[T];
+  }
+  if (item) {
+    return item as ParamType[T];
+  }
+  return null;
 }
 
 export function setTypedStorageKey<
   T extends localStorageKeys,
-  V extends ParamType<T>
+  V extends ParamType[T]
 >(key: T, value: V): void {
-  localStorage.setItem(key, value);
+  localStorage.setItem(key, value.toString());
 }
 
 export function removeLastUsedAddress() {
