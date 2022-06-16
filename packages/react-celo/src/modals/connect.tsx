@@ -163,7 +163,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     };
   }, [screens, hideFromDefaults, additionalWCWallets]);
 
-  const providers = useProviders(wallets, sort, search);
+  const providers = useProviders(wallets, allScreens, sort, search);
 
   const ProviderElement = adding && allScreens?.[adding];
   const content = ProviderElement ? (
