@@ -77,6 +77,12 @@ export default class InjectedConnector
 
     this.persist();
 
+    this.emit(ConnectorEvents.CONNECTED, {
+      walletType: this.type,
+      address: defaultAccount,
+      networkName: this.network.name,
+    });
+
     return this;
   }
 

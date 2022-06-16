@@ -38,7 +38,6 @@ describe('Persistor', () => {
       address: '0x9e81622',
       networkName: 'Celo',
       index: 2,
-      privateKey: 'PRIVATE',
       walletId: WalletIds.Steakwallet,
     };
     beforeEach(() => {
@@ -64,11 +63,6 @@ describe('Persistor', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedIndex)).toEqual(2);
     });
 
-    it('stores PK', () => {
-      expect(getTypedStorageKey(localStorageKeys.lastUsedPrivateKey)).toEqual(
-        'PRIVATE'
-      );
-    });
     it('remembers walletID so it can be used to find recently used wallet', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedWalletId)).toEqual(
         WalletIds.Steakwallet

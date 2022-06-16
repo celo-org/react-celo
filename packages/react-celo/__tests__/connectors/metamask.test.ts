@@ -1,7 +1,7 @@
 import { CeloContract } from '@celo/contractkit/lib/base';
 import { generateTestingUtils } from 'eth-testing';
 
-import { localStorageKeys } from '../../src';
+import { localStorageKeys, WalletTypes } from '../../src';
 import { ConnectorEvents, MetaMaskConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
 import { getTypedStorageKey } from '../../src/utils/local-storage';
@@ -30,9 +30,16 @@ describe('MetaMaskConnector', () => {
 
   it('initialises', async () => {
     const connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
+    jest.spyOn(connector, 'emit');
     await connector.initialise();
     expect(connector.account).toEqual(ACCOUNT);
     expect(connector.initialised).toBe(true);
+
+    expect(connector.emit).toBeCalledWith(ConnectorEvents.CONNECTED, {
+      walletType: WalletTypes.MetaMask,
+      networkName: Alfajores.name,
+      address: ACCOUNT,
+    });
   });
   describe('when network change', () => {
     let connector: MetaMaskConnector;

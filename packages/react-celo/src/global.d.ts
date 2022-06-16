@@ -9,6 +9,12 @@ declare global {
       removeListener?: (...args: unknown[]) => void;
       autoRefreshOnNetworkChange?: boolean;
       enable: () => Promise<void>;
+      publicConfigStore: {
+        on: (
+          event: string,
+          cb: (args: { networkVersion: number }) => void
+        ) => void;
+      };
     };
     web3?: unknown;
   }

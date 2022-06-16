@@ -2,9 +2,12 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { LocalWallet } from '@celo/wallet-local';
 
-import { WalletTypes } from '../constants';
+import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
-import { clearPreviousConfig } from '../utils/local-storage';
+import {
+  clearPreviousConfig,
+  setTypedStorageKey,
+} from '../utils/local-storage';
 import {
   AbstractConnector,
   ConnectorEvents,
@@ -36,6 +39,7 @@ export default class PrivateKeyConnector
   }
 
   persist() {
+    setTypedStorageKey(localStorageKeys.lastUsedPrivateKey, this.privateKey);
     persist({
       walletType: WalletTypes.PrivateKey,
       network: this.network,
@@ -49,6 +53,11 @@ export default class PrivateKeyConnector
 
     this.persist();
 
+    this.emit(ConnectorEvents.CONNECTED, {
+      networkName: this.network.name,
+      walletType: this.type,
+      address: this.account as string,
+    });
     return this;
   }
 

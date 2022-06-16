@@ -11,6 +11,7 @@ describe('LedgerConnector', () => {
   let connector: LedgerConnector;
   beforeEach(() => {
     connector = new LedgerConnector(Alfajores, 0, CeloContract.GoldToken);
+    jest.spyOn(connector, 'emit');
   });
 
   it('remembers info in localStorage', () => {
@@ -29,9 +30,21 @@ describe('LedgerConnector', () => {
     expect(getLastUsedWalletArgs()).toEqual([0]);
   });
 
+  describe('initialise', () => {
+    beforeEach(() => {
+      void connector.initialise();
+    });
+    it.skip('emits CONNECTED with index, network, walletType params', () => {
+      expect(connector.emit).toBeCalledWith(ConnectorEvents.CONNECTED, {
+        networkName: Alfajores.name,
+        walletType: WalletTypes.Ledger,
+        index: 0,
+      });
+    });
+  });
+
   describe('close()', () => {
     beforeEach(() => {
-      jest.spyOn(connector, 'emit');
       connector.close();
     });
     it('clears out localStorage', () => {
