@@ -24,12 +24,6 @@ const persistor: Updater = (connector: AbstractConnector) => {
     if (params.index) {
       setTypedStorageKey(localStorageKeys.lastUsedIndex, params.index);
     }
-    if (params.privateKey) {
-      setTypedStorageKey(
-        localStorageKeys.lastUsedPrivateKey,
-        params.privateKey
-      );
-    }
 
     if (params.walletId) {
       setTypedStorageKey(localStorageKeys.lastUsedWalletId, params.walletId);

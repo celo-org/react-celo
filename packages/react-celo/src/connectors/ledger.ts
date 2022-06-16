@@ -62,7 +62,12 @@ export default class LedgerConnector
     }
 
     this.persist();
-
+    this.emit(ConnectorEvents.CONNECTED, {
+      walletType: this.type,
+      address: this.account,
+      index: this.index,
+      networkName: this.network.name,
+    });
     return this;
   }
 

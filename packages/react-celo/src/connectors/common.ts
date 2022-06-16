@@ -71,14 +71,40 @@ export enum ConnectorEvents {
   'NETWORK_CHANGED' = 'NETWORK_CHANGED',
 }
 
-export type ConnectorParams = {
+interface ConnectorParamsCommon {
   networkName: string;
   walletType: WalletTypes;
   address: string;
-  index?: number;
-  privateKey?: string;
   walletId?: string;
-};
+  index?: number;
+}
+
+interface PrivateKeyParams extends ConnectorParamsCommon {
+  walletType: WalletTypes.PrivateKey;
+  privateKey: string;
+}
+
+interface LedgerParams extends ConnectorParamsCommon {
+  walletType: WalletTypes.Ledger;
+  index: number;
+}
+
+interface WalletConnectParams extends ConnectorParamsCommon {
+  walletType:
+    | WalletTypes.CeloWallet
+    | WalletTypes.Valora
+    | WalletTypes.WalletConnect
+    | WalletTypes.CeloTerminal
+    | WalletTypes.CeloDance;
+
+  walletId: string;
+}
+
+export type ConnectorParams =
+  | ConnectorParamsCommon
+  | PrivateKeyParams
+  | LedgerParams
+  | WalletConnectParams;
 
 export type EventsMap = {
   [ConnectorEvents.ADDRESS_CHANGED]: string;

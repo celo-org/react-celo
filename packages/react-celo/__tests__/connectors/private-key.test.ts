@@ -1,6 +1,6 @@
 import { CeloContract } from '@celo/contractkit';
 
-import { Alfajores, localStorageKeys } from '../../src';
+import { Alfajores, localStorageKeys, WalletTypes } from '../../src';
 import { ConnectorEvents, PrivateKeyConnector } from '../../src/connectors';
 import {
   getLastUsedWalletArgs,
@@ -19,6 +19,7 @@ describe('PrivateKeyConnector', () => {
         TEST_KEY,
         CeloContract.StableTokenEUR
       );
+      jest.spyOn(connector, 'emit');
     });
     it('sets the account', async () => {
       await connector.initialise();
@@ -42,6 +43,15 @@ describe('PrivateKeyConnector', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
         Alfajores.name
       );
+    });
+
+    it('emits CONNECTED event with needed params', async () => {
+      await connector.initialise();
+      expect(connector.emit).toBeCalledWith(ConnectorEvents.CONNECTED, {
+        networkName: Alfajores.name,
+        walletType: WalletTypes.PrivateKey,
+        address: '0x6df18c5837718a83581ead5e26bfcdb8a548e409',
+      });
     });
   });
 
