@@ -156,7 +156,7 @@ function HomePage(): React.ReactElement {
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1"
+          content="width=device-width, initial-scale=1, maximum-scale=5"
         />
       </Head>
       <main>
@@ -187,7 +187,7 @@ function HomePage(): React.ReactElement {
           <ul className="list-disc list-inside">
             <li>
               <a
-                className="text-blue-500"
+                className="text-blue-700"
                 target="_blank"
                 href="https://www.npmjs.com/package/@celo/react-celo"
                 rel="noreferrer"
@@ -197,7 +197,7 @@ function HomePage(): React.ReactElement {
             </li>
             <li>
               <a
-                className="text-blue-500"
+                className="text-blue-700"
                 target="_blank"
                 href="https://github.com/celo-org/react-celo"
                 rel="noreferrer"
@@ -232,7 +232,7 @@ function HomePage(): React.ReactElement {
               <li key={name}>
                 <a
                   target="_blank"
-                  className="text-blue-500"
+                  className="text-blue-700"
                   href={url}
                   rel="noreferrer"
                 >
@@ -249,7 +249,7 @@ function HomePage(): React.ReactElement {
             Connect to your wallet of choice and sign something for send a test
             transaction
             <br />
-            <a target="_blank" className="text-blue-500" href="/wallet">
+            <a target="_blank" className="text-blue-700" href="/wallet">
               Example wallet
             </a>
           </div>
