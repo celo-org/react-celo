@@ -10,6 +10,7 @@ export function ThemeButton({ theme, currentTheme, onClick }: Props) {
   const selected = currentTheme === theme;
   return (
     <button
+      aria-label="Theme button"
       className={`flex flex-row rounded gap-y-1 justify-between border cursor-pointer text-xs`}
       style={{
         background: theme.background,

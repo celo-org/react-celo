@@ -3,7 +3,7 @@ import Document, { Head, Html, Main, NextScript } from 'next/document';
 class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html lang="en-US">
         <Head>
           <link
             href="https://fonts.googleapis.com/css2?family=Philosopher&display=optional"
