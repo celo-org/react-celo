@@ -531,7 +531,7 @@ Add the correct display in Chrome and Safari.
   height: auto;
 }
 
-/* 
+/*
 Scrollbar overrides
 ===================
 */
@@ -627,14 +627,17 @@ Spinner
 @tailwind components;
 @tailwind utilities;
 
-body {
+.react-celo-modal-open-body {
   min-height: 100vh;
   /* mobile viewport bug fix */
   min-height: -webkit-fill-available;
+  overflow: hidden;
 }
 
-html {
-  height: -webkit-fill-available;
+@media (max-width: 900px) {
+  .react-celo-modal-open-html {
+    height: -webkit-fill-available;
+  }
 }
 
 * {
