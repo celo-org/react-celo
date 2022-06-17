@@ -132,8 +132,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     searchable = true,
   } = providersOptions;
 
-  const { wallets, allScreens } = useMemo(() => {
-    let _screens: Record<string, React.FC<ConnectorProps>>;
+  const { wallets, allScreens, includedDefaultProviders } = useMemo(() => {
+    let _screens: Partial<Record<SupportedProviders, React.FC<ConnectorProps>>>;
     const _wallets = additionalWCWallets || [];
 
     if (hideFromDefaults) {
@@ -155,15 +155,24 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     }
 
     return {
+      includedDefaultProviders: Object.keys(_screens) as SupportedProviders[],
       wallets: _wallets,
-      allScreens: _wallets.reduce((acc, wallet) => {
-        acc[wallet.id] = walletToScreen(wallet);
-        return acc;
-      }, _screens),
+      allScreens: _wallets.reduce(
+        (acc: Record<string, React.FC<ConnectorProps>>, wallet) => {
+          acc[wallet.id] = walletToScreen(wallet);
+          return acc;
+        },
+        _screens
+      ),
     };
   }, [screens, hideFromDefaults, additionalWCWallets]);
 
-  const providers = useProviders(wallets, allScreens, sort, search);
+  const providers = useProviders(
+    wallets,
+    includedDefaultProviders,
+    sort,
+    search
+  );
 
   const ProviderElement = adding && allScreens?.[adding];
   const content = ProviderElement ? (

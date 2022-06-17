@@ -5,9 +5,9 @@ import {
   localStorageKeys,
   Priorities,
   PROVIDERS,
+  SupportedProviders,
   WalletTypes,
 } from '../constants';
-import { ConnectorProps } from '../screens';
 import { Maybe, Provider, WalletConnectProvider, WalletEntry } from '../types';
 import localStorage from './localStorage';
 import { defaultProviderSort } from './sort';
@@ -45,23 +45,22 @@ export function getRecent(): Maybe<Provider> {
 
 export default function useProviders(
   wallets: WalletEntry[] = [],
-  allScreens: Record<string, React.FC<ConnectorProps>>,
+  includedDefaultProviders: SupportedProviders[],
   sort = defaultProviderSort,
   search?: string
 ) {
   const record: Record<string, Provider> = useMemo(
     () => ({
-      ...Object.keys(allScreens).reduce((all, current) => {
-        // @ts-ignore
+      ...includedDefaultProviders.reduce((all, current) => {
         all[current] = PROVIDERS[current];
         return all;
-      }, {}),
+      }, {} as Record<SupportedProviders, Provider>),
       ...wallets.reduce((acc, wallet) => {
         acc[wallet.id] = walletToProvider(wallet);
         return acc;
       }, {} as Record<string, Provider>),
     }),
-    [wallets, allScreens]
+    [wallets, includedDefaultProviders]
   );
 
   const providers = useMemo<[providerKey: string, provider: Provider][]>(() => {
