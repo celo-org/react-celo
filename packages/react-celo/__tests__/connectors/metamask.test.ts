@@ -13,6 +13,7 @@ describe('MetaMaskConnector', () => {
     providerType: 'MetaMask',
     verbose: false,
   });
+  const onConnect = jest.fn();
   beforeAll(() => {
     // Manually inject the mocked provider in the window as MetaMask does
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -30,12 +31,12 @@ describe('MetaMaskConnector', () => {
 
   it('initialises', async () => {
     const connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
-    jest.spyOn(connector, 'emit');
+    connector.on(ConnectorEvents.CONNECTED, onConnect);
     await connector.initialise();
     expect(connector.account).toEqual(ACCOUNT);
     expect(connector.initialised).toBe(true);
 
-    expect(connector.emit).toBeCalledWith(ConnectorEvents.CONNECTED, {
+    expect(onConnect).toBeCalledWith({
       walletType: WalletTypes.MetaMask,
       networkName: Alfajores.name,
       address: ACCOUNT,
@@ -70,14 +71,14 @@ describe('MetaMaskConnector', () => {
   });
   describe('close()', () => {
     let connector: MetaMaskConnector;
+    const onDisconnect = jest.fn();
     beforeEach(() => {
       connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
-      jest.spyOn(connector, 'emit');
+      connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
     });
-
     it('emits DISCONNECTED event', () => {
       connector.close();
-      expect(connector.emit).toBeCalledWith(ConnectorEvents.DISCONNECTED);
+      expect(onDisconnect).toBeCalled();
     });
   });
 });

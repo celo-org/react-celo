@@ -13,13 +13,14 @@ const TEST_KEY =
 describe('PrivateKeyConnector', () => {
   let connector: PrivateKeyConnector;
   describe('initialise()', () => {
+    const onConnect = jest.fn();
     beforeEach(() => {
       connector = new PrivateKeyConnector(
         Alfajores,
         TEST_KEY,
         CeloContract.StableTokenEUR
       );
-      jest.spyOn(connector, 'emit');
+      connector.on(ConnectorEvents.CONNECTED, onConnect);
     });
     it('sets the account', async () => {
       await connector.initialise();
@@ -47,7 +48,7 @@ describe('PrivateKeyConnector', () => {
 
     it('emits CONNECTED event with needed params', async () => {
       await connector.initialise();
-      expect(connector.emit).toBeCalledWith(ConnectorEvents.CONNECTED, {
+      expect(onConnect).toBeCalledWith({
         networkName: Alfajores.name,
         walletType: WalletTypes.PrivateKey,
         address: '0x6df18c5837718a83581ead5e26bfcdb8a548e409',
@@ -56,13 +57,14 @@ describe('PrivateKeyConnector', () => {
   });
 
   describe('close()', () => {
+    const onDisconnect = jest.fn();
     beforeEach(() => {
       connector = new PrivateKeyConnector(
         Alfajores,
         TEST_KEY,
         CeloContract.StableTokenEUR
       );
-      jest.spyOn(connector, 'emit');
+      connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
     });
     it('clears out localStorage', async () => {
       await connector.initialise();
@@ -84,7 +86,7 @@ describe('PrivateKeyConnector', () => {
 
     it('emits DISCONNECTED event', () => {
       connector.close();
-      expect(connector.emit).toBeCalledWith(ConnectorEvents.DISCONNECTED);
+      expect(onDisconnect).toBeCalled();
     });
   });
   describe('updateFeeCurrency', () => {

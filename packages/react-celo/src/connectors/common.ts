@@ -123,7 +123,10 @@ export class AbstractConnector {
     this.emitter.on(event, fn);
   };
 
-  emit = <E extends ConnectorEvents>(event: E, data?: EventsMap[E]) => {
+  protected emit = <E extends ConnectorEvents>(
+    event: E,
+    data?: EventsMap[E]
+  ) => {
     this.emitter.emit(event, data);
   };
 }
