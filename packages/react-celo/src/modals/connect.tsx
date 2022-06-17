@@ -178,6 +178,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   return (
     <ReactModal
       portalClassName={styles.portal}
+      htmlOpenClassName={'react-celo-modal-open-html'}
+      bodyOpenClassName={'react-celo-modal-open-body'}
       isOpen={!!connectionCallback}
       onRequestClose={close}
       className={styles.modal}
