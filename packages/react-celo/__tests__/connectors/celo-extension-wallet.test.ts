@@ -18,16 +18,20 @@ describe('CeloExtensionWalletConnector', () => {
     verbose: false,
   });
 
+  const provider = testingUtils.getProvider();
+
   beforeAll(() => {
     // Manually inject the mocked provider in the window as MetaMask does
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    global.window.ethereum = testingUtils.getProvider();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     (global.window.celo = {
-      ...testingUtils.getProvider(),
-      send: () => true,
+      ...provider,
+      send: (params, cb) =>
+        cb(null, {
+          jsonrpc: params.jsonrpc,
+          id: Number(params.id),
+          result: [ACCOUNT],
+        }),
       enable: () => Promise.resolve(undefined),
       publicConfigStore: {
         on: (e: string, cb: (args: { networkVersion: number }) => void) => {
@@ -35,18 +39,22 @@ describe('CeloExtensionWalletConnector', () => {
         },
       },
     }),
-      testingUtils.mockNotConnectedWallet();
+      testingUtils.mockConnectedWallet([ACCOUNT], {
+        chainId: Alfajores.chainId,
+      });
     testingUtils.mockAccounts([ACCOUNT]);
     testingUtils.mockRequestAccounts([ACCOUNT]);
-    testingUtils.lowLevel.mockRequest('wallet_switchEthereumChain', {});
   });
   let connector: CeloExtensionWalletConnector;
+  const onConnect = jest.fn();
+  const onDisconnect = jest.fn();
   beforeEach(() => {
     connector = new CeloExtensionWalletConnector(
       Alfajores,
       CeloContract.GoldToken
     );
-    jest.spyOn(connector, 'emit');
+    connector.on(ConnectorEvents.CONNECTED, onConnect);
+    connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
   });
 
   afterEach(() => {
@@ -54,10 +62,10 @@ describe('CeloExtensionWalletConnector', () => {
     testingUtils.clearAllMocks();
   });
   describe('initialise()', () => {
-    it.skip('emits CONNECTED with network, address, walletType', async () => {
+    it('emits CONNECTED with network, address, walletType', async () => {
       await connector.initialise();
       expect(connector.initialised).toBe(true);
-      expect(connector.emit).toBeCalledWith(ConnectorEvents.CONNECTED, {
+      expect(onConnect).toBeCalledWith({
         networkName: Alfajores.name,
         address: ACCOUNT,
         walletType: WalletTypes.CeloExtensionWallet,
@@ -68,7 +76,7 @@ describe('CeloExtensionWalletConnector', () => {
   describe('close()', () => {
     it('emits DISCONNECTED event', () => {
       connector.close();
-      expect(connector.emit).toHaveBeenCalledWith(ConnectorEvents.DISCONNECTED);
+      expect(onDisconnect).toHaveBeenCalled();
     });
   });
 });

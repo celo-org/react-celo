@@ -9,9 +9,12 @@ import {
 
 describe('LedgerConnector', () => {
   let connector: LedgerConnector;
+  const onDisconnect = jest.fn();
+  const onConnect = jest.fn();
   beforeEach(() => {
     connector = new LedgerConnector(Alfajores, 0, CeloContract.GoldToken);
-    jest.spyOn(connector, 'emit');
+    connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
+    connector.on(ConnectorEvents.CONNECTED, onConnect);
   });
 
   it('remembers info in localStorage', () => {
@@ -35,7 +38,7 @@ describe('LedgerConnector', () => {
       void connector.initialise();
     });
     it.skip('emits CONNECTED with index, network, walletType params', () => {
-      expect(connector.emit).toBeCalledWith(ConnectorEvents.CONNECTED, {
+      expect(onConnect).toBeCalledWith({
         networkName: Alfajores.name,
         walletType: WalletTypes.Ledger,
         index: 0,
@@ -59,7 +62,7 @@ describe('LedgerConnector', () => {
       );
     });
     it('emits DISCONNECTED event', () => {
-      expect(connector.emit).toBeCalledWith(ConnectorEvents.DISCONNECTED);
+      expect(onDisconnect).toBeCalled();
     });
   });
   describe('updateFeeCurrency', () => {

@@ -64,19 +64,20 @@ describe('WalletConnectConnector', () => {
   });
   describe('close()', () => {
     let connector: WalletConnectConnector;
+    const onDisconnected = jest.fn();
     beforeEach(() => {
       connector = new WalletConnectConnector(
         Alfajores,
         CeloContract.GoldToken,
         buildOptions(Alfajores)
       );
-      jest.spyOn(connector, 'emit');
+      connector.on(ConnectorEvents.DISCONNECTED, onDisconnected);
       jest.spyOn(connector.kit, 'getWallet').mockImplementation(() => wallet);
     });
 
     it('emits DISCONNECTED event', async () => {
       await connector.close();
-      expect(connector.emit).toBeCalledWith(ConnectorEvents.DISCONNECTED);
+      expect(onDisconnected).toBeCalled();
     });
   });
 });

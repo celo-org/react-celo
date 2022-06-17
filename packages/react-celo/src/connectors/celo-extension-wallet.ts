@@ -40,14 +40,12 @@ export default class CeloExtensionWalletConnector
 
   async initialise(): Promise<this> {
     const { default: Web3 } = await import('web3');
-
     const celo = window.celo;
     if (!celo) {
       throw new Error('Celo Extension Wallet not installed');
     }
     const web3 = new Web3(celo);
     await celo.enable();
-
     (
       web3.currentProvider as unknown as {
         publicConfigStore: {
@@ -62,7 +60,6 @@ export default class CeloExtensionWalletConnector
         this.onNetworkChangeCallback(networkVersion);
       }
     });
-
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     const [defaultAccount] = await this.kit.connection.web3.eth.getAccounts();
     this.kit.connection.defaultAccount = defaultAccount;
@@ -71,7 +68,11 @@ export default class CeloExtensionWalletConnector
     this.initialised = true;
 
     this.persist();
-
+    this.emit(ConnectorEvents.CONNECTED, {
+      walletType: WalletTypes.CeloExtensionWallet,
+      address: defaultAccount,
+      networkName: this.network.name,
+    });
     return this;
   }
 
