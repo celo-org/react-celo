@@ -260,7 +260,7 @@ export const PROVIDERS: {
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => Priorities.Popular,
-    supportedPlatforms: [Platform.Mobile, Platform.Web, Platform.Desktop],
+    supportedPlatforms: [Platform.Mobile, Platform.Web],
   },
 };
 
