@@ -1,5 +1,6 @@
 import { ConnectorEvents, ConnectorParams } from '../../src/connectors/common';
 import {
+  Alfajores,
   localStorageKeys,
   PROVIDERS,
   WalletIds,
@@ -13,7 +14,7 @@ import { ConnectorStub } from './connector-stub';
 describe('Persistor', () => {
   let connector: ConnectorStub;
   beforeEach(() => {
-    connector = new ConnectorStub();
+    connector = new ConnectorStub(Alfajores);
     persistor(connector);
   });
   describe(`when connector emits ${ConnectorEvents.ADDRESS_CHANGED}`, () => {

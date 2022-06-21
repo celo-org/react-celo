@@ -2,18 +2,8 @@ import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
 import EventEmitter from 'eventemitter3';
 
-// Uncomment with WCV2 support
-// import {
-//   WalletConnectWallet,
-//   WalletConnectWalletOptions,
-// } from '@celo/wallet-walletconnect';
-import { localStorageKeys, WalletTypes } from '../constants';
-import { Connector, Network } from '../types';
-import {
-  setLastUsedWalletArgs,
-  setTypedStorageKey,
-  WalletArgs,
-} from '../utils/local-storage';
+import { WalletTypes } from '../constants';
+import { Connector } from '../types';
 
 export type Web3Type = Parameters<typeof newKitFromWeb3>[0];
 
@@ -99,6 +89,10 @@ export class AbstractConnector {
   ) => {
     this.emitter.on(event, fn);
   };
+
+  supportsFeeCurrency() {
+    return false;
+  }
 
   protected emit = <E extends ConnectorEvents>(
     event: E,

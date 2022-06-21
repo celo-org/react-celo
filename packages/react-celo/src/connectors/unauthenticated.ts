@@ -3,7 +3,7 @@ import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
-import { clearPreviousConfig, forgetConnection } from '../utils/local-storage';
+import { clearPreviousConfig } from '../utils/local-storage';
 import { ConnectorEvents, EventsMap } from './common';
 
 /**

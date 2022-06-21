@@ -1,4 +1,4 @@
-import { WalletTypes } from '../../src';
+import { Alfajores, WalletTypes } from '../../src';
 import { ConnectorEvents } from '../../src/connectors/common';
 import { updater } from '../../src/utils/updater';
 import { ConnectorStub } from './connector-stub';
@@ -7,7 +7,7 @@ describe('Updater', () => {
   const dispatchStub = jest.fn();
   let connector: ConnectorStub;
   beforeEach(() => {
-    connector = new ConnectorStub();
+    connector = new ConnectorStub(Alfajores);
     updater(connector, dispatchStub);
   });
   afterEach(() => {
