@@ -11,7 +11,7 @@ import {
   NetworkNames,
   SupportedProviders,
 } from '../src/constants';
-import { CeloProviderProps } from '../src/react-celo-provider';
+import CeloProviderProps from '../src/react-celo-provider-props';
 import defaultTheme from '../src/theme/default';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';

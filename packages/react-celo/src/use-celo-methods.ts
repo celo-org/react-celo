@@ -9,29 +9,26 @@ import {
   ContractCacheBuilder,
   useContractsCache,
 } from './hooks/use-contracts-cache';
-import { Dispatcher } from './react-celo-provider';
+import { Dispatcher } from './react-celo-provider-state';
 import { Connector, Network, Theme } from './types';
 import { contrastCheck, fixTheme } from './utils/colors';
 import { getLastUsedWalletArgs } from './utils/local-storage';
 import { getApplicationLogger } from './utils/logger';
 
+interface CeloMethodsInput {
+  connector: Connector;
+  networks: Network[];
+  network: Network;
+}
+
 export function useCeloMethods(
-  {
-    connector,
-    networks,
-    network,
-  }: {
-    connector: Connector;
-    networks: Network[];
-    network: Network;
-  },
+  { connector, networks, network }: CeloMethodsInput,
   dispatch: Dispatcher,
   buildContractsCache?: ContractCacheBuilder
 ): CeloMethods {
   const destroy = useCallback(async () => {
     await connector.close();
-    dispatch('destroy');
-  }, [dispatch, connector]);
+  }, [connector]);
 
   const initConnector = useCallback(
     async (nextConnector: Connector) => {

@@ -1,11 +1,10 @@
-import { AbstractConnector, ConnectorEvents } from '../connectors/common';
+import { ConnectorEvents } from '../connectors/common';
+import { Dispatcher } from '../react-celo-provider-state';
+import { Connector } from '../types';
 
-type Updater = (
-  connector: AbstractConnector,
-  dispatch: (action: string, payload?: unknown) => void
-) => void;
+type Updater = (connector: Connector, dispatch: Dispatcher) => void;
 
-export const updater: Updater = (connector: AbstractConnector, dispatch) => {
+export const updater: Updater = (connector, dispatch) => {
   connector.on(ConnectorEvents.ADDRESS_CHANGED, (address) => {
     dispatch('setAddress', address);
   });
@@ -21,3 +20,5 @@ export const updater: Updater = (connector: AbstractConnector, dispatch) => {
     dispatch('destroy');
   });
 };
+
+export default updater;
