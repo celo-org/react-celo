@@ -3,7 +3,7 @@ import { CeloContract } from '@celo/contractkit';
 import { WalletConnectWallet } from '@celo/wallet-walletconnect-v1';
 import { generateTestingUtils } from 'eth-testing';
 
-import { Alfajores } from '../../src';
+import { Alfajores, WalletIds, WalletTypes } from '../../src';
 import { ConnectorEvents, WalletConnectConnector } from '../../src/connectors';
 import { buildOptions } from '../../src/connectors/wallet-connect';
 
@@ -26,6 +26,7 @@ jest.spyOn(wallet, 'getAccounts').mockImplementation(function getAccounts() {
 });
 
 describe('WalletConnectConnector', () => {
+  let connector: WalletConnectConnector;
   const testingUtils = generateTestingUtils({
     providerType: 'WalletConnect',
     verbose: false,
@@ -42,16 +43,22 @@ describe('WalletConnectConnector', () => {
     // Clear all mocks between tests
     testingUtils.clearAllMocks();
   });
-
-  it('initialises', async () => {
-    const connector = new WalletConnectConnector(
+  const onConnect = jest.fn();
+  beforeEach(() => {
+    connector = new WalletConnectConnector(
       Alfajores,
       CeloContract.GoldToken,
-      { connect: { chainId: Alfajores.chainId } }
+      buildOptions(Alfajores),
+      false,
+      (x) => x,
+      1,
+      WalletIds.Steakwallet
     );
-
     jest.spyOn(connector.kit, 'getWallet').mockImplementation(() => wallet);
+    connector.on(ConnectorEvents.CONNECTED, onConnect);
+  });
 
+  it('initialises', async () => {
     await connector.initialise();
     expect(connector.account).toEqual(ACCOUNT);
     expect(connector.initialised).toBe(true);
@@ -61,18 +68,31 @@ describe('WalletConnectConnector', () => {
     expect(wallet.getAccounts).toHaveBeenCalled();
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(connector.kit.getWallet).toHaveBeenCalled();
+
+    // TODO
+    // expect(onConnect).toBeCalledWith({
+    //   networkName: Alfajores.name,
+    //   address: ACCOUNT,
+    //   walletType: WalletTypes.WalletConnect,
+    //   walletId: WalletIds.Steakwallet,
+    // });
   });
+
+  describe('when a connected wallet changes accounts', () => {
+    const onAddressChange = jest.fn();
+    beforeEach(async () => {
+      await connector.initialise();
+      connector.on(ConnectorEvents.ADDRESS_CHANGED, onAddressChange);
+    });
+    it.skip('emits an ADDRESS_CHANGED event', () => {
+      expect(onAddressChange).toBeCalledWith('address');
+    });
+  });
+
   describe('close()', () => {
-    let connector: WalletConnectConnector;
     const onDisconnected = jest.fn();
     beforeEach(() => {
-      connector = new WalletConnectConnector(
-        Alfajores,
-        CeloContract.GoldToken,
-        buildOptions(Alfajores)
-      );
       connector.on(ConnectorEvents.DISCONNECTED, onDisconnected);
-      jest.spyOn(connector.kit, 'getWallet').mockImplementation(() => wallet);
     });
 
     it('emits DISCONNECTED event', async () => {
