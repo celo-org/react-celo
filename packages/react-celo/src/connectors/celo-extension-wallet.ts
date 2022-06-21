@@ -8,12 +8,7 @@ import {
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { clearPreviousConfig } from '../utils/local-storage';
-import {
-  AbstractConnector,
-  ConnectorEvents,
-  persist,
-  Web3Type,
-} from './common';
+import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
 export default class CeloExtensionWalletConnector
   extends AbstractConnector
@@ -28,14 +23,6 @@ export default class CeloExtensionWalletConnector
   constructor(private network: Network, public feeCurrency: CeloTokenContract) {
     super();
     this.kit = newKit(network.rpcUrl);
-  }
-
-  persist() {
-    persist({
-      walletType: WalletTypes.CeloExtensionWallet,
-      network: this.network,
-      options: [this.feeCurrency],
-    });
   }
 
   async initialise(): Promise<this> {
@@ -67,7 +54,6 @@ export default class CeloExtensionWalletConnector
 
     this.initialised = true;
 
-    this.persist();
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: WalletTypes.CeloExtensionWallet,
       address: defaultAccount,

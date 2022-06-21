@@ -11,7 +11,6 @@ import {
 import {
   AbstractConnector,
   ConnectorEvents,
-  persist,
   updateFeeCurrency,
 } from './common';
 
@@ -38,21 +37,11 @@ export default class PrivateKeyConnector
     this.account = this.kit.connection.defaultAccount ?? null;
   }
 
-  persist() {
-    setTypedStorageKey(localStorageKeys.lastUsedPrivateKey, this.privateKey);
-    persist({
-      walletType: WalletTypes.PrivateKey,
-      network: this.network,
-      options: [this.privateKey],
-    });
-  }
-
   async initialise(): Promise<this> {
     await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
 
-    this.persist();
-
+    setTypedStorageKey(localStorageKeys.lastUsedPrivateKey, this.privateKey);
     this.emit(ConnectorEvents.CONNECTED, {
       networkName: this.network.name,
       walletType: this.type,
