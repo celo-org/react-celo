@@ -1,11 +1,31 @@
+import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
+import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
+
 import {
   AbstractConnector,
   ConnectorEvents,
   EventsMap,
 } from '../../src/connectors/common';
+import { WalletTypes } from '../../src/constants';
+import { Connector, Maybe, Network } from '../../src/types';
 
-export class ConnectorStub extends AbstractConnector {
+export class ConnectorStub extends AbstractConnector implements Connector {
+  public initialised = true;
+  public type = WalletTypes.Unauthenticated;
+  public kit: MiniContractKit;
+  public account: Maybe<string> = null;
+  public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
+
+  constructor(n: Network) {
+    super();
+    this.kit = newKit(n.rpcUrl);
+  }
+
+  initialise = () => this;
+
   testEmit = <E extends ConnectorEvents>(event: E, args?: EventsMap[E]) => {
     this.emit(event, args);
   };
+
+  close = () => null;
 }
