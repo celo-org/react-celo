@@ -29,17 +29,37 @@ describe('MetaMaskConnector', () => {
     testingUtils.clearAllMocks();
   });
 
-  it('initialises', async () => {
-    const connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
-    connector.on(ConnectorEvents.CONNECTED, onConnect);
-    await connector.initialise();
-    expect(connector.account).toEqual(ACCOUNT);
-    expect(connector.initialised).toBe(true);
+  describe('initialise()', () => {
+    beforeEach(() => {
+      testingUtils.mockConnectedWallet([ACCOUNT]);
+    });
 
-    expect(onConnect).toBeCalledWith({
-      walletType: WalletTypes.MetaMask,
-      networkName: Alfajores.name,
-      address: ACCOUNT,
+    it('is idempotent', async () => {
+      const connector = new MetaMaskConnector(
+        Alfajores,
+        CeloContract.GoldToken
+      );
+      connector.on(ConnectorEvents.CONNECTED, onConnect);
+      await connector.initialise();
+      await connector.initialise();
+      expect(onConnect).toBeCalledTimes(1);
+    });
+
+    it('initialises', async () => {
+      const connector = new MetaMaskConnector(
+        Alfajores,
+        CeloContract.GoldToken
+      );
+      connector.on(ConnectorEvents.CONNECTED, onConnect);
+      await connector.initialise();
+
+      expect(connector.account).toEqual(ACCOUNT);
+      expect(connector.initialised).toBe(true);
+      expect(onConnect).toBeCalledWith({
+        walletType: WalletTypes.MetaMask,
+        networkName: Alfajores.name,
+        address: ACCOUNT,
+      });
     });
   });
   describe('when network change', () => {
@@ -69,6 +89,24 @@ describe('MetaMaskConnector', () => {
       expect(callback).toHaveBeenLastCalledWith(1);
     });
   });
+
+  describe('when wallet changes address', () => {
+    const onAddressChange = jest.fn();
+    let connector: MetaMaskConnector;
+    beforeEach(async () => {
+      testingUtils.mockConnectedWallet([ACCOUNT]);
+      connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
+      connector.on(ConnectorEvents.ADDRESS_CHANGED, onAddressChange);
+      // Seems to only work when  init is called after the callback is set
+      await connector.initialise();
+    });
+    it('emits ADDRESS_CHANGED', () => {
+      const newAddress = '0x11eed0F399d76Fe419FAf19a80ae7a52DE948D76';
+      testingUtils.mockAccountsChanged([newAddress]);
+      expect(onAddressChange).toBeCalledWith(newAddress);
+    });
+  });
+
   describe('close()', () => {
     let connector: MetaMaskConnector;
     const onDisconnect = jest.fn();

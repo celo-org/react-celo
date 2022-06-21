@@ -56,6 +56,8 @@ describe('PrivateKeyConnector', () => {
     });
   });
 
+  // it.skip('does not need to support ADDRESS CHANGE');
+
   describe('close()', () => {
     const onDisconnect = jest.fn();
     beforeEach(() => {

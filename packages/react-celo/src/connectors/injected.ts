@@ -29,7 +29,6 @@ export default class InjectedConnector
   public kit: MiniContractKit;
   public account: Maybe<string> = null;
   private onNetworkChangeCallback?: (chainId: number) => void;
-  private onAddressChangeCallback?: (address: Maybe<string>) => void;
   private network: Network;
 
   constructor(
@@ -55,6 +54,10 @@ export default class InjectedConnector
     if (!injected) {
       throw new Error('Ethereum wallet not installed');
     }
+    if (this.initialised) {
+      return this;
+    }
+
     const { web3, ethereum, isMetaMask } = injected;
 
     this.type = isMetaMask ? WalletTypes.MetaMask : WalletTypes.Injected;
@@ -94,10 +97,8 @@ export default class InjectedConnector
   };
 
   private onAccountsChanged = (accounts: string[]) => {
-    if (this.onAddressChangeCallback) {
-      this.kit.connection.defaultAccount = accounts[0];
-      this.onAddressChangeCallback(accounts[0] ?? null);
-    }
+    this.kit.connection.defaultAccount = accounts[0];
+    this.emit(ConnectorEvents.ADDRESS_CHANGED, accounts[0]);
   };
 
   supportsFeeCurrency() {
@@ -113,11 +114,6 @@ export default class InjectedConnector
   onNetworkChange(callback: (chainId: number) => void): void {
     this.onNetworkChangeCallback = callback;
   }
-
-  onAddressChange(callback: (address: Maybe<string>) => void): void {
-    this.onAddressChangeCallback = callback;
-  }
-
   close(): void {
     clearPreviousConfig();
     const ethereum = getEthereum();
@@ -126,7 +122,6 @@ export default class InjectedConnector
       ethereum.removeListener('accountsChanged', this.onAccountsChanged);
     }
     this.onNetworkChangeCallback = undefined;
-    this.onAddressChangeCallback = undefined;
     this.emit(ConnectorEvents.DISCONNECTED);
     return;
   }

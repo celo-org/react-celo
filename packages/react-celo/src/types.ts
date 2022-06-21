@@ -84,7 +84,6 @@ export interface Connector {
   getDeeplinkUrl?: (uri: string) => string | false;
   updateKitWithNetwork?: (network: Network) => Promise<void>;
   onNetworkChange?: (callback: (chainId: number) => void) => void;
-  onAddressChange?: (callback: (address: Maybe<string>) => void) => void;
   persist: () => void;
 }
 
