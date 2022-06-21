@@ -21,14 +21,10 @@ export default class UnauthenticatedConnector implements Connector {
   constructor(n: Network) {
     this.kit = newKit(n.rpcUrl);
   }
-
-  persist() {
-    forgetConnection();
-  }
+  // note handle the forgetConnection somewhere ?
 
   initialise(): this {
     this.initialised = true;
-    this.persist();
     return this;
   }
 

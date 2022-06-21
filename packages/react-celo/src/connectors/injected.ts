@@ -13,12 +13,7 @@ import {
   setTypedStorageKey,
 } from '../utils/local-storage';
 import { switchToCeloNetwork } from '../utils/metamask';
-import {
-  AbstractConnector,
-  ConnectorEvents,
-  persist,
-  Web3Type,
-} from './common';
+import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
 export default class InjectedConnector
   extends AbstractConnector
@@ -40,13 +35,6 @@ export default class InjectedConnector
     this.type = defaultType;
     this.kit = newKit(network.rpcUrl);
     this.network = network;
-  }
-
-  persist() {
-    persist({
-      walletType: this.type,
-      network: this.network,
-    });
   }
 
   async initialise(): Promise<this> {
@@ -77,8 +65,6 @@ export default class InjectedConnector
     this.kit.connection.defaultAccount = defaultAccount;
     this.account = defaultAccount ?? null;
     this.initialised = true;
-
-    this.persist();
 
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,

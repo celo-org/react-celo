@@ -11,7 +11,6 @@ import {
 import {
   AbstractConnector,
   ConnectorEvents,
-  persist,
   updateFeeCurrency,
 } from './common';
 
@@ -36,14 +35,6 @@ export default class LedgerConnector
     this.kit = newKit(network.rpcUrl);
   }
 
-  persist() {
-    persist({
-      walletType: WalletTypes.Ledger,
-      network: this.network,
-      options: [this.index],
-    });
-  }
-
   async initialise(): Promise<this> {
     const { default: TransportUSB } = await import(
       '@ledgerhq/hw-transport-webusb'
@@ -61,7 +52,6 @@ export default class LedgerConnector
       await this.updateFeeCurrency(this.feeCurrency);
     }
 
-    this.persist();
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
       address: this.account,

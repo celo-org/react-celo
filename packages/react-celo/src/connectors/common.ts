@@ -41,29 +41,6 @@ export async function updateFeeCurrency(
   this.kit.connection.defaultFeeCurrency = address;
 }
 
-export function persist({
-  walletType,
-  walletId,
-  options = [],
-  network,
-}: {
-  walletType?: WalletTypes;
-  walletId?: string;
-  options?: WalletArgs;
-  network?: Network;
-}): void {
-  if (walletType) {
-    setTypedStorageKey(localStorageKeys.lastUsedWalletType, walletType);
-  }
-  if (walletId) {
-    setTypedStorageKey(localStorageKeys.lastUsedWalletId, walletId);
-  }
-  if (network) {
-    setTypedStorageKey(localStorageKeys.lastUsedNetwork, network.name);
-  }
-  setLastUsedWalletArgs(options);
-}
-
 export enum ConnectorEvents {
   'CONNECTED' = 'CONNECTED',
   'DISCONNECTED' = 'DISCONNECTED',

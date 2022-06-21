@@ -12,7 +12,6 @@ import { clearPreviousConfig } from '../utils/local-storage';
 import {
   AbstractConnector,
   ConnectorEvents,
-  persist,
   updateFeeCurrency,
 } from './common';
 
@@ -55,15 +54,6 @@ export default class WalletConnectConnector
     //   : new WalletConnectWallet(options as WalletConnectWalletOptions);
     this.kit = newKit(network.rpcUrl, wallet);
     this.version = version;
-  }
-
-  persist() {
-    persist({
-      walletType: WalletTypes.WalletConnect,
-      walletId: this.walletId,
-      network: this.network,
-      options: [this.options],
-    });
   }
 
   onUri(callback: (uri: string) => void): void {
@@ -125,8 +115,6 @@ export default class WalletConnectConnector
 
     await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
-
-    this.persist();
 
     return this;
   }
