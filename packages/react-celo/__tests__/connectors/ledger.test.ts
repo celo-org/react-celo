@@ -33,6 +33,10 @@ describe('LedgerConnector', () => {
     expect(getLastUsedWalletArgs()).toEqual([0]);
   });
 
+  // it.skip(
+  //   'does not need to support ADDRESS CHANGE since the device cannot do this'
+  // );
+
   describe('initialise', () => {
     beforeEach(() => {
       void connector.initialise();

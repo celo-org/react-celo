@@ -48,6 +48,7 @@ describe('CeloExtensionWalletConnector', () => {
   let connector: CeloExtensionWalletConnector;
   const onConnect = jest.fn();
   const onDisconnect = jest.fn();
+  const onChangeAddress = jest.fn();
   beforeEach(() => {
     connector = new CeloExtensionWalletConnector(
       Alfajores,
@@ -55,6 +56,7 @@ describe('CeloExtensionWalletConnector', () => {
     );
     connector.on(ConnectorEvents.CONNECTED, onConnect);
     connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
+    connector.on(ConnectorEvents.ADDRESS_CHANGED, onChangeAddress);
   });
 
   afterEach(() => {

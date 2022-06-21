@@ -85,9 +85,6 @@ export function useCeloMethods(
                 });
           }
         });
-        initialisedConnector.onAddressChange?.((address) => {
-          dispatch('setAddress', address);
-        });
       } catch (e) {
         if (typeof e === 'symbol') {
           getApplicationLogger().debug(
