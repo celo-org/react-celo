@@ -86,11 +86,13 @@ export default class WalletConnectConnector
       // wallet.onPairingDeleted = () => this.onCloseCallback?.();
       wallet.onSessionDeleted = () => this.onCloseCallback?.();
       wallet.onWcSessionUpdate = (_error, session) => {
+        console.info('SESSION+WC+UPDATE', session);
         if (session.params[0].chainId == null) {
           this.onCloseCallback?.();
         }
       };
       wallet.onSessionUpdated = (_error, session) => {
+        console.info('SESSION+UPDATE', session);
         if (session.params[0].chainId == null) {
           this.onCloseCallback?.();
         }
