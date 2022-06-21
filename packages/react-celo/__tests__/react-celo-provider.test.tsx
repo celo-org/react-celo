@@ -5,7 +5,8 @@ import { act, fireEvent, render, renderHook } from '@testing-library/react';
 import React, { ReactElement } from 'react';
 
 import { Alfajores, Baklava, Mainnet, NetworkNames } from '../src/constants';
-import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
+import { CeloProvider } from '../src/react-celo-provider';
+import CeloProviderProps from '../src/react-celo-provider-props';
 import defaultTheme from '../src/theme/default';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
