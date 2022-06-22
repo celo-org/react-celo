@@ -12,7 +12,6 @@ export const updater: Updater = (connector, dispatch) => {
     dispatch('setNetworkByName', networkName);
   });
   connector.on(ConnectorEvents.CONNECTED, (params) => {
-    // TODO create a 'connected' action to dispatch
     dispatch('connect', params);
   });
 

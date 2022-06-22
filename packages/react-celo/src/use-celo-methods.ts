@@ -15,6 +15,8 @@ import { contrastCheck, fixTheme } from './utils/colors';
 import { getLastUsedWalletArgs } from './utils/local-storage';
 import { getApplicationLogger } from './utils/logger';
 
+import persistor from './utils/persistor';
+import updater from './utils/updater';
 interface CeloMethodsInput {
   connector: Connector;
   networks: Network[];
@@ -33,6 +35,9 @@ export function useCeloMethods(
   const initConnector = useCallback(
     async (nextConnector: Connector) => {
       try {
+        // need to set the event listeners here before initialise()
+        updater(nextConnector, dispatch);
+        persistor(nextConnector);
         const initialisedConnector = await nextConnector.initialise();
         dispatch('initialisedConnector', initialisedConnector);
 
