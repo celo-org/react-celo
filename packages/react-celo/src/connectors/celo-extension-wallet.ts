@@ -7,7 +7,6 @@ import {
 
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
-import { clearPreviousConfig } from '../utils/local-storage';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
 export default class CeloExtensionWalletConnector
@@ -71,7 +70,6 @@ export default class CeloExtensionWalletConnector
   }
 
   close(): void {
-    clearPreviousConfig();
     this.emit(ConnectorEvents.DISCONNECTED);
     return;
   }

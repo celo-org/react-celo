@@ -8,10 +8,7 @@ import {
 import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
-import {
-  clearPreviousConfig,
-  setTypedStorageKey,
-} from '../utils/local-storage';
+import { setTypedStorageKey } from '../utils/local-storage';
 import { switchToCeloNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
@@ -97,11 +94,12 @@ export default class InjectedConnector
     await this.initialise();
   }
 
+  setNetworkOnWallet(network: Network) {}
+
   onNetworkChange(callback: (chainId: number) => void): void {
     this.onNetworkChangeCallback = callback;
   }
   close(): void {
-    clearPreviousConfig();
     const ethereum = getEthereum();
     if (ethereum) {
       ethereum.removeListener('chainChanged', this.onChainChanged);

@@ -4,10 +4,7 @@ import { LocalWallet } from '@celo/wallet-local';
 
 import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
-import {
-  clearPreviousConfig,
-  setTypedStorageKey,
-} from '../utils/local-storage';
+import { setTypedStorageKey } from '../utils/local-storage';
 import {
   AbstractConnector,
   ConnectorEvents,
@@ -57,7 +54,6 @@ export default class PrivateKeyConnector
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
-    clearPreviousConfig();
     this.emit(ConnectorEvents.DISCONNECTED);
     return;
   }

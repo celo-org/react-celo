@@ -4,7 +4,6 @@ import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import {
-  clearPreviousConfig,
   setLastUsedWalletArgs,
   setTypedStorageKey,
 } from '../utils/local-storage';
@@ -68,7 +67,6 @@ export default class LedgerConnector
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
-    clearPreviousConfig();
     this.emit(ConnectorEvents.DISCONNECTED);
     return;
   }

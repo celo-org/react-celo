@@ -8,7 +8,6 @@ import { BigNumber } from 'bignumber.js';
 
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
-import { clearPreviousConfig } from '../utils/local-storage';
 import {
   AbstractConnector,
   ConnectorEvents,
@@ -145,7 +144,6 @@ export default class WalletConnectConnector
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   async close(message?: string): Promise<void> {
-    clearPreviousConfig();
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
     await wallet.close(message);
     this.emit(ConnectorEvents.DISCONNECTED);
