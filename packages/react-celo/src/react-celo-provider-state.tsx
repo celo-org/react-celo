@@ -99,7 +99,10 @@ export function useCeloState({
     address: stateFromLocalStorage.address,
     connector: connector || initialState.connector,
     network: initialNetwork,
-    feeCurrency: stateFromLocalStorage.feeCurrency || feeCurrency,
+    feeCurrency:
+      stateFromLocalStorage.feeCurrency ||
+      feeCurrency ||
+      CeloContract.GoldToken,
     networks,
     theme,
     dapp: {

@@ -248,6 +248,9 @@ describe('CeloProvider', () => {
       });
 
       describe('when feeCurrency WhitelistToken passed', () => {
+        beforeEach(() => {
+          clearPreviousConfig();
+        });
         it('sets that as the feeCurrency', () => {
           const { result } = renderUseCelo({
             feeCurrency: CeloContract.StableTokenBRL,

@@ -21,11 +21,11 @@ export class ConnectorStub extends AbstractConnector implements Connector {
     this.kit = newKit(n.rpcUrl);
   }
 
-  initialise = () => this;
+  initialise = () => Promise.resolve(this);
 
   testEmit = <E extends ConnectorEvents>(event: E, args?: EventsMap[E]) => {
     this.emit(event, args);
   };
 
-  close = () => null;
+  close: () => void = () => undefined;
 }

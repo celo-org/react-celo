@@ -22,7 +22,7 @@ describe('Updater', () => {
   describe(`when connector emits ${ConnectorEvents.NETWORK_CHANGED}`, () => {
     it('dispatches the new network to Reducer', () => {
       connector.testEmit(ConnectorEvents.NETWORK_CHANGED, 'Polygon');
-      expect(dispatchStub).toHaveBeenCalledWith('setNetwork', 'Polygon');
+      expect(dispatchStub).toHaveBeenCalledWith('setNetworkByName', 'Polygon');
     });
   });
   describe(`when connector emits ${ConnectorEvents.CONNECTED}`, () => {
