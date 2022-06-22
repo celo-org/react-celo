@@ -9,7 +9,7 @@ export const updater: Updater = (connector, dispatch) => {
     dispatch('setAddress', address);
   });
   connector.on(ConnectorEvents.NETWORK_CHANGED, (networkName) => {
-    dispatch('setNetwork', networkName);
+    dispatch('setNetworkByName', networkName);
   });
   connector.on(ConnectorEvents.CONNECTED, (params) => {
     // TODO create a 'connected' action to dispatch

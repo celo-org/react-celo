@@ -30,6 +30,13 @@ export function celoReactReducer(
         ...state,
         network: action.payload,
       };
+    case 'setNetworkByName': {
+      const network = state.networks.find((net) => net.name === action.payload);
+      if (network) {
+        return { ...state, network };
+      }
+      return state;
+    }
     case 'setFeeCurrency':
       if (action.payload === state.feeCurrency) {
         return state;
@@ -41,7 +48,12 @@ export function celoReactReducer(
         connector: action.payload,
       };
     }
-
+    case 'connect': {
+      const network = state.networks.find(
+        (net) => net.name === action.payload.networkName
+      );
+      return { ...state, address: action.payload.address, network: network! };
+    }
     case 'destroy':
       return {
         ...state,
@@ -99,6 +111,8 @@ export interface ActionsMap extends SetActions {
   decrementPendingActionCount: undefined;
   initialisedConnector: Connector;
   destroy: undefined;
+  connect: { address: string; networkName: string };
+  setNetworkByName: string;
 }
 
 // This converts the `ActionsMap` into a union of possible actions

@@ -1,11 +1,7 @@
 import { CeloContract } from '@celo/contractkit';
 
-import { Alfajores, localStorageKeys, WalletTypes } from '../../src';
+import { Alfajores, WalletTypes } from '../../src';
 import { ConnectorEvents, PrivateKeyConnector } from '../../src/connectors';
-import {
-  getLastUsedWalletArgs,
-  getTypedStorageKey,
-} from '../../src/utils/local-storage';
 
 const TEST_KEY =
   '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abbdef';
@@ -36,16 +32,6 @@ describe('PrivateKeyConnector', () => {
       expect(connector.feeCurrency).toEqual(CeloContract.StableTokenEUR);
     });
 
-    it('sets the private key in locale storage', () => {
-      expect(getLastUsedWalletArgs()).toEqual([TEST_KEY]);
-    });
-
-    it('sets the last network in local storage', () => {
-      expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
-        Alfajores.name
-      );
-    });
-
     it('emits CONNECTED event with needed params', async () => {
       await connector.initialise();
       expect(onConnect).toBeCalledWith({
@@ -67,23 +53,6 @@ describe('PrivateKeyConnector', () => {
         CeloContract.StableTokenEUR
       );
       connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
-    });
-    it('clears out localStorage', async () => {
-      await connector.initialise();
-
-      connector.close();
-
-      expect(getTypedStorageKey(localStorageKeys.lastUsedFeeCurrency)).toEqual(
-        null
-      );
-
-      expect(
-        getTypedStorageKey(localStorageKeys.lastUsedWalletArguments)
-      ).toEqual(null);
-
-      expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
-        null
-      );
     });
 
     it('emits DISCONNECTED event', () => {

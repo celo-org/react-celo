@@ -3,7 +3,7 @@ import { CeloContract } from '@celo/contractkit';
 import { WalletConnectWallet } from '@celo/wallet-walletconnect-v1';
 import { generateTestingUtils } from 'eth-testing';
 
-import { Alfajores, WalletIds, WalletTypes } from '../../src';
+import { Alfajores, WalletIds } from '../../src';
 import { ConnectorEvents, WalletConnectConnector } from '../../src/connectors';
 import { buildOptions } from '../../src/connectors/wallet-connect';
 

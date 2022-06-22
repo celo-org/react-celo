@@ -1,5 +1,6 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
+import { Network } from '@ethersproject/providers';
 import EventEmitter from 'eventemitter3';
 
 import { WalletTypes } from '../constants';
@@ -94,6 +95,8 @@ export class AbstractConnector {
     return false;
   }
 
+  setNetworkOnWallet(network: Network) {}
+
   protected emit = <E extends ConnectorEvents>(
     event: E,
     data?: EventsMap[E]
@@ -101,3 +104,30 @@ export class AbstractConnector {
     this.emitter.emit(event, data);
   };
 }
+
+/*
+  Next up
+
+  ✅ setup address changed emission
+
+  determin the connect, initialisedConnector, connected flow
+
+  make all connector.initialise calls idempotent
+
+  setup network changed emission (or is it just disconnect and reconnect?)
+
+  ✅ replace loadConfig with resurrector
+
+  ✅ setup updater and persistor
+
+  ✅ remove the direct usage of local storage
+
+  look for peculiarities
+
+  bring Connector and Abstract Connector together
+
+  wallet connect connector needs to be updated to have address change
+
+  wallet connect wallet get URI should not setup the event listeners.
+
+*/

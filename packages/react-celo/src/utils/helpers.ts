@@ -7,7 +7,7 @@ import { getTypedStorageKey } from './local-storage';
 export function loadPreviousState(): {
   address: string | null;
   networkName: string | null;
-  feeCurrency: CeloTokenContract;
+  feeCurrency: CeloTokenContract | null;
 } {
   const address = getTypedStorageKey(localStorageKeys.lastUsedAddress);
   const networkName = getTypedStorageKey(localStorageKeys.lastUsedNetwork);
@@ -18,7 +18,7 @@ export function loadPreviousState(): {
 
   const feeCurrency = isValidFeeCurrency(localLastUsedFeeCurrency)
     ? (localLastUsedFeeCurrency as CeloTokenContract)
-    : CeloContract.GoldToken;
+    : null;
 
   return {
     address,
