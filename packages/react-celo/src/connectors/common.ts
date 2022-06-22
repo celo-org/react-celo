@@ -95,8 +95,6 @@ export class AbstractConnector {
     return false;
   }
 
-  setNetworkOnWallet(network: Network) {}
-
   protected emit = <E extends ConnectorEvents>(
     event: E,
     data?: EventsMap[E]
@@ -113,6 +111,8 @@ export class AbstractConnector {
   determin the connect, initialisedConnector, connected flow
 
   make all connector.initialise calls idempotent
+
+  old Unauthenticated / forget connection bahvior
 
   setup network changed emission (or is it just disconnect and reconnect?)
 

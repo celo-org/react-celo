@@ -97,7 +97,6 @@ export interface ReducerState {
   address: Maybe<string>;
   feeCurrency: CeloTokenContract;
   theme: Maybe<Theme>;
-
   connectionCallback: Maybe<(connector: Connector | false) => void>;
 }
 
