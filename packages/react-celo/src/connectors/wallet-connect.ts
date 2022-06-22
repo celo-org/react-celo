@@ -115,7 +115,12 @@ export default class WalletConnectConnector
 
     await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
-
+    this.emit(ConnectorEvents.CONNECTED, {
+      walletType: this.type,
+      walletId: this.walletId as string,
+      networkName: this.network.name,
+      address: defaultAccount!,
+    });
     return this;
   }
 

@@ -71,12 +71,6 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
     // We only want this to run on mount so the deps array is empty.
     /* eslint-disable-next-line */
   }, []);
-
-  useEffect(() => {
-    updater(state.connector, dispatch);
-    persistor(state.connector);
-  }, [state.connector, dispatch]);
-
   return (
     <ContextProvider value={[state, dispatch, methods]}>
       <IOSViewportFix />
