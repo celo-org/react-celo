@@ -3,7 +3,7 @@ import { CeloContract } from '@celo/contractkit';
 import { WalletConnectWallet } from '@celo/wallet-walletconnect-v1';
 import { generateTestingUtils } from 'eth-testing';
 
-import { Alfajores, WalletIds } from '../../src';
+import { Alfajores, WalletIds, WalletTypes } from '../../src';
 import { ConnectorEvents, WalletConnectConnector } from '../../src/connectors';
 import { buildOptions } from '../../src/connectors/wallet-connect';
 
@@ -23,6 +23,12 @@ jest.spyOn(wallet, 'close').mockImplementation(async function close() {
 
 jest.spyOn(wallet, 'getAccounts').mockImplementation(function getAccounts() {
   return [ACCOUNT];
+});
+
+jest.spyOn(wallet, 'getUri').mockImplementation(function getUri() {
+  return Promise.resolve(
+    'wc:8a5e5bdc-a0e4-4702-ba63-8f1a5655744f@1?bridge=https%3A%2F%2Fbridge.walletconnect.org&key=41791102999c339c844880b23950704cc43aa840f3739e365323cda4dfa89e7a'
+  );
 });
 
 describe('WalletConnectConnector', () => {
@@ -68,14 +74,15 @@ describe('WalletConnectConnector', () => {
     expect(wallet.getAccounts).toHaveBeenCalled();
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(connector.kit.getWallet).toHaveBeenCalled();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(wallet.getUri).toHaveBeenCalled();
 
-    // TODO
-    // expect(onConnect).toBeCalledWith({
-    //   networkName: Alfajores.name,
-    //   address: ACCOUNT,
-    //   walletType: WalletTypes.WalletConnect,
-    //   walletId: WalletIds.Steakwallet,
-    // });
+    expect(onConnect).toBeCalledWith({
+      networkName: Alfajores.name,
+      address: ACCOUNT,
+      walletType: WalletTypes.WalletConnect,
+      walletId: WalletIds.Steakwallet,
+    });
   });
 
   describe('when a connected wallet changes accounts', () => {

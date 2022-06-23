@@ -108,11 +108,11 @@ export class AbstractConnector {
 
   ✅ setup address changed emission
 
-  determin the connect, initialisedConnector, connected flow
+  determine the connect, initialisedConnector, connected flow, including having all ways of starting a connector be done thru same code (ie ressurector and initial connection)
 
   make all connector.initialise calls idempotent
 
-  old Unauthenticated / forget connection bahvior
+  old Unauthenticated / forget connection behavior
 
   setup network changed emission (or is it just disconnect and reconnect?)
 
