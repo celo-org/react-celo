@@ -57,6 +57,11 @@ export const styles = cls({
     tw-overflow-hidden`,
 });
 
+type ReactModalProps = Omit<
+  ReactModal.Props,
+  'onRequestClose' | 'htmlOpenClassName' | 'bodyOpenClassName'
+>;
+
 export interface ConnectModalProps {
   screens?: {
     [x in SupportedProviders]?: FunctionComponent<{
@@ -69,7 +74,7 @@ export interface ConnectModalProps {
     onClick: () => void;
     selected: boolean;
   }>;
-  reactModalProps?: Partial<ReactModal.Props>;
+  reactModalProps?: Partial<ReactModalProps>;
   title?: string | React.ReactElement;
   providersOptions?: {
     hideFromDefaults?: true | SupportedProviders[];
@@ -194,10 +199,13 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
       className={styles.modal}
       overlayClassName={styles.overlay}
       style={{
+        ...reactModalProps?.style,
         content: {
+          ...reactModalProps?.style?.content,
           background: theme.background,
         },
         overlay: {
+          ...reactModalProps?.style?.overlay,
           background: hexToRGB(theme.background, 0.75),
         },
       }}
