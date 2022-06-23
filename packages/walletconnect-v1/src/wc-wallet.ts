@@ -79,10 +79,11 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return new WalletConnect(this.initOptions);
   }
 
-  /**
-   * Get the URI needed for out of band session establishment
-   */
-  public async getUri(): Promise<string | undefined> {
+  public async setupClient() {
+    if (this.client && this.client.connected) {
+      return;
+    }
+
     this.client = this.getWalletConnectClient();
 
     this.client.on(CLIENT_EVENTS.connect, this.onSessionCreated);
@@ -98,6 +99,13 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       // create new session
       await this.client.createSession(this.connectOptions);
     }
+  }
+
+  /**
+   * Get the URI needed for out of band session establishment
+   */
+  public async getUri() {
+    await this.setupClient();
 
     return this.client?.uri;
   }
