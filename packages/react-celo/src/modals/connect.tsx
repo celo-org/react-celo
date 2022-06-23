@@ -195,21 +195,19 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
       htmlOpenClassName={'react-celo-modal-open-html'}
       bodyOpenClassName={'react-celo-modal-open-body'}
       isOpen={!!connectionCallback}
-      onRequestClose={close}
       className={styles.modal}
       overlayClassName={styles.overlay}
+      {...reactModalProps}
+      onRequestClose={close}
       style={{
-        ...reactModalProps?.style,
         content: {
-          ...reactModalProps?.style?.content,
           background: theme.background,
         },
         overlay: {
-          ...reactModalProps?.style?.overlay,
           background: hexToRGB(theme.background, 0.75),
+          ...reactModalProps?.style?.overlay,
         },
       }}
-      {...reactModalProps}
       shouldCloseOnOverlayClick={!isMobile}
       ariaHideApp={false}
     >
