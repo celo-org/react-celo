@@ -3,7 +3,7 @@
 import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useCallback, useEffect, useState } from 'react';
 
-import { ConnectorEvents, WalletConnectConnector } from '../connectors';
+import { WalletConnectConnector } from '../connectors';
 import { buildOptions } from '../connectors/wallet-connect';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
