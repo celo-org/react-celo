@@ -3,7 +3,7 @@
 import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useCallback, useEffect, useState } from 'react';
 
-import { WalletConnectConnector } from '../connectors';
+import { ConnectorEvents, WalletConnectConnector } from '../connectors';
 import { buildOptions } from '../connectors/wallet-connect';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
@@ -81,6 +81,7 @@ export default function useWalletConnectConnector(
           '[useWalletConnectConnector]',
           'Lost connection to WC servers'
         );
+        // This calling destroy will led to a loop unless I am mistaken about what causes onClose to be called.
         void destroy().then(() => {
           setError('Connection with wallet was closed.');
           setUri(null);
