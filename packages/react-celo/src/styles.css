@@ -393,6 +393,14 @@ Spinner
   animation: react-celo-spinner-dash 1.5s ease-in-out infinite;
 }
 
+.react-celo .justify-center {
+  justify-content: center;
+}
+
+.react-celo .justify-between {
+  justify-content: space-between;
+}
+
 @keyframes react-celo-spinner-rotate {
   100% {
     transform: rotate(360deg);
