@@ -15,36 +15,48 @@ export default class PrivateKeyConnector
   extends AbstractConnector
   implements Connector
 {
-  public initialised = true;
+  public initialised = false;
   public type = WalletTypes.PrivateKey;
   public kit: MiniContractKit;
   public account: Maybe<string> = null;
-
+  private wallet: LocalWallet;
   constructor(
     private network: Network,
-    private privateKey: string,
+    privateKey: string,
     public feeCurrency: CeloTokenContract
   ) {
     super();
-    const wallet = new LocalWallet();
-    wallet.addAccount(privateKey);
-
-    this.kit = newKit(network.rpcUrl, wallet);
-    this.kit.connection.defaultAccount = wallet.getAccounts()[0];
-    this.account = this.kit.connection.defaultAccount ?? null;
+    this.wallet = new LocalWallet();
+    this.wallet.addAccount(privateKey);
+    this.kit = this.newKit(network);
+    setTypedStorageKey(localStorageKeys.lastUsedPrivateKey, privateKey);
   }
 
   async initialise(): Promise<this> {
+    if (this.initialised) return this;
+
     await this.updateFeeCurrency(this.feeCurrency);
     this.initialised = true;
 
-    setTypedStorageKey(localStorageKeys.lastUsedPrivateKey, this.privateKey);
     this.emit(ConnectorEvents.CONNECTED, {
       networkName: this.network.name,
       walletType: this.type,
-      address: this.account as string,
+      address: this.kit.connection.defaultAccount as string,
     });
     return this;
+  }
+
+  async startNetworkChangeFromApp(network: Network) {
+    this.kit = this.newKit(network);
+    await this.updateFeeCurrency(this.feeCurrency); // new kit so we must set the feeCurrency again
+    this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
+  }
+
+  private newKit(network: Network) {
+    const kit = newKit(network.rpcUrl, this.wallet);
+    kit.connection.defaultAccount = this.wallet.getAccounts()[0];
+    this.account = kit.connection.defaultAccount ?? null;
+    return kit;
   }
 
   supportsFeeCurrency() {
@@ -54,7 +66,8 @@ export default class PrivateKeyConnector
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
-    this.emit(ConnectorEvents.DISCONNECTED);
+    this.kit.connection.stop();
+    this.disconnect();
     return;
   }
 }

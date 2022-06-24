@@ -1,5 +1,6 @@
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
+import Web3 from 'web3';
 
 import { Alfajores } from '../../src';
 import {
@@ -171,7 +172,7 @@ describe('switchToCeloNetwork', () => {
       }
     });
 
-    await switchToCeloNetwork(kit, Alfajores, jestEthereum);
+    await switchToCeloNetwork(Alfajores, jestEthereum, new Web3(jestEthereum));
     expect(jestEthereumRequest.mock.calls[1]).toEqual([
       {
         method: 'wallet_switchEthereumChain',
@@ -196,7 +197,7 @@ describe('switchToCeloNetwork', () => {
     });
 
     await expect(
-      switchToCeloNetwork(kit, Alfajores, jestEthereum)
+      switchToCeloNetwork(Alfajores, jestEthereum, kit.connection.web3)
     ).resolves.toBe(undefined);
   });
   it('handles known errors in a specific way', async () => {
@@ -210,7 +211,7 @@ describe('switchToCeloNetwork', () => {
     });
 
     await expect(
-      switchToCeloNetwork(kit, Alfajores, jestEthereum)
+      switchToCeloNetwork(Alfajores, jestEthereum, kit.connection.web3)
     ).resolves.toBe(undefined);
   });
   it('doesnt yet handle unknown errors', async () => {
@@ -224,7 +225,7 @@ describe('switchToCeloNetwork', () => {
     });
 
     await expect(
-      switchToCeloNetwork(kit, Alfajores, jestEthereum)
+      switchToCeloNetwork(Alfajores, jestEthereum, kit.connection.web3)
     ).rejects.toThrow('test-error');
   });
 });

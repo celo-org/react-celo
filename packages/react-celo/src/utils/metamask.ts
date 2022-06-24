@@ -210,13 +210,11 @@ export async function addNetworksToMetamask(ethereum: Ethereum): Promise<void> {
 }
 
 export async function switchToCeloNetwork(
-  kit: MiniContractKit,
   network: Network,
-  ethereum: Ethereum
+  ethereum: Ethereum,
+  web3: MiniContractKit['connection']['web3'] | Web3
 ): Promise<void> {
-  const web3 = new Web3(ethereum);
   const chainId = await web3.eth.getChainId();
-
   if (network.chainId !== chainId) {
     try {
       await ethereum.request({
@@ -227,6 +225,7 @@ export async function switchToCeloNetwork(
           },
         ],
       });
+      await networkHasUpdated(web3.eth, network.chainId);
     } catch (err) {
       const { code } = err as MetamaskRPCError;
       if (
@@ -235,7 +234,7 @@ export async function switchToCeloNetwork(
       ) {
         // ChainId not yet added to metamask
         await addNetworkToMetamask(ethereum, network);
-        return switchToCeloNetwork(kit, network, ethereum);
+        return switchToCeloNetwork(network, ethereum, web3);
       } else if (code === MetamaskRPCErrorCode.AwaitingUserConfirmation) {
         // user has already been requested to switch the network
         return;
@@ -245,3 +244,31 @@ export async function switchToCeloNetwork(
     }
   }
 }
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const SLEEP = 500;
+const MAX_WAIT_MINUTES = 5;
+const MAX_RETRY = Math.round((MAX_WAIT_MINUTES * 1000) / SLEEP);
+
+// Hacky workaround to wait for the network to change.\
+
+export const networkHasUpdated = async (
+  eth: MiniContractKit['connection']['web3']['eth'] | Web3['eth'],
+  expectedChainId: number
+) => {
+  let attempts = 0;
+  let isNetworkUpdated = false;
+  while (!isNetworkUpdated) {
+    attempts++;
+    if (attempts >= MAX_RETRY) {
+      throw new Error('Network did not change');
+    }
+    const chainId = await eth.getChainId();
+    if (chainId === expectedChainId) {
+      isNetworkUpdated = true;
+      return true;
+    }
+    await sleep(SLEEP);
+  }
+};

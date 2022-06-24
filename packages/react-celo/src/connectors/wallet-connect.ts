@@ -123,6 +123,11 @@ export default class WalletConnectConnector
     return this;
   }
 
+  async startNetworkChangeFromApp() {
+    await this.initialise(); // change to specific method
+    this.emit(ConnectorEvents.NETWORK_CHANGED, '');
+  }
+
   supportsFeeCurrency() {
     // If on WC 1 it will not work due to fields being dropped
     if (!this.version || this.version === 1) {
@@ -146,6 +151,7 @@ export default class WalletConnectConnector
   async close(message?: string): Promise<void> {
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
     await wallet.close(message);
-    this.emit(ConnectorEvents.DISCONNECTED);
+    this.kit.connection.stop();
+    this.disconnect();
   }
 }

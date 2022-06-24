@@ -5,10 +5,9 @@ import {
   newKitFromWeb3,
 } from '@celo/contractkit/lib/mini-kit';
 
-import { localStorageKeys, WalletTypes } from '../constants';
+import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
-import { setTypedStorageKey } from '../utils/local-storage';
 import { switchToCeloNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
@@ -20,7 +19,6 @@ export default class InjectedConnector
   public type = WalletTypes.Injected;
   public kit: MiniContractKit;
   public account: Maybe<string> = null;
-  private onNetworkChangeCallback?: (chainId: number) => void;
   private network: Network;
 
   constructor(
@@ -35,14 +33,14 @@ export default class InjectedConnector
   }
 
   async initialise(): Promise<this> {
-    const injected = await getInjectedEthereum();
-    if (!injected) {
-      throw new Error('Ethereum wallet not installed');
-    }
     if (this.initialised) {
       return this;
     }
 
+    const injected = await getInjectedEthereum();
+    if (!injected) {
+      throw new Error('Ethereum wallet not installed');
+    }
     const { web3, ethereum, isMetaMask } = injected;
 
     this.type = isMetaMask ? WalletTypes.MetaMask : WalletTypes.Injected;
@@ -53,14 +51,12 @@ export default class InjectedConnector
 
     ethereum.removeListener('chainChanged', this.onChainChanged);
     ethereum.removeListener('accountsChanged', this.onAccountsChanged);
-    await switchToCeloNetwork(this.kit, this.network, ethereum);
+    await switchToCeloNetwork(this.network, ethereum, web3); // TODO better way of auto switching networks on startup
     ethereum.on('chainChanged', this.onChainChanged);
     ethereum.on('accountsChanged', this.onAccountsChanged);
 
-    this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
+    this.newKit(web3 as unknown as Web3Type, defaultAccount);
 
-    this.kit.connection.defaultAccount = defaultAccount;
-    this.account = defaultAccount ?? null;
     this.initialised = true;
 
     this.emit(ConnectorEvents.CONNECTED, {
@@ -72,10 +68,39 @@ export default class InjectedConnector
     return this;
   }
 
+  private newKit(web3: Web3Type, defaultAccount: string) {
+    this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
+    this.kit.connection.defaultAccount = defaultAccount;
+    this.account = defaultAccount ?? null;
+  }
+
+  async startNetworkChangeFromApp(network: Network) {
+    const ethereum = getEthereum();
+    const web3 = this.kit.connection.web3;
+    await switchToCeloNetwork(network, ethereum!, web3);
+    this.continueNetworkUpdateFromWallet(network);
+  }
+
+  //
+  continueNetworkUpdateFromWallet(network: Network): void {
+    this.network = network; // must set to prevent loop
+    const web3 = this.kit.connection.web3;
+    this.newKit(web3, this.account as string); // kit caches things so it need to be recreated
+    this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
+  }
+
+  // wallet changes net chain
+  // emits 'chainChanged'
+  // onChainChanged called and emits WALLET_CHAIN_CHANGED if chain ids dont match
+  // networkWatcher sees that and if a suitable network can be found calls continueNetworkUpdateFromWallet()
+  // else it dies.
   private onChainChanged = (chainIdHex: string) => {
     const chainId = parseInt(chainIdHex, 16);
-    if (this.onNetworkChangeCallback && this.network.chainId !== chainId) {
-      this.onNetworkChangeCallback(chainId);
+    // if this change was initiated by app the chainIds will already match and we can abort
+    console.log('chain changed');
+    if (this.network.chainId !== chainId) {
+      console.log('chain event emitting', chainId);
+      this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, chainId);
     }
   };
 
@@ -88,25 +113,18 @@ export default class InjectedConnector
     return false;
   }
 
-  async updateKitWithNetwork(network: Network): Promise<void> {
-    setTypedStorageKey(localStorageKeys.lastUsedNetwork, network.name);
-    this.network = network;
-    await this.initialise();
-  }
-
-  setNetworkOnWallet(network: Network) {}
-
-  onNetworkChange(callback: (chainId: number) => void): void {
-    this.onNetworkChangeCallback = callback;
-  }
-  close(): void {
+  private removeListenersFromEth() {
     const ethereum = getEthereum();
     if (ethereum) {
       ethereum.removeListener('chainChanged', this.onChainChanged);
       ethereum.removeListener('accountsChanged', this.onAccountsChanged);
     }
-    this.onNetworkChangeCallback = undefined;
-    this.emit(ConnectorEvents.DISCONNECTED);
+  }
+
+  close(): void {
+    this.removeListenersFromEth();
+    this.kit.connection.stop();
+    this.disconnect();
     return;
   }
 }

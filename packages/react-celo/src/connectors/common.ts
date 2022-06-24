@@ -1,6 +1,5 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
-import { Network } from '@ethersproject/providers';
 import EventEmitter from 'eventemitter3';
 
 import { WalletTypes } from '../constants';
@@ -37,6 +36,7 @@ export enum ConnectorEvents {
   'DISCONNECTED' = 'DISCONNECTED',
   'ADDRESS_CHANGED' = 'ADDRESS_CHANGED',
   'NETWORK_CHANGED' = 'NETWORK_CHANGED',
+  'WALLET_CHAIN_CHANGED' = 'WALLET_CHAIN_CHANGED',
 }
 
 interface ConnectorParamsCommon {
@@ -75,10 +75,11 @@ export type ConnectorParams =
   | WalletConnectParams;
 
 export type EventsMap = {
-  [ConnectorEvents.ADDRESS_CHANGED]: string;
-  [ConnectorEvents.NETWORK_CHANGED]: string;
-  [ConnectorEvents.CONNECTED]: ConnectorParams;
-  [ConnectorEvents.DISCONNECTED]: void;
+  [ConnectorEvents.ADDRESS_CHANGED]: string; // address/account changed
+  [ConnectorEvents.NETWORK_CHANGED]: string; // network has been changed, this is issued post it being reflected on kit and wallet
+  [ConnectorEvents.WALLET_CHAIN_CHANGED]: number; // wallet changed network, dapp and connector should respond
+  [ConnectorEvents.CONNECTED]: ConnectorParams; // wallet is now connected
+  [ConnectorEvents.DISCONNECTED]: void; // wallet is no longer connected
 };
 
 export class AbstractConnector {
@@ -101,6 +102,11 @@ export class AbstractConnector {
   ) => {
     this.emitter.emit(event, data);
   };
+
+  protected disconnect() {
+    this.emit(ConnectorEvents.DISCONNECTED);
+    this.emitter.removeAllListeners();
+  }
 }
 
 /*

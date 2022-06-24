@@ -83,8 +83,18 @@ export interface Connector {
   updateFeeCurrency?: (token: CeloTokenContract) => Promise<void>;
   supportsFeeCurrency: () => boolean;
   getDeeplinkUrl?: (uri: string) => string | false;
-  updateKitWithNetwork?: (network: Network) => Promise<void>;
-  onNetworkChange?: (callback: (chainId: number) => void) => void;
+  /**
+   * This isn't the method you want
+   * used when wallet changes chain. to change change chain from app use startNetworkChangeFromApp()
+   */
+  continueNetworkUpdateFromWallet?: (network: Network) => void;
+
+  /**
+   * when network is changed from dapp side
+   * connectors / wallets that dont support this should do X
+   * connectors that do support MUST emit a NETWORK_CHANGED event
+   */
+  startNetworkChangeFromApp: (network: Network) => Promise<void> | void;
 }
 
 /**

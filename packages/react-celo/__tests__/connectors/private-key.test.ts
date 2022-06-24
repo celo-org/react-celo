@@ -1,7 +1,8 @@
 import { CeloContract } from '@celo/contractkit';
 
 import { Alfajores, WalletTypes } from '../../src';
-import { ConnectorEvents, PrivateKeyConnector } from '../../src/connectors';
+import { ConnectorEvents } from '../../src/connectors/common';
+import PrivateKeyConnector from '../../src/connectors/private-key';
 
 const TEST_KEY =
   '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abbdef';

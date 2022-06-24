@@ -1,16 +1,20 @@
 import { CeloContract } from '@celo/contractkit';
 
-import { Alfajores, WalletTypes } from '../../src';
-import { ConnectorEvents, LedgerConnector } from '../../src/connectors';
+import { Alfajores, Baklava, WalletTypes } from '../../src';
+import { ConnectorEvents } from '../../src/connectors/common';
+import LedgerConnector from '../../src/connectors/ledger';
 
 describe('LedgerConnector', () => {
   let connector: LedgerConnector;
   const onDisconnect = jest.fn();
   const onConnect = jest.fn();
-  beforeEach(() => {
+  const onChangeNetwork = jest.fn();
+  beforeEach(async () => {
     connector = new LedgerConnector(Alfajores, 0, CeloContract.GoldToken);
     connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
     connector.on(ConnectorEvents.CONNECTED, onConnect);
+    connector.on(ConnectorEvents.NETWORK_CHANGED, onChangeNetwork);
+    await connector.initialise();
   });
 
   // it.skip(
@@ -18,15 +22,25 @@ describe('LedgerConnector', () => {
   // );
 
   describe('initialise', () => {
-    beforeEach(() => {
-      void connector.initialise();
-    });
-    it.skip('emits CONNECTED with index, network, walletType params', () => {
+    it('emits CONNECTED with index, network, walletType params', () => {
       expect(onConnect).toBeCalledWith({
         networkName: Alfajores.name,
         walletType: WalletTypes.Ledger,
         index: 0,
       });
+    });
+  });
+
+  describe('startNetworkChangeFromApp()', () => {
+    it('emits NETWORK_CHANGED EVENT', () => {
+      connector.startNetworkChangeFromApp(Baklava);
+      expect(onChangeNetwork).toBeCalledWith(Baklava.name);
+    });
+
+    it('creates a new kit', () => {
+      const originalKit = connector.kit;
+      connector.startNetworkChangeFromApp(Baklava);
+      expect(connector.kit).not.toBe(originalKit);
     });
   });
 

@@ -5,7 +5,7 @@ import {
   CeloExtensionWalletConnector,
   ConnectorEvents,
 } from '../../src/connectors';
-import { Alfajores, WalletTypes } from '../../src/constants';
+import { Alfajores, Baklava, WalletTypes } from '../../src/constants';
 
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
@@ -49,6 +49,7 @@ describe('CeloExtensionWalletConnector', () => {
   const onConnect = jest.fn();
   const onDisconnect = jest.fn();
   const onChangeAddress = jest.fn();
+  const onChangeNetwork = jest.fn();
   beforeEach(() => {
     connector = new CeloExtensionWalletConnector(
       Alfajores,
@@ -57,6 +58,7 @@ describe('CeloExtensionWalletConnector', () => {
     connector.on(ConnectorEvents.CONNECTED, onConnect);
     connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
     connector.on(ConnectorEvents.ADDRESS_CHANGED, onChangeAddress);
+    connector.on(ConnectorEvents.NETWORK_CHANGED, onChangeNetwork);
   });
 
   afterEach(() => {
@@ -72,6 +74,25 @@ describe('CeloExtensionWalletConnector', () => {
         address: ACCOUNT,
         walletType: WalletTypes.CeloExtensionWallet,
       });
+    });
+  });
+
+  describe('startNetworkChangeFromApp()', () => {
+    it('throws since CEW doesnt support that', () => {
+      expect(() => connector.startNetworkChangeFromApp()).toThrowError();
+    });
+  });
+
+  describe('continueNetworkUpdateFromWallet()', () => {
+    it('emits NETWORK_CHANGED EVENT', () => {
+      connector.continueNetworkUpdateFromWallet(Baklava);
+      expect(onChangeNetwork).toBeCalledWith(Baklava.name);
+    });
+
+    it('creates a new kit', () => {
+      const originalKit = connector.kit;
+      connector.continueNetworkUpdateFromWallet(Baklava);
+      expect(connector.kit).not.toBe(originalKit);
     });
   });
 

@@ -63,25 +63,25 @@ describe('MetaMaskConnector', () => {
   });
   describe('when network change', () => {
     let connector: MetaMaskConnector;
+    const onChangeNetwork = jest.fn();
+
     beforeEach(() => {
       testingUtils.mockConnectedWallet([ACCOUNT]);
       connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
-    });
-    it.skip('sets network', async () => {
-      await connector.updateKitWithNetwork(Baklava);
+      connector.on(ConnectorEvents.NETWORK_CHANGED, onConnect);
     });
 
-    const callback = jest.fn();
+    describe('continueNetworkUpdateFromWallet()', () => {
+      it('emits NETWORK_CHANGED EVENT', () => {
+        connector.continueNetworkUpdateFromWallet(Baklava);
+        expect(onChangeNetwork).toBeCalledWith(Baklava.name);
+      });
 
-    it('reacts to network being changed from metamask side', async () => {
-      connector.onNetworkChange(callback);
-
-      // Seems to only work when  init is called after the callback is set
-      await connector.initialise();
-
-      testingUtils.mockChainChanged('0x1');
-
-      expect(callback).toHaveBeenLastCalledWith(1);
+      it('creates a new kit', () => {
+        const originalKit = connector.kit;
+        connector.continueNetworkUpdateFromWallet(Baklava);
+        expect(connector.kit).not.toBe(originalKit);
+      });
     });
   });
 

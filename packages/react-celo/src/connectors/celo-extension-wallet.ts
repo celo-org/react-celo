@@ -17,7 +17,6 @@ export default class CeloExtensionWalletConnector
   public type = WalletTypes.CeloExtensionWallet;
   public kit: MiniContractKit;
   public account: Maybe<string> = null;
-  private onNetworkChangeCallback?: (chainId: number) => void;
 
   constructor(private network: Network, public feeCurrency: CeloTokenContract) {
     super();
@@ -42,10 +41,11 @@ export default class CeloExtensionWalletConnector
         };
       }
     ).publicConfigStore.on('update', ({ networkVersion }) => {
-      if (this.onNetworkChangeCallback) {
-        this.onNetworkChangeCallback(networkVersion);
+      if (networkVersion !== this.network.chainId) {
+        this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, networkVersion);
       }
     });
+
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     const [defaultAccount] = await this.kit.connection.web3.eth.getAccounts();
     this.kit.connection.defaultAccount = defaultAccount;
@@ -61,16 +61,31 @@ export default class CeloExtensionWalletConnector
     return this;
   }
 
+  continueNetworkUpdateFromWallet(network: Network): void {
+    this.network = network; // must set to prevent loop
+    const web3 = this.kit.connection.web3;
+    this.newKit(web3, this.account as string); // kit caches things so it need to be recreated
+    this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
+  }
+
+  startNetworkChangeFromApp() {
+    throw new Error(
+      'Celo Extension wallet does not support changing network from app'
+    );
+  }
+
   supportsFeeCurrency() {
     return false;
   }
 
-  onNetworkChange(callback: (chainId: number) => void): void {
-    this.onNetworkChangeCallback = callback;
+  private newKit(web3: Web3Type, defaultAccount: string) {
+    this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
+    this.kit.connection.defaultAccount = defaultAccount;
+    this.account = defaultAccount ?? null;
   }
 
   close(): void {
-    this.emit(ConnectorEvents.DISCONNECTED);
-    return;
+    this.kit.connection.stop();
+    this.disconnect();
   }
 }

@@ -4,7 +4,7 @@ import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
 import { clearPreviousConfig } from '../utils/local-storage';
-import { ConnectorEvents, EventsMap } from './common';
+import { AbstractConnector, ConnectorEvents, EventsMap } from './common';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
@@ -12,13 +12,17 @@ import { ConnectorEvents, EventsMap } from './common';
  * them and present a workable API.
  */
 
-export default class UnauthenticatedConnector implements Connector {
+export default class UnauthenticatedConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = true;
   public type = WalletTypes.Unauthenticated;
   public kit: MiniContractKit;
   public account: Maybe<string> = null;
   public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
   constructor(n: Network) {
+    super();
     this.kit = newKit(n.rpcUrl);
   }
   // note handle the forgetConnection somewhere ?
@@ -32,11 +36,13 @@ export default class UnauthenticatedConnector implements Connector {
     return false;
   }
 
-  close(): void {
-    clearPreviousConfig();
-    return;
+  startNetworkChangeFromApp(network: Network) {
+    this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
   }
-  on<E extends ConnectorEvents>(_e: E, _fn: (arg: EventsMap[E]) => void): void {
-    // no op
+
+  close(): void {
+    this.kit.connection.stop();
+    this.disconnect();
+    return;
   }
 }
