@@ -1,51 +1,17 @@
 import '@testing-library/jest-dom';
 
 import { CeloContract } from '@celo/contractkit';
-import { act, fireEvent, render, renderHook } from '@testing-library/react';
-import React, { ReactElement } from 'react';
+import { act, fireEvent } from '@testing-library/react';
+import React from 'react';
 
 import { Mainnet, SupportedProviders } from '../src/constants';
-import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
+import { CeloProviderProps } from '../src/react-celo-provider';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
-
-interface RenderArgs {
-  providerProps: Partial<CeloProviderProps>;
-}
-
-const defaultProps: CeloProviderProps = {
-  dapp: {
-    name: 'Testing Celo React',
-    description: 'Test it well',
-    url: 'https://celo.developers',
-    icon: '',
-  },
-  children: null,
-};
-
-function renderHookInCKProvider<R>(
-  hook: (i: unknown) => R,
-  { providerProps }: RenderArgs
-) {
-  return renderHook<R, unknown>(hook, {
-    wrapper: ({ children }) => {
-      const props = { ...defaultProps, ...providerProps };
-      return <CeloProvider {...props}>{children}</CeloProvider>;
-    },
-  });
-}
-
-function renderComponentInCKProvider(
-  ui: ReactElement<unknown, string>,
-  { providerProps }: RenderArgs
-) {
-  return render(ui, {
-    wrapper: ({ children }) => {
-      const props = { ...defaultProps, ...providerProps };
-      return <CeloProvider {...props}>{children}</CeloProvider>;
-    },
-  });
-}
+import {
+  renderComponentInCKProvider,
+  renderHookInCKProvider,
+} from './render-in-provider';
 
 describe('CeloProvider', () => {
   describe('user interface', () => {
