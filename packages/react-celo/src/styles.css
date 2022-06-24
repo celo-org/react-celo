@@ -1,21 +1,10 @@
 /*! tailwindcss v2.0.3 | MIT License | https://tailwindcss.com */
 
 /*! modern-normalize v1.0.0 | MIT License | https://github.com/sindresorhus/modern-normalize */
-
 /*
 Document
 ========
 */
-
-/**
-Use a better box model (opinionated).
-*/
-
-.react-celo *,
-.react-celo *::before,
-.react-celo *::after {
-  box-sizing: border-box;
-}
 
 /**
 Use a more readable tab size (opinionated).
@@ -80,15 +69,6 @@ Text-level semantics
 */
 
 /**
-Add the correct text decoration in Chrome, Edge, and Safari.
-*/
-
-.react-celo abbr[title] {
-  -webkit-text-decoration: underline dotted;
-  text-decoration: underline dotted;
-}
-
-/**
 Add the correct font weight in Edge and Safari.
 */
 
@@ -98,60 +78,11 @@ Add the correct font weight in Edge and Safari.
 }
 
 /**
-1. Improve consistency of default fonts in all browsers. (https://github.com/sindresorhus/modern-normalize/issues/3)
-2. Correct the odd 'em' font sizing in all browsers.
-*/
-
-.react-celo code,
-.react-celo kbd,
-.react-celo samp,
-.react-celo pre {
-  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo,
-    monospace; /* 1 */
-  font-size: 1em; /* 2 */
-}
-
-/**
 Add the correct font size in all browsers.
 */
 
 .react-celo small {
   font-size: 80%;
-}
-
-/**
-Prevent 'sub' and 'sup' elements from affecting the line height in all browsers.
-*/
-
-.react-celo sub,
-.react-celo sup {
-  font-size: 75%;
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-
-.react-celo sub {
-  bottom: -0.25em;
-}
-
-.react-celo sup {
-  top: -0.5em;
-}
-
-/*
-Tabular data
-============
-*/
-
-/**
-1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
-2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
-*/
-
-.react-celo table {
-  text-indent: 0; /* 1 */
-  border-color: inherit; /* 2 */
 }
 
 /*
@@ -224,14 +155,6 @@ See: https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d4
 }
 
 /**
-Remove the padding so developers are not caught out when they zero out 'fieldset' elements in all browsers.
-*/
-
-.react-celo legend {
-  padding: 0;
-}
-
-/**
 Add the correct vertical alignment in Chrome and Firefox.
 */
 
@@ -266,28 +189,10 @@ Remove the inner padding in Chrome and Safari on macOS.
   -webkit-appearance: none;
 }
 
-/**
-1. Correct the inability to style clickable types in iOS and Safari.
-2. Change font properties to 'inherit' in Safari.
-*/
-
-.react-celo ::-webkit-file-upload-button {
-  -webkit-appearance: button; /* 1 */
-  font: inherit; /* 2 */
-}
-
 /*
 Interactive
 ===========
 */
-
-/*
-Add the correct display in Chrome and Safari.
-*/
-
-.react-celo summary {
-  display: list-item;
-}
 
 /**
  * Manually forked from SUIT CSS Base: https://github.com/suitcss/base
@@ -299,9 +204,6 @@ Add the correct display in Chrome and Safari.
  * Removes the default spacing and border for appropriate elements.
  */
 
-.react-celo blockquote,
-.react-celo dl,
-.react-celo dd,
 .react-celo h1,
 .react-celo h2,
 .react-celo h3,
@@ -329,71 +231,6 @@ Add the correct display in Chrome and Safari.
   outline: 1px dotted;
   outline: 5px auto -webkit-focus-ring-color;
 }
-
-.react-celo fieldset {
-  margin: 0;
-  padding: 0;
-}
-
-.react-celo ol,
-.react-celo ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/**
- * Tailwind custom reset styles
- */
-
-/**
- * 1. Use the user's configured `sans` font-family (with Tailwind's default
- *    sans-serif font stack as a fallback) as a sane default.
- * 2. Use Tailwind's default "normal" line-height so the user isn't forced
- *    to override it to ensure consistency even when using the default theme.
- */
-
-.react-celo {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; /* 1 */
-  line-height: 1.5; /* 2 */
-}
-
-/**
- * Inherit font-family and line-height from `html` so users can set them as
- * a class directly on the `html` element.
- */
-/* .react-celo {
-  font-family: inherit;
-  line-height: inherit;
-} */
-
-/**
- * 1. Prevent padding and border from affecting element width.
- *
- *    We used to set this in the html element and inherit from
- *    the parent element for everything else. This caused issues
- *    in shadow-dom-enhanced elements like <details> where the content
- *    is wrapped by a div with box-sizing set to `content-box`.
- *
- *    https://github.com/mozdevs/cssremedy/issues/4
- *
- *
- * 2. Allow adding a border to an element by just adding a border-width.
- *
- *    By default, the way the browser specifies that an element should have no
- *    border is by setting it's border-style to `none` in the user-agent
- *    stylesheet.
- *
- *    In order to easily add borders to elements by just setting the `border-width`
- *    property, we change the default border-style for all elements to `solid`, and
- *    use border-width to hide them instead. This way our `border` utilities only
- *    need to set the `border-width` property instead of the entire `border`
- *    shorthand, making our border utilities much more straightforward to compose.
- *
- *    https://github.com/tailwindcss/tailwindcss/pull/116
- */
 
 .react-celo *,
 .react-celo ::before,
@@ -483,52 +320,13 @@ Add the correct display in Chrome and Safari.
   color: inherit;
 }
 
-/**
- * Use the configured 'mono' font family for elements that
- * are expected to be rendered with a monospace font, falling
- * back to the system monospace stack if there is no configured
- * 'mono' font family.
- */
-
-.react-celo pre,
-.react-celo code,
-.react-celo kbd,
-.react-celo samp {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
-}
-
-/**
- * Make replaced elements `display: block` by default as that's
- * the behavior you want almost all of the time. Inspired by
- * CSS Remedy, with `svg` added as well.
- *
- * https://github.com/mozdevs/cssremedy/issues/14
- */
-
-.react-celo img,
-.react-celo svg,
-.react-celo video,
-.react-celo canvas,
-.react-celo audio,
-.react-celo iframe,
-.react-celo embed,
-.react-celo object {
-  display: block;
-  vertical-align: middle;
-}
-
-/**
- * Constrain images and videos to the parent width and preserve
- * their instrinsic aspect ratio.
- *
- * https://github.com/mozdevs/cssremedy/issues/14
- */
-
 .react-celo img,
 .react-celo video {
+  display: block;
+
   max-width: 100%;
   height: auto;
+  vertical-align: middle;
 }
 
 /*
@@ -595,6 +393,14 @@ Spinner
   animation: react-celo-spinner-dash 1.5s ease-in-out infinite;
 }
 
+.react-celo .justify-center {
+  justify-content: center;
+}
+
+.react-celo .justify-between {
+  justify-content: space-between;
+}
+
 @keyframes react-celo-spinner-rotate {
   100% {
     transform: rotate(360deg);
@@ -623,7 +429,6 @@ Spinner
   }
 }
 
-@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -639,6 +444,13 @@ Spinner
     height: -webkit-fill-available;
   }
 }
+
+.tw-drop-shadow {
+  --tw-drop-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))
+    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
+  filter: var(--tw-drop-shadow);
+}
+/* These are use by spinner */
 
 * {
   --tw-translate-x: 0;
