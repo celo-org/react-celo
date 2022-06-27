@@ -76,7 +76,7 @@ export type ConnectorParams =
 
 export type EventsMap = {
   [ConnectorEvents.ADDRESS_CHANGED]: string; // address/account changed
-  [ConnectorEvents.NETWORK_CHANGED]: string; // network has been changed, this is issued post it being reflected on kit and wallet
+  [ConnectorEvents.NETWORK_CHANGED]: string; // network has been changed, when this is issued post it being reflected on kit and wallet
   [ConnectorEvents.WALLET_CHAIN_CHANGED]: number; // wallet changed network, dapp and connector should respond
   [ConnectorEvents.CONNECTED]: ConnectorParams; // wallet is now connected
   [ConnectorEvents.DISCONNECTED]: void; // wallet is no longer connected
@@ -114,19 +114,21 @@ export class AbstractConnector {
 
   ✅ setup address changed emission
 
-  determine the connect, initialisedConnector, connected flow, including having all ways of starting a connector be done thru same code (ie ressurector and initial connection)
+  ✅ determine the connect, initialisedConnector, connected flow, including having all ways of starting a connector be done thru same code (ie ressurector and initial connection)
 
-  make all connector.initialise calls idempotent
+  ✅ make all connector.initialise calls idempotent
 
-  old Unauthenticated / forget connection behavior
+  ✅ old Unauthenticated / forget connection behavior
 
-  setup network changed emission (or is it just disconnect and reconnect?)
+  ✅ setup network changed emission (or is it just disconnect and reconnect?)
 
   ✅ replace loadConfig with resurrector
 
   ✅ setup updater and persistor
 
   ✅ remove the direct usage of local storage
+
+  remote CONNECTOR_TYPES object
 
   look for peculiarities
 
@@ -135,5 +137,7 @@ export class AbstractConnector {
   wallet connect connector needs to be updated to have address change
 
   wallet connect wallet get URI should not setup the event listeners.
+
+  should network be set by chainID not name? might be better?
 
 */

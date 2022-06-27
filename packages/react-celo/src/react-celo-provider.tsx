@@ -1,22 +1,15 @@
 import { CeloContract } from '@celo/contractkit/lib/base';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import IOSViewportFix from './components/ios-viewport-fix';
-import {
-  AbstractConnector,
-  CONNECTOR_TYPES,
-  UnauthenticatedConnector,
-} from './connectors';
-import { DEFAULT_NETWORKS, Mainnet } from './constants';
+import { DEFAULT_NETWORKS, Mainnet, WalletTypes } from './constants';
 import { ActionModal, ConnectModal } from './modals';
 import { CeloProviderProps } from './react-celo-provider-props';
 import { Dispatcher, useCeloState } from './react-celo-provider-state';
 import { ReducerState } from './react-celo-reducer';
 import { Connector, Network } from './types';
 import { CeloMethods, useCeloMethods } from './use-celo-methods';
-import persistor from './utils/persistor';
 import { resurrector } from './utils/resurrector';
-import updater from './utils/updater';
 import { setApplicationLogger } from './utils/logger';
 
 type ReactCeloContextInterface = readonly [
@@ -74,7 +67,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   const methods = useCeloMethods(state, dispatch, buildContractsCache);
 
   useEffect(() => {
-    if (CONNECTOR_TYPES[state.connector.type] !== UnauthenticatedConnector) {
+    if (state.connector.type !== WalletTypes.Unauthenticated) {
       methods.initConnector(state.connector).catch(() => {
         // If the connector fails to initialise on mount then we reset.
         dispatch('destroy');

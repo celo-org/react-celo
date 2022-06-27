@@ -3,8 +3,8 @@ import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
-import { clearPreviousConfig } from '../utils/local-storage';
-import { AbstractConnector, ConnectorEvents, EventsMap } from './common';
+import { forgetConnection } from '../utils/local-storage';
+import { AbstractConnector, ConnectorEvents } from './common';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
@@ -25,10 +25,10 @@ export default class UnauthenticatedConnector
     super();
     this.kit = newKit(n.rpcUrl);
   }
-  // note handle the forgetConnection somewhere ?
 
   initialise(): this {
     this.initialised = true;
+    forgetConnection();
     return this;
   }
 

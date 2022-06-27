@@ -52,7 +52,6 @@ export default class WalletConnectConnector
     //   ? new WalletConnectWalletV1(options as WalletConnectWalletOptionsV1)
     //   : new WalletConnectWallet(options as WalletConnectWalletOptions);
     this.kit = newKit(network.rpcUrl, wallet);
-    this.version = version;
   }
 
   onUri(callback: (uri: string) => void): void {
