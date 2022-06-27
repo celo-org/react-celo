@@ -3,6 +3,7 @@ import { CeloContract } from '@celo/contractkit';
 
 import {
   CeloExtensionWalletConnector,
+  CoinbaseWalletConnector,
   InjectedConnector,
   LedgerConnector,
   MetaMaskConnector,
@@ -40,7 +41,6 @@ export const resurrector: Resurrector = function (networks: Network[]) {
         return new MetaMaskConnector(network, CeloContract.GoldToken);
       case WalletTypes.Injected:
         return new InjectedConnector(network, CeloContract.GoldToken);
-
       case WalletTypes.PrivateKey: {
         const privateKey = getTypedStorageKey(
           localStorageKeys.lastUsedPrivateKey
@@ -62,6 +62,8 @@ export const resurrector: Resurrector = function (networks: Network[]) {
           buildOptions(network)
         );
       }
+      case WalletTypes.CoinbaseWallet:
+        return new CoinbaseWalletConnector(network, CeloContract.GoldToken);
       case WalletTypes.Unauthenticated:
         return null;
     }

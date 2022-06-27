@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import { CONNECTOR_TYPES } from '../../src/connectors';
 import {
   Baklava,
@@ -16,6 +18,15 @@ const PRIVATE_TEST_KEY =
   '04f9d516be49bb44346ca040bdd2736d486bca868693c74d51d274ad92f61976';
 
 describe('resurrector', () => {
+  beforeAll(() => {
+    // @ts-expect-error global override
+    global.crypto = crypto;
+    Object.defineProperty(global.self, 'crypto', {
+      value: {
+        getRandomValues: (arr: number[]) => crypto.randomBytes(arr.length),
+      },
+    });
+  });
   afterEach(() => {
     clearPreviousConfig();
   });

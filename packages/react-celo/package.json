@@ -29,6 +29,7 @@
     "@celo/wallet-local": "^2.0.0",
     "@celo/wallet-remote": "^2.0.0",
     "@celo/wallet-walletconnect-v1": "4.0.0-dev",
+    "@coinbase/wallet-sdk": "^3.2.0",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "eventemitter3": "^4.0.7",

@@ -1,6 +1,7 @@
 import { SupportedProviders } from '../constants';
 import { Connector, WalletConnectProvider } from '../types';
 import { CeloExtensionWallet } from './cew';
+import { CoinbaseWallet } from './coinbase';
 import { Ledger } from './ledger';
 import { MetaMaskOrInjectedWallet } from './metamask';
 import { PrivateKey } from './private-key';
@@ -18,6 +19,7 @@ export const defaultScreens = {
   [SupportedProviders.Steakwallet]: WalletConnect,
   [SupportedProviders.Injected]: MetaMaskOrInjectedWallet,
   [SupportedProviders.PrivateKey]: PrivateKey,
+  [SupportedProviders.CoinbaseWallet]: CoinbaseWallet,
 };
 
 export type ConnectorProps = {

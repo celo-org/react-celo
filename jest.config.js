@@ -13,4 +13,8 @@ module.exports = {
   coveragePathIgnorePatterns: ['__tests__', 'lib'],
   coverageReporters: [Boolean(process.env.CI) ? 'clover' : 'html'],
   verbose: Boolean(process.env.CI),
+  moduleNameMapper: {
+    '^preact$': require.resolve('preact'),
+    '^preact/hooks$': require.resolve('preact/hooks'),
+  },
 };
