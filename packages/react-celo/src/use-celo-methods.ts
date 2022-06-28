@@ -282,6 +282,7 @@ export interface CeloMethods {
    * Note: _not compatible with all wallets_
    */
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
+
   contractsCache?: unknown;
   /**
    * `updateTheme` programmaticaly updates the theme used in the

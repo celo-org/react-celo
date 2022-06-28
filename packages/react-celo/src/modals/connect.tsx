@@ -24,7 +24,6 @@ import {
 } from '../types';
 import { useCeloInternal } from '../use-celo';
 import { hexToRGB } from '../utils/colors';
-import { useFixedBody } from '../utils/helpers';
 import { defaultProviderSort, SortingPredicate } from '../utils/sort';
 import cls from '../utils/tailwind';
 
@@ -58,6 +57,11 @@ export const styles = cls({
     tw-overflow-hidden`,
 });
 
+type ReactModalProps = Omit<
+  ReactModal.Props,
+  'onRequestClose' | 'htmlOpenClassName' | 'bodyOpenClassName'
+>;
+
 export interface ConnectModalProps {
   screens?: {
     [x in SupportedProviders]?: FunctionComponent<{
@@ -70,7 +74,7 @@ export interface ConnectModalProps {
     onClick: () => void;
     selected: boolean;
   }>;
-  reactModalProps?: Partial<ReactModal.Props>;
+  reactModalProps?: Partial<ReactModalProps>;
   title?: string | React.ReactElement;
   providersOptions?: {
     hideFromDefaults?: true | SupportedProviders[];
@@ -133,8 +137,9 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     searchable = true,
   } = providersOptions;
 
-  const { wallets, allScreens } = useMemo(() => {
-    let _screens: Record<string, React.FC<ConnectorProps>>;
+  const { wallets, allScreens, includedDefaultProviders } = useMemo(() => {
+    let _screens: Partial<Record<SupportedProviders, React.FC<ConnectorProps>>>;
+
     const _wallets = additionalWCWallets || [];
 
     if (hideFromDefaults) {
@@ -156,15 +161,24 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     }
 
     return {
+      includedDefaultProviders: Object.keys(_screens) as SupportedProviders[],
       wallets: _wallets,
-      allScreens: _wallets.reduce((acc, wallet) => {
-        acc[wallet.id] = walletToScreen(wallet);
-        return acc;
-      }, _screens),
+      allScreens: _wallets.reduce(
+        (acc: Record<string, React.FC<ConnectorProps>>, wallet) => {
+          acc[wallet.id] = walletToScreen(wallet);
+          return acc;
+        },
+        _screens
+      ),
     };
   }, [screens, hideFromDefaults, additionalWCWallets]);
 
-  const providers = useProviders(wallets, sort, search);
+  const providers = useProviders(
+    wallets,
+    includedDefaultProviders,
+    sort,
+    search
+  );
 
   const ProviderElement = adding && allScreens?.[adding];
   const content = ProviderElement ? (
@@ -176,24 +190,25 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     <Placeholder />
   );
 
-  useFixedBody(!!connectionCallback);
-
   return (
     <ReactModal
       portalClassName={styles.portal}
+      htmlOpenClassName={'react-celo-modal-open-html'}
+      bodyOpenClassName={'react-celo-modal-open-body'}
       isOpen={!!connectionCallback}
-      onRequestClose={close}
       className={styles.modal}
       overlayClassName={styles.overlay}
+      {...reactModalProps}
+      onRequestClose={close}
       style={{
         content: {
           background: theme.background,
         },
         overlay: {
           background: hexToRGB(theme.background, 0.75),
+          ...reactModalProps?.style?.overlay,
         },
       }}
-      {...reactModalProps}
       shouldCloseOnOverlayClick={!isMobile}
       ariaHideApp={false}
     >

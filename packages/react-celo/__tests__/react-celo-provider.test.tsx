@@ -1,52 +1,24 @@
 import '@testing-library/jest-dom';
 
 import { CeloContract } from '@celo/contractkit';
-import { act, fireEvent, render, renderHook } from '@testing-library/react';
-import React, { ReactElement } from 'react';
+import { act, fireEvent } from '@testing-library/react';
+import React from 'react';
 
-import { Alfajores, Baklava, Mainnet, NetworkNames } from '../src/constants';
-import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
+import {
+  Alfajores,
+  Baklava,
+  Mainnet,
+  NetworkNames,
+  SupportedProviders,
+} from '../src/constants';
+import { CeloProviderProps } from '../src/react-celo-provider';
 import defaultTheme from '../src/theme/default';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
-
-interface RenderArgs {
-  providerProps: Partial<CeloProviderProps>;
-}
-
-const defaultProps: CeloProviderProps = {
-  dapp: {
-    name: 'Testing Celo React',
-    description: 'Test it well',
-    url: 'https://celo.developers',
-    icon: '',
-  },
-  children: null,
-};
-
-function renderHookInCKProvider<R>(
-  hook: (i: unknown) => R,
-  { providerProps }: RenderArgs
-) {
-  return renderHook<R, unknown>(hook, {
-    wrapper: ({ children }) => {
-      const props = { ...defaultProps, ...providerProps };
-      return <CeloProvider {...props}>{children}</CeloProvider>;
-    },
-  });
-}
-
-function renderComponentInCKProvider(
-  ui: ReactElement<unknown, string>,
-  { providerProps }: RenderArgs
-) {
-  return render(ui, {
-    wrapper: ({ children }) => {
-      const props = { ...defaultProps, ...providerProps };
-      return <CeloProvider {...props}>{children}</CeloProvider>;
-    },
-  });
-}
+import {
+  renderComponentInCKProvider,
+  renderHookInCKProvider,
+} from './render-in-provider';
 
 describe('CeloProvider', () => {
   describe('user interface', () => {
@@ -55,9 +27,9 @@ describe('CeloProvider', () => {
       return <button onClick={connect}>Connect</button>;
     };
 
-    async function stepsToOpenModal() {
+    async function stepsToOpenModal(props: Partial<CeloProviderProps> = {}) {
       const dom = renderComponentInCKProvider(<ConnectButton />, {
-        providerProps: {},
+        providerProps: props,
       });
 
       const button = await dom.findByText('Connect');
@@ -75,6 +47,62 @@ describe('CeloProvider', () => {
         const modal = await dom.findByText('Connect a wallet');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         expect(modal).toBeVisible();
+      });
+      it('shows default wallets', async () => {
+        const dom = await stepsToOpenModal();
+
+        Object.keys(SupportedProviders).map(async (key) => {
+          const walletName = { ...SupportedProviders }[
+            key
+          ] as SupportedProviders;
+
+          if (walletName === SupportedProviders.Injected) {
+            return;
+          }
+
+          const walletEntry = await dom.findByText(walletName);
+
+          expect(walletEntry).toBeVisible();
+        });
+      });
+    });
+
+    describe('when hideFromModal option is given array', () => {
+      it('does not show those wallets in the UI', async () => {
+        const dom = await stepsToOpenModal({
+          connectModal: {
+            providersOptions: {
+              hideFromDefaults: [
+                SupportedProviders.CeloDance,
+                SupportedProviders.Ledger,
+              ],
+            },
+          },
+        });
+        const valora = dom.queryByText('Valora');
+        const ledger = dom.queryByText(SupportedProviders.Ledger);
+        expect(valora).toBeVisible();
+
+        expect(ledger).toBe(null);
+      });
+    });
+    describe('when hideFromModal option is given true', () => {
+      it('does not show any wallets in the UI', async () => {
+        const dom = await stepsToOpenModal({
+          connectModal: {
+            providersOptions: {
+              hideFromDefaults: true,
+            },
+          },
+        });
+        const valora = dom.queryByText('Valora');
+        const ledger = dom.queryByText(SupportedProviders.Ledger);
+        const none = dom.queryByText('No matches');
+        expect(valora).toBe(null);
+
+        expect(ledger).toBe(null);
+
+        expect(none).toBeVisible();
       });
     });
   });

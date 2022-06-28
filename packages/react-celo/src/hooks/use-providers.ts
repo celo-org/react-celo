@@ -5,6 +5,7 @@ import {
   localStorageKeys,
   Priorities,
   PROVIDERS,
+  SupportedProviders,
   WalletTypes,
 } from '../constants';
 import { Maybe, Provider, WalletConnectProvider, WalletEntry } from '../types';
@@ -44,18 +45,23 @@ export function getRecent(): Maybe<Provider> {
 
 export default function useProviders(
   wallets: WalletEntry[] = [],
+  includedDefaultProviders: SupportedProviders[],
   sort = defaultProviderSort,
   search?: string
 ) {
   const record: Record<string, Provider> = useMemo(
     () => ({
-      ...PROVIDERS,
+      ...includedDefaultProviders.reduce((all, current) => {
+        all[current] = PROVIDERS[current];
+        return all;
+      }, {} as Record<SupportedProviders, Provider>),
+
       ...wallets.reduce((acc, wallet) => {
         acc[wallet.id] = walletToProvider(wallet);
         return acc;
       }, {} as Record<string, Provider>),
     }),
-    [wallets]
+    [wallets, includedDefaultProviders]
   );
 
   const providers = useMemo<[providerKey: string, provider: Provider][]>(() => {
