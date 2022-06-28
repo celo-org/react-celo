@@ -20,7 +20,6 @@ import {
   renderHookInCKProvider,
 } from './render-in-provider';
 
-
 describe('CeloProvider', () => {
   describe('user interface', () => {
     const ConnectButton = () => {
@@ -31,6 +30,7 @@ describe('CeloProvider', () => {
     async function stepsToOpenModal(props: Partial<CeloProviderProps> = {}) {
       const dom = renderComponentInCKProvider(<ConnectButton />, {
         providerProps: props,
+      });
 
       const button = await dom.findByText('Connect');
       act(() => {
@@ -104,7 +104,6 @@ describe('CeloProvider', () => {
 
         expect(none).toBeVisible();
       });
-
     });
   });
 

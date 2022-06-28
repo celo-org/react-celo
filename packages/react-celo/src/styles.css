@@ -89,7 +89,6 @@ Add the correct font size in all browsers.
   font-size: 80%;
 }
 
-
 /*
 Forms
 =====
@@ -195,12 +194,10 @@ Remove the inner padding in Chrome and Safari on macOS.
   -webkit-appearance: none;
 }
 
-
 /*
 Interactive
 ===========
 */
-
 
 /**
  * Manually forked from SUIT CSS Base: https://github.com/suitcss/base
@@ -211,7 +208,6 @@ Interactive
 /**
  * Removes the default spacing and border for appropriate elements.
  */
-
 
 .react-celo h1,
 .react-celo h2,
@@ -240,7 +236,6 @@ Interactive
   outline: 1px dotted;
   outline: 5px auto -webkit-focus-ring-color;
 }
-
 
 .react-celo *,
 .react-celo ::before,
@@ -339,7 +334,7 @@ Interactive
   vertical-align: middle;
 }
 
-
+/*
 Scrollbar overrides
 ===================
 */
@@ -411,7 +406,6 @@ Spinner
   justify-content: space-between;
 }
 
-
 @keyframes react-celo-spinner-rotate {
   100% {
     transform: rotate(360deg);
@@ -462,7 +456,6 @@ Spinner
   filter: var(--tw-drop-shadow);
 }
 /* These are use by spinner */
-
 
 * {
   --tw-translate-x: 0;

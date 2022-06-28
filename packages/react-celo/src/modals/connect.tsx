@@ -180,7 +180,6 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     search
   );
 
-
   const ProviderElement = adding && allScreens?.[adding];
   const content = ProviderElement ? (
     <ProviderElement
@@ -190,8 +189,6 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   ) : (
     <Placeholder />
   );
-  
- 
 
   return (
     <ReactModal
