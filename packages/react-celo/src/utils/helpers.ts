@@ -1,4 +1,5 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
+import { useEffect } from 'react';
 
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from '../connectors';
 import { localStorageKeys, WalletTypes } from '../constants';
@@ -91,4 +92,19 @@ export function isValidFeeCurrency(currency: Maybe<string>): boolean {
     default:
       return false;
   }
+}
+
+export function useFixedBody(isOpen: boolean) {
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      const originalPadding = document.body.style.paddingRight;
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = '15px';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPadding;
+      };
+    }
+  }, [isOpen]);
 }

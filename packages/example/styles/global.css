@@ -27,6 +27,7 @@
   width: 42px;
   height: 24px;
 }
+
 /* Hide default HTML checkbox */
 .switch input {
   opacity: 0;
@@ -106,7 +107,7 @@ input:checked + .slider:before {
   color: white;
 }
 
-.error {
+.failed {
   background: #f94144;
   color: white;
 }

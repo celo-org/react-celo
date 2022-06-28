@@ -5,6 +5,7 @@ import {
   CeloDance,
   CeloTerminal,
   ChromeExtensionStore,
+  CoinbaseWallet,
   Ethereum,
   Ledger,
   MetaMask,
@@ -27,6 +28,10 @@ export enum localStorageKeys {
   lastUsedNetwork = 'react-celo/last-used-network',
   lastUsedWalletType = 'react-celo/last-used-wallet',
   lastUsedWalletId = 'react-celo/last-used-wallet-id',
+
+  lastUsedIndex = 'react-celo/last-used-index',
+  lastUsedPrivateKey = 'react-celo/last-used-private-key',
+
   lastUsedWalletArguments = 'react-celo/last-used-wallet-arguments',
   lastUsedFeeCurrency = 'react-celo/last-used-fee-currency',
 }
@@ -43,6 +48,7 @@ export enum SupportedProviders {
   Valora = 'Valora',
   WalletConnect = 'WalletConnect',
   Steakwallet = 'Steakwallet',
+  CoinbaseWallet = 'Coinbase Wallet',
 }
 export enum WalletTypes {
   Valora = 'Valora',
@@ -56,6 +62,7 @@ export enum WalletTypes {
   Injected = 'Injected',
   PrivateKey = 'PrivateKey',
   Unauthenticated = 'Unauthenticated',
+  CoinbaseWallet = 'CoinbaseWallet',
 }
 
 export enum Priorities {
@@ -244,6 +251,16 @@ export const PROVIDERS: {
           return false;
       }
     },
+  },
+  [SupportedProviders.CoinbaseWallet]: {
+    name: SupportedProviders.CoinbaseWallet,
+    type: WalletTypes.CoinbaseWallet,
+    description: 'Scan a QR code to connect your wallet',
+    icon: CoinbaseWallet,
+    canConnect: () => true,
+    showInList: () => true,
+    listPriority: () => Priorities.Popular,
+    supportedPlatforms: [Platform.Mobile, Platform.Web],
   },
 };
 

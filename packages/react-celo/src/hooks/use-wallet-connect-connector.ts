@@ -4,6 +4,7 @@ import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useCallback, useEffect, useState } from 'react';
 
 import { WalletConnectConnector } from '../connectors';
+import { buildOptions } from '../connectors/wallet-connect';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
 import { getApplicationLogger } from '../utils/logger';
@@ -52,26 +53,7 @@ export default function useWalletConnectConnector(
       connector = new WalletConnectConnector(
         network,
         feeCurrency,
-        {
-          connect: {
-            chainId: network.chainId,
-            // Uncomment with WCV2 support
-            // metadata: {
-            //   name: dapp.name,
-            //   description: dapp.description,
-            //   url: dapp.url,
-            //   icons: [dapp.icon],
-            // },
-            // permissions: {
-            //   blockchain: {
-            //     chains: [`eip155:${}`],
-            //   },
-            //   jsonrpc: {
-            //     methods: Object.values(SupportedMethods),
-            //   },
-            // },
-          },
-        },
+        buildOptions(network),
         autoOpen,
         getDeeplinkUrl,
         version

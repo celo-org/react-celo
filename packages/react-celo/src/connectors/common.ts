@@ -1,5 +1,6 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
+import EventEmitter from 'eventemitter3';
 
 // Uncomment with WCV2 support
 // import {
@@ -61,4 +62,42 @@ export function persist({
     setTypedStorageKey(localStorageKeys.lastUsedNetwork, network.name);
   }
   setLastUsedWalletArgs(options);
+}
+
+export enum ConnectorEvents {
+  'CONNECTED' = 'CONNECTED',
+  'DISCONNECTED' = 'DISCONNECTED',
+  'ADDRESS_CHANGED' = 'ADDRESS_CHANGED',
+  'NETWORK_CHANGED' = 'NETWORK_CHANGED',
+}
+
+export type ConnectorParams = {
+  networkName: string;
+  walletType: WalletTypes;
+  address: string;
+  index?: number;
+  privateKey?: string;
+  walletId?: string;
+};
+
+export type EventsMap = {
+  [ConnectorEvents.ADDRESS_CHANGED]: string;
+  [ConnectorEvents.NETWORK_CHANGED]: string;
+  [ConnectorEvents.CONNECTED]: ConnectorParams;
+  [ConnectorEvents.DISCONNECTED]: void;
+};
+
+export class AbstractConnector {
+  protected emitter = new EventEmitter();
+
+  on<E extends ConnectorEvents>(
+    event: E,
+    fn: (arg: EventsMap[E]) => void
+  ): void {
+    this.emitter.on(event, fn);
+  }
+
+  emit<E extends ConnectorEvents>(event: E, data?: EventsMap[E]) {
+    this.emitter.emit(event, data);
+  }
 }

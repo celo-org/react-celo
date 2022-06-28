@@ -24,6 +24,7 @@ import {
 } from '../types';
 import { useCeloInternal } from '../use-celo';
 import { hexToRGB } from '../utils/colors';
+import { useFixedBody } from '../utils/helpers';
 import { defaultProviderSort, SortingPredicate } from '../utils/sort';
 import cls from '../utils/tailwind';
 
@@ -174,6 +175,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   ) : (
     <Placeholder />
   );
+
+  useFixedBody(!!connectionCallback);
 
   return (
     <ReactModal
