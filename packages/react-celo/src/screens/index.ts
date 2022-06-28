@@ -7,7 +7,9 @@ import { MetaMaskOrInjectedWallet } from './metamask';
 import { PrivateKey } from './private-key';
 import { WalletConnect } from './wallet-connect';
 
-export const defaultScreens = {
+export const defaultScreens: {
+  [K in SupportedProviders]: React.FC<ConnectorProps>;
+} = {
   [SupportedProviders.Valora]: WalletConnect,
   [SupportedProviders.MetaMask]: MetaMaskOrInjectedWallet,
   [SupportedProviders.WalletConnect]: WalletConnect,
@@ -24,5 +26,5 @@ export const defaultScreens = {
 
 export type ConnectorProps = {
   onSubmit: (connector: Connector) => void;
-  provider?: WalletConnectProvider;
+  provider: WalletConnectProvider;
 };

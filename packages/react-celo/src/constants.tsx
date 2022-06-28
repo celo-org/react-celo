@@ -78,6 +78,7 @@ export enum Platform {
 }
 
 export const WalletIds = {
+  WalletConnect: '_',
   Valora: 'd01c7758d741b363e637a817a09bcf579feae4db9f5bb16f599fdd1f66e2f974',
   CeloWallet:
     '36d854b702817e228d5c853c528d7bdb46f4bb041d255f67b82eb47111e5676b',
@@ -89,7 +90,7 @@ export const WalletIds = {
 };
 
 export const PROVIDERS: {
-  [K in SupportedProviders]: Provider | WalletConnectProvider;
+  [K in SupportedProviders]: Provider;
 } = {
   [SupportedProviders.Valora]: {
     name: SupportedProviders.Valora,
@@ -111,7 +112,7 @@ export const PROVIDERS: {
           return false;
       }
     },
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.WalletConnect]: {
     name: SupportedProviders.WalletConnect,
     type: WalletTypes.WalletConnect,
@@ -119,9 +120,9 @@ export const PROVIDERS: {
     icon: WalletConnect,
     canConnect: () => true,
     showInList: () => true,
-    listPriority: () => Priorities.Popular,
+    listPriority: () => Priorities.Default,
     supportedPlatforms: [Platform.Mobile],
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.Ledger]: {
     name: SupportedProviders.Ledger,
     type: WalletTypes.Ledger,
@@ -138,7 +139,7 @@ export const PROVIDERS: {
     icon: Celo,
     canConnect: () => true,
     showInList: () => true,
-    listPriority: () => (!isMobile ? 0 : 1),
+    listPriority: () => Priorities.Default,
     walletConnectId: WalletIds.CeloWallet,
     installURL: 'https://celowallet.app/',
     supportedPlatforms: [Platform.Desktop, Platform.Web],
@@ -152,7 +153,7 @@ export const PROVIDERS: {
           return false;
       }
     },
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.CeloTerminal]: {
     name: SupportedProviders.CeloTerminal,
     type: WalletTypes.WalletConnect,
@@ -164,7 +165,7 @@ export const PROVIDERS: {
     installURL: 'https://celoterminal.com/',
     walletConnectId: WalletIds.CeloTerminal,
     supportedPlatforms: [],
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.MetaMask]: {
     name: SupportedProviders.MetaMask,
     type: WalletTypes.MetaMask,
@@ -231,7 +232,7 @@ export const PROVIDERS: {
           return false;
       }
     },
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.Steakwallet]: {
     name: SupportedProviders.Steakwallet,
     description: 'Scan a QR code to connect your wallet',
@@ -239,7 +240,7 @@ export const PROVIDERS: {
     icon: SteakWallet,
     canConnect: () => true,
     showInList: () => true,
-    listPriority: () => Priorities.Popular,
+    listPriority: () => Priorities.Default,
     installURL: 'https://steakwallet.fi/',
     walletConnectId: WalletIds.Steakwallet,
     supportedPlatforms: [Platform.Mobile],
@@ -251,7 +252,7 @@ export const PROVIDERS: {
           return false;
       }
     },
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.CoinbaseWallet]: {
     name: SupportedProviders.CoinbaseWallet,
     type: WalletTypes.CoinbaseWallet,
@@ -259,8 +260,7 @@ export const PROVIDERS: {
     icon: CoinbaseWallet,
     canConnect: () => true,
     showInList: () => true,
-    listPriority: () => Priorities.Popular,
-    supportedPlatforms: [Platform.Mobile, Platform.Web],
+    listPriority: () => Priorities.Default,
   },
 };
 

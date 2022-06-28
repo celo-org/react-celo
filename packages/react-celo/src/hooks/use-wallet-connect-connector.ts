@@ -20,8 +20,8 @@ interface UseWalletConnectConnector {
 export default function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
   autoOpen: boolean,
-  getDeeplinkUrl?: (uri: string) => string | false,
-  walletId?: string
+  walletId: string,
+  getDeeplinkUrl?: (uri: string) => string | false
 ): UseWalletConnectConnector {
   const { network, feeCurrency, initConnector, destroy } = useCeloInternal();
   const [uri, setUri] = useState<Maybe<string>>(null);
@@ -56,12 +56,14 @@ export default function useWalletConnectConnector(
         buildOptions(network),
         autoOpen,
         getDeeplinkUrl,
-        version
+        version,
+        walletId
       );
       connector.onUri((newUri) => {
         getApplicationLogger().debug(
           '[useWalletConnectConnector]',
-          'Generated WC URI'
+          'Generated WC URI',
+          newUri
         );
         if (mounted) {
           setUri(newUri);

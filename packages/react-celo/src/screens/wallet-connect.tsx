@@ -57,7 +57,7 @@ const styles = cls({
 
 export interface Props {
   onSubmit: (connector: Connector) => void;
-  provider?: WalletConnectProvider;
+  provider: WalletConnectProvider;
 }
 
 export const WalletConnect = ({ onSubmit, provider }: Props) => {
@@ -65,10 +65,10 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
   const { uri, error, loading, retry } = useWalletConnectConnector(
     onSubmit,
     isMobile,
-    provider?.getLink &&
+    provider.walletConnectId,
+    provider.getLink &&
       ((uri: string) =>
-        provider.getLink!(uri, isMobile ? Platform.Mobile : Platform.Desktop)),
-    provider?.walletConnectId
+        provider.getLink!(uri, isMobile ? Platform.Mobile : Platform.Desktop))
   );
 
   const onClickPlatform = useCallback(

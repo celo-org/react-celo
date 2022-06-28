@@ -106,7 +106,7 @@ interface Props {
 }
 
 export default function Tray({
-  providers,
+  providers: providersByPriority,
   title,
   onClickProvider,
   selectedProvider,
@@ -115,7 +115,7 @@ export default function Tray({
 }: Props) {
   const theme = useTheme();
 
-  const nPriorities = providers.reduce((acc, [prio]) => {
+  const nPriorities = providersByPriority.reduce((acc, [prio]) => {
     if (!acc.includes(prio)) acc.push(prio);
     return acc;
   }, [] as Priorities[]);
@@ -163,7 +163,7 @@ export default function Tray({
             <h1>{title}</h1>
             {isMobile && searchElem}
           </div>
-          {!providers.length && (
+          {!providersByPriority.length && (
             <div className={styles.noMatchesContainer}>
               <span
                 className={styles.noMatchesSpan}
@@ -173,8 +173,13 @@ export default function Tray({
               </span>
             </div>
           )}
-          {providers.map(([priority, providers]) => (
-            <div key={priority} className={styles.container}>
+          {providersByPriority.map(([priority, providers], i) => (
+            <div
+              key={priority}
+              className={
+                nPriorities.length === 1 || i > 0 ? styles.container : ''
+              }
+            >
               {!isMobile && nPriorities.length !== 1 && (
                 <span
                   className={styles.subtitle}
