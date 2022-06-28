@@ -51,7 +51,10 @@ export default class InjectedConnector
 
     ethereum.removeListener('chainChanged', this.onChainChanged);
     ethereum.removeListener('accountsChanged', this.onAccountsChanged);
-    await switchToCeloNetwork(this.network, ethereum, web3); // TODO better way of auto switching networks on startup
+    // TODO better way of auto switching networks on startup
+    await switchToCeloNetwork(this.network, ethereum, () =>
+      web3.eth.getChainId()
+    );
     ethereum.on('chainChanged', this.onChainChanged);
     ethereum.on('accountsChanged', this.onAccountsChanged);
 
@@ -76,8 +79,7 @@ export default class InjectedConnector
 
   async startNetworkChangeFromApp(network: Network) {
     const ethereum = getEthereum();
-    const web3 = this.kit.connection.web3;
-    await switchToCeloNetwork(network, ethereum!, web3);
+    await switchToCeloNetwork(network, ethereum!, this.kit.connection.chainId);
     this.continueNetworkUpdateFromWallet(network);
   }
 

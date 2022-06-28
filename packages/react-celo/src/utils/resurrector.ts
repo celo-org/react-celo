@@ -12,12 +12,10 @@ import {
 } from '../connectors';
 import { buildOptions } from '../connectors/wallet-connect';
 import { localStorageKeys, WalletTypes } from '../constants';
-import { Connector, Network } from '../types';
+import { Dapp, Network } from '../types';
 import { getTypedStorageKey } from './local-storage';
 
-type Resurrector = (networks: Network[]) => Connector | null;
-
-export const resurrector: Resurrector = function (networks: Network[]) {
+export function resurrector(networks: Network[], dapp: Dapp) {
   const walletType = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
   const network = getNetwork(networks);
 
@@ -51,6 +49,8 @@ export const resurrector: Resurrector = function (networks: Network[]) {
           CeloContract.GoldToken
         );
       }
+      case WalletTypes.CoinbaseWallet:
+        return new CoinbaseWalletConnector(network, dapp);
       case WalletTypes.CeloDance:
       case WalletTypes.CeloTerminal:
       case WalletTypes.CeloWallet:
@@ -62,8 +62,7 @@ export const resurrector: Resurrector = function (networks: Network[]) {
           buildOptions(network)
         );
       }
-      case WalletTypes.CoinbaseWallet:
-        return new CoinbaseWalletConnector(network, CeloContract.GoldToken);
+
       case WalletTypes.Unauthenticated:
         return null;
     }
@@ -72,7 +71,7 @@ export const resurrector: Resurrector = function (networks: Network[]) {
       console.error('[react-celo] Unknown error in resurrector', e);
     return null;
   }
-};
+}
 function getNetwork(networks: Network[]) {
   const networkName = getTypedStorageKey(localStorageKeys.lastUsedNetwork);
   if (!networkName) return;

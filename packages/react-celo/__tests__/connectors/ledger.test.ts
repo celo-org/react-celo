@@ -1,20 +1,42 @@
 import { CeloContract } from '@celo/contractkit';
+import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
+import { WalletBase } from '@celo/wallet-base';
+import { LedgerSigner } from '@celo/wallet-ledger';
 
 import { Alfajores, Baklava, WalletTypes } from '../../src';
 import { ConnectorEvents } from '../../src/connectors/common';
 import LedgerConnector from '../../src/connectors/ledger';
 
+class StubWallet extends WalletBase<LedgerSigner> {}
+
 describe('LedgerConnector', () => {
   let connector: LedgerConnector;
+  let walletStub: StubWallet;
   const onDisconnect = jest.fn();
   const onConnect = jest.fn();
   const onChangeNetwork = jest.fn();
+  let originalKit: MiniContractKit;
   beforeEach(async () => {
+    walletStub = new StubWallet();
     connector = new LedgerConnector(Alfajores, 0, CeloContract.GoldToken);
     connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
     connector.on(ConnectorEvents.CONNECTED, onConnect);
     connector.on(ConnectorEvents.NETWORK_CHANGED, onChangeNetwork);
+
+    jest
+      .spyOn<any, any>(connector, 'createWallet')
+      .mockImplementation(function () {
+        return walletStub;
+      });
+
+    jest
+      .spyOn<any, any>(connector, 'getWallet')
+      .mockImplementation(function () {
+        return walletStub;
+      });
+    jest.spyOn(walletStub, 'getAccounts');
     await connector.initialise();
+    originalKit = connector.kit;
   });
 
   // it.skip(
@@ -29,17 +51,21 @@ describe('LedgerConnector', () => {
         index: 0,
       });
     });
+    it('gets account from wallet', () => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(walletStub.getAccounts).toBeCalled();
+    });
   });
 
   describe('startNetworkChangeFromApp()', () => {
+    beforeEach(async () => {
+      await connector.startNetworkChangeFromApp(Baklava);
+    });
     it('emits NETWORK_CHANGED EVENT', () => {
-      connector.startNetworkChangeFromApp(Baklava);
       expect(onChangeNetwork).toBeCalledWith(Baklava.name);
     });
 
     it('creates a new kit', () => {
-      const originalKit = connector.kit;
-      connector.startNetworkChangeFromApp(Baklava);
       expect(connector.kit).not.toBe(originalKit);
     });
   });

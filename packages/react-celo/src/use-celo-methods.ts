@@ -3,6 +3,7 @@ import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
+import { UnauthenticatedConnector } from './connectors';
 import { STATIC_NETWORK_WALLETS, WalletTypes } from './constants';
 import {
   ContractCacheBuilder,
@@ -15,21 +16,19 @@ import { getApplicationLogger } from './utils/logger';
 
 import networkWatcher from './utils/network-watcher';
 import persistor from './utils/persistor';
-import updater from './utils/updater';
+import { updater } from './utils/updater';
+
 interface CeloMethodsInput {
   connector: Connector;
   networks: Network[];
+  network: Network;
 }
 
 export function useCeloMethods(
-  { connector, networks }: CeloMethodsInput,
+  { connector, networks, network }: CeloMethodsInput,
   dispatch: Dispatcher,
   buildContractsCache?: ContractCacheBuilder
 ): CeloMethods {
-  const destroy = useCallback(async () => {
-    await connector.close();
-  }, [connector]);
-
   const initConnector = useCallback(
     async (nextConnector: Connector) => {
       try {
@@ -64,6 +63,11 @@ export function useCeloMethods(
     },
     [dispatch, networks]
   );
+  const destroy = useCallback(async () => {
+    await connector.close();
+    const passiveConnector = new UnauthenticatedConnector(network);
+    await initConnector(passiveConnector);
+  }, [connector, network, initConnector]);
 
   // This is just to be used to for users to explicitly change
   // the network. It doesn't work for all wallets.

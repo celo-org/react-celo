@@ -1,6 +1,7 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
-import { LedgerWallet } from '@celo/wallet-ledger';
+import { LedgerWallet, newLedgerWalletWithSetup } from '@celo/wallet-ledger';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 import { localStorageKeys, WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
@@ -35,12 +36,12 @@ export default class LedgerConnector
     this.kit = newKit(network.rpcUrl);
   }
 
+  private getWallet() {
+    return this.wallet;
+  }
+
   private async createWallet(index: number) {
-    const { default: TransportUSB } = await import(
-      '@ledgerhq/hw-transport-webusb'
-    );
-    const { newLedgerWalletWithSetup } = await import('@celo/wallet-ledger');
-    const transport = await TransportUSB.create();
+    const transport = await TransportWebUSB.create();
     this.wallet = await newLedgerWalletWithSetup(transport, [index]);
     return this.wallet;
   }
@@ -78,7 +79,7 @@ export default class LedgerConnector
   }
 
   async startNetworkChangeFromApp(network: Network) {
-    await this.createKit(this.wallet as LedgerWallet, network);
+    await this.createKit(this.getWallet() as LedgerWallet, network);
     this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
   }
 

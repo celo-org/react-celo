@@ -37,6 +37,7 @@ export default class UnauthenticatedConnector
   }
 
   startNetworkChangeFromApp(network: Network) {
+    this.kit = newKit(network.rpcUrl);
     this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
   }
 

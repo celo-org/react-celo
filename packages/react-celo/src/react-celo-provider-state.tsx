@@ -83,7 +83,7 @@ export function useCeloState({
   );
 
   const connector = useMemo(() => {
-    return resurrector(networks);
+    return resurrector(networks, dapp);
     /* eslint-disable-next-line */
   }, []);
 

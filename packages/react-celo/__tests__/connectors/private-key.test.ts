@@ -11,30 +11,26 @@ describe('PrivateKeyConnector', () => {
   let connector: PrivateKeyConnector;
   describe('initialise()', () => {
     const onConnect = jest.fn();
-    beforeEach(() => {
+    beforeEach(async () => {
       connector = new PrivateKeyConnector(
         Alfajores,
         TEST_KEY,
         CeloContract.StableTokenEUR
       );
       connector.on(ConnectorEvents.CONNECTED, onConnect);
-    });
-    it('sets the account', async () => {
       await connector.initialise();
-
+    });
+    it('sets the account', () => {
       expect(connector.account).toEqual(
         '0x6df18c5837718a83581ead5e26bfcdb8a548e409'
       );
     });
 
-    it('sets and uses the fee currency', async () => {
-      await connector.initialise();
-
+    it('sets and uses the fee currency', () => {
       expect(connector.feeCurrency).toEqual(CeloContract.StableTokenEUR);
     });
 
-    it('emits CONNECTED event with needed params', async () => {
-      await connector.initialise();
+    it('emits CONNECTED event with needed params', () => {
       expect(onConnect).toBeCalledWith({
         networkName: Alfajores.name,
         walletType: WalletTypes.PrivateKey,
@@ -63,12 +59,21 @@ describe('PrivateKeyConnector', () => {
   });
   describe('updateFeeCurrency', () => {
     it('sets fee currency and in fact uses it', async () => {
-      await connector.updateFeeCurrency(CeloContract.StableToken);
+      connector = new PrivateKeyConnector(
+        Alfajores,
+        TEST_KEY,
+        CeloContract.StableTokenEUR
+      );
+      await connector.initialise();
+      expect(connector.kit.connection.defaultFeeCurrency).toEqual(
+        '0x10c892A6EC43a53E45D0B916B4b7D383B1b78C0F'
+      );
+      await connector.updateFeeCurrency(CeloContract.StableTokenBRL);
 
-      expect(connector.feeCurrency).toEqual(CeloContract.StableToken);
+      expect(connector.feeCurrency).toEqual(CeloContract.StableTokenBRL);
 
       expect(connector.kit.connection.defaultFeeCurrency).toEqual(
-        '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1'
+        '0xE4D517785D091D3c54818832dB6094bcc2744545'
       );
     });
   });

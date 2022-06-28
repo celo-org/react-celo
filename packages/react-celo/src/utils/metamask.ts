@@ -1,7 +1,6 @@
-import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
+import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
-import Web3 from 'web3';
 
 import { Alfajores, Baklava, Mainnet } from '../constants';
 import { Ethereum } from '../global';
@@ -212,9 +211,9 @@ export async function addNetworksToMetamask(ethereum: Ethereum): Promise<void> {
 export async function switchToCeloNetwork(
   network: Network,
   ethereum: Ethereum,
-  web3: MiniContractKit['connection']['web3'] | Web3
+  getChainId: () => Promise<number>
 ): Promise<void> {
-  const chainId = await web3.eth.getChainId();
+  const chainId = await getChainId();
   if (network.chainId !== chainId) {
     try {
       await ethereum.request({
@@ -225,7 +224,7 @@ export async function switchToCeloNetwork(
           },
         ],
       });
-      await networkHasUpdated(web3.eth, network.chainId);
+      await networkHasUpdated(getChainId, network.chainId);
     } catch (err) {
       const { code } = err as MetamaskRPCError;
       if (
@@ -234,7 +233,7 @@ export async function switchToCeloNetwork(
       ) {
         // ChainId not yet added to metamask
         await addNetworkToMetamask(ethereum, network);
-        return switchToCeloNetwork(network, ethereum, web3);
+        return switchToCeloNetwork(network, ethereum, getChainId);
       } else if (code === MetamaskRPCErrorCode.AwaitingUserConfirmation) {
         // user has already been requested to switch the network
         return;
@@ -254,7 +253,7 @@ const MAX_RETRY = Math.round((MAX_WAIT_MINUTES * 1000) / SLEEP);
 // Hacky workaround to wait for the network to change.\
 
 export const networkHasUpdated = async (
-  eth: MiniContractKit['connection']['web3']['eth'] | Web3['eth'],
+  getChainId: () => Promise<number>,
   expectedChainId: number
 ) => {
   let attempts = 0;
@@ -264,7 +263,7 @@ export const networkHasUpdated = async (
     if (attempts >= MAX_RETRY) {
       throw new Error('Network did not change');
     }
-    const chainId = await eth.getChainId();
+    const chainId = await getChainId();
     if (chainId === expectedChainId) {
       isNetworkUpdated = true;
       return true;
