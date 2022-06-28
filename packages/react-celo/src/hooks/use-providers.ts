@@ -55,6 +55,7 @@ export default function useProviders(
         all[current] = PROVIDERS[current];
         return all;
       }, {} as Record<SupportedProviders, Provider>),
+
       ...wallets.reduce((acc, wallet) => {
         acc[wallet.id] = walletToProvider(wallet);
         return acc;

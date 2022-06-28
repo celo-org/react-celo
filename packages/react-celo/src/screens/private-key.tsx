@@ -23,8 +23,8 @@ const styles = cls({
     tw-py-2
     tw-font-mono`,
   button: `
-    tw-mt-3
-    tw-px-4
+    tw-mt-3 
+    tw-px-4 
     tw-py-2`,
 });
 

@@ -94,28 +94,6 @@ export function isValidFeeCurrency(currency: Maybe<string>): boolean {
   }
 }
 
-export function hexToRGB(hex: string, alpha?: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-
-  if (alpha) {
-    return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
-  } else {
-    return `rgba(${r}, ${g}, ${b})`;
-  }
-}
-
-export function RGBToHex(rgba: string): string {
-  const values = rgba.split('(')[1].split(')')[0];
-  const r = parseInt(values[0]).toString(16);
-  const g = parseInt(values[1]).toString(16);
-  const b = parseInt(values[2]).toString(16);
-  const alpha = values[3] ? parseInt(values[3]).toString(16) : '';
-
-  return `#${r}${g}${b}${alpha}`;
-}
-
 export function useFixedBody(isOpen: boolean) {
   useEffect(() => {
     if (isOpen) {

@@ -139,6 +139,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
 
   const { wallets, allScreens, includedDefaultProviders } = useMemo(() => {
     let _screens: Partial<Record<SupportedProviders, React.FC<ConnectorProps>>>;
+
     const _wallets = additionalWCWallets || [];
 
     if (hideFromDefaults) {
@@ -179,6 +180,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
     search
   );
 
+
   const ProviderElement = adding && allScreens?.[adding];
   const content = ProviderElement ? (
     <ProviderElement
@@ -188,6 +190,8 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
   ) : (
     <Placeholder />
   );
+  
+ 
 
   return (
     <ReactModal

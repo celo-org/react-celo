@@ -98,6 +98,7 @@ export const ActionModal: React.FC<Props> = ({
       portalClassName={styles.portal}
       htmlOpenClassName={'react-celo-modal-open-html'}
       bodyOpenClassName={'react-celo-modal-open-body'}
+
       isOpen={pendingActionCount > 0}
       // isOpen
       ariaHideApp={false}

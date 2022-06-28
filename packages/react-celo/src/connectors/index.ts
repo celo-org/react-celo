@@ -1,21 +1,11 @@
-import CeloExtensionWalletConnector from './celo-extension-wallet';
-import CoinbaseWalletConnector from './coinbase-wallet';
-import InjectedConnector from './injected';
-import LedgerConnector from './ledger';
-import MetaMaskConnector from './metamask';
-import PrivateKeyConnector from './private-key';
-import UnauthenticatedConnector from './unauthenticated';
-import WalletConnectConnector from './wallet-connect';
 
+export { default as CeloExtensionWalletConnector } from './celo-extension-wallet';
+export { default as CoinbaseWalletConnector } from './coinbase-wallet';
+export * from './common';
 export * from './connectors-by-name';
-
-export {
-  CeloExtensionWalletConnector,
-  CoinbaseWalletConnector,
-  InjectedConnector,
-  LedgerConnector,
-  MetaMaskConnector,
-  PrivateKeyConnector,
-  UnauthenticatedConnector,
-  WalletConnectConnector,
-};
+export { default as InjectedConnector } from './injected';
+export { default as LedgerConnector } from './ledger';
+export { default as MetaMaskConnector } from './metamask';
+export { default as PrivateKeyConnector } from './private-key';
+export { default as UnauthenticatedConnector } from './unauthenticated';
+export { default as WalletConnectConnector } from './wallet-connect';

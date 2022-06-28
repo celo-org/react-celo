@@ -27,6 +27,7 @@
   width: 42px;
   height: 24px;
 }
+
 /* Hide default HTML checkbox */
 .switch input {
   opacity: 0;
