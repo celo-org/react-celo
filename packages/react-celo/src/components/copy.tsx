@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 
+import { useIsMounted } from '../hooks/use-is-mounted';
+import useTheme from '../hooks/use-theme';
 import cls from '../utils/tailwind';
-import { useIsMounted } from '../utils/useIsMounted';
-import useTheme from '../utils/useTheme';
 
 const styles = cls({
   button: `

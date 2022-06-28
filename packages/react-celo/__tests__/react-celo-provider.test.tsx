@@ -1,17 +1,58 @@
 import '@testing-library/jest-dom';
 
 import { CeloContract } from '@celo/contractkit';
-import { act, fireEvent } from '@testing-library/react';
-import React from 'react';
+import { act, fireEvent, render, renderHook } from '@testing-library/react';
+import React, { ReactElement } from 'react';
 
-import { Mainnet, SupportedProviders } from '../src/constants';
-import { CeloProviderProps } from '../src/react-celo-provider';
+import {
+  Alfajores,
+  Baklava,
+  Mainnet,
+  NetworkNames,
+  SupportedProviders,
+} from '../src/constants';
+import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
+import defaultTheme from '../src/theme/default';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
-import {
-  renderComponentInCKProvider,
-  renderHookInCKProvider,
-} from './render-in-provider';
+
+interface RenderArgs {
+  providerProps: Partial<CeloProviderProps>;
+}
+
+const defaultProps: CeloProviderProps = {
+  dapp: {
+    name: 'Testing Celo React',
+    description: 'Test it well',
+    url: 'https://celo.developers',
+    icon: '',
+  },
+  children: null,
+};
+
+function renderHookInCKProvider<R>(
+  hook: (i: unknown) => R,
+  { providerProps }: RenderArgs
+) {
+  return renderHook<R, unknown>(hook, {
+    wrapper: ({ children }) => {
+      const props = { ...defaultProps, ...providerProps };
+      return <CeloProvider {...props}>{children}</CeloProvider>;
+    },
+  });
+}
+
+function renderComponentInCKProvider(
+  ui: ReactElement<unknown, string>,
+  { providerProps }: RenderArgs
+) {
+  return render(ui, {
+    wrapper: ({ children }) => {
+      const props = { ...defaultProps, ...providerProps };
+      return <CeloProvider {...props}>{children}</CeloProvider>;
+    },
+  });
+}
 
 describe('CeloProvider', () => {
   describe('user interface', () => {
@@ -155,10 +196,12 @@ describe('CeloProvider', () => {
       });
 
       it('updates the Current network', async () => {
-        const { result, rerender, unmount } = renderUseCelo({ networks });
+        const { result, rerender, unmount } = renderUseCelo({
+          networks,
+          defaultNetwork: networks[0].name,
+        });
 
-        // TODO Need to determine behavior when network is not in networks
-        expect(result.current.network).toEqual(Mainnet);
+        expect(result.current.network).toEqual(networks[0]);
 
         await act(async () => {
           await result.current.updateNetwork(networks[1]);
@@ -168,6 +211,51 @@ describe('CeloProvider', () => {
 
         expect(result.current.network).toEqual(networks[1]);
         unmount();
+      });
+
+      it('still allows old network prop to be used ', () => {
+        const { result } = renderUseCelo({
+          network: Baklava,
+        });
+
+        expect(result.current.network).toEqual(Baklava);
+      });
+
+      describe('when given defaultNetwork prop that exists in networks', () => {
+        it('starts with that network', () => {
+          const { result } = renderUseCelo({
+            defaultNetwork: NetworkNames.Alfajores,
+          });
+
+          expect(result.current.network).toMatchObject(Alfajores);
+        });
+      });
+      describe('when given defaultNetwork prop does not exist in networks', () => {
+        it('throws an error', () => {
+          expect(() => {
+            renderUseCelo({
+              defaultNetwork: 'Solana',
+            });
+          }).toThrowError(
+            `[react-celo] Could not find 'defaultNetwork' (Solana) in 'networks'. 'defaultNetwork' must equal 'network.name' on one of the 'networks' passed to CeloProvider.`
+          );
+        });
+      });
+      describe('when given defaultNetwork and networks array prop', () => {
+        it('starts with the network it found', () => {
+          const customRPCMainnet: Network = {
+            name: NetworkNames.Mainnet,
+            chainId: Mainnet.chainId,
+            rpcUrl: 'https://rpc.ankr.com/celo',
+            explorer: 'https://celoscan.xyz',
+          };
+          const { result } = renderUseCelo({
+            defaultNetwork: NetworkNames.Mainnet,
+            networks: [Alfajores, Baklava, customRPCMainnet],
+          });
+
+          expect(result.current.network).toEqual(customRPCMainnet);
+        });
       });
     });
 
@@ -216,29 +304,20 @@ describe('CeloProvider', () => {
       expect(result.current.network).toEqual(Mainnet);
 
       act(() => {
-        result.current.updateTheme({
-          background: '#000',
-          primary: '#000',
-          secondary: '#000',
-          muted: '#000',
-          error: '#000',
-          text: '#000',
-          textSecondary: '#000',
-          textTertiary: '#000',
-        });
+        result.current.updateTheme(defaultTheme.light);
       });
 
       rerender();
 
       expect(result.current.theme).toEqual({
-        background: '#000',
-        primary: '#000',
-        secondary: '#000',
-        muted: '#000',
-        error: '#000',
-        text: '#000',
-        textSecondary: '#000',
-        textTertiary: '#000',
+        background: '#ffffff',
+        primary: '#6366f1',
+        secondary: '#eef2ff',
+        muted: '#e2e8f0',
+        error: '#ef4444',
+        text: '#000000',
+        textSecondary: '#1f2937',
+        textTertiary: '#64748b',
       });
     });
   });

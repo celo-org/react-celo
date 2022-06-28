@@ -5,10 +5,10 @@
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-org/react-celo/blob/master/LICENSEs)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/celo-org/react-celo/issues)
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
-[![npm version](https://badge.fury.io/js/%40celo-tools%2Freact-celo.png)](https://badge.fury.io/js/%40celo-tools%2Freact-celo)
+[![npm version](https://badge.fury.io/js/%40celo%2Freact-celo.png)](https://badge.fury.io/js/%40celo%2Freact-celo)
 [![codecov](https://codecov.io/gh/celo-org/react-celo/branch/master/graph/badge.svg?token=vy6ALIKLwt)](https://codecov.io/gh/celo-org/react-celo)
 
-The easiest way to access [ContractKit](https://www.npmjs.com/package/@celo/contractkit) in your React applications 🔥. `react-celo` is a [React hook](https://reactjs.org/docs/hooks-intro.html) for managing access to ContractKit with a built-in headless modal system for connecting to your users wallet of choice.
+The easiest way to access [ContractKit](https://www.npmjs.com/package/@celo/contractkit) in your React applications 🔥. `react-celo` is a [React hook](https://reactjs.org/docs/hooks-intro.html) for managing access to Celo with a built-in headless modal system for connecting to your users wallet of choice.
 
 Now your DApp can be made available to everyone in the Celo ecosystem, from Valora users to self custodied Ledger users.
 
@@ -362,6 +362,21 @@ interface Theme {
   muted: string;
   background: string;
   error: string;
+}
+```
+
+### Logging and debugging
+
+We log by default `debug` or above in development mode. It is determined your environement variables: by either setting `DEBUG` to `true` or setting `NODE_ENV` to something else than `production`). In production mode, we log only `error`.
+
+But you are welcome to provide your own logger at the provider level. It should implement our `ILogger` interface which looks like that:
+
+```ts
+interface ILogger {
+  debug(...args: unknown[]): void;
+  log(...args: unknown[]): void;
+  warn(...args: unknown[]): void;
+  error(...args: unknown[]): void;
 }
 ```
 

@@ -10,7 +10,8 @@ import React, {
 import IOSViewportFix from './components/ios-viewport-fix';
 import { CONNECTOR_TYPES, UnauthenticatedConnector } from './connectors';
 import { DEFAULT_NETWORKS, Mainnet } from './constants';
-import { ContractCacheBuilder } from './ContractCacheBuilder';
+import { ContractCacheBuilder } from './hooks/use-contracts-cache';
+import { useIsMounted } from './hooks/use-is-mounted';
 import {
   ActionModal,
   ActionModalProps,
@@ -26,7 +27,7 @@ import {
 import { Dapp, Network, Theme } from './types';
 import { CeloMethods, useCeloMethods } from './use-celo-methods';
 import { loadPreviousConfig } from './utils/helpers';
-import { useIsMounted } from './utils/useIsMounted';
+import { ILogger, setApplicationLogger } from './utils/logger';
 
 // This type lets you call dispatch with one or two arguments:
 // First a type, and second an optional payload that matches an
@@ -48,7 +49,7 @@ type ReactCeloContextInterface = readonly [
   CeloMethods
 ];
 
-const initialState = {
+const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Mainnet),
   connectorInitError: null,
   dapp: {
@@ -91,15 +92,24 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   connectModal,
   actionModal,
   dapp,
-  network = Mainnet,
+  network, // TODO:#246 remove when network prop is removed
+  defaultNetwork = Mainnet.name,
   theme,
   networks = DEFAULT_NETWORKS,
   feeCurrency = CeloContract.GoldToken,
   buildContractsCache,
+  logger,
 }: CeloProviderProps) => {
+  if (logger) {
+    setApplicationLogger(logger);
+  }
+
   const isMountedRef = useIsMounted();
+
+  const initialNetwork = getInitialNetwork(networks, defaultNetwork, network);
+
   const previousConfig = useMemo(
-    () => loadPreviousConfig(network, feeCurrency, networks),
+    () => loadPreviousConfig(initialNetwork, feeCurrency, networks),
     // We only want this to run on mount so the deps array is empty.
     // This is OK because the previousConfig is only used to create the initial reducer state
     /* eslint-disable-next-line */
@@ -108,7 +118,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   const [state, _dispatch] = useReducer(celoReactReducer, {
     ...initialState,
     ...previousConfig,
-    network: previousConfig.network || network,
+    network: previousConfig.network || initialNetwork,
     feeCurrency: previousConfig.feeCurrency || feeCurrency,
     networks,
     theme,
@@ -159,7 +169,12 @@ export const ContractKitProvider = CeloProvider;
 export interface CeloProviderProps {
   children: ReactNode;
   dapp: Dapp;
+  /**
+   * `network` has been deprecated and replaced with defaultNetwork
+   *  since passing a full object could lead to bugs
+   */
   network?: Network;
+  defaultNetwork?: string; // must match the name of a network in networks Array
   networks?: Network[];
   theme?: Theme;
   feeCurrency?: CeloTokenContract;
@@ -169,4 +184,34 @@ export interface CeloProviderProps {
     reactModalProps?: Partial<ReactModal.Props>;
     render?: (props: ActionModalProps) => ReactNode;
   };
+  logger?: ILogger;
+}
+
+function getInitialNetwork(
+  networks: Network[],
+  defaultNetwork?: string,
+  passedNetwork?: Network // TODO:#246 remove when network prop is removed
+) {
+  if (process.env.NODE_ENV !== 'production' && passedNetwork) {
+    console.warn(
+      '[react-celo] The `network` prop on CeloProvider has been deprecated, use `defaultNetwork`'
+    );
+  }
+  const network = networks.find((net) => {
+    // TODO:#246 remove when network prop is removed
+    if (passedNetwork) {
+      return net.name === passedNetwork.name;
+    } else {
+      return net.name === defaultNetwork;
+    }
+  });
+
+  if (!network) {
+    const name = defaultNetwork || passedNetwork?.name || 'unknown';
+    throw new Error(
+      `[react-celo] Could not find 'defaultNetwork' (${name}) in 'networks'. 'defaultNetwork' must equal 'network.name' on one of the 'networks' passed to CeloProvider.`
+    );
+  }
+
+  return network;
 }

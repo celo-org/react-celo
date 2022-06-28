@@ -3,9 +3,9 @@ import React, { useCallback, useState } from 'react';
 import Button from '../components/button';
 import ConnectorScreen from '../components/connector-screen';
 import { PrivateKeyConnector } from '../connectors';
+import useTheme from '../hooks/use-theme';
 import { useCelo } from '../use-celo';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 import { ConnectorProps } from '.';
 
 const styles = cls({
@@ -23,8 +23,8 @@ const styles = cls({
     tw-py-2
     tw-font-mono`,
   button: `
-    tw-mt-3 
-    tw-px-4 
+    tw-mt-3
+    tw-px-4
     tw-py-2`,
 });
 

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 
+import useTheme from '../hooks/use-theme';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 import Button from './button';
 
 interface Footer {

@@ -9,8 +9,8 @@ import {
   WalletTypes,
 } from '../constants';
 import { Maybe, Provider, WalletConnectProvider, WalletEntry } from '../types';
-import localStorage from './localStorage';
-import { defaultProviderSort } from './sort';
+import { getTypedStorageKey } from '../utils/local-storage';
+import { defaultProviderSort } from '../utils/sort';
 
 export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
   return {
@@ -27,8 +27,8 @@ export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
 }
 
 export function getRecent(): Maybe<Provider> {
-  const type = localStorage.getItem(localStorageKeys.lastUsedWalletType);
-  const id = localStorage.getItem(localStorageKeys.lastUsedWalletId);
+  const type = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
+  const id = getTypedStorageKey(localStorageKeys.lastUsedWalletId);
   let provider;
 
   if (id && WalletTypes.WalletConnect === type) {

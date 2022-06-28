@@ -4,19 +4,16 @@ import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { CONNECTOR_TYPES } from './connectors';
-import {
-  localStorageKeys,
-  STATIC_NETWORK_WALLETS,
-  WalletTypes,
-} from './constants';
+import { STATIC_NETWORK_WALLETS, WalletTypes } from './constants';
 import {
   ContractCacheBuilder,
   useContractsCache,
-} from './ContractCacheBuilder';
+} from './hooks/use-contracts-cache';
 import { Dispatcher } from './react-celo-provider';
-import defaultTheme from './theme/default';
 import { Connector, Network, Theme } from './types';
-import { RGBToHex } from './utils/helpers';
+import { contrastCheck, fixTheme } from './utils/colors';
+import { getLastUsedWalletArgs } from './utils/local-storage';
+import { getApplicationLogger } from './utils/logger';
 
 export function useCeloMethods(
   {
@@ -69,8 +66,9 @@ export function useCeloMethods(
                   dispatch('initialisedConnector', initialisedConnector);
                 })
                 .catch((e) => {
-                  console.error(
-                    '[react-celo] Error switching network',
+                  getApplicationLogger().error(
+                    '[initConnector]',
+                    'Error switching network',
                     nextConnector.type,
                     e
                   );
@@ -90,15 +88,17 @@ export function useCeloMethods(
         });
       } catch (e) {
         if (typeof e === 'symbol') {
-          console.info(
-            '[react-celo] Ignoring error initializing connector with reason',
+          getApplicationLogger().debug(
+            '[initConnector]',
+            'Ignoring error initializing connector with reason',
             e.description
           );
           throw e;
         }
 
-        console.error(
-          '[react-celo] Error initializing connector',
+        getApplicationLogger().error(
+          '[initConnector]',
+          'Error initializing connector',
           nextConnector.type,
           e
         );
@@ -121,11 +121,9 @@ export function useCeloMethods(
           "The connected wallet's network must be changed from the wallet."
         );
       }
-      if (network === newNetwork) return;
+
       if (connector.initialised) {
-        const connectorArgs = JSON.parse(
-          localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
-        ) as unknown[];
+        const connectorArgs = getLastUsedWalletArgs() || [];
         await connector.close();
         const ConnectorConstructor = CONNECTOR_TYPES[connector.type];
         const newConnector = new ConnectorConstructor(
@@ -137,7 +135,7 @@ export function useCeloMethods(
 
       dispatch('setNetwork', newNetwork);
     },
-    [dispatch, connector, network, initConnector]
+    [dispatch, connector, initConnector]
   );
 
   const connect = useCallback(async (): Promise<Connector> => {
@@ -173,7 +171,8 @@ export function useCeloMethods(
           dispatch('setFeeCurrency', newFeeCurrency);
         }
       } catch (error) {
-        console.warn(
+        getApplicationLogger().warn(
+          '[updateFeeCurrency]',
           'updating Fee Currency not supported by this wallet or network',
           error
         );
@@ -185,23 +184,12 @@ export function useCeloMethods(
   const updateTheme = useCallback(
     (theme: Theme | null) => {
       if (!theme) return dispatch('setTheme', null);
-      Object.entries(theme).forEach(([key, value]: [string, string]) => {
-        if (!(key in defaultTheme.light)) {
-          console.warn(`Theme key ${key} is not valid.`);
-        }
-        const _key = key as keyof Theme;
-        if (value.startsWith('rgb')) {
-          theme[_key] = RGBToHex(value);
-          console.warn(
-            `RGB values not officially supported, but were translated to hex (${value} -> ${theme[_key]})`
-          );
-        } else if (!value.startsWith('#')) {
-          theme[_key] = `#${value}`;
-          console.warn(
-            `Malformed hex value was missing # (${value} -> ${theme[_key]})`
-          );
-        }
-      });
+
+      if (process.env.NODE_ENV !== 'production') {
+        fixTheme(theme);
+        contrastCheck(theme);
+      }
+
       dispatch('setTheme', theme);
     },
     [dispatch]
@@ -256,16 +244,63 @@ export function useCeloMethods(
 }
 
 export interface CeloMethods {
-  resetInitError: () => void;
+  /**
+   * `destroy` removes the connection to the wallet from state and from
+   * localStorage where it's persisted.
+   */
   destroy: () => Promise<void>;
-  initConnector: (connector: Connector) => Promise<void>;
-  updateNetwork: (network: Network) => Promise<void>;
+  /**
+   * `updateNetwork` changes the network used in the wallet.
+   *
+   * Note: _not compatible with all wallets_
+   */
+  updateNetwork: (network: Network, forceUpdate?: boolean) => Promise<void>;
+  /**
+   * `connect` initiates the connection to a wallet and
+   * opens a modal from which the user can choose a
+   * wallet to connect to.
+   */
   connect: () => Promise<Connector>;
+  /**
+   * `getConnectedKit` gets the connected instance of MiniContractKit.
+   * If the user is not connected, this opens up the connection modal.
+   */
   getConnectedKit: () => Promise<MiniContractKit>;
+  /**
+   * `performActions` is a helper function for handling any interaction with a Celo wallet.
+   * Perform action will:
+   * - open the action modal
+   * - handle multiple transactions in order
+   */
   performActions: (
     ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
   ) => Promise<unknown[]>;
+  /**
+   * `updateFeeCurrency` updates the currency that will be used
+   * in future transactions.
+   *
+   * Note: _not compatible with all wallets_
+   */
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
-  contractsCache?: undefined | unknown;
+
+  contractsCache?: unknown;
+  /**
+   * `updateTheme` programmaticaly updates the theme used in the
+   * wallet connection modal. This is useful if you want to give
+   * the user the option to change the theme.
+   */
   updateTheme: (theme: Theme | null) => void;
+  /**
+   * @internal
+   * resetInitError cleans up the error that occurred
+   * when trying to initialize a wallet connector.
+   */
+  resetInitError: () => void;
+  /**
+   * @internal
+   *
+   * `initConnector` is used to initialize a connector
+   *  for the wallet chosen by the user.
+   */
+  initConnector: (connector: Connector) => Promise<void>;
 }

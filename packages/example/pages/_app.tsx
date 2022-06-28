@@ -1,32 +1,26 @@
 import '@celo/react-celo/lib/styles.css';
 import '../styles/global.css';
 
-import { Alfajores, CeloProvider } from '@celo/react-celo';
 import { AppProps } from 'next/app';
+import Link, { type LinkProps } from 'next/link';
+import { PropsWithChildren } from 'react';
 import { Toaster } from 'react-hot-toast';
 
+import CeloLogo from '../components/celo-logo';
+
 function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
-  if (router.route !== '/') {
+  const StyledLink = (props: PropsWithChildren<LinkProps>) => {
+    const active = router.pathname === props.href;
+    const activeClass = active ? 'font-semibold' : '';
     return (
-      <div className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
-        <Component {...pageProps} />
+      <div className={`hover:text-slate-500 text-slate-900 ${activeClass}`}>
+        <Link {...props} />
       </div>
     );
-  }
+  };
 
   return (
-    <CeloProvider
-      dapp={{
-        name: 'react-celo demo',
-        description: 'A demo DApp to showcase functionality',
-        url: 'https://react-celo.vercel.app',
-        icon: 'https://react-celo.vercel.app/favicon.ico',
-      }}
-      network={Alfajores}
-      connectModal={{
-        providersOptions: { searchable: true },
-      }}
-    >
+    <div>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -36,10 +30,23 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
           },
         }}
       />
-      <div className="max-w-screen-sm mx-auto py-10 md:py-20 px-4">
+      <div className="max-w-screen-sm mx-auto py-10 px-4">
+        <nav className="flex gap-[40px] mt-[20px] mb-[20px] justify-between items-center flex-col md:flex-row lg:flex-row">
+          <div className="flex items-center gap-[5px]">
+            <CeloLogo />
+            <span className="font-light text-[25px] font-['Philosopher']">
+              react-celo
+            </span>
+          </div>
+          <div className="flex gap-[40px]">
+            <StyledLink href="/">Home</StyledLink>
+            <StyledLink href="/wallet">Wallet example</StyledLink>
+            <StyledLink href="/wallet-test-plan">Test plan</StyledLink>
+          </div>
+        </nav>
         <Component {...pageProps} />
       </div>
-    </CeloProvider>
+    </div>
   );
 }
 

@@ -8,8 +8,9 @@ import { create, QRCodeErrorCorrectionLevel } from 'qrcode';
 import React, { ReactElement, useMemo } from 'react';
 
 import { QRCodeClass } from '../global';
+import useTheme from '../hooks/use-theme';
+import { getApplicationLogger } from '../utils/logger';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 
 // From https://github.com/soldair/node-qrcode#qr-code-capacity
 const qrCodeCapacity: [QRCodeErrorCorrectionLevel, number][] = [
@@ -143,7 +144,11 @@ type Props = {
 
 const PrettyQrCode = ({ size = 200, value }: Props) => {
   const theme = useTheme();
-  const matrix = useMemo(() => generateMatrix(value), [value]);
+  const matrix = useMemo(() => {
+    const _matrix = generateMatrix(value);
+    getApplicationLogger().debug('[PrettyQrCode]', 'Generated matrix');
+    return _matrix;
+  }, [value]);
   const corners = useMemo(() => matrixToCorners(matrix, size), [size, matrix]);
   const dots = useMemo(() => matrixToDots(matrix, size), [size, matrix]);
 

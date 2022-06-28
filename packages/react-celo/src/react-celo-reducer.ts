@@ -1,10 +1,14 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
 import { UnauthenticatedConnector } from './connectors';
-import { localStorageKeys } from './constants';
+import { localStorageKeys as lsKeys } from './constants';
 import { Connector, Dapp, Maybe, Network, Theme } from './types';
-import { clearPreviousConfig } from './utils/helpers';
-import localStorage from './utils/localStorage';
+import {
+  clearPreviousConfig,
+  removeLastUsedAddress,
+  setTypedStorageKey,
+} from './utils/local-storage';
+import { getApplicationLogger } from './utils/logger';
 
 export function celoReactReducer(
   state: ReducerState,
@@ -22,9 +26,9 @@ export function celoReactReducer(
         return state;
       }
       if (action.payload) {
-        localStorage.setItem(localStorageKeys.lastUsedAddress, action.payload);
+        setTypedStorageKey(lsKeys.lastUsedAddress, action.payload);
       } else {
-        localStorage.removeItem(localStorageKeys.lastUsedAddress);
+        removeLastUsedAddress();
       }
       return {
         ...state,
@@ -34,17 +38,14 @@ export function celoReactReducer(
       if (action.payload === state.network) {
         return state;
       }
-      localStorage.setItem(
-        localStorageKeys.lastUsedNetwork,
-        action.payload.name
-      );
+      setTypedStorageKey(lsKeys.lastUsedNetwork, action.payload.name);
       return {
         ...state,
         network: action.payload,
       };
 
     case 'setConnector':
-      localStorage.removeItem(localStorageKeys.lastUsedAddress);
+      removeLastUsedAddress();
       return {
         ...state,
         connector: action.payload,
@@ -55,16 +56,13 @@ export function celoReactReducer(
       if (action.payload === state.feeCurrency) {
         return state;
       }
-      localStorage.setItem(
-        localStorageKeys.lastUsedFeeCurrency,
-        action.payload
-      );
+      setTypedStorageKey(lsKeys.lastUsedFeeCurrency, action.payload);
       return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
       const newConnector = action.payload;
       const address = newConnector.kit.connection.defaultAccount ?? null;
       if (address) {
-        localStorage.setItem(localStorageKeys.lastUsedAddress, address);
+        setTypedStorageKey(lsKeys.lastUsedAddress, address);
       }
       return {
         ...state,
@@ -94,10 +92,9 @@ export function celoReactReducer(
           [key]: action.payload,
         };
       } else {
-        console.error(
-          new Error(
-            `Unrecognized action type ${action.type} in celoReactReducer`
-          )
+        getApplicationLogger().error(
+          '[reducer]',
+          new Error(`Unrecognized action type ${action.type}`)
         );
       }
       return state;
@@ -106,6 +103,9 @@ export function celoReactReducer(
 
 export interface ReducerState {
   connector: Connector;
+  /**
+   * Initialisation error, if applicable.
+   */
   connectorInitError: Maybe<Error>;
   dapp: Dapp;
   network: Network;

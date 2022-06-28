@@ -29,8 +29,7 @@
     "@walletconnect/client-v1": "npm:@walletconnect/client@1.6.6",
     "@walletconnect/types-v1": "npm:@walletconnect/types@1.6.6",
     "@walletconnect/utils-v1": "npm:@walletconnect/utils@1.6.6",
-    "debug": "^4.3.3",
-    "ethereumjs-util": "^7.1.3"
+    "debug": "^4.3.3"
   },
   "engines": {
     "node": ">=10"

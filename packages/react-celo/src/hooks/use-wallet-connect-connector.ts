@@ -3,10 +3,12 @@
 import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useCallback, useEffect, useState } from 'react';
 
+import { WalletConnectConnector } from '../connectors';
+import { buildOptions } from '../connectors/wallet-connect';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
-import { useWalletVersion } from '../utils/useWalletVersion';
-import { WalletConnectConnector } from './connectors';
+import { getApplicationLogger } from '../utils/logger';
+import { useWalletVersion } from './use-wallet-version';
 
 interface UseWalletConnectConnector {
   error: Maybe<string>;
@@ -15,7 +17,7 @@ interface UseWalletConnectConnector {
   retry: () => void;
 }
 
-export function useWalletConnectConnector(
+export default function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
   autoOpen: boolean,
   getDeeplinkUrl?: (uri: string) => string | false,
@@ -41,8 +43,9 @@ export function useWalletConnectConnector(
 
     void (async () => {
       if (version == null) {
-        console.warn(
-          'WalletconnectConnector initialization awaiting for registry'
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Initialization awaiting for registry'
         );
         return;
       }
@@ -50,39 +53,32 @@ export function useWalletConnectConnector(
       connector = new WalletConnectConnector(
         network,
         feeCurrency,
-        {
-          connect: {
-            chainId: network.chainId,
-            // Uncomment with WCV2 support
-            // metadata: {
-            //   name: dapp.name,
-            //   description: dapp.description,
-            //   url: dapp.url,
-            //   icons: [dapp.icon],
-            // },
-            // permissions: {
-            //   blockchain: {
-            //     chains: [`eip155:${}`],
-            //   },
-            //   jsonrpc: {
-            //     methods: Object.values(SupportedMethods),
-            //   },
-            // },
-          },
-        },
+        buildOptions(network),
         autoOpen,
         getDeeplinkUrl,
         version
       );
       connector.onUri((newUri) => {
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Generated WC URI'
+        );
         if (mounted) {
           setUri(newUri);
         }
       });
       connector.onConnect(() => {
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Connected to WC servers'
+        );
         setLoading(true);
       });
       connector.onClose(() => {
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Lost connection to WC servers'
+        );
         void destroy().then(() => {
           setError('Connection with wallet was closed.');
           setUri(null);
@@ -94,8 +90,17 @@ export function useWalletConnectConnector(
         onSubmit(connector);
       } catch (reason) {
         if (reason === CANCELED) {
+          getApplicationLogger().debug(
+            '[useWalletConnectConnector]',
+            'User canceled connection'
+          );
           return;
         }
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'WC error',
+          reason
+        );
         setError((reason as Error).message);
       }
     })();

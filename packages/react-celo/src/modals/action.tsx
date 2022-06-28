@@ -3,11 +3,12 @@ import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
 import Spinner from '../components/spinner';
+import useTheme from '../hooks/use-theme';
 import { Theme } from '../types';
 import { useCeloInternal } from '../use-celo';
-import { hexToRGB } from '../utils/helpers';
+import { hexToRGB } from '../utils/colors';
+import { useFixedBody } from '../utils/helpers';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 import { styles as modalStyles } from './connect';
 
 const styles = cls({
@@ -90,6 +91,7 @@ export const ActionModal: React.FC<Props> = ({
 }: Props) => {
   const theme = useTheme();
   const { pendingActionCount, dapp } = useCeloInternal();
+  useFixedBody(pendingActionCount > 0);
 
   return (
     <ReactModal

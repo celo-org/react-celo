@@ -106,7 +106,7 @@ input:checked + .slider:before {
   color: white;
 }
 
-.error {
+.failed {
   background: #f94144;
   color: white;
 }

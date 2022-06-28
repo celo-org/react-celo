@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
+import useTheme from '../hooks/use-theme';
 import { Provider } from '../types';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 
 interface Props {
   provider: Provider;
@@ -28,20 +28,20 @@ const styles = cls({
     tw-scale-100
     active:tw-scale-95`,
   rowContainer: `
-    tw-flex 
-    tw-flex-shrink-0 
-    tw-mr-4 
+    tw-flex
+    tw-flex-shrink-0
+    tw-mr-4
     md:tw-mr-5`,
   iconContainer: `
-    tw-my-auto 
+    tw-my-auto
     tw-rounded
     tw-p-0.5
     ${isMobile ? 'tw-h-10 tw-w-10' : 'tw-h-7 tw-w-7'}`,
   icon: `
-    tw-h-full 
+    tw-h-full
     tw-w-full`,
   name: `
-    tw-font-medium 
+    tw-font-medium
     tw-text-sm
     tw-antialiased`,
   description: `

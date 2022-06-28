@@ -1,7 +1,8 @@
 import React from 'react';
 
+import useTheme from '../hooks/use-theme';
+import { getApplicationLogger } from '../utils/logger';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 
 const styles = cls({
   button: `
@@ -28,7 +29,8 @@ export default function Button({ as, className, style, ...props }: Props) {
 
   if (process.env.NODE_ENV !== 'production') {
     if (as !== 'a' && props.href) {
-      console.warn(
+      getApplicationLogger().warn(
+        '[a11y]',
         "Potential accessibility error. Got an href on an element which isn't an <a />"
       );
     }

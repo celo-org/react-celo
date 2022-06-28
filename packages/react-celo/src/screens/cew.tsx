@@ -4,9 +4,9 @@ import ConnectorScreen from '../components/connector-screen';
 import Spinner from '../components/spinner';
 import { CeloExtensionWalletConnector } from '../connectors';
 import { PROVIDERS } from '../constants';
+import useTheme from '../hooks/use-theme';
 import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 import { ConnectorProps } from '.';
 
 const styles = cls({
