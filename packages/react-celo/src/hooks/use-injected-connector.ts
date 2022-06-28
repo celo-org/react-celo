@@ -3,6 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { InjectedConnector, MetaMaskConnector } from '../connectors';
 import { Connector, Dapp, Maybe, Network } from '../types';
 import { useCeloInternal } from '../use-celo';
+import { getApplicationLogger } from '../utils/logger';
 import { CeloTokens } from '../utils/metamask';
 
 export function useInjectedConnector(
@@ -31,7 +32,7 @@ export function useInjectedConnector(
           onSubmit(connector);
         }
       } catch (e) {
-        console.error(e);
+        getApplicationLogger().error('[useMetaMaskConnector]', e);
       }
     })();
 

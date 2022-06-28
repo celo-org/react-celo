@@ -11,8 +11,8 @@ describe('RGBToHex', () => {
     expect(RGBToHex('rgb(0, 0, 0)')).toEqual('#000000');
     expect(RGBToHex('rgb(255, 0, 0)')).toEqual('#ff0000');
   });
-  it('converts rgba to hex, with an error, and strip the alpha', () => {
-    const spy = jest.spyOn(console, 'error');
+  it('converts rgba to hex, with a warning, and strip the alpha', () => {
+    const spy = jest.spyOn(console, 'warn');
     expect(RGBToHex('rgba(255, 255, 255, 0.5)')).toEqual('#ffffff80');
     expect(spy).toBeCalled();
   });

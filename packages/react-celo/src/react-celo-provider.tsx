@@ -27,6 +27,7 @@ import {
 import { Dapp, Network, Theme } from './types';
 import { CeloMethods, useCeloMethods } from './use-celo-methods';
 import { loadPreviousConfig } from './utils/helpers';
+import { ILogger, setApplicationLogger } from './utils/logger';
 
 // This type lets you call dispatch with one or two arguments:
 // First a type, and second an optional payload that matches an
@@ -97,7 +98,12 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   networks = DEFAULT_NETWORKS,
   feeCurrency = CeloContract.GoldToken,
   buildContractsCache,
+  logger,
 }: CeloProviderProps) => {
+  if (logger) {
+    setApplicationLogger(logger);
+  }
+
   const isMountedRef = useIsMounted();
 
   const initialNetwork = getInitialNetwork(networks, defaultNetwork, network);
@@ -178,6 +184,7 @@ export interface CeloProviderProps {
     reactModalProps?: Partial<ReactModal.Props>;
     render?: (props: ActionModalProps) => ReactNode;
   };
+  logger?: ILogger;
 }
 
 function getInitialNetwork(

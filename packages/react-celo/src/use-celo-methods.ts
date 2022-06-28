@@ -13,6 +13,7 @@ import { Dispatcher } from './react-celo-provider';
 import { Connector, Network, Theme } from './types';
 import { contrastCheck, fixTheme } from './utils/colors';
 import { getLastUsedWalletArgs } from './utils/local-storage';
+import { getApplicationLogger } from './utils/logger';
 
 export function useCeloMethods(
   {
@@ -65,8 +66,9 @@ export function useCeloMethods(
                   dispatch('initialisedConnector', initialisedConnector);
                 })
                 .catch((e) => {
-                  console.error(
-                    '[react-celo] Error switching network',
+                  getApplicationLogger().error(
+                    '[initConnector]',
+                    'Error switching network',
                     nextConnector.type,
                     e
                   );
@@ -86,15 +88,17 @@ export function useCeloMethods(
         });
       } catch (e) {
         if (typeof e === 'symbol') {
-          console.info(
-            '[react-celo] Ignoring error initializing connector with reason',
+          getApplicationLogger().debug(
+            '[initConnector]',
+            'Ignoring error initializing connector with reason',
             e.description
           );
           throw e;
         }
 
-        console.error(
-          '[react-celo] Error initializing connector',
+        getApplicationLogger().error(
+          '[initConnector]',
+          'Error initializing connector',
           nextConnector.type,
           e
         );
@@ -167,7 +171,8 @@ export function useCeloMethods(
           dispatch('setFeeCurrency', newFeeCurrency);
         }
       } catch (error) {
-        console.warn(
+        getApplicationLogger().warn(
+          '[updateFeeCurrency]',
           'updating Fee Currency not supported by this wallet or network',
           error
         );
@@ -182,8 +187,6 @@ export function useCeloMethods(
 
       if (process.env.NODE_ENV !== 'production') {
         fixTheme(theme);
-        // minimal recommended contrast ratio is 4.
-        // or 3 for larger font-sizes
         contrastCheck(theme);
       }
 
