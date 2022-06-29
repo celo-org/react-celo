@@ -1,19 +1,6 @@
 import { isMobile } from 'react-device-detect';
 
-import {
-  Celo,
-  CeloDance,
-  CeloTerminal,
-  ChromeExtensionStore,
-  CoinbaseWallet,
-  Ethereum,
-  Ledger,
-  MetaMask,
-  PrivateKey,
-  SteakWallet,
-  Valora,
-  WalletConnect,
-} from './components/icons';
+import * as Icons from './components/icons';
 import {
   ChainId,
   Maybe,
@@ -78,6 +65,7 @@ export enum Platform {
 }
 
 export const WalletIds = {
+  WalletConnect: '_',
   Valora: 'd01c7758d741b363e637a817a09bcf579feae4db9f5bb16f599fdd1f66e2f974',
   CeloWallet:
     '36d854b702817e228d5c853c528d7bdb46f4bb041d255f67b82eb47111e5676b',
@@ -89,14 +77,14 @@ export const WalletIds = {
 };
 
 export const PROVIDERS: {
-  [K in SupportedProviders]: Provider | WalletConnectProvider;
+  [K in SupportedProviders]: Provider;
 } = {
   [SupportedProviders.Valora]: {
     name: SupportedProviders.Valora,
     type: WalletTypes.WalletConnect,
     description:
       'Connect to Valora, a mobile payments app that works worldwide',
-    icon: Valora,
+    icon: Icons.Valora,
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => Priorities.Popular,
@@ -111,22 +99,22 @@ export const PROVIDERS: {
           return false;
       }
     },
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.WalletConnect]: {
     name: SupportedProviders.WalletConnect,
     type: WalletTypes.WalletConnect,
     description: 'Scan a QR code to connect your wallet',
-    icon: WalletConnect,
+    icon: Icons.WalletConnect,
     canConnect: () => true,
     showInList: () => true,
-    listPriority: () => Priorities.Popular,
+    listPriority: () => Priorities.Default,
     supportedPlatforms: [Platform.Mobile],
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.Ledger]: {
     name: SupportedProviders.Ledger,
     type: WalletTypes.Ledger,
     description: 'Sync with your Ledger hardware wallet',
-    icon: Ledger,
+    icon: Icons.Ledger,
     canConnect: () => true,
     showInList: () => !isMobile,
     listPriority: () => Priorities.Popular,
@@ -135,10 +123,10 @@ export const PROVIDERS: {
     name: SupportedProviders.CeloWallet,
     type: WalletTypes.WalletConnect,
     description: 'Connect to Celo Wallet for web or desktop',
-    icon: Celo,
+    icon: Icons.Celo,
     canConnect: () => true,
     showInList: () => true,
-    listPriority: () => (!isMobile ? 0 : 1),
+    listPriority: () => Priorities.Default,
     walletConnectId: WalletIds.CeloWallet,
     installURL: 'https://celowallet.app/',
     supportedPlatforms: [Platform.Desktop, Platform.Web],
@@ -152,19 +140,19 @@ export const PROVIDERS: {
           return false;
       }
     },
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.CeloTerminal]: {
     name: SupportedProviders.CeloTerminal,
     type: WalletTypes.WalletConnect,
     description: 'Connect to the Celo Terminal desktop app',
-    icon: CeloTerminal,
+    icon: Icons.CeloTerminal,
     canConnect: () => true,
     showInList: () => !isMobile,
     listPriority: () => Priorities.Default,
     installURL: 'https://celoterminal.com/',
     walletConnectId: WalletIds.CeloTerminal,
     supportedPlatforms: [],
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.MetaMask]: {
     name: SupportedProviders.MetaMask,
     type: WalletTypes.MetaMask,
@@ -173,7 +161,7 @@ export const PROVIDERS: {
         ? 'Connect with MetaMask Mobile App'
         : 'Open MetaMask Mobile App'
       : 'Use the Metamask browser extension. Celo support is limited.',
-    icon: MetaMask,
+    icon: Icons.MetaMask,
     canConnect: () => isMobile || isEthereumFromMetamask(),
     showInList: () => true,
     listPriority: () => Priorities.Popular,
@@ -186,7 +174,7 @@ export const PROVIDERS: {
     name: SupportedProviders.CeloExtensionWallet,
     type: WalletTypes.CeloExtensionWallet,
     description: 'Use a wallet from the the Celo chrome extension',
-    icon: ChromeExtensionStore,
+    icon: Icons.ChromeExtensionStore,
     canConnect: () => !!window.celo,
     showInList: () => !isMobile,
     listPriority: () => Priorities.Default,
@@ -197,7 +185,7 @@ export const PROVIDERS: {
     name: SupportedProviders.Injected,
     type: WalletTypes.Injected,
     description: 'Connect any Ethereum wallet to Celo',
-    icon: Ethereum,
+    icon: Icons.Ethereum,
     canConnect: () => isEthereumPresent(),
     showInList: () => isEthereumFromMetamask(),
     listPriority: () => Priorities.Default,
@@ -207,7 +195,7 @@ export const PROVIDERS: {
     type: WalletTypes.PrivateKey,
     description:
       'Enter a plaintext private key to load your account (testing only)',
-    icon: PrivateKey,
+    icon: Icons.PrivateKey,
     canConnect: () => true,
     showInList: () => process.env.NODE_ENV !== 'production',
     listPriority: () => Priorities.Default,
@@ -216,7 +204,7 @@ export const PROVIDERS: {
     name: SupportedProviders.CeloDance,
     type: WalletTypes.WalletConnect,
     description: 'Send, vote, and earn rewards within one wallet',
-    icon: CeloDance,
+    icon: Icons.CeloDance,
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => Priorities.Default,
@@ -231,15 +219,15 @@ export const PROVIDERS: {
           return false;
       }
     },
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.Steakwallet]: {
     name: SupportedProviders.Steakwallet,
     description: 'Scan a QR code to connect your wallet',
     type: WalletTypes.WalletConnect,
-    icon: SteakWallet,
+    icon: Icons.SteakWallet,
     canConnect: () => true,
     showInList: () => true,
-    listPriority: () => Priorities.Popular,
+    listPriority: () => Priorities.Default,
     installURL: 'https://steakwallet.fi/',
     walletConnectId: WalletIds.Steakwallet,
     supportedPlatforms: [Platform.Mobile],
@@ -251,16 +239,15 @@ export const PROVIDERS: {
           return false;
       }
     },
-  },
+  } as WalletConnectProvider,
   [SupportedProviders.CoinbaseWallet]: {
     name: SupportedProviders.CoinbaseWallet,
     type: WalletTypes.CoinbaseWallet,
     description: 'Scan a QR code to connect your wallet',
-    icon: CoinbaseWallet,
+    icon: Icons.CoinbaseWallet,
     canConnect: () => true,
     showInList: () => true,
-    listPriority: () => Priorities.Popular,
-    supportedPlatforms: [Platform.Mobile, Platform.Web],
+    listPriority: () => Priorities.Default,
   },
 };
 

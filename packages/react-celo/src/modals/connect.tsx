@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
@@ -64,10 +59,7 @@ type ReactModalProps = Omit<
 
 export interface ConnectModalProps {
   screens?: {
-    [x in SupportedProviders]?: FunctionComponent<{
-      onSubmit: (connector: Connector) => void;
-      provider?: WalletConnectProvider;
-    }>;
+    [x in SupportedProviders]?: React.FC<ConnectorProps>;
   };
   RenderProvider?: React.FC<{
     provider: Provider;

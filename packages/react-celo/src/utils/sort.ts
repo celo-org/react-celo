@@ -15,8 +15,8 @@ export const sortByPriority: SortingPredicate<Provider> = (a, b) => {
   const A = a.listPriority();
   const B = b.listPriority();
 
-  if (A < B) return -1;
-  if (A > B) return 1;
+  if (A < B) return 1;
+  if (A > B) return -1;
   return 0;
 };
 

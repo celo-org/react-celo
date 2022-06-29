@@ -116,11 +116,11 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     if (session.event === 'disconnect') {
       const params = session.params as { message: string }[];
-      const error =
+      const errMessage =
         params && params[0] && params[0].message
           ? params[0].message
           : 'Unknown error';
-      void this.close(error);
+      void this.close(errMessage);
     }
   };
   onSessionRequest = (error: Error | null, session: SessionProposal): void => {

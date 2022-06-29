@@ -3,6 +3,7 @@ import { isMobile } from 'react-device-detect';
 
 import {
   localStorageKeys,
+  Platform,
   Priorities,
   PROVIDERS,
   SupportedProviders,
@@ -15,21 +16,23 @@ import { defaultProviderSort } from '../utils/sort';
 export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
   return {
     name: wallet.name,
+    walletConnectId: wallet.id,
     type: WalletTypes.WalletConnect,
     description: wallet.description || 'Missing description in registry',
     icon: wallet.logos.md,
     canConnect: () => true,
     showInList: () =>
       isMobile ? Object.values(wallet.mobile).some(Boolean) : true,
-    listPriority: () => 0,
+    listPriority: () => Priorities.Default,
     installURL: wallet.homepage,
+    supportedPlatforms: [Platform.Mobile],
   };
 }
 
 export function getRecent(): Maybe<Provider> {
   const type = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
   const id = getTypedStorageKey(localStorageKeys.lastUsedWalletId);
-  let provider;
+  let provider: Maybe<Provider>;
 
   if (id && WalletTypes.WalletConnect === type) {
     provider = Object.values(PROVIDERS).find(
@@ -48,7 +51,10 @@ export default function useProviders(
   includedDefaultProviders: SupportedProviders[],
   sort = defaultProviderSort,
   search?: string
-) {
+): [
+  priority: Priorities,
+  entry: [providerKey: string, provider: Provider][]
+][] {
   const record: Record<string, Provider> = useMemo(
     () => ({
       ...includedDefaultProviders.reduce((all, current) => {
@@ -74,24 +80,26 @@ export default function useProviders(
       .sort(([, a], [, b]) => sort(a, b));
   }, [record, sort, search]);
 
+  if (!providers.length) {
+    return [];
+  }
+
   const recentlyUsedProvider = getRecent();
-  const prioritizedProviders = useMemo(() => {
-    const map = providers.reduce((acc, [providerKey, provider]) => {
-      const priority =
-        recentlyUsedProvider && recentlyUsedProvider.name === provider.name
-          ? Priorities.Recent
-          : Priorities.Default;
+  if (recentlyUsedProvider) {
+    const index = providers.findIndex(
+      ([providerKey]) => providerKey === recentlyUsedProvider.name
+    );
 
-      if (!acc.has(priority)) {
-        acc.set(priority, []);
-      }
+    if (index > -1) {
+      return [
+        [
+          Priorities.Recent,
+          [[recentlyUsedProvider.name, recentlyUsedProvider]],
+        ],
+        [Priorities.Default, providers.filter((_, i) => index !== i)],
+      ];
+    }
+  }
 
-      acc.get(priority)?.push([providerKey, provider]);
-      return acc;
-    }, new Map<Priorities, [providerKey: string, provider: Provider][]>());
-
-    return [...map.entries()].sort(([prioA], [prioB]) => prioB - prioA);
-  }, [recentlyUsedProvider, providers]);
-
-  return prioritizedProviders;
+  return [[Priorities.Default, providers]];
 }

@@ -31,7 +31,7 @@ const BAKLAVA_PARAMS = Object.freeze({
   },
 });
 
-const params: { [chain in ChainId]: typeof CELO_PARAMS } = {
+const PARAMS: { [chain in ChainId]: typeof CELO_PARAMS } = {
   [ChainId.Mainnet]: CELO_PARAMS,
   [ChainId.Alfajores]: ALFAJORES_PARAMS,
   [ChainId.Baklava]: BAKLAVA_PARAMS,
@@ -97,9 +97,9 @@ export const makeNetworkParams = async (
 
   return {
     chainId: `0x${info.chainId.toString(16)}`,
-    chainName: params[info.chainId].chainName ?? info.name,
+    chainName: PARAMS[info.chainId].chainName ?? info.name,
     nativeCurrency: {
-      name: params[info.chainId].nativeCurrency.name,
+      name: PARAMS[info.chainId].nativeCurrency.name,
       symbol,
       decimals,
     },

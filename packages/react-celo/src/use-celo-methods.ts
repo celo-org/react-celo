@@ -52,6 +52,8 @@ export function useCeloMethods(
         // and we need to update what network we're storing
         // accordingly.
         initialisedConnector.onNetworkChange?.((chainId) => {
+          // NOTE: for @aaron - I know you're working on this so I dont want conflicts for you
+          // eslint-disable-next-line @typescript-eslint/no-shadow
           const network = networks.find((n) => n.chainId === chainId);
           if (netId === chainId || !network) return;
 

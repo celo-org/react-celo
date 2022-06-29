@@ -39,7 +39,7 @@ export interface CeloNetwork extends Network {
  */
 export interface Provider {
   name: string;
-  type: WalletTypes;
+  type: Omit<WalletTypes.WalletConnect, WalletTypes>;
   description: string | JSX.Element;
   icon: string | React.FC<React.SVGProps<SVGSVGElement>>;
   canConnect: () => boolean;
@@ -49,8 +49,9 @@ export interface Provider {
 }
 
 export interface WalletConnectProvider extends Provider {
-  walletConnectId?: string;
-  supportedPlatforms?: Platform[];
+  type: WalletTypes.WalletConnect;
+  walletConnectId: string;
+  supportedPlatforms: Platform[];
   getLink?: (uri: string, platform: Platform) => string | false;
 }
 
