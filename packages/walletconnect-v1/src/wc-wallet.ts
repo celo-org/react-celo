@@ -18,6 +18,7 @@ import {
   DecryptProposal,
   PersonalSignProposal,
   SessionProposal,
+  SessionUpdate,
   SignTransactionProposal,
   SignTypedSignProposal,
   WalletConnectWalletOptions,
@@ -101,6 +102,15 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     }
   }
 
+  async switchToChain(params: {
+    chainId: number;
+    networkId: number;
+    rpcUrl: string;
+    nativeCurrency: { name: string; symbol: string };
+  }) {
+    return this.client!.updateChain(params);
+  }
+
   /**
    * Get the URI needed for out of band session establishment
    */
@@ -137,7 +147,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       throw error;
     }
   };
-  onSessionUpdated = (error: Error | null, session: SessionProposal): void => {
+  onSessionUpdated = (error: Error | null, session: SessionUpdate): void => {
     console.info('onSessionUpdated', error, session);
     if (error) {
       throw error;

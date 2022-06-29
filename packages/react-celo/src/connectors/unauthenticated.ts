@@ -35,7 +35,7 @@ export default class UnauthenticatedConnector
   }
 
   startNetworkChangeFromApp(network: Network) {
-    this.kit.connection.stop();
+    console.info('not authenticated to', network);
     this.kit = newKit(network.rpcUrl);
     this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
   }

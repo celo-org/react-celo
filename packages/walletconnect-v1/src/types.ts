@@ -69,6 +69,15 @@ export type SessionProposal = Request<
     }
   ]
 >;
+
+export type SessionUpdate = Request<
+  {
+    accounts: string[];
+    chainId: number;
+  }[],
+  'session_update'
+>;
+
 export type AccountsProposal = Request<unknown[], SupportedMethods.accounts>;
 
 export type SignTransactionProposal = Request<

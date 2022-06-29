@@ -309,9 +309,31 @@ export const getProviderForWallet = (
 /**
  * Default networks to connect to.
  */
-export const DEFAULT_NETWORKS = [
+export const DEFAULT_NETWORKS: Network[] = [
   Mainnet,
   Alfajores,
+  {
+    name: 'SecureFastChain',
+    rpcUrl: 'https://rpc-mainnet.matic.network',
+    explorer: 'https://explorer.example.com',
+    chainId: 9812374,
+    nativeCurrency: {
+      name: 'SFC',
+      symbol: 'SFC',
+      decimals: 18,
+    },
+  },
+  {
+    name: 'BoringChain',
+    rpcUrl: 'https://bsc-dataseed.binance.org/',
+    explorer: 'https://explorer.boringchain.org',
+    chainId: 0x38,
+    nativeCurrency: {
+      name: 'BORING',
+      symbol: 'BOR',
+      decimals: 18,
+    },
+  },
   Baklava,
   ...(process.env.NODE_ENV !== 'production' ? [Localhost] : []),
 ];

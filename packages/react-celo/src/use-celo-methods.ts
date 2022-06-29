@@ -29,6 +29,7 @@ export function useCeloMethods(
   dispatch: Dispatcher,
   buildContractsCache?: ContractCacheBuilder
 ): CeloMethods {
+  // TODO how to ensure previous connector is disbanded properly. thinking of case of from UnAuthenticated to AnyConnector. then unauth would still need to be closed. (not sure if others could be in that state too)
   const initConnector = useCallback(
     async (nextConnector: Connector) => {
       try {
@@ -78,6 +79,7 @@ export function useCeloMethods(
           "The connected wallet's network must be changed from the wallet."
         );
       }
+      console.info('new network', newNetwork, connector.type);
       await connector.startNetworkChangeFromApp(newNetwork);
     },
     [connector]

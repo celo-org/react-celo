@@ -69,13 +69,6 @@ export default function useWalletConnectConnector(
           setUri(newUri);
         }
       });
-      connector.onConnect(() => {
-        getApplicationLogger().debug(
-          '[useWalletConnectConnector]',
-          'Connected to WC servers'
-        );
-        setLoading(true);
-      });
       connector.onClose(() => {
         getApplicationLogger().debug(
           '[useWalletConnectConnector]',

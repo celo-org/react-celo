@@ -100,6 +100,7 @@ export class AbstractConnector {
     event: E,
     data?: EventsMap[E]
   ) => {
+    console.info('Connector', this.type, event, data);
     this.emitter.emit(event, data);
   };
 
@@ -136,10 +137,12 @@ export class AbstractConnector {
 
   bring Connector and Abstract Connector together
 
-  wallet connect connector needs to be updated to have address change
+  WIP wallet connect connector needs to be updated to have address change
 
   wallet connect wallet get URI should not setup the event listeners.
 
   should network be set by chainID not name? might be better?
+
+  handle situation of connector started to be created but then failed or canceled (reset to Unauthenticated)
 
 */
