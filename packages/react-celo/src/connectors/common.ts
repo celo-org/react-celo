@@ -128,7 +128,9 @@ export class AbstractConnector {
 
   ✅ remove the direct usage of local storage
 
-  remote CONNECTOR_TYPES object
+  make sure its clear when we close PRIVATE key connector (destroying it deliberately should forget the key closing browser window should remember it)
+
+  remote CONNECTOR_TYPES object (or move to tests ?)
 
   look for peculiarities
 

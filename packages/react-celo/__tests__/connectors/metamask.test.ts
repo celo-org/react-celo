@@ -19,9 +19,10 @@ describe('MetaMaskConnector', () => {
     // @ts-ignore
     global.window.ethereum = testingUtils.getProvider();
     testingUtils.mockNotConnectedWallet();
-    testingUtils.mockAccounts([ACCOUNT]);
     testingUtils.mockRequestAccounts([ACCOUNT]);
-    testingUtils.lowLevel.mockRequest('wallet_switchEthereumChain', {});
+    testingUtils.lowLevel.mockRequest('wallet_switchEthereumChain', {
+      chainId: `0x${Alfajores.chainId.toString(16)}`,
+    });
   });
   afterEach(() => {
     // Clear all mocks between tests
@@ -30,7 +31,9 @@ describe('MetaMaskConnector', () => {
 
   describe('initialise()', () => {
     beforeEach(() => {
-      testingUtils.mockConnectedWallet([ACCOUNT]);
+      testingUtils.mockConnectedWallet([ACCOUNT], {
+        chainId: `0x${Alfajores.chainId.toString(16)}`,
+      });
     });
 
     it('is idempotent', async () => {
@@ -66,9 +69,11 @@ describe('MetaMaskConnector', () => {
     const onChangeNetwork = jest.fn();
 
     beforeEach(() => {
-      testingUtils.mockConnectedWallet([ACCOUNT]);
+      testingUtils.mockConnectedWallet([ACCOUNT], {
+        chainId: `0x${Alfajores.chainId.toString(16)}`,
+      });
       connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
-      connector.on(ConnectorEvents.NETWORK_CHANGED, onConnect);
+      connector.on(ConnectorEvents.NETWORK_CHANGED, onChangeNetwork);
     });
 
     describe('continueNetworkUpdateFromWallet()', () => {
@@ -89,7 +94,9 @@ describe('MetaMaskConnector', () => {
     const onAddressChange = jest.fn();
     let connector: MetaMaskConnector;
     beforeEach(async () => {
-      testingUtils.mockConnectedWallet([ACCOUNT]);
+      testingUtils.mockConnectedWallet([ACCOUNT], {
+        chainId: `0x${Alfajores.chainId.toString(16)}`,
+      });
       connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
       connector.on(ConnectorEvents.ADDRESS_CHANGED, onAddressChange);
       // Seems to only work when  init is called after the callback is set

@@ -3,7 +3,6 @@ import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from '../constants';
 import { Connector, Maybe, Network } from '../types';
-import { forgetConnection } from '../utils/local-storage';
 import { AbstractConnector, ConnectorEvents } from './common';
 
 /**
@@ -28,7 +27,6 @@ export default class UnauthenticatedConnector
 
   initialise(): this {
     this.initialised = true;
-    forgetConnection();
     return this;
   }
 
@@ -37,6 +35,7 @@ export default class UnauthenticatedConnector
   }
 
   startNetworkChangeFromApp(network: Network) {
+    this.kit.connection.stop();
     this.kit = newKit(network.rpcUrl);
     this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
   }

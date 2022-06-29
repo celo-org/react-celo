@@ -51,9 +51,8 @@ export default class InjectedConnector
 
     ethereum.removeListener('chainChanged', this.onChainChanged);
     ethereum.removeListener('accountsChanged', this.onAccountsChanged);
-    // TODO better way of auto switching networks on startup
     await switchToCeloNetwork(this.network, ethereum, () =>
-      web3.eth.getChainId()
+      this.kit.connection.chainId()
     );
     ethereum.on('chainChanged', this.onChainChanged);
     ethereum.on('accountsChanged', this.onAccountsChanged);
