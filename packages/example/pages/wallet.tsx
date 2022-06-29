@@ -70,7 +70,7 @@ export default function Wallet(): React.ReactElement {
       kit.contracts.getStableToken(StableToken.cEUR),
     ]);
 
-    const [summary, celo, cusd, ceur] = await Promise.all([
+    const [accountSummary, celo, cusd, ceur] = await Promise.all([
       accounts.getAccountSummary(account.address).catch((e) => {
         console.error(e);
         return defaultSummary;
@@ -81,7 +81,7 @@ export default function Wallet(): React.ReactElement {
     ]);
 
     setSummary({
-      ...summary,
+      ...accountSummary,
       celo,
       cusd,
       ceur,
@@ -253,7 +253,7 @@ export default function Wallet(): React.ReactElement {
 
   const handleNewRequests = useCallback(
     (
-      error: Error | null,
+      err: Error | null,
       payload:
         | AccountsProposal
         | SignTransactionProposal
@@ -262,7 +262,7 @@ export default function Wallet(): React.ReactElement {
         | DecryptProposal
         | ComputeSharedSecretProposal
     ): void => {
-      if (error) return setError(error.message);
+      if (err) return setError(err.message);
 
       console.log('call_request', payload);
       let decodedMessage: string;
@@ -367,8 +367,8 @@ export default function Wallet(): React.ReactElement {
 
     connector.on(
       CLIENT_EVENTS.session_request,
-      (error, payload: SessionProposal) => {
-        if (error) return setError(error.message);
+      (requestError, payload: SessionProposal) => {
+        if (requestError) return setError(requestError.message);
 
         setApprovalData({
           accept: approveConnection,
@@ -383,18 +383,18 @@ export default function Wallet(): React.ReactElement {
 
     connector.on(
       CLIENT_EVENTS.connect,
-      (error, payload: Request<unknown[]>) => {
-        if (error) return setError(error.message);
+      (connectError, payload: Request<unknown[]>) => {
+        if (connectError) return setError(connectError.message);
 
         console.log(CLIENT_EVENTS.connect, payload);
 
         connector.on(
           CLIENT_EVENTS.disconnect,
-          (error, payload: Request<unknown[]>) => {
-            if (error) return setError(error.message);
+          (disconnectError, disconnectPayload: Request<unknown[]>) => {
+            if (disconnectError) return setError(disconnectError.message);
             if (!connector) return;
 
-            console.log(CLIENT_EVENTS.disconnect, payload);
+            console.log(CLIENT_EVENTS.disconnect, disconnectPayload);
             setConnector(null);
             setApprovalData(null);
           }
@@ -404,24 +404,24 @@ export default function Wallet(): React.ReactElement {
 
     connector.on(
       CLIENT_EVENTS.session_update,
-      (error, payload: Request<unknown[]>) => {
-        if (error) return setError(error.message);
+      (updateError, payload: Request<unknown[]>) => {
+        if (updateError) return setError(updateError.message);
 
         console.log(CLIENT_EVENTS.session_update, payload);
       }
     );
     connector.on(
       CLIENT_EVENTS.wc_sessionRequest,
-      (error, payload: Request<unknown[]>) => {
-        if (error) return setError(error.message);
+      (requestError, payload: Request<unknown[]>) => {
+        if (requestError) return setError(requestError.message);
 
         console.log(CLIENT_EVENTS.wc_sessionRequest, payload);
       }
     );
     connector.on(
       CLIENT_EVENTS.wc_sessionUpdate,
-      (error, payload: Request<unknown[]>) => {
-        if (error) return setError(error.message);
+      (updateError, payload: Request<unknown[]>) => {
+        if (updateError) return setError(updateError.message);
 
         console.log(CLIENT_EVENTS.wc_sessionUpdate, payload);
       }

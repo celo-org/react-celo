@@ -67,8 +67,8 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
     isMobile,
     provider.walletConnectId,
     provider.getLink &&
-      ((uri: string) =>
-        provider.getLink!(uri, isMobile ? Platform.Mobile : Platform.Desktop))
+      ((URI: string) =>
+        provider.getLink!(URI, isMobile ? Platform.Mobile : Platform.Desktop))
   );
 
   const onClickPlatform = useCallback(

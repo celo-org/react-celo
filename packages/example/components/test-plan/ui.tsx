@@ -5,8 +5,8 @@ import { ErrorIcon } from './error-icon';
 import { Status } from './useTestStatus';
 
 export function TestTag({ type }: { type: Status }) {
-  const getText = (type: Status) => {
-    return type.replace('-', ' ');
+  const getText = (text: Status) => {
+    return text.replace('-', ' ');
   };
 
   return (

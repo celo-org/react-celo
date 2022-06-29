@@ -59,11 +59,11 @@ export function getTestWallet(): {
 
     if (session.event === 'disconnect') {
       const params = session.params as { message: string }[];
-      const error =
+      const err =
         params && params[0] && params[0].message
           ? params[0].message
           : 'Unknown error';
-      console.log('DISCONNECT', params, error);
+      console.log('DISCONNECT', params, err);
     }
   };
   const onSessionRequest = (

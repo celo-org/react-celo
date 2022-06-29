@@ -94,7 +94,7 @@ function HomePage(): React.ReactElement {
       ),
     ]);
 
-    const [summary, celo, balances] = await Promise.all([
+    const [accountSummary, celo, balances] = await Promise.all([
       accounts.getAccountSummary(address).catch((e) => {
         console.error(e);
         return defaultSummary;
@@ -104,7 +104,7 @@ function HomePage(): React.ReactElement {
     ]);
 
     setSummary({
-      ...summary,
+      ...accountSummary,
       celo,
       balances,
     });
@@ -281,9 +281,9 @@ function HomePage(): React.ReactElement {
                   key={i}
                   theme={theme}
                   currentTheme={_theme}
-                  onClick={(theme) => {
-                    updateTheme(theme);
-                    selectTheme(theme);
+                  onClick={(newTheme) => {
+                    updateTheme(newTheme);
+                    selectTheme(newTheme);
                   }}
                 />
               ))}

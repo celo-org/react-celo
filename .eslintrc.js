@@ -38,6 +38,8 @@ module.exports = {
     'simple-import-sort/exports': 'warn',
     'unused-imports/no-unused-imports': 'error',
     '@typescript-eslint/triple-slash-reference': 'off',
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
     '@typescript-eslint/no-unused-vars': [
       'warn',
       {
