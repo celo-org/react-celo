@@ -107,7 +107,7 @@ describe('CeloProvider', () => {
     });
 
     describe('when additionalWCWallets are given', () => {
-      it.only('renders a QR code', async () => {
+      it('renders a QR code', async () => {
         const dom = await stepsToOpenModal({
           connectModal: {
             providersOptions: {
