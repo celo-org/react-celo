@@ -154,7 +154,12 @@ const PrettyQrCode = ({ size = 200, value }: Props) => {
 
   return (
     <div className={styles.container} style={{ borderColor: theme.muted }}>
-      <svg height={size} style={{ all: 'revert' }} width={size}>
+      <svg
+        data-testid="QR-CODE"
+        height={size}
+        style={{ all: 'revert' }}
+        width={size}
+      >
         <rect fill="transparent" height={size} width={size} />
         {corners}
         {dots}

@@ -14,6 +14,23 @@ import { getTypedStorageKey } from '../utils/local-storage';
 import { defaultProviderSort } from '../utils/sort';
 
 export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
+  const platforms = [];
+  if (
+    wallet.responsive?.mobileFriendly ||
+    wallet.app.android ||
+    wallet.app.ios
+  ) {
+    platforms.push(Platform.Mobile);
+  }
+
+  if (wallet.responsive?.browserFriendly || wallet.app.browser) {
+    platforms.push(Platform.Web);
+  }
+
+  if (wallet.app.mac || wallet.app.linux || wallet.app.windows) {
+    platforms.push(Platform.Desktop);
+  }
+
   return {
     name: wallet.name,
     walletConnectId: wallet.id,
@@ -25,7 +42,7 @@ export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
       isMobile ? Object.values(wallet.mobile).some(Boolean) : true,
     listPriority: () => Priorities.Default,
     installURL: wallet.homepage,
-    supportedPlatforms: [Platform.Mobile],
+    supportedPlatforms: platforms,
   };
 }
 

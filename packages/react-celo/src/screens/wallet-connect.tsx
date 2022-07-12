@@ -43,6 +43,7 @@ const styles = cls({
     tw-scale-100
     active:tw-scale-95`,
   desktopDisclaimer: `
+    tw-text-center
     tw-text-sm
     tw-pb-4`,
   mobileDisclaimer: `
@@ -83,6 +84,7 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
 
   if (!provider) return null;
   let content = null;
+
   if (!uri || loading) {
     if (error) {
       content = (

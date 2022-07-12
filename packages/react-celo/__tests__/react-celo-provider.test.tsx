@@ -105,6 +105,77 @@ describe('CeloProvider', () => {
         expect(none).toBeVisible();
       });
     });
+
+    describe('when additionalWCWallets are given', () => {
+      it.only('renders a QR code', async () => {
+        const dom = await stepsToOpenModal({
+          connectModal: {
+            providersOptions: {
+              additionalWCWallets: [
+                // see https://github.com/WalletConnect/walletconnect-registry/#schema for a schema example
+                {
+                  app: {
+                    android:
+                      'https://play.google.com/store/apps/details?id=com.bitkeep.wallet',
+                    browser:
+                      'https://chrome.google.com/webstore/detail/bitkeep-bitcoin-crypto-wa/jiidiaalihmmhddjgbnbgdfflelocpak',
+                    ios: 'https://apps.apple.com/app/bitkeep/id1395301115',
+                    linux: 'https://bitkeep.com/download?type=2',
+                    mac: 'https://bitkeep.com/download?type=2',
+                    windows: 'https://bitkeep.com/download?type=2',
+                  },
+                  chains: ['eip:4220'],
+                  description:
+                    'BitKeep is a decentralized multi-chain digital wallet.',
+                  desktop: {
+                    native: 'bitkeep://',
+                    universal: 'bitkeep://',
+                  },
+                  homepage: 'https://bitkeep.com/',
+                  id: 'bitkeep-wallet',
+                  logos: {
+                    lg: 'https://github.com/bitkeepwallet/download/blob/main/logo-png/BitKeep_logo_circle.png?raw=true',
+                    md: 'https://github.com/bitkeepwallet/download/blob/main/logo-png/BitKeep_logo_circle.png?raw=true',
+                    sm: 'https://github.com/bitkeepwallet/download/blob/main/logo-png/BitKeep_logo_circle.png?raw=true',
+                  },
+                  metadata: {
+                    colors: {
+                      primary: '#fff',
+                      secondary: '#7524F9',
+                    },
+                    shortName: 'BitKeep',
+                  },
+                  mobile: {
+                    native: 'bitkeep://',
+                    universal: 'bitkeep://',
+                  },
+                  name: 'BitKeep Wallet',
+                  responsive: {
+                    browserFriendly: true,
+                    browserOnly: false,
+                    mobileFriendly: true,
+                    mobileOnly: false,
+                  },
+                  // IMPORTANT
+                  // This is the version of WC. We only support version 1 at the moment.
+                  versions: ['1'],
+                },
+              ],
+            },
+          },
+        });
+
+        const wallet = dom.queryByText('BitKeep Wallet');
+
+        act(() => {
+          wallet && fireEvent.click(wallet);
+        });
+
+        const qrCode = await dom.findByTestId('QR-CODE');
+
+        expect(qrCode).toBeVisible();
+      });
+    });
   });
 
   describe('hook interface', () => {
