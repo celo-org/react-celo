@@ -154,7 +154,6 @@ export class AbstractConnector {
 
   ✅ remote CONNECTOR_TYPES object (or move to tests ?)
 
-  
   ✅ wallet connect connector needs to be updated to have address change
 
   ✅ wallet connect wallet get URI should not setup the event listeners.
@@ -162,13 +161,14 @@ export class AbstractConnector {
   ✅ should network be set by chainID not name? might be better?
 
   ✅ handle situation of connector started to be created but then failed or canceled (reset to Unauthenticated)
+  
+  ✅ the removal of connector.account as a public method
+
+  replace console.info with our custom logger
 
   standarize the use of fetchWalletAddress with defaultAccount vs address and 
-  the removal of connector.account as a public method
 
-  fix valora connecting then disconnecting when connected any network that isnt celo mainnet -- technically it only worked before because we were not handling changing network from wallet properly. but since we do now and valora only supports mainnet this will break 
-
-  bring Connector and Abstract Connector together (or not?)
+  fix valora connecting then disconnecting when connected to any network that isnt celo mainnet -- technically it only worked before because we were not handling changing network from wallet properly. but since we do now and valora only supports mainnet this will break 
   
   look for peculiarities
 
