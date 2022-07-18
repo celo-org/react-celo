@@ -4,13 +4,12 @@ import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useCallback, useEffect, useState } from 'react';
 
 import { WalletConnectConnector } from '../connectors';
+import { ConnectorEvents } from '../connectors/common';
 import { buildOptions } from '../connectors/wallet-connect';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
 import { getApplicationLogger } from '../utils/logger';
 import { useWalletVersion } from './use-wallet-version';
-
-import { ConnectorEvents } from '../connectors/common';
 
 interface UseWalletConnectConnector {
   error: Maybe<string>;
@@ -108,7 +107,7 @@ export default function useWalletConnectConnector(
       // We should cleanup the state
       if (!connector?.initialised) {
         // destroy so we dont have open connectors all over the place
-        destroy();
+        void destroy();
       }
 
       setUri(null);

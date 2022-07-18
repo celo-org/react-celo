@@ -1,4 +1,4 @@
-import { CeloTokenContract, CeloContract } from '@celo/contractkit/lib/base';
+import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import {
   EthProposal,
@@ -101,6 +101,7 @@ export default class WalletConnectConnector
       const wallet = this.kit.getWallet() as WalletConnectWalletV1;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const resp = await wallet.switchToChain({
         ...network,
         networkId: network.chainId,
@@ -125,10 +126,13 @@ export default class WalletConnectConnector
     }
   }
 
-  private onSessionCreated(_error: Error | null, session: SessionConnect) {
+  private async onSessionCreated(
+    _error: Error | null,
+    session: SessionConnect
+  ) {
     // TODO HANDLE FAILED TO CONNECT STATE
-    const connectSession = session as SessionConnect;
-    this.onConnected(connectSession);
+    const connectSession = session;
+    await this.onConnected(connectSession);
   }
 
   private onCallRequest(error: Error | null, payload: EthProposal) {
@@ -139,18 +143,21 @@ export default class WalletConnectConnector
     }
   }
 
-  private onWcSessionUpdate(_error: Error | null, session: SessionProposal) {
+  private async onWcSessionUpdate(
+    _error: Error | null,
+    session: SessionProposal
+  ) {
     console.info('SESSION+WC+UPDATE', session, _error);
     const params = session.params[0];
-    this.combinedSessionUpdater(params);
+    await this.combinedSessionUpdater(params);
   }
 
-  private onSessionUpdated(_error: Error | null, session: SessionUpdate) {
+  private async onSessionUpdated(_error: Error | null, session: SessionUpdate) {
     console.info('SESSION+UPDATE', session, _error);
     const params = session.params[0];
 
     // TODO emit event when there is an error
-    this.combinedSessionUpdater(params);
+    await this.combinedSessionUpdater(params);
   }
 
   private onSessionDeleted(_error: Error | null, session: SessionDisconnect) {

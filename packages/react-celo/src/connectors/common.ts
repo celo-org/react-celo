@@ -84,7 +84,7 @@ export type ConnectorParams =
 export type EventsMap = {
   [ConnectorEvents.ADDRESS_CHANGED]: string; // address/account changed
   [ConnectorEvents.NETWORK_CHANGED]: string; // network has been changed, when this is issued post it being reflected on kit and wallet
-  [ConnectorEvents.NETWORK_CHANGE_FAILED]: any; // an attempt to change chain id failed (likely either the wallet or dapp does not support the requested chain)
+  [ConnectorEvents.NETWORK_CHANGE_FAILED]: unknown; // an attempt to change chain id failed (likely either the wallet or dapp does not support the requested chain)
   [ConnectorEvents.WALLET_CHAIN_CHANGED]: number; // wallet changed network, dapp and connector should respond
   [ConnectorEvents.CONNECTED]: ConnectorParams; // wallet is now connected
   [ConnectorEvents.WC_URI_RECEIVED]: string; // wc uri is available

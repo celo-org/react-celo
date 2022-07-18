@@ -11,7 +11,7 @@ import {
 
 import { WalletTypes } from '../constants';
 import { Ethereum } from '../global';
-import { Connector, Dapp, Maybe, Network } from '../types';
+import { Connector, Dapp, Network } from '../types';
 import { switchToCeloNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
@@ -146,7 +146,7 @@ export default class CoinbaseWalletConnector
     this.disconnect();
     if (this.provider?.connected) {
       // must be called last as it refreshes page which then starts the resurector if disconnect has not been called
-      this.provider?.close();
+      void this.provider?.close();
     }
     return;
   }

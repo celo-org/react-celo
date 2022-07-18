@@ -2,7 +2,7 @@ import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from '../constants';
-import { Connector, Maybe, Network } from '../types';
+import { Connector, Network } from '../types';
 import { AbstractConnector, ConnectorEvents } from './common';
 
 /**

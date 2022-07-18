@@ -12,11 +12,11 @@ import {
 import { CANCELED, defaultBridge } from './constants';
 import {
   CLIENT_EVENTS,
-  SessionConnect,
-  SessionProposal,
-  SessionDisconnect,
-  SessionUpdate,
   EthProposal,
+  SessionConnect,
+  SessionDisconnect,
+  SessionProposal,
+  SessionUpdate,
   WalletConnectWalletOptions,
 } from './types';
 import Canceler from './utils/canceler';

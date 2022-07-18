@@ -374,7 +374,7 @@ export default function Wallet(): React.ReactElement {
           accept: approveConnection,
           reject: rejectConnection,
           meta: {
-            title: `new connection from dApp ${payload.params[0].peerMeta.name}`,
+            title: `new connection from dApp ${payload?.params[0]?.peerMeta?.name}`,
             raw: payload,
           },
         });

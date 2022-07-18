@@ -20,7 +20,9 @@ export class ConnectorStub extends AbstractConnector implements Connector {
     this.kit = newKit(n.rpcUrl);
   }
 
-  startNetworkChangeFromApp(network: Network) {}
+  startNetworkChangeFromApp(_network: Network) {
+    // no op
+  }
 
   initialise = () => Promise.resolve(this);
 

@@ -1,6 +1,5 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
-import { UnauthenticatedConnector } from './connectors';
 import { Connector, Dapp, Maybe, Network, Theme } from './types';
 import { getApplicationLogger } from './utils/logger';
 

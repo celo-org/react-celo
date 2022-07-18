@@ -4,7 +4,7 @@ import Button from '../components/button';
 import ConnectorScreen from '../components/connector-screen';
 import { PrivateKeyConnector } from '../connectors';
 import useTheme from '../hooks/use-theme';
-import { useCelo, useCeloInternal } from '../use-celo';
+import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
 import { ConnectorProps } from '.';
 

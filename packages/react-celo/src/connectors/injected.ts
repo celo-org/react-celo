@@ -6,7 +6,7 @@ import {
 } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from '../constants';
-import { Connector, Maybe, Network } from '../types';
+import { Connector, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
 import { switchToCeloNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';

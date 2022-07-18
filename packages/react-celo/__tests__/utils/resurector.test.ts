@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-import { CONNECTOR_TYPES } from '../../src/connectors';
+import { CONNECTOR_TYPES } from '../../src/connectors/connectors-by-name';
 import {
   Baklava,
   DEFAULT_NETWORKS,

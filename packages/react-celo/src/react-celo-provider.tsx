@@ -70,10 +70,10 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   // downside is there are some sementics that get weird
   useEffect(() => {
     console.info('Connector init', state.connector.type);
-    methods.initConnector(state.connector).catch((e) => {
+    methods.initConnector(state.connector).catch(async (e) => {
       console.info('initConnect error', e);
       // If the connector fails to initialise on mount then we reset.
-      methods.destroy();
+      await methods.destroy();
     });
     // We only want this to run on mount so the deps array is empty.
     /* eslint-disable-next-line */

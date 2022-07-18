@@ -3,7 +3,7 @@ import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { LocalWallet } from '@celo/wallet-local';
 
 import { localStorageKeys, WalletTypes } from '../constants';
-import { Connector, Maybe, Network } from '../types';
+import { Connector, Network } from '../types';
 import { setTypedStorageKey } from '../utils/local-storage';
 import {
   AbstractConnector,

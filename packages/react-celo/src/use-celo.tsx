@@ -1,5 +1,6 @@
 import { useReactCeloContext } from './react-celo-provider';
 import { ReducerState } from './react-celo-reducer';
+import { Maybe } from './types';
 import { CeloMethods } from './use-celo-methods';
 
 type SomeReducerStateProps = Pick<
@@ -14,7 +15,7 @@ type DerivedFromReducerStateProps = {
 
 type SomeReducerConnectorProps = Pick<
   ReducerState['connector'],
-  'kit' | 'account' | 'initialised'
+  'kit' | 'initialised'
 >;
 
 type DerivedFromConnectorProps = {
@@ -29,7 +30,7 @@ export type UseCelo = SomeReducerStateProps &
   DerivedFromReducerStateProps &
   SomeReducerConnectorProps &
   DerivedFromConnectorProps &
-  SomeCeloMethods;
+  SomeCeloMethods & { account: Maybe<string> };
 
 export function useCelo<CC = undefined>(): UseCelo {
   const [reducerState, _dispatch, celoMethods] = useReactCeloContext();
@@ -67,6 +68,9 @@ export function useCelo<CC = undefined>(): UseCelo {
     kit: connector.kit,
     // the wallet address from Account.getWalletAddress => The address at which the account expects to receive transfers.
     // If it's empty/0x0, the account indicates that an address exchange should be initiated with the dataEncryptionKey
+    /*
+     * @deprecated this will likely be removed in favor of just address
+     */
     account: connector.kit.connection.defaultAccount,
     initialised: connector.initialised,
     walletType: connector.type,

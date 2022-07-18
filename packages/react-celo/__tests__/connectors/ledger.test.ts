@@ -24,12 +24,14 @@ describe('LedgerConnector', () => {
     connector.on(ConnectorEvents.NETWORK_CHANGED, onChangeNetwork);
 
     jest
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
       .spyOn<any, any>(connector, 'createWallet')
       .mockImplementation(function () {
         return walletStub;
       });
 
     jest
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
       .spyOn<any, any>(connector, 'getWallet')
       .mockImplementation(function () {
         return walletStub;
