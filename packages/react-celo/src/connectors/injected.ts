@@ -18,7 +18,6 @@ export default class InjectedConnector
   public initialised = false;
   public type = WalletTypes.Injected;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
   private network: Network;
 
   constructor(
@@ -73,7 +72,6 @@ export default class InjectedConnector
   private newKit(web3: Web3Type, defaultAccount: string) {
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     this.kit.connection.defaultAccount = defaultAccount;
-    this.account = defaultAccount ?? null;
   }
 
   async startNetworkChangeFromApp(network: Network) {

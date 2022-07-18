@@ -20,7 +20,7 @@ export function resurrector(networks: Network[], dapp: Dapp) {
   const network = getNetwork(networks);
 
   if (!walletType || !network) return null;
-
+  console.info(walletType, 'resurecting with', network, dapp);
   try {
     switch (walletType) {
       case WalletTypes.Ledger: {
@@ -72,6 +72,7 @@ export function resurrector(networks: Network[], dapp: Dapp) {
     return null;
   }
 }
+
 function getNetwork(networks: Network[]) {
   const networkName = getTypedStorageKey(localStorageKeys.lastUsedNetwork);
   if (!networkName) return;

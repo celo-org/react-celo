@@ -18,7 +18,6 @@ export default class PrivateKeyConnector
   public initialised = false;
   public type = WalletTypes.PrivateKey;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
   private wallet: LocalWallet;
   constructor(
     private network: Network,
@@ -55,7 +54,6 @@ export default class PrivateKeyConnector
   private newKit(network: Network) {
     const kit = newKit(network.rpcUrl, this.wallet);
     kit.connection.defaultAccount = this.wallet.getAccounts()[0];
-    this.account = kit.connection.defaultAccount ?? null;
     return kit;
   }
 
@@ -67,6 +65,7 @@ export default class PrivateKeyConnector
 
   close(): void {
     this.kit.connection.stop();
+    setTypedStorageKey(localStorageKeys.lastUsedPrivateKey, '');
     this.disconnect();
     return;
   }

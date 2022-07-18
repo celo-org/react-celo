@@ -101,19 +101,6 @@ export function getLastUsedWalletArgs(): WalletArgs | null {
   return null;
 }
 
-export function setLastUsedWalletArgs(params: WalletArgs) {
-  const args = JSON.stringify(params);
-  localStorage.setItem(localStorageKeys.lastUsedWalletArguments, args);
-}
-
-export function forgetConnection() {
-  [
-    localStorageKeys.lastUsedWalletType,
-    localStorageKeys.lastUsedWalletArguments,
-    localStorageKeys.lastUsedNetwork,
-  ].forEach((key) => localStorage.removeItem(key));
-}
-
 export function clearPreviousConfig(): void {
   Object.values(localStorageKeys).forEach((val) => {
     if (val === localStorageKeys.lastUsedWalletId) return;

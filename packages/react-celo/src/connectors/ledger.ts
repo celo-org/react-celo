@@ -3,12 +3,8 @@ import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { LedgerWallet, newLedgerWalletWithSetup } from '@celo/wallet-ledger';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
-import { localStorageKeys, WalletTypes } from '../constants';
-import { Connector, Maybe, Network } from '../types';
-import {
-  setLastUsedWalletArgs,
-  setTypedStorageKey,
-} from '../utils/local-storage';
+import { WalletTypes } from '../constants';
+import { Connector, Network } from '../types';
 import {
   AbstractConnector,
   ConnectorEvents,
@@ -22,7 +18,6 @@ export default class LedgerConnector
   public initialised = false;
   public type = WalletTypes.Ledger;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
   private wallet: LedgerWallet | undefined;
   constructor(
     private network: Network,
@@ -30,9 +25,6 @@ export default class LedgerConnector
     public feeCurrency: CeloTokenContract
   ) {
     super();
-    setLastUsedWalletArgs([index]);
-    setTypedStorageKey(localStorageKeys.lastUsedWalletType, WalletTypes.Ledger);
-    setTypedStorageKey(localStorageKeys.lastUsedNetwork, network.name);
     this.kit = newKit(network.rpcUrl);
   }
 
@@ -49,7 +41,6 @@ export default class LedgerConnector
   private async createKit(wallet: LedgerWallet, network: Network) {
     this.kit = newKit(network.rpcUrl, wallet);
     this.kit.connection.defaultAccount = wallet.getAccounts()[0];
-    this.account = this.kit.connection.defaultAccount ?? null;
     if (this.feeCurrency) {
       await this.updateFeeCurrency(this.feeCurrency);
     }

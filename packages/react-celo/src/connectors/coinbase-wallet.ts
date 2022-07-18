@@ -22,7 +22,6 @@ export default class CoinbaseWalletConnector
   public initialised = false;
   public type = WalletTypes.CoinbaseWallet;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
   public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
 
   private provider: CoinbaseWalletProvider | null = null;
@@ -34,6 +33,19 @@ export default class CoinbaseWalletConnector
     const sdk = new CoinbaseWalletSDK({
       appName: dapp?.name ?? '',
       appLogoUrl: dapp?.icon ?? '',
+      reloadOnDisconnect: false,
+      diagnosticLogger: {
+        log: (e, p) => {
+          // this fixes the app trying to resurect the cb connector after the wallet has initiated a disconnection as the sdk has reloads the page
+          if (
+            'walletlink_sdk_metadata_destroyed' === e &&
+            p?.alreadyDestroyed === false
+          ) {
+            this.close();
+          }
+          console.info('CB', e, p);
+        },
+      },
     });
     this.provider = sdk.makeWeb3Provider(network.rpcUrl, network.chainId);
   }
@@ -42,6 +54,7 @@ export default class CoinbaseWalletConnector
     if (!this.provider) {
       throw new Error('Coinbase wallet provider not instantiated');
     }
+    this.provider.disableReloadOnDisconnect();
     if (this.initialised) {
       return this;
     }
@@ -92,7 +105,6 @@ export default class CoinbaseWalletConnector
   private newKit(web3: Web3Type, defaultAccount: string) {
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     this.kit.connection.defaultAccount = defaultAccount;
-    this.account = defaultAccount ?? null;
     return this.kit;
   }
 
@@ -131,8 +143,11 @@ export default class CoinbaseWalletConnector
     } catch (e) {
       console.info('stopped dead', e, e === 'CeloProvider already stopped');
     }
-
     this.disconnect();
+    if (this.provider?.connected) {
+      // must be called last as it refreshes page which then starts the resurector if disconnect has not been called
+      this.provider?.close();
+    }
     return;
   }
 }

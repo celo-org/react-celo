@@ -6,21 +6,17 @@ import { RemoteWallet } from '@celo/wallet-remote';
 import WalletConnect from '@walletconnect/client-v1';
 import {
   ICreateSessionOptions,
-  IInternalEvent,
   IWalletConnectSDKOptions,
 } from '@walletconnect/types';
 
 import { CANCELED, defaultBridge } from './constants';
 import {
-  AccountsProposal,
   CLIENT_EVENTS,
-  ComputeSharedSecretProposal,
-  DecryptProposal,
-  PersonalSignProposal,
+  SessionConnect,
   SessionProposal,
+  SessionDisconnect,
   SessionUpdate,
-  SignTransactionProposal,
-  SignTypedSignProposal,
+  EthProposal,
   WalletConnectWalletOptions,
 } from './types';
 import Canceler from './utils/canceler';
@@ -120,13 +116,18 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return this.client?.uri;
   }
 
-  onSessionCreated = (error: Error | null, session: IInternalEvent): void => {
+  // heads up! common pattern for the onSession*** methods is to overwrite them externally
+
+  onSessionCreated = (error: Error | null, session: SessionConnect): void => {
     console.info('onSessionCreated', error, session);
     if (error) {
       throw error;
     }
   };
-  onSessionDeleted = (error: Error | null, session: IInternalEvent): void => {
+  onSessionDeleted = (
+    error: Error | null,
+    session: SessionDisconnect
+  ): void => {
     console.info('onSessionDeleted', error);
     if (error) {
       throw error;
@@ -153,16 +154,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       throw error;
     }
   };
-  onCallRequest = (
-    error: Error | null,
-    payload:
-      | AccountsProposal
-      | SignTransactionProposal
-      | PersonalSignProposal
-      | SignTypedSignProposal
-      | DecryptProposal
-      | ComputeSharedSecretProposal
-  ): void => {
+  onCallRequest = (error: Error | null, payload: EthProposal): void => {
     console.info('onCallRequest', error, payload);
     if (error) {
       throw error;
@@ -230,10 +222,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       throw new Error('Wallet must be initialized before calling close()');
     }
     this.canceler.cancel();
-
+    // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
+    localStorage.removeItem('walletconnect');
     if (this.client.connected) {
-      // https://github.com/WalletConnect/walletconnect-monorepo/issues/315
-      localStorage.removeItem('walletconnect');
       await this.client.killSession({ message });
     }
   }

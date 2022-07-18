@@ -10,6 +10,8 @@ import { useCeloInternal } from '../use-celo';
 import { getApplicationLogger } from '../utils/logger';
 import { useWalletVersion } from './use-wallet-version';
 
+import { ConnectorEvents } from '../connectors/common';
+
 interface UseWalletConnectConnector {
   error: Maybe<string>;
   uri: Maybe<string>;
@@ -59,27 +61,25 @@ export default function useWalletConnectConnector(
         version,
         walletId
       );
-      connector.onUri((newUri) => {
+      connector.on(ConnectorEvents.WC_URI_RECEIVED, (nextURI) => {
         getApplicationLogger().debug(
           '[useWalletConnectConnector]',
           'Generated WC URI',
-          newUri
-        );
+          nextURI
+        );        
         if (mounted) {
-          setUri(newUri);
+          setUri(nextURI);
         }
       });
-      connector.onClose(() => {
+      connector.on(ConnectorEvents.DISCONNECTED, () => {
         getApplicationLogger().debug(
           '[useWalletConnectConnector]',
           'Lost connection to WC servers'
         );
-        // This calling destroy will led to a loop unless I am mistaken about what causes onClose to be called.
-        void destroy().then(() => {
-          setError('Connection with wallet was closed.');
-          setUri(null);
-        });
+        setError('Connection with wallet was closed.');
+        setUri(null);
       });
+
       try {
         await initConnector(connector);
 
@@ -90,7 +90,8 @@ export default function useWalletConnectConnector(
             '[useWalletConnectConnector]',
             'User canceled connection'
           );
-          return;
+          // destroy so we dont have open connectors all over the place
+          return destroy();
         }
         getApplicationLogger().debug(
           '[useWalletConnectConnector]',
@@ -106,7 +107,8 @@ export default function useWalletConnectConnector(
       // if initialised is false, it means the connection was canceled or errored.
       // We should cleanup the state
       if (!connector?.initialised) {
-        void connector?.close('Connection canceled');
+        // destroy so we dont have open connectors all over the place
+        destroy();
       }
 
       setUri(null);

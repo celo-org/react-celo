@@ -16,7 +16,6 @@ export default class CeloExtensionWalletConnector
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
 
   constructor(private network: Network, public feeCurrency: CeloTokenContract) {
     super();
@@ -49,7 +48,6 @@ export default class CeloExtensionWalletConnector
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     const [defaultAccount] = await this.kit.connection.web3.eth.getAccounts();
     this.kit.connection.defaultAccount = defaultAccount;
-    this.account = defaultAccount ?? null;
 
     this.initialised = true;
 
@@ -81,7 +79,6 @@ export default class CeloExtensionWalletConnector
   private newKit(web3: Web3Type, defaultAccount: string) {
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     this.kit.connection.defaultAccount = defaultAccount;
-    this.account = defaultAccount ?? null;
   }
 
   close(): void {

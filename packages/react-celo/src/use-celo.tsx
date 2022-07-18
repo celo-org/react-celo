@@ -57,7 +57,7 @@ export function useCelo<CC = undefined>(): UseCelo {
 
   return {
     dapp,
-    address,
+    address, // The account address
     network,
     feeCurrency,
     initError: connectorInitError,
@@ -65,7 +65,9 @@ export function useCelo<CC = undefined>(): UseCelo {
     networks: networks.map((net) => ({ ...net })),
 
     kit: connector.kit,
-    account: connector.account,
+    // the wallet address from Account.getWalletAddress => The address at which the account expects to receive transfers.
+    // If it's empty/0x0, the account indicates that an address exchange should be initiated with the dataEncryptionKey
+    account: connector.kit.connection.defaultAccount,
     initialised: connector.initialised,
     walletType: connector.type,
     supportsFeeCurrency: connector.supportsFeeCurrency(),

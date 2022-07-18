@@ -62,11 +62,6 @@ export interface WalletConnectProvider extends Provider {
 export interface Connector {
   kit: MiniContractKit;
   type: WalletTypes;
-  /**
-   * `account` is the address of the account connected
-   * when there is one. Otherwise, it's null.
-   */
-  account: Maybe<string>;
   feeCurrency: CeloTokenContract;
   /**
    * `initialised` indicates if the connector

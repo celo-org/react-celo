@@ -18,7 +18,6 @@ export default class UnauthenticatedConnector
   public initialised = true;
   public type = WalletTypes.Unauthenticated;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
   public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
   constructor(n: Network) {
     super();

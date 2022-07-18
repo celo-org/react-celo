@@ -1,13 +1,18 @@
-import { CeloTokenContract } from '@celo/contractkit/lib/base';
+import { CeloTokenContract, CeloContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import {
+  EthProposal,
+  SessionConnect,
+  SessionDisconnect,
+  SessionProposal,
+  SessionUpdate,
   WalletConnectWallet as WalletConnectWalletV1,
   WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
 } from '@celo/wallet-walletconnect-v1';
 import { BigNumber } from 'bignumber.js';
 
 import { WalletTypes } from '../constants';
-import { Connector, Maybe, Network } from '../types';
+import { Connector, Network } from '../types';
 import {
   AbstractConnector,
   ConnectorEvents,
@@ -29,10 +34,6 @@ export default class WalletConnectConnector
   public initialised = false;
   public type: WalletTypes.WalletConnect = WalletTypes.WalletConnect;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
-
-  private onUriCallback?: (uri: string) => void;
-  private onCloseCallback?: () => void;
 
   constructor(
     private network: Network,
@@ -50,60 +51,41 @@ export default class WalletConnectConnector
     this.kit = newKit(network.rpcUrl, wallet);
   }
 
-  onUri(callback: (uri: string) => void): void {
-    this.onUriCallback = callback;
-  }
-
-  onClose(callback: () => void): void {
-    this.onCloseCallback = callback;
-  }
-
+  // this is called automatically and is what gives us the uri for the qr code to be scanned
   async initialise(): Promise<this> {
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
 
-    wallet.onSessionCreated = (_error, session) => {
-      // TODO HANDLE FAILED TO CONNECT STATE
-      const connectSession = session as ConnectSession;
-      this.onConnected(connectSession);
-    };
+    wallet.onSessionCreated = this.onSessionCreated.bind(this);
 
-    wallet.onSessionDeleted = (_error, session) => {
-      console.info('SESSION+DELETED', session);
-      void this.close();
-    };
-    // wallet.onPairingDeleted = () => this.onCloseCallback?.();
+    wallet.onSessionUpdated = this.onSessionUpdated.bind(this);
 
-    // TODO why do both these methods exist? data is duplicated on them always from when ive seen
-    wallet.onWcSessionUpdate = (_error, session) => {
-      console.info('SESSION+WC+UPDATE', session);
-      if (session.params[0].chainId == null) {
-        this.onCloseCallback?.();
-      }
-    };
-    wallet.onSessionUpdated = (_error, session) => {
-      console.info('SESSION+UPDATE', session);
-      const params = session.params[0];
+    wallet.onCallRequest = this.onCallRequest.bind(this);
 
-      if (params.chainId == null) {
-        return this.close();
-      }
+    wallet.onWcSessionUpdate = this.onWcSessionUpdate.bind(this);
 
-      if (params.chainId !== this.network.chainId) {
-        return this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, params.chainId);
-      }
+    wallet.onSessionDeleted = this.onSessionDeleted.bind(this);
 
-      const accounts = params.accounts as string[];
-      const addressFromSessionUpdate = accounts[0];
-      if (
-        typeof addressFromSessionUpdate === 'string' &&
-        addressFromSessionUpdate !== this.account
-      ) {
-        return this.onAddressChange(addressFromSessionUpdate);
-      }
-    };
+    // must be called after all callbacks are set
+    await wallet.setupClient();
+
+    await this.handleUri(wallet);
+
+    await wallet.init();
+
+    const [address] = wallet.getAccounts();
+    const defaultAccount = await this.fetchWalletAddressForAccount(address);
+
+    this.kit.connection.defaultAccount = defaultAccount;
+
+    this.initialised = true;
+    this.emit(ConnectorEvents.WC_INITIALISED);
+    return this;
+  }
+
+  private async handleUri(wallet: WalletConnectWalletV1) {
     const uri = await wallet.getUri();
-    if (uri && this.onUriCallback) {
-      this.onUriCallback(uri);
+    if (uri) {
+      this.emit(ConnectorEvents.WC_URI_RECEIVED, uri);
     }
 
     if (uri && this.autoOpen) {
@@ -112,20 +94,8 @@ export default class WalletConnectConnector
         location.href = deepLink;
       }
     }
-
-    await wallet.init();
-    const [address] = wallet.getAccounts();
-    const defaultAccount = await this.fetchWalletAddressForAccount(address);
-    this.kit.connection.defaultAccount = defaultAccount;
-    this.account = defaultAccount ?? null;
-
-    await this.updateFeeCurrency(this.feeCurrency);
-    this.initialised = true;
-    // EMIT something that indicates we have started to connect
-    return this;
   }
 
-  // TODO do any wallets support this?
   async startNetworkChangeFromApp(network: Network) {
     try {
       const wallet = this.kit.getWallet() as WalletConnectWalletV1;
@@ -135,9 +105,12 @@ export default class WalletConnectConnector
         ...network,
         networkId: network.chainId,
       });
+      console.info('switched chain response', resp);
       this.restartKit(network);
       this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
     } catch (e) {
+      this.emit(ConnectorEvents.NETWORK_CHANGE_FAILED, e);
+      // TODO emit network change Failed
       console.error('NETWORK CANT CHANGE', e);
     }
   }
@@ -145,8 +118,71 @@ export default class WalletConnectConnector
   private restartKit(network: Network) {
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
     this.network = network; // must set to prevent loop
-    this.kit.connection.stop(); // this blows up if its already stopped (make it conditional?)
-    this.kit = newKit(network.rpcUrl, wallet);
+    try {
+      this.kit.connection.stop(); // this blows up if its already stopped
+    } finally {
+      this.kit = newKit(network.rpcUrl, wallet);
+    }
+  }
+
+  private onSessionCreated(_error: Error | null, session: SessionConnect) {
+    // TODO HANDLE FAILED TO CONNECT STATE
+    const connectSession = session as SessionConnect;
+    this.onConnected(connectSession);
+  }
+
+  private onCallRequest(error: Error | null, payload: EthProposal) {
+    console.info('onCallRequest Payload', payload);
+    if (error) {
+      console.info('name', error.name, 'message', error.message);
+      this.emit(ConnectorEvents.WC_ERROR, error);
+    }
+  }
+
+  private onWcSessionUpdate(_error: Error | null, session: SessionProposal) {
+    console.info('SESSION+WC+UPDATE', session, _error);
+    const params = session.params[0];
+    this.combinedSessionUpdater(params);
+  }
+
+  private onSessionUpdated(_error: Error | null, session: SessionUpdate) {
+    console.info('SESSION+UPDATE', session, _error);
+    const params = session.params[0];
+
+    // TODO emit event when there is an error
+    this.combinedSessionUpdater(params);
+  }
+
+  private onSessionDeleted(_error: Error | null, session: SessionDisconnect) {
+    console.info('SESSION+DELETED', session, _error);
+    // since dapps send the both when they initiate disconnection and when responding to disconnection requests
+    // check if dapp initiated the closure to avoid closing twice.
+    if (session.params[0]?.message?.startsWith(END_MESSAGE)) {
+      return;
+    }
+    void this.close();
+  }
+
+  private combinedSessionUpdater(params: {
+    accounts?: string[];
+    chainId: number | null;
+  }) {
+    if (params.chainId == null) {
+      return this.close();
+    }
+
+    if (params.chainId !== this.network.chainId) {
+      return this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, params.chainId);
+    }
+
+    const accounts = params.accounts as string[];
+    const addressFromSessionUpdate = accounts[0];
+    if (
+      typeof addressFromSessionUpdate === 'string' &&
+      addressFromSessionUpdate !== this.kit.connection.defaultAccount
+    ) {
+      return this.onAddressChange(addressFromSessionUpdate);
+    }
   }
 
   // for when the wallet is already on the desired network and the kit / dapp need to catch up.
@@ -164,16 +200,19 @@ export default class WalletConnectConnector
     return true;
   }
 
-  private onAddressChange(address: string) {
-    this.kit.connection.defaultAccount = address;
+  private async onAddressChange(address: string) {
+    this.kit.connection.defaultAccount =
+      await this.fetchWalletAddressForAccount(address);
     this.emit(ConnectorEvents.ADDRESS_CHANGED, address);
   }
 
-  private onConnected(session: ConnectSession) {
+  private async onConnected(session: SessionConnect) {
     const sessionAccount = session.params[0].accounts[0];
-    console.info(this.account, sessionAccount);
-    if (this.account !== sessionAccount) {
-      this.kit.connection.defaultAccount = sessionAccount;
+    const walletAddress = await this.fetchWalletAddressForAccount(
+      sessionAccount
+    );
+    if (this.kit.connection.defaultAccount !== walletAddress) {
+      this.kit.connection.defaultAccount = walletAddress;
     }
 
     this.emit(ConnectorEvents.CONNECTED, {
@@ -196,9 +235,10 @@ export default class WalletConnectConnector
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   async close(message?: string): Promise<void> {
+    console.info('closing wallet connect connector', message);
     try {
       const wallet = this.kit.getWallet() as WalletConnectWalletV1;
-      await wallet.close(`session ended from dapp side ${message || ''}`);
+      await wallet.close(`${END_MESSAGE} : ${message || ''}`);
       this.kit.connection.stop();
     } finally {
       this.disconnect();
@@ -206,14 +246,4 @@ export default class WalletConnectConnector
   }
 }
 
-interface ConnectSession {
-  event: 'connect';
-  params: [
-    {
-      accounts: string[];
-      chainId: number;
-      peerId: string;
-      peerMeta: unknown;
-    }
-  ];
-}
+const END_MESSAGE = '[react-celo] WC SESSION ENDED BY DAPP';

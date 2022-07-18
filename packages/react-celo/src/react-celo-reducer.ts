@@ -59,7 +59,7 @@ export function celoReactReducer(
       return {
         ...state,
         address: null,
-        connector: new UnauthenticatedConnector(state.network),
+        // connector is overwritten by the destroy method init of a new Unauthenticated Connector, so no need to do here
       };
 
     default:

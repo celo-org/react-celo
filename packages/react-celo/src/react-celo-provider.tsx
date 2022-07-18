@@ -65,14 +65,15 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   const methods = useCeloMethods(state, dispatch, buildContractsCache);
 
   // what happens when i disconnect, need to be able to switch chains still.
-  // need to init UNauthenticated connnector both at startup and when last chain was destroyed or Replace the null object pattern
+  // need to init Unauthenticated connnector both at startup and when last chain was destroyed or Replace the null object pattern
   // benefit is that you might still want to just passively watch a chain
   // downside is there are some sementics that get weird
   useEffect(() => {
-    // hmm i think we still need to init this. otherwise theres no way to change networks before auth
-    methods.initConnector(state.connector).catch(() => {
+    console.info('Connector init', state.connector.type);
+    methods.initConnector(state.connector).catch((e) => {
+      console.info('initConnect error', e);
       // If the connector fails to initialise on mount then we reset.
-      dispatch('destroy');
+      methods.destroy();
     });
     // We only want this to run on mount so the deps array is empty.
     /* eslint-disable-next-line */

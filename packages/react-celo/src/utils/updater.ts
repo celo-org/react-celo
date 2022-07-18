@@ -13,10 +13,12 @@ export const updater: Updater = (connector, dispatch) => {
     dispatch('setNetworkByName', networkName);
   });
   connector.on(ConnectorEvents.CONNECTED, (params) => {
+    console.info('Updator witnessed connection');
     dispatch('connect', params);
   });
 
   connector.on(ConnectorEvents.DISCONNECTED, () => {
+    console.info('Updator witnessed disconnection');
     dispatch('destroy');
   });
 };
