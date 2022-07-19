@@ -14,13 +14,20 @@ import { buildOptions } from '../connectors/wallet-connect';
 import { localStorageKeys, WalletTypes } from '../constants';
 import { Dapp, Network } from '../types';
 import { getTypedStorageKey } from './local-storage';
+import { getApplicationLogger } from './logger';
 
 export function resurrector(networks: Network[], dapp: Dapp) {
   const walletType = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
   const network = getNetwork(networks);
 
   if (!walletType || !network) return null;
-  console.info(walletType, 'resurecting with', network, dapp);
+  getApplicationLogger().log(
+    '[resurrector] will create',
+    walletType,
+    'with',
+    network,
+    dapp
+  );
   try {
     switch (walletType) {
       case WalletTypes.Ledger: {
@@ -67,8 +74,7 @@ export function resurrector(networks: Network[], dapp: Dapp) {
         return null;
     }
   } catch (e) {
-    process.env.NODE_ENV !== 'production' &&
-      console.error('[react-celo] Unknown error in resurrector', e);
+    getApplicationLogger().error('Unknown error resurrecting', walletType, e);
     return null;
   }
 }

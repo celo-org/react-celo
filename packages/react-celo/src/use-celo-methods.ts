@@ -13,7 +13,6 @@ import { Dispatcher } from './react-celo-provider-state';
 import { Connector, Network, Theme } from './types';
 import { contrastCheck, fixTheme } from './utils/colors';
 import { getApplicationLogger } from './utils/logger';
-
 import networkWatcher from './utils/network-watcher';
 import persistor from './utils/persistor';
 import { updater } from './utils/updater';
@@ -74,12 +73,16 @@ export function useCeloMethods(
   // the network. It doesn't work for all wallets.
   const updateNetwork = useCallback(
     async (newNetwork: Network) => {
+      getApplicationLogger().debug(
+        '[updateNetwork]',
+        newNetwork,
+        connector.type
+      );
       if (STATIC_NETWORK_WALLETS.includes(connector.type)) {
         throw new Error(
           "The connected wallet's network must be changed from the wallet."
         );
       }
-      console.info('new network', newNetwork, connector.type);
       await connector.startNetworkChangeFromApp(newNetwork);
     },
     [connector]

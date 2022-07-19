@@ -8,6 +8,7 @@ import {
 import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
+import { getApplicationLogger } from '../utils/logger';
 import { switchToCeloNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
@@ -96,9 +97,8 @@ export default class InjectedConnector
   private onChainChanged = (chainIdHex: string) => {
     const chainId = parseInt(chainIdHex, 16);
     // if this change was initiated by app the chainIds will already match and we can abort
-    console.log('chain changed');
+    getApplicationLogger().log('onChainChanged', chainId);
     if (this.network.chainId !== chainId) {
-      console.log('chain event emitting', chainId);
       this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, chainId);
     }
   };

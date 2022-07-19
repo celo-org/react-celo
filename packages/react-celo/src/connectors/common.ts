@@ -7,6 +7,7 @@ import EventEmitter from 'eventemitter3';
 
 import { WalletTypes } from '../constants';
 import { Connector } from '../types';
+import { getApplicationLogger } from '../utils/logger';
 
 export type Web3Type = Parameters<typeof newKitFromWeb3>[0];
 
@@ -121,7 +122,7 @@ export class AbstractConnector {
     event: E,
     data?: EventsMap[E]
   ) => {
-    console.info('EMIT: Connector', this.type, event, data);
+    getApplicationLogger().debug('[CONNECTOR EMIT]', this.type, event, data);
     this.emitter.emit(event, data);
   };
 
@@ -164,7 +165,7 @@ export class AbstractConnector {
 
   ✅ the removal of connector.account as a public method
 
-  replace console.info with our custom logger
+  ✅ replace console.info with our custom logger
 
   standarize the use of fetchWalletAddress with defaultAccount vs address and
 

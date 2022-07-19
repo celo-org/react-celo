@@ -12,6 +12,7 @@ import {
 import { WalletTypes } from '../constants';
 import { Ethereum } from '../global';
 import { Connector, Dapp, Network } from '../types';
+import { getApplicationLogger } from '../utils/logger';
 import { switchToCeloNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
@@ -43,7 +44,12 @@ export default class CoinbaseWalletConnector
           ) {
             this.close();
           }
-          console.info('CB', e, p);
+          getApplicationLogger().debug(
+            '[coinbase-wallet] sdk event',
+            e,
+            'properties',
+            p
+          );
         },
       },
     });
@@ -140,7 +146,10 @@ export default class CoinbaseWalletConnector
     try {
       this.kit.connection.stop();
     } catch (e) {
-      console.info('stopped dead', e, e === 'CeloProvider already stopped');
+      getApplicationLogger().error(
+        '[methods.close] could not stop a already stopped CeloConnection',
+        e
+      );
     }
     this.disconnect();
     if (this.provider?.connected) {

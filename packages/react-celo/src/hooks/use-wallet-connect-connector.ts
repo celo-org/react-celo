@@ -65,7 +65,7 @@ export default function useWalletConnectConnector(
           '[useWalletConnectConnector]',
           'Generated WC URI',
           nextURI
-        );        
+        );
         if (mounted) {
           setUri(nextURI);
         }

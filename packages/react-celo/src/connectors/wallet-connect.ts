@@ -13,6 +13,7 @@ import { BigNumber } from 'bignumber.js';
 
 import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
+import { getApplicationLogger } from '../utils/logger';
 import {
   AbstractConnector,
   ConnectorEvents,
@@ -106,13 +107,14 @@ export default class WalletConnectConnector
         ...network,
         networkId: network.chainId,
       });
-      console.info('switched chain response', resp);
+      getApplicationLogger().debug(
+        '[startNetworkChangeFromApp] response',
+        resp
+      );
       this.restartKit(network);
       this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
     } catch (e) {
       this.emit(ConnectorEvents.NETWORK_CHANGE_FAILED, e);
-      // TODO emit network change Failed
-      console.error('NETWORK CANT CHANGE', e);
     }
   }
 
@@ -136,9 +138,12 @@ export default class WalletConnectConnector
   }
 
   private onCallRequest(error: Error | null, payload: EthProposal) {
-    console.info('onCallRequest Payload', payload);
+    getApplicationLogger().debug(
+      '[wallet-connect] onCallRequest => Payload:',
+      payload,
+      error ? `Error ${error.name} ${error.message}` : ''
+    );
     if (error) {
-      console.info('name', error.name, 'message', error.message);
       this.emit(ConnectorEvents.WC_ERROR, error);
     }
   }
@@ -147,13 +152,23 @@ export default class WalletConnectConnector
     _error: Error | null,
     session: SessionProposal
   ) {
-    console.info('SESSION+WC+UPDATE', session, _error);
+    getApplicationLogger().debug(
+      'wallet-connect',
+      'on-wc-session-update',
+      session,
+      _error
+    );
     const params = session.params[0];
     await this.combinedSessionUpdater(params);
   }
 
   private async onSessionUpdated(_error: Error | null, session: SessionUpdate) {
-    console.info('SESSION+UPDATE', session, _error);
+    getApplicationLogger().debug(
+      'wallet-connect',
+      'on-session-update',
+      session,
+      _error
+    );
     const params = session.params[0];
 
     // TODO emit event when there is an error
@@ -161,7 +176,12 @@ export default class WalletConnectConnector
   }
 
   private onSessionDeleted(_error: Error | null, session: SessionDisconnect) {
-    console.info('SESSION+DELETED', session, _error);
+    getApplicationLogger().debug(
+      'wallet-connect',
+      'on-session-delete',
+      session,
+      _error
+    );
     // since dapps send the both when they initiate disconnection and when responding to disconnection requests
     // check if dapp initiated the closure to avoid closing twice.
     if (session.params[0]?.message?.startsWith(END_MESSAGE)) {
@@ -242,7 +262,7 @@ export default class WalletConnectConnector
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   async close(message?: string): Promise<void> {
-    console.info('closing wallet connect connector', message);
+    getApplicationLogger().log('wallet-connect', 'close', message);
     try {
       const wallet = this.kit.getWallet() as WalletConnectWalletV1;
       await wallet.close(`${END_MESSAGE} : ${message || ''}`);

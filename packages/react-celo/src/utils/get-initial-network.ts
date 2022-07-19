@@ -1,4 +1,5 @@
 import { Network } from '../types';
+import { getApplicationLogger } from './logger';
 
 // will look for a network searching first in local storage, then based on what was given.
 export function getInitialNetwork(
@@ -8,8 +9,8 @@ export function getInitialNetwork(
   storedNetwork?: string | null
 ) {
   if (process.env.NODE_ENV !== 'production' && passedNetwork) {
-    console.warn(
-      '[react-celo] The `network` prop on CeloProvider has been deprecated, use `defaultNetwork`'
+    getApplicationLogger().warn(
+      'The `network` prop on CeloProvider has been deprecated, use `defaultNetwork`'
     );
   }
   const network = networks.find((net) => {

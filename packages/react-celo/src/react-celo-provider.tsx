@@ -8,7 +8,7 @@ import { CeloProviderProps } from './react-celo-provider-props';
 import { Dispatcher, useCeloState } from './react-celo-provider-state';
 import { ReducerState } from './react-celo-reducer';
 import { CeloMethods, useCeloMethods } from './use-celo-methods';
-import { setApplicationLogger } from './utils/logger';
+import { getApplicationLogger, setApplicationLogger } from './utils/logger';
 
 type ReactCeloContextInterface = readonly [
   ReducerState,
@@ -69,9 +69,17 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   // benefit is that you might still want to just passively watch a chain
   // downside is there are some sementics that get weird
   useEffect(() => {
-    console.info('Connector init', state.connector.type);
+    getApplicationLogger().debug(
+      'onLoad Initialisation of',
+      state.connector.type,
+      'Connector'
+    );
     methods.initConnector(state.connector).catch(async (e) => {
-      console.info('initConnect error', e);
+      getApplicationLogger().error(
+        'onLoad Initialisation Failed',
+        state.connector.type,
+        e
+      );
       // If the connector fails to initialise on mount then we reset.
       await methods.destroy();
     });
