@@ -1,7 +1,8 @@
 import { render, renderHook } from '@testing-library/react';
 import React, { ReactElement } from 'react';
 
-import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
+import { CeloProvider } from '../src/react-celo-provider';
+import { CeloProviderProps } from '../src/react-celo-provider-props';
 
 interface RenderArgs {
   providerProps: Partial<CeloProviderProps>;

@@ -15,6 +15,7 @@ import CeloProviderProps from '../src/react-celo-provider-props';
 import defaultTheme from '../src/theme/default';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
+import { clearPreviousConfig } from '../src/utils/local-storage';
 import {
   renderComponentInCKProvider,
   renderHookInCKProvider,

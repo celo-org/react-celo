@@ -98,7 +98,7 @@ export class AbstractConnector {
   type: WalletTypes | undefined;
   protected emitter = new EventEmitter();
 
-  protected get account() {
+  get account() {
     return this.kit?.connection?.defaultAccount;
   }
 
@@ -161,15 +161,15 @@ export class AbstractConnector {
   ✅ should network be set by chainID not name? might be better?
 
   ✅ handle situation of connector started to be created but then failed or canceled (reset to Unauthenticated)
-  
+
   ✅ the removal of connector.account as a public method
 
   replace console.info with our custom logger
 
-  standarize the use of fetchWalletAddress with defaultAccount vs address and 
+  standarize the use of fetchWalletAddress with defaultAccount vs address and
 
-  fix valora connecting then disconnecting when connected to any network that isnt celo mainnet -- technically it only worked before because we were not handling changing network from wallet properly. but since we do now and valora only supports mainnet this will break 
-  
+  fix valora connecting then disconnecting when connected to any network that isnt celo mainnet -- technically it only worked before because we were not handling changing network from wallet properly. but since we do now and valora only supports mainnet this will break
+
   look for peculiarities
 
 */

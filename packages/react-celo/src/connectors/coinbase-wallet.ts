@@ -54,7 +54,6 @@ export default class CoinbaseWalletConnector
     if (!this.provider) {
       throw new Error('Coinbase wallet provider not instantiated');
     }
-    this.provider.disableReloadOnDisconnect();
     if (this.initialised) {
       return this;
     }

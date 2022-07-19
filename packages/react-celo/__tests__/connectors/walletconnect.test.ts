@@ -50,6 +50,7 @@ describe('WalletConnectConnector', () => {
     testingUtils.clearAllMocks();
   });
   const onConnect = jest.fn();
+  const onInit = jest.fn();
   beforeEach(() => {
     connector = new WalletConnectConnector(
       Alfajores,
@@ -62,6 +63,7 @@ describe('WalletConnectConnector', () => {
     );
     jest.spyOn(connector.kit, 'getWallet').mockImplementation(() => wallet);
     connector.on(ConnectorEvents.CONNECTED, onConnect);
+    connector.on(ConnectorEvents.WC_INITIALISED, onInit);
   });
 
   it('initialises', async () => {
@@ -77,12 +79,7 @@ describe('WalletConnectConnector', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(wallet.getUri).toHaveBeenCalled();
 
-    expect(onConnect).toBeCalledWith({
-      networkName: Alfajores.name,
-      address: ACCOUNT,
-      walletType: WalletTypes.WalletConnect,
-      walletId: WalletIds.Steakwallet,
-    });
+    expect(onInit).toBeCalled();
   });
 
   describe('when a connected wallet changes accounts', () => {
