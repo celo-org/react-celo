@@ -82,7 +82,10 @@ export default class CeloExtensionWalletConnector
   }
 
   close(): void {
-    this.kit.connection.stop();
-    this.disconnect();
+    try {
+      this.kit.connection.stop();
+    } finally {
+      this.disconnect();
+    }
   }
 }

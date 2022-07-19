@@ -122,8 +122,10 @@ export default class InjectedConnector
 
   close(): void {
     this.removeListenersFromEth();
-    this.kit.connection.stop();
-    this.disconnect();
-    return;
+    try {
+      this.kit.connection.stop();
+    } finally {
+      this.disconnect();
+    }
   }
 }

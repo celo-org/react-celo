@@ -64,9 +64,11 @@ export default class PrivateKeyConnector
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
-    this.kit.connection.stop();
     setTypedStorageKey(localStorageKeys.lastUsedPrivateKey, '');
-    this.disconnect();
-    return;
+    try {
+      this.kit.connection.stop();
+    } finally {
+      this.disconnect();
+    }
   }
 }

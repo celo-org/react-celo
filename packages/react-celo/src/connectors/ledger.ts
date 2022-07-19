@@ -77,8 +77,10 @@ export default class LedgerConnector
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
   close(): void {
-    this.kit.connection.stop();
-    this.disconnect();
-    return;
+    try {
+      this.kit.connection.stop();
+    } finally {
+      this.disconnect();
+    }
   }
 }

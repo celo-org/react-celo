@@ -80,7 +80,7 @@ export interface Connector {
   getDeeplinkUrl?: (uri: string) => string | false;
   /**
    * This isn't the method you want
-   * used when wallet changes chain. to change change chain from app use startNetworkChangeFromApp()
+   * used when wallet changes chain. To change chain from app use startNetworkChangeFromApp()
    */
   continueNetworkUpdateFromWallet?: (network: Network) => void;
 

@@ -39,8 +39,10 @@ export default class UnauthenticatedConnector
   }
 
   close(): void {
-    this.kit.connection.stop();
-    this.disconnect();
-    return;
+    try {
+      this.kit.connection.stop();
+    } finally {
+      this.disconnect();
+    }
   }
 }
