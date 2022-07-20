@@ -14,6 +14,13 @@ declare global {
   }
 }
 
+const mockLogger = {
+  log: jest.fn(),
+  error: jest.fn(),
+  debug: jest.fn(),
+  warn: jest.fn(),
+};
+
 describe('SendTransaction', () => {
   const testingUtils = generateTestingUtils({
     providerType: 'MetaMask',
@@ -73,6 +80,7 @@ describe('SendTransaction', () => {
         connectModal={{
           providersOptions: { searchable: true },
         }}
+        logger={mockLogger}
       >
         <SendTransaction />
       </CeloProvider>

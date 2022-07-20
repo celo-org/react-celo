@@ -120,11 +120,6 @@ describe('WalletConnectWallet tests', () => {
   afterAll(async () => {
     await wallet.close();
     await testWallet?.close();
-
-    // TODO: bug in WalletConnect V2
-    setTimeout(() => {
-      process.exit(0);
-    }, 10000);
   }, 10000);
 
   it('getAccounts()', () => {

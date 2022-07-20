@@ -12,6 +12,12 @@ declare global {
     ethereum: ReturnType<TestingUtils['getProvider']> & { send?: () => void };
   }
 }
+const mockLogger = {
+  log: jest.fn(),
+  error: jest.fn(),
+  debug: jest.fn(),
+  warn: jest.fn(),
+};
 
 describe('ConnectWalletCheck', () => {
   const testingUtils = generateTestingUtils({ providerType: 'MetaMask' });
@@ -48,6 +54,7 @@ describe('ConnectWalletCheck', () => {
         connectModal={{
           providersOptions: { searchable: true },
         }}
+        logger={mockLogger}
       >
         <ConnectWalletCheck />
       </CeloProvider>
