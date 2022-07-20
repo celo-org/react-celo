@@ -88,6 +88,14 @@ describe('SendTransaction', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('not started');
 
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'This sends a very small transaction to impact market contract.'
+        )
+      ).toBeVisible();
+    });
+
     await waitFor(() =>
       expect(
         screen.getByText(
