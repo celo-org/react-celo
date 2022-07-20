@@ -14,6 +14,8 @@ import {
   setTypedStorageKey,
 } from '../../src/utils/local-storage';
 import { resurrector } from '../../src/utils/resurrector';
+import { mockLogger } from '../test-logger';
+import { setApplicationLogger } from '../../src/utils/logger';
 
 const PRIVATE_TEST_KEY =
   '04f9d516be49bb44346ca040bdd2736d486bca868693c74d51d274ad92f61976';
@@ -34,6 +36,7 @@ describe('resurrector', () => {
         getRandomValues: (arr: number[]) => crypto.randomBytes(arr.length),
       },
     });
+    setApplicationLogger(mockLogger);
   });
   afterEach(() => {
     clearPreviousConfig();

@@ -3,12 +3,15 @@ import { CeloContract } from '@celo/contractkit';
 import { Alfajores, WalletTypes } from '../../src';
 import { ConnectorEvents } from '../../src/connectors/common';
 import PrivateKeyConnector from '../../src/connectors/private-key';
+import { setApplicationLogger } from '../../src/utils/logger';
+import { mockLogger } from '../test-logger';
 
 const TEST_KEY =
   '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abbdef';
 
 describe('PrivateKeyConnector', () => {
   let connector: PrivateKeyConnector;
+  beforeAll(() => setApplicationLogger(mockLogger));
   describe('initialise()', () => {
     const onConnect = jest.fn();
     beforeEach(async () => {

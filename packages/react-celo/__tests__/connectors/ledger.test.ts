@@ -6,7 +6,8 @@ import { LedgerSigner } from '@celo/wallet-ledger';
 import { Alfajores, Baklava, WalletTypes } from '../../src';
 import { ConnectorEvents } from '../../src/connectors/common';
 import LedgerConnector from '../../src/connectors/ledger';
-
+import { setApplicationLogger } from '../../src/utils/logger';
+import { mockLogger } from '../test-logger';
 class StubWallet extends WalletBase<LedgerSigner> {}
 
 describe('LedgerConnector', () => {
@@ -16,6 +17,9 @@ describe('LedgerConnector', () => {
   const onConnect = jest.fn();
   const onChangeNetwork = jest.fn();
   let originalKit: MiniContractKit;
+
+  beforeAll(() => setApplicationLogger(mockLogger));
+
   beforeEach(async () => {
     walletStub = new StubWallet();
     connector = new LedgerConnector(Alfajores, 0, CeloContract.GoldToken);

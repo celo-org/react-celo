@@ -4,6 +4,8 @@ import { generateTestingUtils } from 'eth-testing';
 import { WalletTypes } from '../../src';
 import { ConnectorEvents, MetaMaskConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
+import { setApplicationLogger } from '../../src/utils/logger';
+import { mockLogger } from '../test-logger';
 
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
@@ -23,6 +25,7 @@ describe('MetaMaskConnector', () => {
     testingUtils.lowLevel.mockRequest('wallet_switchEthereumChain', {
       chainId: `0x${Alfajores.chainId.toString(16)}`,
     });
+    setApplicationLogger(mockLogger);
   });
   afterEach(() => {
     // Clear all mocks between tests

@@ -8,10 +8,13 @@ import {
 } from '../../src/constants';
 import { getRecent } from '../../src/hooks/use-providers';
 import { getTypedStorageKey } from '../../src/utils/local-storage';
+import { setApplicationLogger } from '../../src/utils/logger';
 import persistor from '../../src/utils/persistor';
+import { mockLogger } from '../test-logger';
 import { ConnectorStub } from './connector-stub';
 
 describe('Persistor', () => {
+  beforeAll(() => setApplicationLogger(mockLogger));
   let connector: ConnectorStub;
   beforeEach(() => {
     connector = new ConnectorStub(Alfajores);

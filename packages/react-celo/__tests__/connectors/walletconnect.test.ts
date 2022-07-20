@@ -6,7 +6,8 @@ import { generateTestingUtils } from 'eth-testing';
 import { Alfajores, WalletIds } from '../../src';
 import { ConnectorEvents, WalletConnectConnector } from '../../src/connectors';
 import { buildOptions } from '../../src/connectors/wallet-connect';
-
+import { mockLogger } from '../test-logger';
+import { setApplicationLogger } from '../../src/utils/logger';
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
 jest.createMockFromModule('@celo/wallet-walletconnect-v1');
@@ -44,6 +45,7 @@ describe('WalletConnectConnector', () => {
     testingUtils.mockRequestAccounts([ACCOUNT]);
     testingUtils.lowLevel.mockRequest('wallet_switchEthereumChain', {});
     jest.setTimeout(11_000);
+    setApplicationLogger(mockLogger);
   });
   afterEach(() => {
     // Clear all mocks between tests
