@@ -8,6 +8,7 @@ import { ConnectorEvents } from '../../src/connectors/common';
 import LedgerConnector from '../../src/connectors/ledger';
 import { setApplicationLogger } from '../../src/utils/logger';
 import { mockLogger } from '../test-logger';
+
 class StubWallet extends WalletBase<LedgerSigner> {}
 
 describe('LedgerConnector', () => {

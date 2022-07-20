@@ -1,9 +1,10 @@
 import { Alfajores, WalletTypes } from '../../src';
 import { ConnectorEvents } from '../../src/connectors/common';
-import { updater } from '../../src/utils/updater';
-import { ConnectorStub } from './connector-stub';
 import { setApplicationLogger } from '../../src/utils/logger';
+import { updater } from '../../src/utils/updater';
 import { mockLogger } from '../test-logger';
+import { ConnectorStub } from './connector-stub';
+
 describe('Updater', () => {
   const dispatchStub = jest.fn();
   let connector: ConnectorStub;

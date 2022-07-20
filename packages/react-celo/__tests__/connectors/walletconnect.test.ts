@@ -6,8 +6,9 @@ import { generateTestingUtils } from 'eth-testing';
 import { Alfajores, WalletIds } from '../../src';
 import { ConnectorEvents, WalletConnectConnector } from '../../src/connectors';
 import { buildOptions } from '../../src/connectors/wallet-connect';
-import { mockLogger } from '../test-logger';
 import { setApplicationLogger } from '../../src/utils/logger';
+import { mockLogger } from '../test-logger';
+
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
 jest.createMockFromModule('@celo/wallet-walletconnect-v1');

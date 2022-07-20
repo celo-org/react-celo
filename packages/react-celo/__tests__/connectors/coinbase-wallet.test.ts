@@ -3,8 +3,8 @@ import { generateTestingUtils } from 'eth-testing';
 
 import { CoinbaseWalletConnector, ConnectorEvents } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
-import { mockLogger } from '../test-logger';
 import { setApplicationLogger } from '../../src/utils/logger';
+import { mockLogger } from '../test-logger';
 
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 

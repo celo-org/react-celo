@@ -8,6 +8,7 @@ import {
 import { Alfajores, Baklava, WalletTypes } from '../../src/constants';
 import { setApplicationLogger } from '../../src/utils/logger';
 import { mockLogger } from '../test-logger';
+
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
