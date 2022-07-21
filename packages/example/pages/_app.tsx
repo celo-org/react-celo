@@ -46,6 +46,9 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
             <StyledLink href="https://github.com/celo-org/react-celo">
               Github
             </StyledLink>
+            <StyledLink href="https://www.npmjs.com/package/@celo/react-celo">
+              NPM
+            </StyledLink>
           </div>
         </nav>
         <div className="h-14" />
