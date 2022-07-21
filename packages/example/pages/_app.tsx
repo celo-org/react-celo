@@ -51,6 +51,22 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
         <div className="h-14" />
         <Component {...pageProps} />
       </div>
+      <footer className="flex gap-[36px] items-center justify-center w-full py-6 px-6 bg-slate-200">
+        <a
+          target="_blank"
+          href="https://discord.com/channels/600834479145353243/929644242790383636"
+          rel="noreferrer"
+        >
+          Discord
+        </a>
+        <a
+          target="_blank"
+          href="https://github.com/celo-org/react-celo/discussions"
+          rel="noreferrer"
+        >
+          Discussions
+        </a>
+      </footer>
     </div>
   );
 }
