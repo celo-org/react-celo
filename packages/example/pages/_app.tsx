@@ -20,7 +20,7 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
   };
 
   return (
-    <div>
+    <div className="flex flex-col justify-between items-center">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -30,20 +30,25 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
           },
         }}
       />
-      <div className="max-w-screen-sm mx-auto py-10 px-4">
-        <nav className="flex gap-[40px] mt-[20px] mb-[20px] justify-between items-center flex-col md:flex-row lg:flex-row">
-          <div className="flex items-center gap-[5px]">
-            <CeloLogo />
-            <span className="font-light text-[25px] font-['Philosopher']">
-              react-celo
-            </span>
-          </div>
-          <div className="flex gap-[40px]">
-            <StyledLink href="/">Home</StyledLink>
+      <div className="max-w-screen-sm mx-auto px-4">
+        <nav className="flex w-full fixed left-0 z-5 top-0 bg-slate-100 py-2 px-4 gap-[40px] justify-between items-center flex-col md:flex-row lg:flex-row">
+          <a href="/">
+            <div className="flex items-center gap-[5px]">
+              <CeloLogo />
+              <span className="font-light text-[25px] font-['Philosopher']">
+                react-celo
+              </span>
+            </div>
+          </a>
+          <div className="flex gap-[36px]">
             <StyledLink href="/wallet">Wallet example</StyledLink>
             <StyledLink href="/wallet-test-plan">Test plan</StyledLink>
+            <StyledLink href="https://github.com/celo-org/react-celo">
+              Github
+            </StyledLink>
           </div>
         </nav>
+        <div className="h-14" />
         <Component {...pageProps} />
       </div>
     </div>
