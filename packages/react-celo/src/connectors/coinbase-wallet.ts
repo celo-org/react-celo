@@ -37,7 +37,7 @@ export default class CoinbaseWalletConnector
       reloadOnDisconnect: false,
       diagnosticLogger: {
         log: (e, p) => {
-          // this fixes the app trying to resurect the cb connector after the wallet has initiated a disconnection as the sdk has reloads the page
+          // this fixes the app trying to resurrect the cb connector after the wallet has initiated a disconnection as the sdk then reloads the page
           if (
             'walletlink_sdk_metadata_destroyed' === e &&
             p?.alreadyDestroyed === false

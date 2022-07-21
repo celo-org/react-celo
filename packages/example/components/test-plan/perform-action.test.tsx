@@ -6,6 +6,7 @@ import { generateTestingUtils } from 'eth-testing';
 import { TestingUtils } from 'eth-testing/lib/testing-utils';
 import Web3 from 'web3';
 
+import { mockLogger } from '../mock-logger';
 import { SendTransaction } from './perform-actions';
 
 declare global {
@@ -13,13 +14,6 @@ declare global {
     ethereum: ReturnType<TestingUtils['getProvider']> & { send?: () => void };
   }
 }
-
-const mockLogger = {
-  log: jest.fn(),
-  error: jest.fn(),
-  debug: jest.fn(),
-  warn: jest.fn(),
-};
 
 describe('SendTransaction', () => {
   const testingUtils = generateTestingUtils({
