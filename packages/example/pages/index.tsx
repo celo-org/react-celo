@@ -52,8 +52,6 @@ function HomePage(): React.ReactElement {
     kit,
     address,
     network,
-    networks,
-    updateNetwork,
     connect,
     supportsFeeCurrency,
     destroy,
@@ -138,10 +136,15 @@ function HomePage(): React.ReactElement {
   const testSignPersonal = wrapAction(signTest, 'signPersonal');
 
   const toggleDarkMode = useCallback(() => {
+    if (!html) {
+      return;
+    }
     if (isDark()) {
-      html && html.classList.remove('tw-dark');
+      html.classList.remove('tw-dark');
+      html.classList.remove('dark');
     } else {
-      html && html.classList.add('tw-dark');
+      html.classList.add('tw-dark');
+      html.classList.add('dark');
     }
   }, []);
 
@@ -160,7 +163,7 @@ function HomePage(): React.ReactElement {
         />
       </Head>
       <main className="w-full">
-        <section className="flex flex-col justify-center items-center w-full min-h-[285px] p-4  bg-white rounded-lg mt-4 border-celo-gold border-solid border">
+        <section className="flex flex-col justify-center items-center w-full min-h-[285px] p-4  bg-white dark:bg-slate-900 dark:text-white rounded-lg mt-4 border-celo-gold border-solid border">
           <h1 className="text-dark-600 mt-6 pb-4 text-center">
             A{' '}
             <a
@@ -191,7 +194,7 @@ function HomePage(): React.ReactElement {
             </PrimaryButton>
           )}
 
-          <div className="text-slate-600 my-4 max-w-sm  text-center">
+          <div className="text-slate-600 dark:text-slate-200 my-4 max-w-sm  text-center">
             Connect to your wallet of choice, then sign and send a test
             transaction
           </div>
@@ -222,12 +225,14 @@ function HomePage(): React.ReactElement {
         <UsedBy />
         <div className="mt-6">
           <div className="text-slate-600 mb-4 max-w-md">
-            <h2 className="mb-2 text-lg text-slate-900">Styling</h2>
-            <p className="text-slate-600 mb-4">
+            <h2 className="mb-2 text-lg text-slate-900 dark:text-slate-200">
+              Styling
+            </h2>
+            <p className="text-slate-600 dark:text-slate-200 mb-4">
               React Celo will go dark when tailwinds tw-dark class is on body or
               you can provide a theme
             </p>
-            <label className="toggle-dark">
+            <label className="toggle-dark dark:text-slate-200">
               <span className="toggle-title">
                 Toggle modal's dark mode (tw-dark)
               </span>
@@ -240,7 +245,7 @@ function HomePage(): React.ReactElement {
                 <span className="slider round "></span>
               </div>
             </label>
-            <h3 className="mb-2 text-base">
+            <h3 className="mb-2 text-base dark:text-slate-200">
               Try out some of the pre-made themes below
             </h3>
             <div className="grid grid-flow-col gap-4 my-4">
@@ -259,9 +264,9 @@ function HomePage(): React.ReactElement {
           </div>
           <div className="flex flex-col">
             {address && (
-              <div className="w-64 md:w-96 space-y-4 text-slate-700 bg-slate-200 rounded p-4">
+              <div className="w-64 md:w-96 space-y-4 text-slate-700 bg-slate-200 dark:bg-black dark:text-white rounded p-4">
                 <div className="mb-4">
-                  <div className="text-lg font-bold mb-2 text-slate-900">
+                  <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-200">
                     Account Summary on {network.name}
                   </div>
                   <div className="space-y-2">
@@ -277,7 +282,7 @@ function HomePage(): React.ReactElement {
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-slate-900">
+                  <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-100">
                     Balances
                   </div>
                   <div className="space-y-2">
@@ -295,7 +300,7 @@ function HomePage(): React.ReactElement {
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-slate-900">
+                  <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-100">
                     Fee Currency{' '}
                     {supportsFeeCurrency || `not supported on ${walletType}`}
                   </div>
@@ -365,7 +370,7 @@ export default function Home(): React.ReactElement {
 function UsedBy() {
   return (
     <div className="mt-6 flex flex-col items-center">
-      <h2 className="mb-2 text-lg">Used by</h2>
+      <h2 className="mb-2 text-lg dark:text-white">Used by</h2>
       <ul className="flex gap-6">
         {[
           {

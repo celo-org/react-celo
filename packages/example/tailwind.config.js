@@ -3,6 +3,7 @@ module.exports = {
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -11,6 +12,7 @@ module.exports = {
         'rc-violet': '#6366f1',
         'rc-violet-light': 'rgb(238, 242, 255)',
         'rc-mist': 'rgba(255,255,255,0.5)',
+        'rc-smog': 'rgba(15,23,42,0.5)',
       },
     },
   },

@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
   };
 
   return (
-    <div className="flex flex-col justify-between items-center min-h-screen">
+    <div className="flex flex-col justify-between items-center min-h-screen dark:bg-slate-900">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -33,11 +33,11 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
         }}
       />
       <div className="max-w-screen-sm mx-auto px-4">
-        <nav className="flex w-full fixed left-0 z-5 top-0 backdrop-blur-sm bg-rc-mist py-2 px-4 gap-[10px] justify-between items-center flex-col md:flex-row lg:flex-row">
+        <nav className="flex w-full fixed left-0 z-5 top-0 backdrop-blur-sm bg-rc-mist dark:bg-rc-smog py-2 px-4 gap-[10px] justify-between items-center flex-col md:flex-row lg:flex-row">
           <a href="/">
             <div className="flex items-center gap-[5px]">
               <CeloLogo />
-              <span className="font-light text-[25px] font-['Philosopher']">
+              <span className="font-light text-[25px] font-['Philosopher'] dark:text-white">
                 react-celo
               </span>
             </div>
