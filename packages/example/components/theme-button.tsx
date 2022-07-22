@@ -20,7 +20,7 @@ export function ThemeButton({ theme, currentTheme, onClick }: Props) {
       }}
       onClick={() => onClick(selected ? null : theme)}
     >
-      <div className="flex flex-col gap-y-2 w-full">
+      <div className="flex flex-col gap-y-1 w-full">
         <div
           className="w-1/3 h-0.5 rounded"
           style={{ background: theme.text }}

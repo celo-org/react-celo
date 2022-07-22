@@ -150,7 +150,7 @@ function HomePage(): React.ReactElement {
   }, [fetchSummary]);
 
   return (
-    <div>
+    <div className="w-full">
       <Head>
         <title>react-celo</title>
         <link rel="icon" href="/favicon.ico" />
@@ -159,102 +159,70 @@ function HomePage(): React.ReactElement {
           content="width=device-width, initial-scale=1, maximum-scale=5"
         />
       </Head>
-      <main>
-        <div className="text-slate-600 mt-2">
-          A{' '}
-          <a
-            className="underline"
-            href="https://reactjs.org/docs/hooks-intro.html"
-            target="_blank"
-            rel="noreferrer"
-          >
-            React hook
-          </a>{' '}
-          to ease connecting to the{' '}
-          <a
-            href="https://celo.org/"
-            target="_blank"
-            style={{ color: 'rgba(53,208,127,1.00)' }}
-            rel="noreferrer"
-          >
-            Celo <CeloLogo />
-          </a>{' '}
-          network.
-        </div>
+      <main className="w-full">
+        <section className="flex flex-col justify-center items-center w-full min-h-[285px] p-4  bg-white rounded-lg mt-4 border-celo-gold border-solid border">
+          <h1 className="text-dark-600 mt-6 pb-4 text-center">
+            A{' '}
+            <a
+              className="underline"
+              href="https://reactjs.org/docs/hooks-intro.html"
+              target="_blank"
+              rel="noreferrer"
+            >
+              React hook
+            </a>{' '}
+            to ease connecting to the{' '}
+            <a href="https://celo.org/" target="_blank" rel="noreferrer">
+              Celo <CeloLogo />
+            </a>{' '}
+            <SelectChain />
+            network.
+          </h1>
 
-        <div className="mt-6">
-          <div className="mb-2 text-lg">Find it on:</div>
-          <ul className="list-disc list-inside">
-            <li>
-              <a
-                className="text-blue-700"
-                target="_blank"
-                href="https://www.npmjs.com/package/@celo/react-celo"
-                rel="noreferrer"
-              >
-                NPM
-              </a>
-            </li>
-            <li>
-              <a
-                className="text-blue-700"
-                target="_blank"
-                href="https://github.com/celo-org/react-celo"
-                rel="noreferrer"
-              >
-                GitHub
-              </a>
-            </li>
-          </ul>
-        </div>
+          {address ? (
+            <PrimaryButton onClick={destroy}>Disconnect</PrimaryButton>
+          ) : (
+            <PrimaryButton
+              onClick={() =>
+                connect().catch((e) => toast.error((e as Error).message))
+              }
+            >
+              Use Celo Now
+            </PrimaryButton>
+          )}
 
-        <div className="mt-6">
-          <div className="mb-2 text-lg">Used by:</div>
-          <ul className="list-disc list-inside">
-            {[
-              {
-                name: 'Celo Tracker ',
-                url: 'https://www.celotracker.com/',
-              },
-              {
-                name: 'Mobius Money',
-                url: 'https://mobius.money/',
-              },
-              {
-                name: 'Impact Market',
-                url: 'https://www.impactmarket.com/',
-              },
-              {
-                name: 'Add yours to the list...',
-                url: 'https://github.com/celo-org/react-celo/',
-              },
-            ].map(({ name, url }) => (
-              <li key={name}>
-                <a
-                  target="_blank"
-                  className="text-blue-700"
-                  href={url}
-                  rel="noreferrer"
-                >
-                  {name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mt-6">
-          <div className="mb-2 text-lg">Try it out</div>
-          <div className="text-slate-600 mb-4">
-            Connect to your wallet of choice and sign something for send a test
+          <div className="text-slate-600 my-4 max-w-sm  text-center">
+            Connect to your wallet of choice, then sign and send a test
             transaction
-            <br />
-            <a target="_blank" className="text-blue-700" href="/wallet">
-              Example wallet
-            </a>
           </div>
-          <div className="text-slate-600 mb-4">
-            <h2 className="mb-2 text-lg">Styling</h2>
+          <div
+            className={`flex flex-col items-center justify-center md:flex-row md:space-x-4 my-2 ${
+              address || 'hidden'
+            }`}
+          >
+            <SecondaryButton disabled={sending} onClick={testSendTransaction}>
+              Test sendTransaction
+            </SecondaryButton>
+            <SecondaryButton
+              disabled={sending}
+              onClick={testSignTypedData}
+              className="w-full md:w-max"
+            >
+              Test signTypedData
+            </SecondaryButton>
+            <SecondaryButton
+              disabled={sending}
+              onClick={testSignPersonal}
+              className="w-full md:w-max"
+            >
+              Test signPersonal
+            </SecondaryButton>
+          </div>
+        </section>
+        <UsedBy />
+        <div className="mt-6">
+          <div className="text-slate-600 mb-4 max-w-md">
+            <h2 className="mb-2 text-lg text-slate-900">Styling</h2>
             <p className="text-slate-600 mb-4">
               React Celo will go dark when tailwinds tw-dark class is on body or
               you can provide a theme
@@ -269,10 +237,10 @@ function HomePage(): React.ReactElement {
                   onChange={toggleDarkMode}
                   defaultValue={isDark() ? 'checked' : 'unchecked'}
                 />
-                <span className="slider round"></span>
+                <span className="slider round "></span>
               </div>
             </label>
-            <h3 className="mb-2 text-lg">
+            <h3 className="mb-2 text-base">
               Try out some of the pre-made themes below
             </h3>
             <div className="grid grid-flow-col gap-4 my-4">
@@ -289,65 +257,9 @@ function HomePage(): React.ReactElement {
               ))}
             </div>
           </div>
-          <div className="flex flex-col items-center">
-            <div className="flex items-center justify-center space-x-8 mb-4">
-              <select
-                className="border border-slate-300 rounded px-4 py-2"
-                value={network.name}
-                onChange={async (e) => {
-                  const newNetwork = networks.find(
-                    (n) => n.name === e.target.value
-                  );
-                  if (newNetwork) {
-                    await updateNetwork(newNetwork);
-                  }
-                }}
-              >
-                {Object.values(networks).map((n) => (
-                  <option key={n.name} value={n.name}>
-                    {n.name}
-                  </option>
-                ))}
-              </select>
-              {address ? (
-                <SecondaryButton onClick={destroy}>Disconnect</SecondaryButton>
-              ) : (
-                <SecondaryButton
-                  onClick={() =>
-                    connect().catch((e) => toast.error((e as Error).message))
-                  }
-                >
-                  Connect
-                </SecondaryButton>
-              )}
-            </div>
-
-            <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
-              <PrimaryButton
-                disabled={sending}
-                onClick={testSendTransaction}
-                className="w-full md:w-max"
-              >
-                Test sendTransaction
-              </PrimaryButton>
-              <PrimaryButton
-                disabled={sending}
-                onClick={testSignTypedData}
-                className="w-full md:w-max"
-              >
-                Test signTypedData
-              </PrimaryButton>
-              <PrimaryButton
-                disabled={sending}
-                onClick={testSignPersonal}
-                className="w-full md:w-max"
-              >
-                Test signPersonal
-              </PrimaryButton>
-            </div>
-
+          <div className="flex flex-col">
             {address && (
-              <div className="w-64 md:w-96 space-y-4 text-slate-700">
+              <div className="w-64 md:w-96 space-y-4 text-slate-700 bg-slate-200 rounded p-4">
                 <div className="mb-4">
                   <div className="text-lg font-bold mb-2 text-slate-900">
                     Account Summary on {network.name}
@@ -447,5 +359,66 @@ export default function Home(): React.ReactElement {
     >
       <HomePage />
     </CeloProvider>
+  );
+}
+
+function UsedBy() {
+  return (
+    <div className="mt-6 flex flex-col items-center">
+      <h2 className="mb-2 text-lg">Used by</h2>
+      <ul className="flex gap-6">
+        {[
+          {
+            name: 'Celo Tracker ',
+            url: 'https://www.celotracker.com/',
+          },
+          {
+            name: 'Mobius Money',
+            url: 'https://mobius.money/',
+          },
+          {
+            name: 'Impact Market',
+            url: 'https://www.impactmarket.com/',
+          },
+          {
+            name: 'Add yours to the list...',
+            url: 'https://github.com/celo-org/react-celo/',
+          },
+        ].map(({ name, url }) => (
+          <li key={name}>
+            <a
+              target="_blank"
+              className="text-rc-violet"
+              href={url}
+              rel="noreferrer"
+            >
+              {name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function SelectChain() {
+  const { network, networks, updateNetwork } = useCelo();
+  return (
+    <select
+      className="border border-celo-gold outline-celo-gold-light text-slate-800 rounded px-1 py-1 mr-1"
+      value={network.name}
+      onChange={async (e) => {
+        const newNetwork = networks.find((n) => n.name === e.target.value);
+        if (newNetwork) {
+          await updateNetwork(newNetwork);
+        }
+      }}
+    >
+      {Object.values(networks).map((n) => (
+        <option key={n.name} value={n.name}>
+          {n.name}
+        </option>
+      ))}
+    </select>
   );
 }
