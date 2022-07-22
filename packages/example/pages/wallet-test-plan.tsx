@@ -26,8 +26,10 @@ export default function WalletTestPlan(): React.ReactElement {
       }}
     >
       <div>
-        <div className="font-semibold text-2xl">Wallet Test Plan</div>
-        <div className="text-slate-600 mt-2">
+        <div className="font-semibold text-2xl dark:text-slate-100">
+          Wallet Test Plan
+        </div>
+        <div className="text-slate-600 mt-2 dark:text-slate-100">
           A set of steps to help verify how well a given wallet interacts with
           react-celo.
           <br />

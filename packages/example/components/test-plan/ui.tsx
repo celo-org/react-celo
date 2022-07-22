@@ -29,7 +29,7 @@ export function TestBlock({
   onRunTest: () => void;
 }>) {
   return (
-    <div className="test-block">
+    <div className="test-block dark:text-slate-100">
       <div className="tag-column">
         <TestTag type={status} />
       </div>
@@ -52,7 +52,7 @@ export function TestBlock({
 }
 
 export const Header: React.FC = (props) => (
-  <h3 className="font-semibold text-base" {...props} />
+  <h3 className="font-semibold text-base mr-2" {...props} />
 );
 
 export const Text: React.FC = (props) => (

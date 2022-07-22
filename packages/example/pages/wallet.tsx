@@ -444,7 +444,9 @@ export default function Wallet(): React.ReactElement {
       </Head>
 
       <main>
-        <div className="font-semibold text-2xl">react-celo wallet</div>
+        <div className="font-semibold text-2xl dark:text-slate-200">
+          react-celo wallet
+        </div>
 
         <input
           style={{
@@ -471,9 +473,9 @@ export default function Wallet(): React.ReactElement {
         <div className={error ? '' : 'hidden'}>
           <span className="text-red-500">{error}</span>
         </div>
-        <div className="w-64 md:w-96 space-y-4 text-slate-700">
+        <div className="w-64 md:w-96 space-y-4 text-slate-700 dark:text-slate-100">
           <div className="mb-4">
-            <div className="text-lg font-bold mb-2 text-slate-900">
+            <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-200">
               Account summary
             </div>
             <div className="space-y-2">
@@ -496,7 +498,7 @@ export default function Wallet(): React.ReactElement {
             </div>
           </div>
           <div>
-            <div className="text-lg font-bold mb-2 text-slate-900">
+            <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-200">
               Balances
             </div>
             <div className="space-y-2">
@@ -524,13 +526,13 @@ export default function Wallet(): React.ReactElement {
           }}
           contentLabel="Approve walletconnect request?"
         >
-          <h2>
+          <h2 className="dark:text-slate-200">
             Approve: <b>{approvalData?.meta.title}</b> ?
           </h2>
           <pre style={{ fontSize: 8 }}>
             {JSON.stringify(approvalData, null, 2)}
           </pre>
-          <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
+          <div className="flex flex-col md:flex-row md:space-x-4 mb-6 dark:text-slate-200">
             <PrimaryButton
               onClick={approvalData?.reject}
               className="w-full md:w-max"
