@@ -247,7 +247,7 @@ export async function switchToCeloNetwork(
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SLEEP = 500;
-const MAX_WAIT_MINUTES = 5;
+const MAX_WAIT_MINUTES = 3;
 const MAX_RETRY = Math.round((MAX_WAIT_MINUTES * 1000) / SLEEP);
 
 // Hacky workaround to wait for the network to change.\
