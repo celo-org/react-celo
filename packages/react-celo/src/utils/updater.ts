@@ -21,7 +21,7 @@ export const updater: Updater = (connector, dispatch) => {
 
   connector.on(ConnectorEvents.DISCONNECTED, () => {
     logger.log('Updater witnessed disconnection');
-    dispatch('destroy');
+    dispatch('disconnect');
   });
 };
 

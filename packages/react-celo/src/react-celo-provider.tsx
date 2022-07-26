@@ -65,7 +65,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   const methods = useCeloMethods(state, dispatch, buildContractsCache);
 
   // what happens when i disconnect, need to be able to switch chains still.
-  // need to init Unauthenticated connnector both at startup and when last chain was destroyed or Replace the null object pattern
+  // need to init Unauthenticated connnector both at startup and when last chain was disconnected or Replace the null object pattern
   // benefit is that you might still want to just passively watch a chain
   // downside is there are some sementics that get weird
   useEffect(() => {
@@ -81,7 +81,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
         e
       );
       // If the connector fails to initialise on mount then we reset.
-      await methods.destroy();
+      await methods.disconnect();
     });
     // We only want this to run on mount so the deps array is empty.
     /* eslint-disable-next-line */

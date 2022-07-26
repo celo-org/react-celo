@@ -62,7 +62,7 @@ export function useCeloMethods(
     },
     [dispatch, networks]
   );
-  const destroy = useCallback(async () => {
+  const disconnect = useCallback(async () => {
     await connector.close();
     const passiveConnector = new UnauthenticatedConnector(network);
     await initConnector(passiveConnector);
@@ -179,7 +179,8 @@ export function useCeloMethods(
   }, [dispatch]);
 
   return {
-    destroy,
+    destroy: disconnect,
+    disconnect,
     initConnector,
     resetInitError,
     updateNetwork,
@@ -194,10 +195,14 @@ export function useCeloMethods(
 
 export interface CeloMethods {
   /**
-   * `destroy` removes the connection to the wallet from state and from
-   * localStorage where it's persisted.
+   * @deprecated use `disconnect` (same behavior better name)
+   *
    */
   destroy: () => Promise<void>;
+  /**
+   * `disconnect` closes the connection to the wallet and reses state
+   */
+  disconnect: () => Promise<void>;
   /**
    * `updateNetwork` changes the network used in the wallet.
    *

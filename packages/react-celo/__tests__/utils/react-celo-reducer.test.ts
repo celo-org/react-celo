@@ -35,12 +35,12 @@ describe('setAddress', () => {
   });
 });
 
-describe('destroy', () => {
+describe('disconnect', () => {
   let newState: ReducerState;
   beforeEach(() => {
     newState = celoReactReducer(
       { ...initialState, address: '0x0123456789abcdf' },
-      { type: 'destroy', payload: undefined }
+      { type: 'disconnect', payload: undefined }
     );
   });
   it('removes the address from state', () => {
@@ -50,7 +50,7 @@ describe('destroy', () => {
   it('removes the address from localStorage', () => {
     newState = celoReactReducer(
       { ...initialState, address: '0x0123456789abcdf' },
-      { type: 'destroy', payload: undefined }
+      { type: 'disconnect', payload: undefined }
     );
 
     expect(newState.address).toEqual(null);

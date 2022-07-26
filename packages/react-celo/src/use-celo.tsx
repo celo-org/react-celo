@@ -47,6 +47,7 @@ export function useCelo<CC = undefined>(): UseCelo {
 
   const {
     destroy,
+    disconnect,
     updateNetwork,
     connect,
     getConnectedKit,
@@ -75,8 +76,8 @@ export function useCelo<CC = undefined>(): UseCelo {
     initialised: connector.initialised,
     walletType: connector.type,
     supportsFeeCurrency: connector.supportsFeeCurrency(),
-
     destroy,
+    disconnect,
     updateNetwork,
     connect,
     getConnectedKit,

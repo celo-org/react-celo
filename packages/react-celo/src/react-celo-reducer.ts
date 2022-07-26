@@ -54,11 +54,11 @@ export function celoReactReducer(
       );
       return { ...state, address: action.payload.address, network: network! };
     }
-    case 'destroy':
+    case 'disconnect':
       return {
         ...state,
         address: null,
-        // connector is overwritten by the destroy method init of a new Unauthenticated Connector, so no need to do here
+        // connector is overwritten by the disconnect method init of a new Unauthenticated Connector, so no need to do here
       };
 
     default:
@@ -108,7 +108,7 @@ type SetActions = {
 export interface ActionsMap extends SetActions {
   decrementPendingActionCount: undefined;
   initialisedConnector: Connector;
-  destroy: undefined;
+  disconnect: undefined;
   connect: { address: string; networkName: string };
   setNetworkByName: string;
 }

@@ -45,9 +45,9 @@ describe('Updater', () => {
     });
   });
   describe(`when connector emits ${ConnectorEvents.DISCONNECTED}`, () => {
-    it('dispatches destroy action', () => {
+    it('dispatches disconnect action', () => {
       connector.testEmit(ConnectorEvents.DISCONNECTED);
-      expect(dispatchStub).toHaveBeenCalledWith('destroy');
+      expect(dispatchStub).toHaveBeenCalledWith('disconnect');
     });
   });
 });

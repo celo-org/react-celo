@@ -24,7 +24,7 @@ export default function useWalletConnectConnector(
   walletId: string,
   getDeeplinkUrl?: (uri: string) => string | false
 ): UseWalletConnectConnector {
-  const { network, feeCurrency, initConnector, destroy } = useCeloInternal();
+  const { network, feeCurrency, initConnector, disconnect } = useCeloInternal();
   const [uri, setUri] = useState<Maybe<string>>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Maybe<string>>(null);
@@ -89,8 +89,8 @@ export default function useWalletConnectConnector(
             '[useWalletConnectConnector]',
             'User canceled connection'
           );
-          // destroy so we dont have open connectors all over the place
-          return destroy();
+          // disconnect so we dont have open connectors all over the place
+          return disconnect();
         }
         getApplicationLogger().debug(
           '[useWalletConnectConnector]',
@@ -106,8 +106,8 @@ export default function useWalletConnectConnector(
       // if initialised is false, it means the connection was canceled or errored.
       // We should cleanup the state
       if (!connector?.initialised) {
-        // destroy so we dont have open connectors all over the place
-        void destroy();
+        // disconnect so we dont have open connectors all over the place
+        void disconnect();
       }
 
       setUri(null);
