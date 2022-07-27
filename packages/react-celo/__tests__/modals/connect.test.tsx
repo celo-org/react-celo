@@ -32,6 +32,10 @@ describe('ConnectModal', () => {
           { providerProps: { theme } }
         );
       });
+
+      afterEach(() => {
+        dom.unmount();
+      });
       it('applies those styles while keeping original', async () => {
         const modal = await dom.findByRole('dialog');
         expect(modal.parentElement).toHaveStyle(

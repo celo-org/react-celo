@@ -53,6 +53,7 @@ describe('CeloProvider', () => {
         const modal = await dom.findByText('Connect a wallet');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         expect(modal).toBeVisible();
+        dom.unmount();
       });
       it('shows default wallets', async () => {
         const dom = await stepsToOpenModal();
@@ -69,6 +70,7 @@ describe('CeloProvider', () => {
           const walletEntry = await dom.findByText(walletName);
 
           expect(walletEntry).toBeVisible();
+          dom.unmount();
         });
       });
     });
@@ -90,6 +92,7 @@ describe('CeloProvider', () => {
         expect(valora).toBeVisible();
 
         expect(ledger).toBe(null);
+        dom.unmount();
       });
     });
     describe('when hideFromModal option is given true', () => {
@@ -109,6 +112,7 @@ describe('CeloProvider', () => {
         expect(ledger).toBe(null);
 
         expect(none).toBeVisible();
+        dom.unmount();
       });
     });
   });

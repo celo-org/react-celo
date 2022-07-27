@@ -5,8 +5,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { generateTestingUtils } from 'eth-testing';
 import { TestingUtils } from 'eth-testing/lib/testing-utils';
 
-import { ConnectWalletCheck } from './connect-wallet';
 import { mockLogger } from '../mock-logger';
+import { ConnectWalletCheck } from './connect-wallet';
 
 declare global {
   interface Window {
