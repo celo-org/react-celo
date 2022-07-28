@@ -131,7 +131,6 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
 
   const { wallets, allScreens, includedDefaultProviders } = useMemo(() => {
     let _screens: Partial<Record<SupportedProviders, React.FC<ConnectorProps>>>;
-
     const _wallets = additionalWCWallets || [];
 
     if (hideFromDefaults) {

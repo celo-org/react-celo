@@ -77,10 +77,10 @@ export type SessionConnect = {
 export type SessionProposal = Request<
   [
     {
-      chainId: number;
       approved: boolean;
       accounts?: string[];
-      networkId: number | null;
+      chainId: number;
+      networkId?: number | null;
       peerId?: string;
       rpcUrl?: string;
       peerMeta?: {

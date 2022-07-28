@@ -1,14 +1,12 @@
 /*! tailwindcss v2.0.3 | MIT License | https://tailwindcss.com */
 
 /*! modern-normalize v1.0.0 | MIT License | https://github.com/sindresorhus/modern-normalize */
-
 /*
 Document
 ========
 */
 
 /**
-
 Use a more readable tab size (opinionated).
 */
 
@@ -71,7 +69,6 @@ Text-level semantics
 */
 
 /**
-
 Add the correct font weight in Edge and Safari.
 */
 
@@ -81,7 +78,6 @@ Add the correct font weight in Edge and Safari.
 }
 
 /**
-
 Add the correct font size in all browsers.
 */
 
@@ -159,7 +155,6 @@ See: https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d4
 }
 
 /**
-
 Add the correct vertical alignment in Chrome and Firefox.
 */
 

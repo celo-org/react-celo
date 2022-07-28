@@ -90,7 +90,7 @@ const roseCustom = {
   textTertiary: '#fecdd3',
   muted: '#3f3f46',
   background: '#27272a',
-  error: 'rgb(255, 0, 0)',
+  error: '#ef4444',
 };
 
 export const themes = [defaultDark, defaultLight, greenCustom, roseCustom];
