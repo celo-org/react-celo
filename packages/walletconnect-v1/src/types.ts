@@ -53,22 +53,55 @@ export interface WCSession {
   handshakeTopic: string;
 }
 
+export type SessionDisconnect = {
+  event: 'disconnect';
+  params: [
+    {
+      message?: string;
+    }
+  ];
+};
+
+export type SessionConnect = {
+  event: 'connect';
+  params: [
+    {
+      accounts: string[];
+      chainId: number;
+      peerId: string;
+      peerMeta: unknown;
+    }
+  ];
+};
+
 export type SessionProposal = Request<
   [
     {
       chainId: number;
       approved: boolean;
+      accounts?: string[];
       networkId: number | null;
-      peerId: string;
-      peerMeta: {
+      peerId?: string;
+      rpcUrl?: string;
+      peerMeta?: {
         description: string;
         icons: string[];
         name: string;
         url: string;
       };
     }
-  ]
+  ],
+  'wc_sessionUpdate'
 >;
+
+export type SessionUpdate = Request<
+  {
+    accounts: string[];
+    chainId: number;
+  }[],
+  'session_update'
+>;
+
 export type AccountsProposal = Request<unknown[], SupportedMethods.accounts>;
 
 export type SignTransactionProposal = Request<

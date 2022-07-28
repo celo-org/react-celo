@@ -12,17 +12,22 @@ import {
 } from '../connectors';
 import { buildOptions } from '../connectors/wallet-connect';
 import { localStorageKeys, WalletTypes } from '../constants';
-import { Connector, Network } from '../types';
+import { Dapp, Network } from '../types';
 import { getTypedStorageKey } from './local-storage';
+import { getApplicationLogger } from './logger';
 
-type Resurrector = (networks: Network[]) => Connector | null;
-
-export const resurrector: Resurrector = function (networks: Network[]) {
+export function resurrector(networks: Network[], dapp: Dapp) {
   const walletType = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
   const network = getNetwork(networks);
 
   if (!walletType || !network) return null;
-
+  getApplicationLogger().log(
+    '[resurrector] will create',
+    walletType,
+    'with',
+    network,
+    dapp
+  );
   try {
     switch (walletType) {
       case WalletTypes.Ledger: {
@@ -51,6 +56,8 @@ export const resurrector: Resurrector = function (networks: Network[]) {
           CeloContract.GoldToken
         );
       }
+      case WalletTypes.CoinbaseWallet:
+        return new CoinbaseWalletConnector(network, dapp);
       case WalletTypes.CeloDance:
       case WalletTypes.CeloTerminal:
       case WalletTypes.CeloWallet:
@@ -62,17 +69,16 @@ export const resurrector: Resurrector = function (networks: Network[]) {
           buildOptions(network)
         );
       }
-      case WalletTypes.CoinbaseWallet:
-        return new CoinbaseWalletConnector(network, CeloContract.GoldToken);
+
       case WalletTypes.Unauthenticated:
         return null;
     }
   } catch (e) {
-    process.env.NODE_ENV !== 'production' &&
-      console.error('[react-celo] Unknown error in resurrector', e);
+    getApplicationLogger().error('Unknown error resurrecting', walletType, e);
     return null;
   }
-};
+}
+
 function getNetwork(networks: Network[]) {
   const networkName = getTypedStorageKey(localStorageKeys.lastUsedNetwork);
   if (!networkName) return;

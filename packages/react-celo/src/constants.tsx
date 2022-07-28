@@ -309,7 +309,7 @@ export const getProviderForWallet = (
 /**
  * Default networks to connect to.
  */
-export const DEFAULT_NETWORKS = [
+export const DEFAULT_NETWORKS: Network[] = [
   Mainnet,
   Alfajores,
   Baklava,

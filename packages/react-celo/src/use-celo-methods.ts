@@ -3,91 +3,40 @@ import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
-import { CONNECTOR_TYPES } from './connectors';
+import { UnauthenticatedConnector } from './connectors';
 import { STATIC_NETWORK_WALLETS, WalletTypes } from './constants';
 import {
   ContractCacheBuilder,
   useContractsCache,
 } from './hooks/use-contracts-cache';
-import { Dispatcher } from './react-celo-provider';
+import { Dispatcher } from './react-celo-provider-state';
 import { Connector, Network, Theme } from './types';
 import { contrastCheck, fixTheme } from './utils/colors';
-import { getLastUsedWalletArgs } from './utils/local-storage';
 import { getApplicationLogger } from './utils/logger';
+import networkWatcher from './utils/network-watcher';
+import persistor from './utils/persistor';
+import { updater } from './utils/updater';
+
+interface CeloMethodsInput {
+  connector: Connector;
+  networks: Network[];
+  network: Network;
+}
 
 export function useCeloMethods(
-  {
-    connector,
-    networks,
-    network,
-  }: {
-    connector: Connector;
-    networks: Network[];
-    network: Network;
-  },
+  { connector, networks, network }: CeloMethodsInput,
   dispatch: Dispatcher,
   buildContractsCache?: ContractCacheBuilder
 ): CeloMethods {
-  const destroy = useCallback(async () => {
-    await connector.close();
-    dispatch('destroy');
-  }, [dispatch, connector]);
-
   const initConnector = useCallback(
     async (nextConnector: Connector) => {
       try {
+        // need to set the event listeners here before initialise()
+        updater(nextConnector, dispatch);
+        persistor(nextConnector);
+        networkWatcher(nextConnector, networks);
         const initialisedConnector = await nextConnector.initialise();
         dispatch('initialisedConnector', initialisedConnector);
-
-        // If the new wallet already has a specific network it's
-        // using then we should go with that one.
-        const netId =
-          await initialisedConnector.kit.connection.web3.eth.net.getId();
-        const newNetwork = networks.find((n) => netId === n.chainId);
-        if (newNetwork !== network) {
-          dispatch('setNetwork', network);
-        }
-
-        // This happens if the network changes on the wallet side
-        // and we need to update what network we're storing
-        // accordingly.
-        initialisedConnector.onNetworkChange?.((chainId) => {
-          // NOTE: for @aaron - I know you're working on this so I dont want conflicts for you
-          // eslint-disable-next-line @typescript-eslint/no-shadow
-          const network = networks.find((n) => n.chainId === chainId);
-          if (netId === chainId || !network) return;
-
-          // TODO: We should probably throw an error if we can't find the new chainId
-
-          if (network) {
-            dispatch('setNetwork', network);
-            initialisedConnector.updateKitWithNetwork &&
-              initialisedConnector
-                .updateKitWithNetwork(network)
-                .then(() => {
-                  dispatch('initialisedConnector', initialisedConnector);
-                })
-                .catch((e) => {
-                  getApplicationLogger().error(
-                    '[initConnector]',
-                    'Error switching network',
-                    nextConnector.type,
-                    e
-                  );
-                  const error =
-                    e instanceof Error
-                      ? e
-                      : new Error(
-                          `Failed to initialise connector with ${network.name}`
-                        );
-                  dispatch('setConnectorInitError', error);
-                  throw e;
-                });
-          }
-        });
-        initialisedConnector.onAddressChange?.((address) => {
-          dispatch('setAddress', address);
-        });
       } catch (e) {
         if (typeof e === 'symbol') {
           getApplicationLogger().debug(
@@ -111,33 +60,31 @@ export function useCeloMethods(
         throw e;
       }
     },
-    [dispatch, network, networks]
+    [dispatch, networks]
   );
+  const disconnect = useCallback(async () => {
+    await connector.close();
+    const passiveConnector = new UnauthenticatedConnector(network);
+    await initConnector(passiveConnector);
+  }, [connector, network, initConnector]);
 
   // This is just to be used to for users to explicitly change
   // the network. It doesn't work for all wallets.
   const updateNetwork = useCallback(
     async (newNetwork: Network) => {
+      getApplicationLogger().debug(
+        '[updateNetwork]',
+        newNetwork,
+        connector.type
+      );
       if (STATIC_NETWORK_WALLETS.includes(connector.type)) {
         throw new Error(
           "The connected wallet's network must be changed from the wallet."
         );
       }
-
-      if (connector.initialised) {
-        const connectorArgs = getLastUsedWalletArgs() || [];
-        await connector.close();
-        const ConnectorConstructor = CONNECTOR_TYPES[connector.type];
-        const newConnector = new ConnectorConstructor(
-          newNetwork,
-          ...connectorArgs
-        );
-        await initConnector(newConnector);
-      }
-
-      dispatch('setNetwork', newNetwork);
+      await connector.startNetworkChangeFromApp(newNetwork);
     },
-    [dispatch, connector, initConnector]
+    [connector]
   );
 
   const connect = useCallback(async (): Promise<Connector> => {
@@ -232,7 +179,8 @@ export function useCeloMethods(
   }, [dispatch]);
 
   return {
-    destroy,
+    destroy: disconnect,
+    disconnect,
     initConnector,
     resetInitError,
     updateNetwork,
@@ -247,10 +195,14 @@ export function useCeloMethods(
 
 export interface CeloMethods {
   /**
-   * `destroy` removes the connection to the wallet from state and from
-   * localStorage where it's persisted.
+   * @deprecated use `disconnect` (same behavior better name)
+   *
    */
   destroy: () => Promise<void>;
+  /**
+   * `disconnect` closes the connection to the wallet and reses state
+   */
+  disconnect: () => Promise<void>;
   /**
    * `updateNetwork` changes the network used in the wallet.
    *

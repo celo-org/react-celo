@@ -4,8 +4,8 @@ import { CeloProvider, localStorageKeys, Mainnet } from '@celo/react-celo';
 import { render, waitFor } from '@testing-library/react';
 import { generateTestingUtils } from 'eth-testing';
 import { TestingUtils } from 'eth-testing/lib/testing-utils';
-import Web3 from 'web3';
 
+import { mockLogger } from '../mock-logger';
 import { SendTransaction } from './perform-actions';
 
 declare global {
@@ -39,14 +39,6 @@ describe('SendTransaction', () => {
     localStorage.setItem(localStorageKeys.lastUsedAddress, mockAddress);
     localStorage.setItem(localStorageKeys.lastUsedWalletType, 'MetaMask');
 
-    // * TODO: Figure out how to mock balance.
-    /**
-     * This balance mock is not actually affecting the balance in the wallet.
-     */
-    testingUtils.mockBalance(
-      mockAddress,
-      Web3.utils.toWei('1000000000000000000')
-    );
     /**
      * As far as I can tell, the balance is retrieved with an `eth_call` request,
      * which is sent using this function. So this might be a good point to investigate
@@ -73,12 +65,21 @@ describe('SendTransaction', () => {
         connectModal={{
           providersOptions: { searchable: true },
         }}
+        logger={mockLogger}
       >
         <SendTransaction />
       </CeloProvider>
     );
 
     expect(screen.getByRole('status')).toHaveTextContent('not started');
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'This sends a very small transaction to impact market contract.'
+        )
+      ).toBeVisible();
+    });
 
     await waitFor(() =>
       expect(

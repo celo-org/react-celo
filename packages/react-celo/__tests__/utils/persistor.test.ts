@@ -1,10 +1,6 @@
+import { ConnectorEvents, ConnectorParams } from '../../src/connectors/common';
 import {
-  AbstractConnector,
-  ConnectorEvents,
-  ConnectorParams,
-  EventsMap,
-} from '../../src/connectors/common';
-import {
+  Alfajores,
   localStorageKeys,
   PROVIDERS,
   WalletIds,
@@ -12,23 +8,21 @@ import {
 } from '../../src/constants';
 import { getRecent } from '../../src/hooks/use-providers';
 import { getTypedStorageKey } from '../../src/utils/local-storage';
+import { setApplicationLogger } from '../../src/utils/logger';
 import persistor from '../../src/utils/persistor';
-
-class ConnectorStub extends AbstractConnector {
-  emit<E extends ConnectorEvents>(event: E, args?: EventsMap[E]) {
-    super.emit(event, args);
-  }
-}
+import { mockLogger } from '../test-logger';
+import { ConnectorStub } from './connector-stub';
 
 describe('Persistor', () => {
+  beforeAll(() => setApplicationLogger(mockLogger));
   let connector: ConnectorStub;
   beforeEach(() => {
-    connector = new ConnectorStub();
+    connector = new ConnectorStub(Alfajores);
     persistor(connector);
   });
   describe(`when connector emits ${ConnectorEvents.ADDRESS_CHANGED}`, () => {
     it('dispatches the new address to Reducer', () => {
-      connector.emit(ConnectorEvents.ADDRESS_CHANGED, '0x12312823y471');
+      connector.testEmit(ConnectorEvents.ADDRESS_CHANGED, '0x12312823y471');
       expect(getTypedStorageKey(localStorageKeys.lastUsedAddress)).toEqual(
         '0x12312823y471'
       );
@@ -36,7 +30,7 @@ describe('Persistor', () => {
   });
   describe(`when connector emits ${ConnectorEvents.NETWORK_CHANGED}`, () => {
     it('dispatches the new network to Reducer', () => {
-      connector.emit(ConnectorEvents.NETWORK_CHANGED, 'Polygon');
+      connector.testEmit(ConnectorEvents.NETWORK_CHANGED, 'Polygon');
       expect(getTypedStorageKey(localStorageKeys.lastUsedNetwork)).toEqual(
         'Polygon'
       );
@@ -48,11 +42,10 @@ describe('Persistor', () => {
       address: '0x9e81622',
       networkName: 'Celo',
       index: 2,
-      privateKey: 'PRIVATE',
       walletId: WalletIds.Steakwallet,
     };
     beforeEach(() => {
-      connector.emit(ConnectorEvents.CONNECTED, params);
+      connector.testEmit(ConnectorEvents.CONNECTED, params);
     });
     it('stores walletType', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedWalletType)).toEqual(
@@ -74,11 +67,6 @@ describe('Persistor', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedIndex)).toEqual(2);
     });
 
-    it('stores PK', () => {
-      expect(getTypedStorageKey(localStorageKeys.lastUsedPrivateKey)).toEqual(
-        'PRIVATE'
-      );
-    });
     it('remembers walletID so it can be used to find recently used wallet', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedWalletId)).toEqual(
         WalletIds.Steakwallet
@@ -88,7 +76,7 @@ describe('Persistor', () => {
   });
   describe(`when connector emits ${ConnectorEvents.DISCONNECTED}`, () => {
     it('removes data from local storage', () => {
-      connector.emit(ConnectorEvents.DISCONNECTED);
+      connector.testEmit(ConnectorEvents.DISCONNECTED);
     });
   });
 });

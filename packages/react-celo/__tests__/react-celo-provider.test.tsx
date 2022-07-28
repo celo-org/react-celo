@@ -11,16 +11,22 @@ import {
   NetworkNames,
   SupportedProviders,
 } from '../src/constants';
-import { CeloProviderProps } from '../src/react-celo-provider';
+import CeloProviderProps from '../src/react-celo-provider-props';
 import defaultTheme from '../src/theme/default';
 import { Maybe, Network, Theme } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
+import { clearPreviousConfig } from '../src/utils/local-storage';
 import {
   renderComponentInCKProvider,
   renderHookInCKProvider,
 } from './render-in-provider';
 
 describe('CeloProvider', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+    jest.spyOn(console, 'warn').mockImplementation(jest.fn());
+    jest.spyOn(console, 'error').mockImplementation(jest.fn());
+  });
   describe('user interface', () => {
     const ConnectButton = () => {
       const { connect } = useCelo();
@@ -47,23 +53,29 @@ describe('CeloProvider', () => {
         const modal = await dom.findByText('Connect a wallet');
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         expect(modal).toBeVisible();
+        dom.unmount();
       });
       it('shows default wallets', async () => {
         const dom = await stepsToOpenModal();
 
-        Object.keys(SupportedProviders).map(async (key) => {
-          const walletName = { ...SupportedProviders }[
-            key
-          ] as SupportedProviders;
+        const testPromises = Object.keys(SupportedProviders).map(
+          async (key) => {
+            const walletName = { ...SupportedProviders }[
+              key
+            ] as SupportedProviders;
 
-          if (walletName === SupportedProviders.Injected) {
-            return;
+            if (walletName === SupportedProviders.Injected) {
+              return;
+            }
+
+            const walletEntry = await dom.findByText(walletName);
+
+            expect(walletEntry).toBeVisible();
           }
+        );
 
-          const walletEntry = await dom.findByText(walletName);
-
-          expect(walletEntry).toBeVisible();
-        });
+        await Promise.all(testPromises);
+        dom.unmount();
       });
     });
 
@@ -84,6 +96,7 @@ describe('CeloProvider', () => {
         expect(valora).toBeVisible();
 
         expect(ledger).toBe(null);
+        dom.unmount();
       });
     });
     describe('when hideFromModal option is given true', () => {
@@ -103,6 +116,7 @@ describe('CeloProvider', () => {
         expect(ledger).toBe(null);
 
         expect(none).toBeVisible();
+        dom.unmount();
       });
     });
   });
@@ -243,6 +257,9 @@ describe('CeloProvider', () => {
       });
 
       describe('when feeCurrency WhitelistToken passed', () => {
+        beforeEach(() => {
+          clearPreviousConfig();
+        });
         it('sets that as the feeCurrency', () => {
           const { result } = renderUseCelo({
             feeCurrency: CeloContract.StableTokenBRL,

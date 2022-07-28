@@ -30,7 +30,6 @@ export async function assertHasBalance(
 
     throw new Error(`Got an error when trying to check balance: ${message}`);
   }
-
   if (convertedBalance < 0.1) {
     throw new Error(
       'Your wallet does not have enough funds for the transaction'

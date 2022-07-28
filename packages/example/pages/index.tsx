@@ -54,7 +54,7 @@ function HomePage(): React.ReactElement {
     network,
     connect,
     supportsFeeCurrency,
-    destroy,
+    disconnect,
     performActions,
     walletType,
     feeCurrency,
@@ -183,7 +183,7 @@ function HomePage(): React.ReactElement {
           </h1>
 
           {address ? (
-            <PrimaryButton onClick={destroy}>Disconnect</PrimaryButton>
+            <PrimaryButton onClick={disconnect}>Disconnect</PrimaryButton>
           ) : (
             <PrimaryButton
               onClick={() =>
@@ -357,7 +357,7 @@ export default function Home(): React.ReactElement {
         url: 'https://react-celo.vercel.app',
         icon: 'https://react-celo.vercel.app/favicon.ico',
       }}
-      network={Alfajores}
+      defaultNetwork={Alfajores.name}
       connectModal={{
         providersOptions: { searchable: true },
       }}

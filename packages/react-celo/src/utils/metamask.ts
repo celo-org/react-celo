@@ -1,7 +1,6 @@
-import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
+import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
-import Web3 from 'web3';
 
 import { Alfajores, Baklava, Mainnet } from '../constants';
 import { Ethereum } from '../global';
@@ -210,13 +209,11 @@ export async function addNetworksToMetamask(ethereum: Ethereum): Promise<void> {
 }
 
 export async function switchToCeloNetwork(
-  kit: MiniContractKit,
   network: Network,
-  ethereum: Ethereum
+  ethereum: Ethereum,
+  getChainId: () => Promise<number>
 ): Promise<void> {
-  const web3 = new Web3(ethereum);
-  const chainId = await web3.eth.getChainId();
-
+  const chainId = await getChainId();
   if (network.chainId !== chainId) {
     try {
       await ethereum.request({
@@ -227,6 +224,7 @@ export async function switchToCeloNetwork(
           },
         ],
       });
+      await networkHasUpdated(getChainId, network.chainId);
     } catch (err) {
       const { code } = err as MetamaskRPCError;
       if (
@@ -235,7 +233,7 @@ export async function switchToCeloNetwork(
       ) {
         // ChainId not yet added to metamask
         await addNetworkToMetamask(ethereum, network);
-        return switchToCeloNetwork(kit, network, ethereum);
+        return switchToCeloNetwork(network, ethereum, getChainId);
       } else if (code === MetamaskRPCErrorCode.AwaitingUserConfirmation) {
         // user has already been requested to switch the network
         return;
@@ -245,3 +243,31 @@ export async function switchToCeloNetwork(
     }
   }
 }
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const SLEEP = 500;
+const MAX_WAIT_MINUTES = 3;
+const MAX_RETRY = Math.round((MAX_WAIT_MINUTES * 1000) / SLEEP);
+
+// Hacky workaround to wait for the network to change.\
+
+export const networkHasUpdated = async (
+  getChainId: () => Promise<number>,
+  expectedChainId: number
+) => {
+  let attempts = 0;
+  let isNetworkUpdated = false;
+  while (!isNetworkUpdated) {
+    attempts++;
+    if (attempts >= MAX_RETRY) {
+      throw new Error('Network did not change');
+    }
+    const chainId = await getChainId();
+    if (chainId === expectedChainId) {
+      isNetworkUpdated = true;
+      return true;
+    }
+    await sleep(SLEEP);
+  }
+};

@@ -2,8 +2,8 @@ import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from '../constants';
-import { Connector, Maybe, Network } from '../types';
-import { clearPreviousConfig, forgetConnection } from '../utils/local-storage';
+import { Connector, Network } from '../types';
+import { AbstractConnector, ConnectorEvents } from './common';
 
 /**
  * Connectors are our link between a DApp and the users wallet. Each
@@ -11,23 +11,21 @@ import { clearPreviousConfig, forgetConnection } from '../utils/local-storage';
  * them and present a workable API.
  */
 
-export default class UnauthenticatedConnector implements Connector {
+export default class UnauthenticatedConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = true;
   public type = WalletTypes.Unauthenticated;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
   public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
   constructor(n: Network) {
+    super();
     this.kit = newKit(n.rpcUrl);
-  }
-
-  persist() {
-    forgetConnection();
   }
 
   initialise(): this {
     this.initialised = true;
-    this.persist();
     return this;
   }
 
@@ -35,8 +33,16 @@ export default class UnauthenticatedConnector implements Connector {
     return false;
   }
 
+  startNetworkChangeFromApp(network: Network) {
+    this.kit = newKit(network.rpcUrl);
+    this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
+  }
+
   close(): void {
-    clearPreviousConfig();
-    return;
+    try {
+      this.kit.connection.stop();
+    } finally {
+      this.disconnect();
+    }
   }
 }

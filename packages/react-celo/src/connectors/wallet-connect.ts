@@ -1,15 +1,24 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import {
+  EthProposal,
+  SessionConnect,
+  SessionDisconnect,
+  SessionProposal,
+  SessionUpdate,
   WalletConnectWallet as WalletConnectWalletV1,
   WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
 } from '@celo/wallet-walletconnect-v1';
 import { BigNumber } from 'bignumber.js';
 
 import { WalletTypes } from '../constants';
-import { Connector, Maybe, Network } from '../types';
-import { clearPreviousConfig } from '../utils/local-storage';
-import { persist, updateFeeCurrency } from './common';
+import { Connector, Network } from '../types';
+import { getApplicationLogger } from '../utils/logger';
+import {
+  AbstractConnector,
+  ConnectorEvents,
+  updateFeeCurrency,
+} from './common';
 
 export function buildOptions(network: Network): WalletConnectWalletOptionsV1 {
   return {
@@ -19,18 +28,16 @@ export function buildOptions(network: Network): WalletConnectWalletOptionsV1 {
   };
 }
 
-export default class WalletConnectConnector implements Connector {
+export default class WalletConnectConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = false;
-  public type = WalletTypes.WalletConnect;
+  public type: WalletTypes.WalletConnect = WalletTypes.WalletConnect;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
-
-  private onUriCallback?: (uri: string) => void;
-  private onConnectCallback?: (account: string) => void;
-  private onCloseCallback?: () => void;
 
   constructor(
-    readonly network: Network,
+    private network: Network,
     public feeCurrency: CeloTokenContract,
     // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     readonly options: WalletConnectWalletOptionsV1,
@@ -39,64 +46,47 @@ export default class WalletConnectConnector implements Connector {
     readonly version?: number,
     readonly walletId?: string
   ) {
+    super();
     const wallet = new WalletConnectWalletV1(options);
-    // Uncomment with WCV2 support
-    // version == 1
-    //   ? new WalletConnectWalletV1(options as WalletConnectWalletOptionsV1)
-    //   : new WalletConnectWallet(options as WalletConnectWalletOptions);
+
     this.kit = newKit(network.rpcUrl, wallet);
-    this.version = version;
   }
 
-  persist() {
-    persist({
-      walletType: WalletTypes.WalletConnect,
-      walletId: this.walletId,
-      network: this.network,
-      options: [this.options],
-    });
-  }
-
-  onUri(callback: (uri: string) => void): void {
-    this.onUriCallback = callback;
-  }
-
-  onConnect(callback: (account: string) => void): void {
-    this.onConnectCallback = callback;
-  }
-
-  onClose(callback: () => void): void {
-    this.onCloseCallback = callback;
-  }
-
+  // this is called automatically and is what gives us the uri for the qr code to be scanned
   async initialise(): Promise<this> {
     const wallet = this.kit.getWallet() as WalletConnectWalletV1;
 
-    if (this.onCloseCallback) {
-      // Uncomment with WCV2 support
-      // wallet.onPairingDeleted = () => this.onCloseCallback?.();
-      wallet.onSessionDeleted = () => this.onCloseCallback?.();
-      wallet.onWcSessionUpdate = (_error, session) => {
-        if (session.params[0].chainId == null) {
-          this.onCloseCallback?.();
-        }
-      };
-      wallet.onSessionUpdated = (_error, session) => {
-        if (session.params[0].chainId == null) {
-          this.onCloseCallback?.();
-        }
-      };
-    }
+    wallet.onSessionCreated = this.onSessionCreated.bind(this);
 
-    if (this.onConnectCallback) {
-      wallet.onSessionCreated = (error, session) => {
-        this.onConnectCallback?.(session.params as string);
-      };
-    }
+    wallet.onSessionUpdated = this.onSessionUpdated.bind(this);
 
+    wallet.onCallRequest = this.onCallRequest.bind(this);
+
+    wallet.onWcSessionUpdate = this.onWcSessionUpdate.bind(this);
+
+    wallet.onSessionDeleted = this.onSessionDeleted.bind(this);
+
+    // must be called after all callbacks are set
+    await wallet.setupClient();
+
+    await this.handleUri(wallet);
+
+    await wallet.init();
+
+    const [address] = wallet.getAccounts();
+    const defaultAccount = await this.fetchWalletAddressForAccount(address);
+
+    this.kit.connection.defaultAccount = defaultAccount;
+
+    this.initialised = true;
+    this.emit(ConnectorEvents.WC_INITIALISED);
+    return this;
+  }
+
+  private async handleUri(wallet: WalletConnectWalletV1) {
     const uri = await wallet.getUri();
-    if (uri && this.onUriCallback) {
-      this.onUriCallback(uri);
+    if (uri) {
+      this.emit(ConnectorEvents.WC_URI_RECEIVED, uri);
     }
 
     if (uri && this.autoOpen) {
@@ -105,19 +95,127 @@ export default class WalletConnectConnector implements Connector {
         location.href = deepLink;
       }
     }
+  }
 
-    await wallet.init();
-    const [address] = wallet.getAccounts();
-    const defaultAccount = await this.fetchWalletAddressForAccount(address);
-    this.kit.connection.defaultAccount = defaultAccount;
-    this.account = defaultAccount ?? null;
+  async startNetworkChangeFromApp(network: Network) {
+    try {
+      const wallet = this.kit.getWallet() as WalletConnectWalletV1;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const resp = await wallet.switchToChain({
+        ...network,
+        networkId: network.chainId,
+      });
+      getApplicationLogger().debug(
+        '[startNetworkChangeFromApp] response',
+        resp
+      );
+      this.restartKit(network);
+      this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
+    } catch (e) {
+      this.emit(ConnectorEvents.NETWORK_CHANGE_FAILED, e);
+    }
+  }
 
-    await this.updateFeeCurrency(this.feeCurrency);
-    this.initialised = true;
+  private restartKit(network: Network) {
+    const wallet = this.kit.getWallet() as WalletConnectWalletV1;
+    this.network = network; // must set to prevent loop
+    try {
+      this.kit.connection.stop(); // this blows up if its already stopped
+    } finally {
+      this.kit = newKit(network.rpcUrl, wallet);
+    }
+  }
 
-    this.persist();
+  private async onSessionCreated(
+    _error: Error | null,
+    session: SessionConnect
+  ) {
+    // TODO HANDLE FAILED TO CONNECT STATE
+    const connectSession = session;
+    await this.onConnected(connectSession);
+  }
 
-    return this;
+  private onCallRequest(error: Error | null, payload: EthProposal) {
+    getApplicationLogger().debug(
+      '[wallet-connect] onCallRequest => Payload:',
+      payload,
+      error ? `Error ${error.name} ${error.message}` : ''
+    );
+    if (error) {
+      this.emit(ConnectorEvents.WC_ERROR, error);
+    }
+  }
+
+  private async onWcSessionUpdate(
+    _error: Error | null,
+    session: SessionProposal
+  ) {
+    getApplicationLogger().debug(
+      'wallet-connect',
+      'on-wc-session-update',
+      session,
+      _error
+    );
+    const params = session.params[0];
+    await this.combinedSessionUpdater(params);
+  }
+
+  private async onSessionUpdated(_error: Error | null, session: SessionUpdate) {
+    getApplicationLogger().debug(
+      'wallet-connect',
+      'on-session-update',
+      session,
+      _error
+    );
+    const params = session.params[0];
+
+    // TODO emit event when there is an error
+    await this.combinedSessionUpdater(params);
+  }
+
+  private onSessionDeleted(_error: Error | null, session: SessionDisconnect) {
+    getApplicationLogger().debug(
+      'wallet-connect',
+      'on-session-delete',
+      session,
+      _error
+    );
+    // since dapps send the both when they initiate disconnection and when responding to disconnection requests
+    // check if dapp initiated the closure to avoid closing twice.
+    if (session.params[0]?.message?.startsWith(END_MESSAGE)) {
+      return;
+    }
+    void this.close();
+  }
+
+  private combinedSessionUpdater(params: {
+    accounts?: string[];
+    chainId: number | null;
+  }) {
+    if (params.chainId == null) {
+      return this.close();
+    }
+
+    if (params.chainId !== this.network.chainId) {
+      return this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, params.chainId);
+    }
+
+    const accounts = params.accounts as string[];
+    const addressFromSessionUpdate = accounts[0];
+    if (
+      typeof addressFromSessionUpdate === 'string' &&
+      addressFromSessionUpdate !== this.kit.connection.defaultAccount
+    ) {
+      return this.onAddressChange(addressFromSessionUpdate);
+    }
+  }
+
+  // for when the wallet is already on the desired network and the kit / dapp need to catch up.
+  continueNetworkUpdateFromWallet(network: Network): void {
+    this.restartKit(network);
+    this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
   }
 
   supportsFeeCurrency() {
@@ -127,6 +225,29 @@ export default class WalletConnectConnector implements Connector {
     }
     // TODO when V2 is used again check based on wallet?
     return true;
+  }
+
+  private async onAddressChange(address: string) {
+    this.kit.connection.defaultAccount =
+      await this.fetchWalletAddressForAccount(address);
+    this.emit(ConnectorEvents.ADDRESS_CHANGED, address);
+  }
+
+  private async onConnected(session: SessionConnect) {
+    const sessionAccount = session.params[0].accounts[0];
+    const walletAddress = await this.fetchWalletAddressForAccount(
+      sessionAccount
+    );
+    if (this.kit.connection.defaultAccount !== walletAddress) {
+      this.kit.connection.defaultAccount = walletAddress;
+    }
+
+    this.emit(ConnectorEvents.CONNECTED, {
+      walletType: this.type,
+      walletId: this.walletId as string,
+      networkName: this.network.name,
+      address: sessionAccount,
+    });
   }
 
   private async fetchWalletAddressForAccount(address?: string) {
@@ -140,9 +261,16 @@ export default class WalletConnectConnector implements Connector {
 
   updateFeeCurrency: typeof updateFeeCurrency = updateFeeCurrency.bind(this);
 
-  close(message?: string): Promise<void> {
-    clearPreviousConfig();
-    const wallet = this.kit.getWallet() as WalletConnectWalletV1;
-    return wallet.close(message);
+  async close(message?: string): Promise<void> {
+    getApplicationLogger().log('wallet-connect', 'close', message);
+    try {
+      const wallet = this.kit.getWallet() as WalletConnectWalletV1;
+      await wallet.close(`${END_MESSAGE} : ${message || ''}`);
+      this.kit.connection.stop();
+    } finally {
+      this.disconnect();
+    }
   }
 }
+
+const END_MESSAGE = '[react-celo] WC SESSION ENDED BY DAPP';

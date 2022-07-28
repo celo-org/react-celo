@@ -1,23 +1,28 @@
-import { AbstractConnector, ConnectorEvents } from '../connectors/common';
+import { ConnectorEvents } from '../connectors/common';
+import { Dispatcher } from '../react-celo-provider-state';
+import { Connector } from '../types';
+import { getApplicationLogger } from './logger';
 
-type Updater = (
-  connector: AbstractConnector,
-  dispatch: (action: string, payload?: unknown) => void
-) => void;
+type Updater = (connector: Connector, dispatch: Dispatcher) => void;
 
-export const updater: Updater = (connector: AbstractConnector, dispatch) => {
+export const updater: Updater = (connector, dispatch) => {
+  const logger = getApplicationLogger();
   connector.on(ConnectorEvents.ADDRESS_CHANGED, (address) => {
     dispatch('setAddress', address);
   });
   connector.on(ConnectorEvents.NETWORK_CHANGED, (networkName) => {
-    dispatch('setNetwork', networkName);
+    logger.log('Network Changing to', networkName);
+    dispatch('setNetworkByName', networkName);
   });
   connector.on(ConnectorEvents.CONNECTED, (params) => {
-    // TODO create a 'connected' action to dispatch
+    logger.log('Updater witnessed connection');
     dispatch('connect', params);
   });
 
   connector.on(ConnectorEvents.DISCONNECTED, () => {
-    dispatch('destroy');
+    logger.log('Updater witnessed disconnection');
+    dispatch('disconnect');
   });
 };
+
+export default updater;

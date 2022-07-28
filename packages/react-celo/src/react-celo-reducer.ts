@@ -1,13 +1,6 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
-import { UnauthenticatedConnector } from './connectors';
-import { localStorageKeys as lsKeys } from './constants';
 import { Connector, Dapp, Maybe, Network, Theme } from './types';
-import {
-  clearPreviousConfig,
-  removeLastUsedAddress,
-  setTypedStorageKey,
-} from './utils/local-storage';
 import { getApplicationLogger } from './utils/logger';
 
 export function celoReactReducer(
@@ -25,11 +18,6 @@ export function celoReactReducer(
       if (action.payload === state.address) {
         return state;
       }
-      if (action.payload) {
-        setTypedStorageKey(lsKeys.lastUsedAddress, action.payload);
-      } else {
-        removeLastUsedAddress();
-      }
       return {
         ...state,
         address: action.payload,
@@ -38,45 +26,39 @@ export function celoReactReducer(
       if (action.payload === state.network) {
         return state;
       }
-      setTypedStorageKey(lsKeys.lastUsedNetwork, action.payload.name);
       return {
         ...state,
         network: action.payload,
       };
-
-    case 'setConnector':
-      removeLastUsedAddress();
-      return {
-        ...state,
-        connector: action.payload,
-        connectorInitError: null,
-        address: null,
-      };
+    case 'setNetworkByName': {
+      const network = state.networks.find((net) => net.name === action.payload);
+      if (network) {
+        return { ...state, network };
+      }
+      return state;
+    }
     case 'setFeeCurrency':
       if (action.payload === state.feeCurrency) {
         return state;
       }
-      setTypedStorageKey(lsKeys.lastUsedFeeCurrency, action.payload);
       return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
-      const newConnector = action.payload;
-      const address = newConnector.kit.connection.defaultAccount ?? null;
-      if (address) {
-        setTypedStorageKey(lsKeys.lastUsedAddress, address);
-      }
       return {
         ...state,
         connector: action.payload,
-        address,
       };
     }
-
-    case 'destroy':
-      clearPreviousConfig();
+    case 'connect': {
+      const network = state.networks.find(
+        (net) => net.name === action.payload.networkName
+      );
+      return { ...state, address: action.payload.address, network: network! };
+    }
+    case 'disconnect':
       return {
         ...state,
         address: null,
-        connector: new UnauthenticatedConnector(state.network),
+        // connector is overwritten by the disconnect method init of a new Unauthenticated Connector, so no need to do here
       };
 
     default:
@@ -114,7 +96,6 @@ export interface ReducerState {
   address: Maybe<string>;
   feeCurrency: CeloTokenContract;
   theme: Maybe<Theme>;
-
   connectionCallback: Maybe<(connector: Connector | false) => void>;
 }
 
@@ -127,7 +108,9 @@ type SetActions = {
 export interface ActionsMap extends SetActions {
   decrementPendingActionCount: undefined;
   initialisedConnector: Connector;
-  destroy: undefined;
+  disconnect: undefined;
+  connect: { address: string; networkName: string };
+  setNetworkByName: string;
 }
 
 // This converts the `ActionsMap` into a union of possible actions

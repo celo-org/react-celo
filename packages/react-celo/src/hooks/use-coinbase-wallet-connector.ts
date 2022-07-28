@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { CoinbaseWalletConnector } from '../connectors';
 import { Connector, Dapp, Maybe, Network } from '../types';
 import { useCeloInternal } from '../use-celo';
+import { getApplicationLogger } from '../utils/logger';
 
 export function useCoinbaseWalletConnector(
   onSubmit: (connector: Connector) => void
@@ -18,14 +19,14 @@ export function useCoinbaseWalletConnector(
   useEffect(() => {
     let stale;
     void (async () => {
-      const connector = new CoinbaseWalletConnector(network, feeCurrency, dapp);
+      const connector = new CoinbaseWalletConnector(network, dapp);
       try {
         await initConnector(connector);
         if (!stale) {
           onSubmit(connector);
         }
       } catch (e) {
-        console.error(e);
+        getApplicationLogger().error('[use-coinbase-wallet-connector]', e);
       }
     })();
 

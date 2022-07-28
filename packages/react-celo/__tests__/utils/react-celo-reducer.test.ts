@@ -1,10 +1,8 @@
 import { CeloContract } from '@celo/contractkit';
 
-import { localStorageKeys } from '../../src';
 import { UnauthenticatedConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
 import { celoReactReducer, ReducerState } from '../../src/react-celo-reducer';
-import { getTypedStorageKey } from '../../src/utils/local-storage';
 
 const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Alfajores),
@@ -35,19 +33,14 @@ describe('setAddress', () => {
   it('adds new address', () => {
     expect(newState).toEqual({ ...initialState, address: 'test-address' });
   });
-  it('saves the address in localStorage', () => {
-    expect(getTypedStorageKey(localStorageKeys.lastUsedAddress)).toEqual(
-      'test-address'
-    );
-  });
 });
 
-describe('destroy', () => {
+describe('disconnect', () => {
   let newState: ReducerState;
   beforeEach(() => {
     newState = celoReactReducer(
       { ...initialState, address: '0x0123456789abcdf' },
-      { type: 'destroy', payload: undefined }
+      { type: 'disconnect', payload: undefined }
     );
   });
   it('removes the address from state', () => {
@@ -57,9 +50,32 @@ describe('destroy', () => {
   it('removes the address from localStorage', () => {
     newState = celoReactReducer(
       { ...initialState, address: '0x0123456789abcdf' },
-      { type: 'destroy', payload: undefined }
+      { type: 'disconnect', payload: undefined }
     );
 
     expect(newState.address).toEqual(null);
+  });
+});
+
+describe('connect', () => {
+  it('sets the address and network', () => {
+    const state = celoReactReducer(initialState, {
+      type: 'connect',
+      payload: { address: '0x1234567890', networkName: Baklava.name },
+    });
+
+    expect(state).toHaveProperty('address', '0x1234567890');
+    expect(state).toHaveProperty('network', Baklava);
+  });
+});
+
+describe('setNetworkByName', () => {
+  it('sets the address and network', () => {
+    const state = celoReactReducer(initialState, {
+      type: 'setNetworkByName',
+      payload: Baklava.name,
+    });
+
+    expect(state).toHaveProperty('network', Baklava);
   });
 });

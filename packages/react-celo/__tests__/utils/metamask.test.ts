@@ -1,7 +1,7 @@
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 
-import { Alfajores } from '../../src';
+import { Alfajores, Mainnet } from '../../src';
 import {
   AddEthereumEventListener,
   Ethereum,
@@ -162,17 +162,19 @@ describe('addNetworksToMetamask', () => {
   });
 });
 describe('switchToCeloNetwork', () => {
-  it('todo', async () => {
-    jestEthereumRequest.mockImplementation((...args) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (args[0].method === 'eth_chainId') {
-        // mock the web.eth.getChainId call
-        return Promise.resolve(-1);
-      }
-    });
+  it('sends request to switch chain', async () => {
+    const mockedGetChainIdFunction = jest.fn();
+    mockedGetChainIdFunction
+      .mockReturnValueOnce(Promise.resolve(Mainnet.chainId))
+      .mockReturnValueOnce(Promise.resolve(Alfajores.chainId))
+      .mockReturnValueOnce(Promise.resolve(Alfajores.chainId));
 
-    await switchToCeloNetwork(kit, Alfajores, jestEthereum);
-    expect(jestEthereumRequest.mock.calls[1]).toEqual([
+    await switchToCeloNetwork(
+      Alfajores,
+      jestEthereum,
+      mockedGetChainIdFunction
+    );
+    expect(jestEthereumRequest.mock.calls[0]).toEqual([
       {
         method: 'wallet_switchEthereumChain',
         params: [
@@ -183,48 +185,38 @@ describe('switchToCeloNetwork', () => {
       },
     ]);
   });
-  it('handles known errors in a specific way', async () => {
-    let calls = 0;
-    jestEthereumRequest.mockImplementation((...args) => {
-      calls += 1;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (args[0].method === 'eth_chainId') {
-        // mock the web.eth.getChainId call
-        return Promise.resolve(-1);
-      }
-      if (calls === 3) throw { code: MetamaskRPCErrorCode.UnknownNetwork };
-    });
+  it('handles UnknownNetwork error in a specific way', async () => {
+    const mockedGetChainIdFunction = jest.fn();
+    mockedGetChainIdFunction
+      .mockReturnValueOnce(Promise.resolve(Mainnet.chainId))
+      .mockRejectedValueOnce({ code: MetamaskRPCErrorCode.UnknownNetwork })
+      .mockReturnValueOnce(Promise.resolve(Alfajores.chainId))
+      .mockReturnValueOnce(Promise.resolve(Alfajores.chainId));
 
     await expect(
-      switchToCeloNetwork(kit, Alfajores, jestEthereum)
+      switchToCeloNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
     ).resolves.toBe(undefined);
   });
-  it('handles known errors in a specific way', async () => {
-    jestEthereumRequest.mockImplementation((...args) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (args[0].method === 'eth_chainId') {
-        // mock the web.eth.getChainId call
-        return Promise.resolve(-1);
-      }
-      throw { code: MetamaskRPCErrorCode.AwaitingUserConfirmation };
-    });
+  it('handles AwaitingUserConfirmation error in a specific way', async () => {
+    const mockedGetChainIdFunction = jest.fn();
+    mockedGetChainIdFunction
+      .mockReturnValueOnce(Promise.resolve(Mainnet.chainId))
+      .mockRejectedValueOnce({
+        code: MetamaskRPCErrorCode.AwaitingUserConfirmation,
+      });
 
     await expect(
-      switchToCeloNetwork(kit, Alfajores, jestEthereum)
+      switchToCeloNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
     ).resolves.toBe(undefined);
   });
   it('doesnt yet handle unknown errors', async () => {
-    jestEthereumRequest.mockImplementation((...args) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (args[0].method === 'eth_chainId') {
-        // mock the web.eth.getChainId call
-        return Promise.resolve(-1);
-      }
-      throw new Error('test-error');
-    });
+    const mockedGetChainIdFunction = jest.fn();
+    mockedGetChainIdFunction
+      .mockReturnValueOnce(Promise.resolve(Mainnet.chainId))
+      .mockRejectedValueOnce(new Error('test-error'));
 
     await expect(
-      switchToCeloNetwork(kit, Alfajores, jestEthereum)
+      switchToCeloNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
     ).rejects.toThrow('test-error');
   });
 });

@@ -6,39 +6,30 @@ import {
 } from '@celo/contractkit/lib/mini-kit';
 
 import { WalletTypes } from '../constants';
-import { Connector, Maybe, Network } from '../types';
-import { clearPreviousConfig } from '../utils/local-storage';
-import { persist, Web3Type } from './common';
+import { Connector, Network } from '../types';
+import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
-export default class CeloExtensionWalletConnector implements Connector {
+export default class CeloExtensionWalletConnector
+  extends AbstractConnector
+  implements Connector
+{
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: MiniContractKit;
-  public account: Maybe<string> = null;
-  private onNetworkChangeCallback?: (chainId: number) => void;
 
   constructor(private network: Network, public feeCurrency: CeloTokenContract) {
+    super();
     this.kit = newKit(network.rpcUrl);
-  }
-
-  persist() {
-    persist({
-      walletType: WalletTypes.CeloExtensionWallet,
-      network: this.network,
-      options: [this.feeCurrency],
-    });
   }
 
   async initialise(): Promise<this> {
     const { default: Web3 } = await import('web3');
-
     const celo = window.celo;
     if (!celo) {
       throw new Error('Celo Extension Wallet not installed');
     }
     const web3 = new Web3(celo);
     await celo.enable();
-
     (
       web3.currentProvider as unknown as {
         publicConfigStore: {
@@ -49,33 +40,52 @@ export default class CeloExtensionWalletConnector implements Connector {
         };
       }
     ).publicConfigStore.on('update', ({ networkVersion }) => {
-      if (this.onNetworkChangeCallback) {
-        this.onNetworkChangeCallback(networkVersion);
+      if (networkVersion !== this.network.chainId) {
+        this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, networkVersion);
       }
     });
 
     this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     const [defaultAccount] = await this.kit.connection.web3.eth.getAccounts();
     this.kit.connection.defaultAccount = defaultAccount;
-    this.account = defaultAccount ?? null;
 
     this.initialised = true;
 
-    this.persist();
-
+    this.emit(ConnectorEvents.CONNECTED, {
+      walletType: WalletTypes.CeloExtensionWallet,
+      address: defaultAccount,
+      networkName: this.network.name,
+    });
     return this;
+  }
+
+  continueNetworkUpdateFromWallet(network: Network): void {
+    this.network = network; // must set to prevent loop
+    const web3 = this.kit.connection.web3;
+    this.newKit(web3, this.account as string); // kit caches things so it need to be recreated
+    this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
+  }
+
+  startNetworkChangeFromApp() {
+    throw new Error(
+      'Celo Extension wallet does not support changing network from app'
+    );
   }
 
   supportsFeeCurrency() {
     return false;
   }
 
-  onNetworkChange(callback: (chainId: number) => void): void {
-    this.onNetworkChangeCallback = callback;
+  private newKit(web3: Web3Type, defaultAccount: string) {
+    this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
+    this.kit.connection.defaultAccount = defaultAccount;
   }
 
   close(): void {
-    clearPreviousConfig();
-    return;
+    try {
+      this.kit.connection.stop();
+    } finally {
+      this.disconnect();
+    }
   }
 }

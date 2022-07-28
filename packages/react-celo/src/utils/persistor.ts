@@ -1,14 +1,11 @@
-import {
-  AbstractConnector,
-  ConnectorEvents,
-  ConnectorParams,
-} from '../connectors/common';
+import { ConnectorEvents, ConnectorParams } from '../connectors/common';
 import { localStorageKeys } from '../constants';
+import { Connector } from '../types';
 import { clearPreviousConfig, setTypedStorageKey } from './local-storage';
 
-type Updater = (connector: AbstractConnector) => void;
+type Updater = (connector: Connector) => void;
 
-const persistor: Updater = (connector: AbstractConnector) => {
+const persistor: Updater = (connector: Connector) => {
   connector.on(ConnectorEvents.ADDRESS_CHANGED, (address) => {
     setTypedStorageKey(localStorageKeys.lastUsedAddress, address);
   });
@@ -23,12 +20,6 @@ const persistor: Updater = (connector: AbstractConnector) => {
 
     if (params.index) {
       setTypedStorageKey(localStorageKeys.lastUsedIndex, params.index);
-    }
-    if (params.privateKey) {
-      setTypedStorageKey(
-        localStorageKeys.lastUsedPrivateKey,
-        params.privateKey
-      );
     }
 
     if (params.walletId) {
