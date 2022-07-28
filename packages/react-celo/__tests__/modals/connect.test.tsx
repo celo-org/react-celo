@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 
-import { RenderResult } from '@testing-library/react';
+import { act, RenderResult } from '@testing-library/react';
 import React from 'react';
 
 import { ConnectModal } from '../../src/modals';
@@ -22,19 +22,21 @@ describe('ConnectModal', () => {
     let dom: RenderResult;
     describe('style.overlay', () => {
       beforeEach(() => {
-        dom = renderComponentInCKProvider(
-          <ConnectModal
-            reactModalProps={{
-              isOpen: true,
-              style: { overlay: { zIndex: 10 } },
-            }}
-          />,
-          { providerProps: { theme } }
-        );
+        act(() => {
+          dom = renderComponentInCKProvider(
+            <ConnectModal
+              reactModalProps={{
+                isOpen: true,
+                style: { overlay: { zIndex: 10 } },
+              }}
+            />,
+            { providerProps: { theme } }
+          );
+        });
       });
 
       afterEach(() => {
-        dom.unmount();
+        // dom.unmount();
       });
       it('applies those styles while keeping original', async () => {
         const modal = await dom.findByRole('dialog');

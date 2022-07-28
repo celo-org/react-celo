@@ -58,20 +58,24 @@ describe('CeloProvider', () => {
       it('shows default wallets', async () => {
         const dom = await stepsToOpenModal();
 
-        Object.keys(SupportedProviders).map(async (key) => {
-          const walletName = { ...SupportedProviders }[
-            key
-          ] as SupportedProviders;
+        const testPromises = Object.keys(SupportedProviders).map(
+          async (key) => {
+            const walletName = { ...SupportedProviders }[
+              key
+            ] as SupportedProviders;
 
-          if (walletName === SupportedProviders.Injected) {
-            return;
+            if (walletName === SupportedProviders.Injected) {
+              return;
+            }
+
+            const walletEntry = await dom.findByText(walletName);
+
+            expect(walletEntry).toBeVisible();
           }
+        );
 
-          const walletEntry = await dom.findByText(walletName);
-
-          expect(walletEntry).toBeVisible();
-          dom.unmount();
-        });
+        await Promise.all(testPromises);
+        dom.unmount();
       });
     });
 
