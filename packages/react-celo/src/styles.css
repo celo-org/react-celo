@@ -433,15 +433,19 @@ Spinner
 @tailwind utilities;
 
 .react-celo-modal-open-body {
-  min-height: 100vh;
-  /* mobile viewport bug fix */
-  min-height: -webkit-fill-available;
+  height: -webkit-fill-available;
   overflow: hidden;
 }
 
 @media (max-width: 900px) {
   .react-celo-modal-open-html {
     height: -webkit-fill-available;
+  }
+}
+@media (min-width: 900px) {
+  .react-celo-modal-open-html {
+    min-height: 100vh;
+    max-height: 100vh;
   }
 }
 
