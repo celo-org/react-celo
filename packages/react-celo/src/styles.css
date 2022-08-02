@@ -441,9 +441,12 @@ Spinner
   .react-celo-modal-open-html {
     height: -webkit-fill-available;
   }
+  .rc-tray-ios-fix {
+    height: -webkit-fill-available;
+  }
 }
 @media (min-width: 900px) {
-  .react-celo-modal-open-html {
+  .react-celo-modal-open-body {
     min-height: 100vh;
     max-height: 100vh;
   }
