@@ -23,11 +23,7 @@ import { defaultProviderSort, SortingPredicate } from '../utils/sort';
 import cls from '../utils/tailwind';
 
 export const styles = cls({
-  overlay: isMobile
-    ? `
-      tw-fixed
-      tw-inset-0`
-    : `
+  overlay: `z-40
       tw-fixed
       tw-inset-0`,
   modal: isMobile
