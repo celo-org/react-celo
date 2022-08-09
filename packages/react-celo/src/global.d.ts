@@ -24,6 +24,8 @@ interface Ethereum extends Exclude<AbstractProvider, 'request'> {
   on: AddEthereumEventListener;
   removeListener: RemoveEthereumEventListener;
   isMetaMask?: boolean;
+  isConnected: () => boolean;
+  selectedAddress: string | undefined;
   request: EthereumRequest;
   enable: () => Promise<void>;
 }
