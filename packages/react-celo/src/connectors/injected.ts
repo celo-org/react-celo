@@ -104,8 +104,13 @@ export default class InjectedConnector
   };
 
   private onAccountsChanged = (accounts: string[]) => {
-    this.kit.connection.defaultAccount = accounts[0];
-    this.emit(ConnectorEvents.ADDRESS_CHANGED, accounts[0]);
+    if (accounts.length === 0) {
+      // wallet is locked properly close the connection.
+      this.close();
+    } else {
+      this.kit.connection.defaultAccount = accounts[0];
+      this.emit(ConnectorEvents.ADDRESS_CHANGED, accounts[0]);
+    }
   };
 
   supportsFeeCurrency() {
