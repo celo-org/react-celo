@@ -79,6 +79,64 @@ describe('CeloProvider', () => {
       });
     });
 
+    describe('when "providersOptions.additionalWCWallets" is given correctly', () => {
+      it('displays that wallet in the UI', async () => {
+        const dom = await stepsToOpenModal({
+          connectModal: {
+            providersOptions: {
+              additionalWCWallets: [
+                {
+                  app: {
+                    android: '',
+                    browser: '',
+                    ios: '',
+                    linux: '',
+                    mac: '',
+                    windows: '',
+                  },
+                  chains: ['eip:42220'],
+                  description: 'Your future unlocked.',
+                  desktop: {
+                    native: 'libera://',
+                    universal: 'libera://',
+                  },
+                  homepage: 'https://impactmarket.com/',
+                  id: 'libera-wallet',
+                  logos: {
+                    lg: 'https://dxdwf61ltxjyn.cloudfront.net/eyJidWNrZXQiOiJpbXBhY3RtYXJrZXQtYXBwIiwia2V5Ijoid2FsbGV0LWxvZ28ucG5nIiwiZWRpdHMiOnsicmVzaXplIjp7IndpZHRoIjo1MDAsImhlaWdodCI6NTAwLCJmaXQiOiJpbnNpZGUifX0sIm91dHB1dEZvcm1hdCI6ImpwZyJ9',
+                    md: 'https://dxdwf61ltxjyn.cloudfront.net/eyJidWNrZXQiOiJpbXBhY3RtYXJrZXQtYXBwIiwia2V5Ijoid2FsbGV0LWxvZ28ucG5nIiwiZWRpdHMiOnsicmVzaXplIjp7IndpZHRoIjo1MDAsImhlaWdodCI6NTAwLCJmaXQiOiJpbnNpZGUifX0sIm91dHB1dEZvcm1hdCI6ImpwZyJ9',
+                    sm: 'https://dxdwf61ltxjyn.cloudfront.net/eyJidWNrZXQiOiJpbXBhY3RtYXJrZXQtYXBwIiwia2V5Ijoid2FsbGV0LWxvZ28ucG5nIiwiZWRpdHMiOnsicmVzaXplIjp7IndpZHRoIjo1MDAsImhlaWdodCI6NTAwLCJmaXQiOiJpbnNpZGUifX0sIm91dHB1dEZvcm1hdCI6ImpwZyJ9',
+                  },
+                  metadata: {
+                    colors: {
+                      primary: '#fff',
+                      secondary: '#2E6AFF',
+                    },
+                    shortName: 'Libera',
+                  },
+                  mobile: {
+                    native: 'libera://',
+                    universal: 'libera://',
+                  },
+                  name: 'Libera',
+                  responsive: {
+                    browserFriendly: false,
+                    browserOnly: false,
+                    mobileFriendly: true,
+                    mobileOnly: true,
+                  },
+                  versions: ['1'],
+                },
+              ],
+            },
+          },
+        });
+        const extraWallet = await dom.findByText('Libera');
+        expect(extraWallet).toBeVisible();
+        dom.unmount();
+      });
+    });
+
     describe('when hideFromModal option is given array', () => {
       it('does not show those wallets in the UI', async () => {
         const dom = await stepsToOpenModal({

@@ -74,7 +74,7 @@ export default function useProviders(
     return Object.entries(record)
       .filter(
         ([providerKey, provider]) =>
-          provider.showInList() &&
+          provider?.showInList() &&
           (!search || providerKey.toLowerCase().includes(search.toLowerCase()))
       )
       .sort(([, a], [, b]) => sort(a, b));
