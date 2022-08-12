@@ -28,6 +28,7 @@ interface Ethereum extends Exclude<AbstractProvider, 'request'> {
   selectedAddress: string | undefined;
   request: EthereumRequest;
   enable: () => Promise<void>;
+  chainId?: string;
 }
 
 type AddEthereumEventListener = <Event extends keyof EthereumEventCallbacks>(
@@ -55,6 +56,7 @@ interface EthereumRequestReturns {
   wallet_addEthereumChain: null;
   wallet_watchAsset: boolean;
   wallet_switchEthereumChain: null;
+  eth_chainId: string;
 }
 
 interface BitMatrix {

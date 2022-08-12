@@ -13,7 +13,7 @@ import { WalletTypes } from '../constants';
 import { Ethereum } from '../global';
 import { Connector, Dapp, Network } from '../types';
 import { getApplicationLogger } from '../utils/logger';
-import { switchToCeloNetwork } from '../utils/metamask';
+import { switchToNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
 export default class CoinbaseWalletConnector
@@ -72,7 +72,7 @@ export default class CoinbaseWalletConnector
 
     this.removeListeners();
 
-    await switchToCeloNetwork(
+    await switchToNetwork(
       this.network,
       this.provider as unknown as Ethereum,
       () => web3.eth.getChainId()
@@ -125,10 +125,8 @@ export default class CoinbaseWalletConnector
   }
   async startNetworkChangeFromApp(network: Network) {
     const web3 = this.kit.connection.web3;
-    await switchToCeloNetwork(
-      network,
-      this.provider! as unknown as Ethereum,
-      () => web3.eth.getChainId()
+    await switchToNetwork(network, this.provider! as unknown as Ethereum, () =>
+      web3.eth.getChainId()
     );
     this.continueNetworkUpdateFromWallet(network);
   }
