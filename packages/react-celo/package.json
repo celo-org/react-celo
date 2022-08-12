@@ -1,6 +1,6 @@
 {
   "name": "@celo/react-celo",
-  "version": "4.1.0-beta.1",
+  "version": "4.1.0-beta.2",
   "private": false,
   "scripts": {
     "prebuild": "mkdir -p lib && node ./scripts/json-to-ts.js package.json lib",
@@ -28,7 +28,7 @@
     "@celo/wallet-ledger": "^2.0.0",
     "@celo/wallet-local": "^2.0.0",
     "@celo/wallet-remote": "^2.0.0",
-    "@celo/wallet-walletconnect-v1": "4.1.0-beta.1",
+    "@celo/wallet-walletconnect-v1": "4.1.0-beta.2",
     "@coinbase/wallet-sdk": "^3.2.0",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
