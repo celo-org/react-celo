@@ -1,7 +1,7 @@
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 
-import { Alfajores, Mainnet } from '../../src';
+import { Alfajores, Baklava, Mainnet } from '../../src';
 import {
   AddEthereumEventListener,
   Ethereum,
@@ -16,7 +16,7 @@ import {
   makeNetworkParams,
   MetamaskRPCErrorCode,
   StableTokens,
-  switchToCeloNetwork,
+  switchToNetwork,
   tokenToParam,
 } from '../../src/utils/metamask';
 
@@ -88,7 +88,7 @@ describe('tokenToParam', () => {
         name: 'Celo Euro',
         symbol: 'cEUR',
         decimals: 18,
-        image: 'https://celoreserve.org/assets/tokens/cEUR.svg',
+        image: 'https://reserve.mento.org/assets/tokens/cEUR.svg',
       },
     });
   });
@@ -161,7 +161,7 @@ describe('addNetworksToMetamask', () => {
     await addNetworksToMetamask(jestEthereum);
   });
 });
-describe('switchToCeloNetwork', () => {
+describe('switchToNetwork', () => {
   it('sends request to switch chain', async () => {
     const mockedGetChainIdFunction = jest.fn();
     mockedGetChainIdFunction
@@ -169,11 +169,7 @@ describe('switchToCeloNetwork', () => {
       .mockReturnValueOnce(Promise.resolve(Alfajores.chainId))
       .mockReturnValueOnce(Promise.resolve(Alfajores.chainId));
 
-    await switchToCeloNetwork(
-      Alfajores,
-      jestEthereum,
-      mockedGetChainIdFunction
-    );
+    await switchToNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction);
     expect(jestEthereumRequest.mock.calls[0]).toEqual([
       {
         method: 'wallet_switchEthereumChain',
@@ -185,6 +181,37 @@ describe('switchToCeloNetwork', () => {
       },
     ]);
   });
+  describe('when ethereum.chainId already matches', () => {
+    const mockedGetChainIdFunction = jest.fn();
+    mockedGetChainIdFunction.mockReturnValue(
+      Promise.resolve(Alfajores.chainId)
+    );
+    jestEthereum.chainId = Alfajores.chainId.toString(16);
+    it('does not request to switch', async () => {
+      await switchToNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction);
+      expect(jestEthereumRequest).toBeCalledTimes(0);
+    });
+  });
+
+  describe('when ethereum.chainId does not match', () => {
+    const mockedGetChainIdFunction = jest.fn();
+    mockedGetChainIdFunction.mockReturnValue(
+      Promise.resolve(Alfajores.chainId)
+    );
+    it('requests wallet to switch chains', async () => {
+      jestEthereum.chainId = Baklava.chainId.toString(16);
+      await switchToNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction);
+      expect(jestEthereumRequest).toHaveBeenCalledWith({
+        method: 'wallet_switchEthereumChain',
+        params: [
+          {
+            chainId: `0x${Alfajores.chainId.toString(16)}`,
+          },
+        ],
+      });
+    });
+  });
+
   it('handles UnknownNetwork error in a specific way', async () => {
     const mockedGetChainIdFunction = jest.fn();
     mockedGetChainIdFunction
@@ -194,7 +221,7 @@ describe('switchToCeloNetwork', () => {
       .mockReturnValueOnce(Promise.resolve(Alfajores.chainId));
 
     await expect(
-      switchToCeloNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
+      switchToNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
     ).resolves.toBe(undefined);
   });
   it('handles AwaitingUserConfirmation error in a specific way', async () => {
@@ -206,7 +233,7 @@ describe('switchToCeloNetwork', () => {
       });
 
     await expect(
-      switchToCeloNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
+      switchToNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
     ).resolves.toBe(undefined);
   });
   it('doesnt yet handle unknown errors', async () => {
@@ -216,7 +243,7 @@ describe('switchToCeloNetwork', () => {
       .mockRejectedValueOnce(new Error('test-error'));
 
     await expect(
-      switchToCeloNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
+      switchToNetwork(Alfajores, jestEthereum, mockedGetChainIdFunction)
     ).rejects.toThrow('test-error');
   });
 });

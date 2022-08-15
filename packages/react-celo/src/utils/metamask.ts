@@ -124,7 +124,7 @@ export const tokenToParam = async (
       name,
       symbol,
       decimals,
-      image: `https://celoreserve.org/assets/tokens/${symbol}.svg`,
+      image: `https://reserve.mento.org/assets/tokens/${symbol}.svg`,
     },
   };
 };
@@ -208,13 +208,16 @@ export async function addNetworksToMetamask(ethereum: Ethereum): Promise<void> {
   );
 }
 
-export async function switchToCeloNetwork(
+export async function switchToNetwork(
   network: Network,
   ethereum: Ethereum,
   getChainId: () => Promise<number>
 ): Promise<void> {
-  const chainId = await getChainId();
-  if (network.chainId !== chainId) {
+  const [chainId, walletChainId] = await Promise.all([
+    getChainId(),
+    getWalletChainId(ethereum),
+  ]);
+  if (network.chainId !== chainId || network.chainId !== walletChainId) {
     try {
       await ethereum.request({
         method: 'wallet_switchEthereumChain',
@@ -233,7 +236,7 @@ export async function switchToCeloNetwork(
       ) {
         // ChainId not yet added to metamask
         await addNetworkToMetamask(ethereum, network);
-        return switchToCeloNetwork(network, ethereum, getChainId);
+        return switchToNetwork(network, ethereum, getChainId);
       } else if (code === MetamaskRPCErrorCode.AwaitingUserConfirmation) {
         // user has already been requested to switch the network
         return;
@@ -271,3 +274,10 @@ export const networkHasUpdated = async (
     await sleep(SLEEP);
   }
 };
+
+async function getWalletChainId(ethereum: Ethereum) {
+  const walletChainId = ethereum.chainId
+    ? ethereum.chainId
+    : await ethereum.request({ method: 'eth_chainId' });
+  return parseInt(walletChainId, 16);
+}
