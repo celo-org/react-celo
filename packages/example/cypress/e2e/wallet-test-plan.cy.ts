@@ -1,15 +1,17 @@
 /// <reference types="cypress" />
 /// <reference types="@testing-library/cypress" />
 
-const BASE_URL = process.env.BASE_CYPRESS_URL || 'http://localhost:3000';
-console.info('BASE', BASE_URL);
 function openModal() {
   cy.get('button[aria-label="Run Connect wallet to mainnet"]').click();
 }
 
 context('Wallet Test Plan', () => {
   beforeEach(() => {
-    cy.visit(`${BASE_URL}/wallet-test-plan`);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const baseUrl: string =
+      Cypress.env('CYPRESS_BASE_URL') || 'http://localhost:3000';
+    console.info('BASE', baseUrl);
+    cy.visit(`${baseUrl}/wallet-test-plan`);
   });
 
   it('searches', () => {
