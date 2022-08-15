@@ -11,7 +11,8 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v4
         env:
-          BASE_CYPRESS_URL: https://react-celo-git-${{github.head_ref}}-c-labs.vercel.app
+          BASE_CYPRESS_URL: https://react-celo-${{github.head_ref}}-c-labs.vercel.app
+
         with:
           browser: chrome
           project: './packages/example'
