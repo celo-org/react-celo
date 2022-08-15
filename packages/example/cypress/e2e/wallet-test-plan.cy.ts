@@ -10,7 +10,7 @@ context('Wallet Test Plan', () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const baseUrl: string = Cypress.env('deployedURL');
     const fixedUrl = baseUrl.replace('/', '-');
-    cy.visit(`${fixedUrl}/wallet-test-plan`);
+    cy.visit(`http://${fixedUrl}/wallet-test-plan`);
   });
 
   it('searches', () => {
