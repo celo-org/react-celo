@@ -8,8 +8,7 @@ function openModal() {
 context('Wallet Test Plan', () => {
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const baseUrl: string =
-      Cypress.env('deployedURL') || 'http://localhost:3000';
+    const baseUrl: string = Cypress.env('deployedURL');
     console.info('deployedURL', baseUrl);
     cy.visit(`${baseUrl}/wallet-test-plan`);
   });

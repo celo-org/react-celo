@@ -8,6 +8,6 @@ export default defineConfig({
     },
   },
   env: {
-    deployedURL: '1',
+    deployedURL: 'http://localhost:3000',
   },
 });
