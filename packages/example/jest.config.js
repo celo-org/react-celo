@@ -5,4 +5,5 @@ module.exports = {
   ...base,
   displayName: pkg.name,
   roots: ['<rootDir>'],
+  setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
 };

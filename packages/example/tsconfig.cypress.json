@@ -5,9 +5,15 @@
     "module": "esnext",
     "isolatedModules": true,
     "jsx": "react-jsx",
+    "types": ["cypress", "node"],
     "sourceMap": true,
     "incremental": true
   },
-  "include": ["next-env.d.ts", "./jest-setup.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "./cypres/**/*.cy.ts"]
+  "include": [
+    "next-env.d.ts",
+    "@testing-library/jest-dom/extend-expect",
+    "./cypress.d.ts",
+    "**/*.cy.ts"
+  ],
+  "exclude": ["node_modules"]
 }
