@@ -8,6 +8,6 @@ export default defineConfig({
     },
   },
   env: {
-    BASE_URL: '1',
+    deployedURL: '1',
   },
 });

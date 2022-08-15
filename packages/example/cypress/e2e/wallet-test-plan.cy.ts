@@ -9,8 +9,8 @@ context('Wallet Test Plan', () => {
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const baseUrl: string =
-      Cypress.env('CYPRESS_BASE_URL') || 'http://localhost:3000';
-    console.info('BASE', baseUrl);
+      Cypress.env('deployedURL') || 'http://localhost:3000';
+    console.info('deployedURL', baseUrl);
     cy.visit(`${baseUrl}/wallet-test-plan`);
   });
 
