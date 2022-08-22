@@ -23,11 +23,7 @@ import { defaultProviderSort, SortingPredicate } from '../utils/sort';
 import cls from '../utils/tailwind';
 
 export const styles = cls({
-  overlay: isMobile
-    ? `
-      tw-fixed
-      tw-inset-0`
-    : `
+  overlay: `tw-z-40
       tw-fixed
       tw-inset-0`,
   modal: isMobile
@@ -131,7 +127,6 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({
 
   const { wallets, allScreens, includedDefaultProviders } = useMemo(() => {
     let _screens: Partial<Record<SupportedProviders, React.FC<ConnectorProps>>>;
-
     const _wallets = additionalWCWallets || [];
 
     if (hideFromDefaults) {

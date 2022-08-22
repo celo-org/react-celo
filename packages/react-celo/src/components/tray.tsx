@@ -24,6 +24,7 @@ function priorityToText(priority: Priorities) {
 }
 
 const styles = cls({
+  spacer: `tw-h-10`,
   title: `
     tw-pb-2
     tw-text-md
@@ -46,7 +47,6 @@ const styles = cls({
     tw-overflow-y-auto
     tw-overflow-x-hidden
     tw-overscroll-contain
-    tw-min-h-full
     tw-pr-1`,
   subtitle: `
     tw-font-medium
@@ -155,7 +155,7 @@ export default function Tray({
   return (
     <>
       <div className={styles.verticalContainer}>
-        <div className={styles.scrollableList}>
+        <div className={`${styles.scrollableList} rc-tray-ios-fix`}>
           <div
             className={styles.title}
             style={{ color: theme.textSecondary, background: theme.background }}
@@ -201,6 +201,8 @@ export default function Tray({
                     />
                   );
                 })}
+                {/* add spacer  to ensure there is room below to push up the last wallet from being hidden by ios tool bars etc. this is better than decreasing height as it just adds whitespace instead of taking away screen space*/}
+                {isMobile && <span className={styles.spacer} />}
               </div>
             </div>
           ))}

@@ -24,8 +24,11 @@ interface Ethereum extends Exclude<AbstractProvider, 'request'> {
   on: AddEthereumEventListener;
   removeListener: RemoveEthereumEventListener;
   isMetaMask?: boolean;
+  isConnected: () => boolean;
+  selectedAddress: string | undefined;
   request: EthereumRequest;
   enable: () => Promise<void>;
+  chainId?: string;
 }
 
 type AddEthereumEventListener = <Event extends keyof EthereumEventCallbacks>(
@@ -53,6 +56,17 @@ interface EthereumRequestReturns {
   wallet_addEthereumChain: null;
   wallet_watchAsset: boolean;
   wallet_switchEthereumChain: null;
+  eth_chainId: string;
+}
+
+interface BitMatrix {
+  size: number;
+  reservedBits: Uint8Array;
+  data: Uint8Array;
+}
+
+interface QRCodeClass extends QRCode.QRCode {
+  modules: BitMatrix;
 }
 
 interface BitMatrix {

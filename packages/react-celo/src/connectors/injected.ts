@@ -9,7 +9,7 @@ import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
 import { getApplicationLogger } from '../utils/logger';
-import { switchToCeloNetwork } from '../utils/metamask';
+import { switchToNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
 export default class InjectedConnector
@@ -51,7 +51,7 @@ export default class InjectedConnector
 
     ethereum.removeListener('chainChanged', this.onChainChanged);
     ethereum.removeListener('accountsChanged', this.onAccountsChanged);
-    await switchToCeloNetwork(this.network, ethereum, () =>
+    await switchToNetwork(this.network, ethereum, () =>
       this.kit.connection.chainId()
     );
     ethereum.on('chainChanged', this.onChainChanged);
@@ -77,7 +77,7 @@ export default class InjectedConnector
 
   async startNetworkChangeFromApp(network: Network) {
     const ethereum = getEthereum();
-    await switchToCeloNetwork(network, ethereum!, this.kit.connection.chainId);
+    await switchToNetwork(network, ethereum!, this.kit.connection.chainId);
     this.continueNetworkUpdateFromWallet(network);
   }
 
@@ -104,8 +104,13 @@ export default class InjectedConnector
   };
 
   private onAccountsChanged = (accounts: string[]) => {
-    this.kit.connection.defaultAccount = accounts[0];
-    this.emit(ConnectorEvents.ADDRESS_CHANGED, accounts[0]);
+    if (accounts.length === 0) {
+      // wallet is locked properly close the connection.
+      this.close();
+    } else {
+      this.kit.connection.defaultAccount = accounts[0];
+      this.emit(ConnectorEvents.ADDRESS_CHANGED, accounts[0]);
+    }
   };
 
   supportsFeeCurrency() {

@@ -8,7 +8,7 @@
 [![npm version](https://badge.fury.io/js/%40celo%2Freact-celo.png)](https://badge.fury.io/js/%40celo%2Freact-celo)
 [![codecov](https://codecov.io/gh/celo-org/react-celo/branch/master/graph/badge.svg?token=vy6ALIKLwt)](https://codecov.io/gh/celo-org/react-celo)
 
-The easiest way to access [ContractKit](https://www.npmjs.com/package/@celo/contractkit) in your React applications 🔥. `react-celo` is a [React hook](https://reactjs.org/docs/hooks-intro.html) for managing access to Celo with a built-in headless modal system for connecting to your users wallet of choice.
+The easiest way to access [Celo](https://www.npmjs.com/package/@celo/contractkit) in your React applications 🔥. `react-celo` is a [React hook](https://reactjs.org/docs/hooks-intro.html) for managing access to Celo with a built-in headless modal system for connecting to your users wallet of choice.
 
 Now your DApp can be made available to everyone in the Celo ecosystem, from Valora users to self custodied Ledger users.
 
