@@ -1,80 +1,82 @@
 import { CeloContract } from '@celo/contractkit';
 
-import { Alfajores, localStorageKeys } from '../../src';
-import { PrivateKeyConnector } from '../../src/connectors';
+import { Alfajores, WalletTypes } from '../../src';
+import { ConnectorEvents } from '../../src/connectors/common';
+import PrivateKeyConnector from '../../src/connectors/private-key';
+import { setApplicationLogger } from '../../src/utils/logger';
+import { mockLogger } from '../test-logger';
 
 const TEST_KEY =
   '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abbdef';
 
 describe('PrivateKeyConnector', () => {
   let connector: PrivateKeyConnector;
+  beforeAll(() => setApplicationLogger(mockLogger));
   describe('initialise()', () => {
+    const onConnect = jest.fn();
+    beforeEach(async () => {
+      connector = new PrivateKeyConnector(
+        Alfajores,
+        TEST_KEY,
+        CeloContract.StableTokenEUR
+      );
+      connector.on(ConnectorEvents.CONNECTED, onConnect);
+      await connector.initialise();
+    });
+    it('sets the account', () => {
+      expect(connector.account).toEqual(
+        '0x6df18c5837718a83581ead5e26bfcdb8a548e409'
+      );
+    });
+
+    it('sets and uses the fee currency', () => {
+      expect(connector.feeCurrency).toEqual(CeloContract.StableTokenEUR);
+    });
+
+    it('emits CONNECTED event with needed params', () => {
+      expect(onConnect).toBeCalledWith({
+        networkName: Alfajores.name,
+        walletType: WalletTypes.PrivateKey,
+        address: '0x6df18c5837718a83581ead5e26bfcdb8a548e409',
+      });
+    });
+  });
+
+  // it.skip('does not need to support ADDRESS CHANGE');
+
+  describe('close()', () => {
+    const onDisconnect = jest.fn();
     beforeEach(() => {
       connector = new PrivateKeyConnector(
         Alfajores,
         TEST_KEY,
         CeloContract.StableTokenEUR
       );
-    });
-    it('sets the account', async () => {
-      await connector.initialise();
-
-      expect(connector.account).toEqual(
-        '0x6df18c5837718a83581ead5e26bfcdb8a548e409'
-      );
+      connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
     });
 
-    it('sets and uses the fee currency', async () => {
-      await connector.initialise();
-
-      expect(connector.feeCurrency).toEqual(CeloContract.StableTokenEUR);
-    });
-
-    it('sets the private key in locale storage', () => {
-      expect(
-        localStorage.getItem(localStorageKeys.lastUsedWalletArguments)
-      ).toEqual(JSON.stringify([TEST_KEY]));
-    });
-
-    it('sets the last network in local storage', () => {
-      expect(localStorage.getItem(localStorageKeys.lastUsedNetwork)).toEqual(
-        Alfajores.name
-      );
+    it('emits DISCONNECTED event', () => {
+      connector.close();
+      expect(onDisconnect).toBeCalled();
     });
   });
-
-  describe('close()', () => {
-    it('clears out localStorage', async () => {
+  describe('updateFeeCurrency', () => {
+    it('sets fee currency and in fact uses it', async () => {
       connector = new PrivateKeyConnector(
         Alfajores,
         TEST_KEY,
         CeloContract.StableTokenEUR
       );
       await connector.initialise();
-
-      connector.close();
-
-      expect(
-        localStorage.getItem(localStorageKeys.lastUsedFeeCurrency)
-      ).toEqual(null);
-
-      expect(
-        localStorage.getItem(localStorageKeys.lastUsedWalletArguments)
-      ).toEqual(null);
-
-      expect(localStorage.getItem(localStorageKeys.lastUsedNetwork)).toEqual(
-        null
+      expect(connector.kit.connection.defaultFeeCurrency).toEqual(
+        '0x10c892A6EC43a53E45D0B916B4b7D383B1b78C0F'
       );
-    });
-  });
-  describe('updateFeeCurrency', () => {
-    it('sets fee currency and in fact uses it', async () => {
-      await connector.updateFeeCurrency(CeloContract.StableToken);
+      await connector.updateFeeCurrency(CeloContract.StableTokenBRL);
 
-      expect(connector.feeCurrency).toEqual(CeloContract.StableToken);
+      expect(connector.feeCurrency).toEqual(CeloContract.StableTokenBRL);
 
       expect(connector.kit.connection.defaultFeeCurrency).toEqual(
-        '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1'
+        '0xE4D517785D091D3c54818832dB6094bcc2744545'
       );
     });
   });

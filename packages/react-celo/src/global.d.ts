@@ -9,6 +9,12 @@ declare global {
       removeListener?: (...args: unknown[]) => void;
       autoRefreshOnNetworkChange?: boolean;
       enable: () => Promise<void>;
+      publicConfigStore: {
+        on: (
+          event: string,
+          cb: (args: { networkVersion: number }) => void
+        ) => void;
+      };
     };
     web3?: unknown;
   }
@@ -18,8 +24,11 @@ interface Ethereum extends Exclude<AbstractProvider, 'request'> {
   on: AddEthereumEventListener;
   removeListener: RemoveEthereumEventListener;
   isMetaMask?: boolean;
+  isConnected: () => boolean;
+  selectedAddress: string | undefined;
   request: EthereumRequest;
   enable: () => Promise<void>;
+  chainId?: string;
 }
 
 type AddEthereumEventListener = <Event extends keyof EthereumEventCallbacks>(
@@ -47,6 +56,7 @@ interface EthereumRequestReturns {
   wallet_addEthereumChain: null;
   wallet_watchAsset: boolean;
   wallet_switchEthereumChain: null;
+  eth_chainId: string;
 }
 
 interface BitMatrix {

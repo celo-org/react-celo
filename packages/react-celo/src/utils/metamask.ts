@@ -1,7 +1,6 @@
-import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
+import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { GoldTokenWrapper } from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
-import Web3 from 'web3';
 
 import { Alfajores, Baklava, Mainnet } from '../constants';
 import { Ethereum } from '../global';
@@ -31,7 +30,7 @@ const BAKLAVA_PARAMS = Object.freeze({
   },
 });
 
-const params: { [chain in ChainId]: typeof CELO_PARAMS } = {
+const PARAMS: { [chain in ChainId]: typeof CELO_PARAMS } = {
   [ChainId.Mainnet]: CELO_PARAMS,
   [ChainId.Alfajores]: ALFAJORES_PARAMS,
   [ChainId.Baklava]: BAKLAVA_PARAMS,
@@ -97,9 +96,9 @@ export const makeNetworkParams = async (
 
   return {
     chainId: `0x${info.chainId.toString(16)}`,
-    chainName: params[info.chainId].chainName ?? info.name,
+    chainName: PARAMS[info.chainId].chainName ?? info.name,
     nativeCurrency: {
-      name: params[info.chainId].nativeCurrency.name,
+      name: PARAMS[info.chainId].nativeCurrency.name,
       symbol,
       decimals,
     },
@@ -125,7 +124,7 @@ export const tokenToParam = async (
       name,
       symbol,
       decimals,
-      image: `https://celoreserve.org/assets/tokens/${symbol}.svg`,
+      image: `https://reserve.mento.org/assets/tokens/${symbol}.svg`,
     },
   };
 };
@@ -209,15 +208,16 @@ export async function addNetworksToMetamask(ethereum: Ethereum): Promise<void> {
   );
 }
 
-export async function switchToCeloNetwork(
-  kit: MiniContractKit,
+export async function switchToNetwork(
   network: Network,
-  ethereum: Ethereum
+  ethereum: Ethereum,
+  getChainId: () => Promise<number>
 ): Promise<void> {
-  const web3 = new Web3(ethereum);
-  const chainId = await web3.eth.getChainId();
-
-  if (network.chainId !== chainId) {
+  const [chainId, walletChainId] = await Promise.all([
+    getChainId(),
+    getWalletChainId(ethereum),
+  ]);
+  if (network.chainId !== chainId || network.chainId !== walletChainId) {
     try {
       await ethereum.request({
         method: 'wallet_switchEthereumChain',
@@ -227,6 +227,7 @@ export async function switchToCeloNetwork(
           },
         ],
       });
+      await networkHasUpdated(getChainId, network.chainId);
     } catch (err) {
       const { code } = err as MetamaskRPCError;
       if (
@@ -235,7 +236,7 @@ export async function switchToCeloNetwork(
       ) {
         // ChainId not yet added to metamask
         await addNetworkToMetamask(ethereum, network);
-        return switchToCeloNetwork(kit, network, ethereum);
+        return switchToNetwork(network, ethereum, getChainId);
       } else if (code === MetamaskRPCErrorCode.AwaitingUserConfirmation) {
         // user has already been requested to switch the network
         return;
@@ -244,4 +245,39 @@ export async function switchToCeloNetwork(
       }
     }
   }
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const SLEEP = 500;
+const MAX_WAIT_MINUTES = 3;
+const MAX_RETRY = Math.round((MAX_WAIT_MINUTES * 1000) / SLEEP);
+
+// Hacky workaround to wait for the network to change.\
+
+export const networkHasUpdated = async (
+  getChainId: () => Promise<number>,
+  expectedChainId: number
+) => {
+  let attempts = 0;
+  let isNetworkUpdated = false;
+  while (!isNetworkUpdated) {
+    attempts++;
+    if (attempts >= MAX_RETRY) {
+      throw new Error('Network did not change');
+    }
+    const chainId = await getChainId();
+    if (chainId === expectedChainId) {
+      isNetworkUpdated = true;
+      return true;
+    }
+    await sleep(SLEEP);
+  }
+};
+
+async function getWalletChainId(ethereum: Ethereum) {
+  const walletChainId = ethereum.chainId
+    ? ethereum.chainId
+    : await ethereum.request({ method: 'eth_chainId' });
+  return parseInt(walletChainId, 16);
 }

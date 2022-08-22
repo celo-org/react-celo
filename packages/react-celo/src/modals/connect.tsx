@@ -1,15 +1,12 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import ReactModal from 'react-modal';
 
 import ModalContainer from '../components/modal-container';
 import Tray from '../components/tray';
 import { PROVIDERS, SupportedProviders } from '../constants';
+import useProviders, { walletToProvider } from '../hooks/use-providers';
+import useTheme from '../hooks/use-theme';
 import { ConnectorProps, defaultScreens } from '../screens';
 import Placeholder from '../screens/placeholder';
 import { WalletConnect } from '../screens/wallet-connect';
@@ -21,18 +18,12 @@ import {
   WalletEntry,
 } from '../types';
 import { useCeloInternal } from '../use-celo';
-import { hexToRGB } from '../utils/helpers';
+import { hexToRGB } from '../utils/colors';
 import { defaultProviderSort, SortingPredicate } from '../utils/sort';
 import cls from '../utils/tailwind';
-import useProviders, { walletToProvider } from '../utils/useProviders';
-import useTheme from '../utils/useTheme';
 
 export const styles = cls({
-  overlay: isMobile
-    ? `
-      tw-fixed
-      tw-inset-0`
-    : `
+  overlay: `tw-z-40
       tw-fixed
       tw-inset-0`,
   modal: isMobile
@@ -64,10 +55,7 @@ type ReactModalProps = Omit<
 
 export interface ConnectModalProps {
   screens?: {
-    [x in SupportedProviders]?: FunctionComponent<{
-      onSubmit: (connector: Connector) => void;
-      provider?: WalletConnectProvider;
-    }>;
+    [x in SupportedProviders]?: React.FC<ConnectorProps>;
   };
   RenderProvider?: React.FC<{
     provider: Provider;

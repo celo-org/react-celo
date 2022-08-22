@@ -1,7 +1,9 @@
 import { render, renderHook } from '@testing-library/react';
 import React, { ReactElement } from 'react';
 
-import { CeloProvider, CeloProviderProps } from '../src/react-celo-provider';
+import { CeloProvider } from '../src/react-celo-provider';
+import { CeloProviderProps } from '../src/react-celo-provider-props';
+import { mockLogger } from './test-logger';
 
 interface RenderArgs {
   providerProps: Partial<CeloProviderProps>;
@@ -15,6 +17,7 @@ const defaultProps: CeloProviderProps = {
     icon: '',
   },
   children: null,
+  logger: mockLogger,
 };
 
 export function renderComponentInCKProvider(

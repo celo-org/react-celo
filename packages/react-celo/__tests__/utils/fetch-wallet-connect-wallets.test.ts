@@ -1,5 +1,5 @@
 import { ChainId } from '../../src';
-import fetchWCWallets from '../../src/utils/fetchWCWallets';
+import fetchWCWallets from '../../src/utils/fetch-wallet-connect-wallets';
 
 describe('fetchWCWallets', () => {
   it('gets only the CELO compatible wallets from the WC registry', async () => {

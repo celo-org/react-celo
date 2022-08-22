@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 export enum Status {
   NotStarted = 'not-started',
   Success = 'success',
-  Error = 'error',
+  Failed = 'failed',
   Pending = 'pending',
 }
 
@@ -26,8 +26,8 @@ export const useTestStatus = () => {
       success: () => {
         setStatus(Status.Success);
       },
-      error: (error: unknown) => {
-        setStatus(Status.Error);
+      failed: (error: unknown) => {
+        setStatus(Status.Failed);
 
         if (hasMessage(error)) {
           setErrorMessage(error.message);
@@ -60,7 +60,7 @@ export const useTestStatus = () => {
       await action();
       set.success();
     } catch (error) {
-      set.error(error);
+      set.failed(error);
     }
   };
 

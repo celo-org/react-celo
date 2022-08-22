@@ -3,9 +3,9 @@ import React, { useCallback, useState } from 'react';
 import Button from '../components/button';
 import ConnectorScreen from '../components/connector-screen';
 import { PrivateKeyConnector } from '../connectors';
-import { useCelo } from '../use-celo';
+import useTheme from '../hooks/use-theme';
+import { useCeloInternal } from '../use-celo';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 import { ConnectorProps } from '.';
 
 const styles = cls({
@@ -23,24 +23,25 @@ const styles = cls({
     tw-py-2
     tw-font-mono`,
   button: `
-    tw-mt-3 
-    tw-px-4 
+    tw-mt-3
+    tw-px-4
     tw-py-2`,
 });
 
 export const PrivateKey = ({ onSubmit }: ConnectorProps) => {
   const theme = useTheme();
   const [value, setValue] = useState('');
-  const { network, feeCurrency } = useCelo();
+  const { network, feeCurrency, initConnector } = useCeloInternal();
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!value) {
       return;
     }
 
     const connector = new PrivateKeyConnector(network, value, feeCurrency);
+    await initConnector(connector);
     void onSubmit(connector);
-  }, [feeCurrency, network, value, onSubmit]);
+  }, [feeCurrency, network, value, onSubmit, initConnector]);
 
   return (
     <ConnectorScreen

@@ -1,47 +1,88 @@
 import { CeloContract } from '@celo/contractkit';
+import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
+import { WalletBase } from '@celo/wallet-base';
+import { LedgerSigner } from '@celo/wallet-ledger';
 
-import { Alfajores, localStorageKeys, WalletTypes } from '../../src';
-import { LedgerConnector } from '../../src/connectors';
+import { Alfajores, Baklava, WalletTypes } from '../../src';
+import { ConnectorEvents } from '../../src/connectors/common';
+import LedgerConnector from '../../src/connectors/ledger';
+import { setApplicationLogger } from '../../src/utils/logger';
+import { mockLogger } from '../test-logger';
+
+class StubWallet extends WalletBase<LedgerSigner> {}
 
 describe('LedgerConnector', () => {
   let connector: LedgerConnector;
-  beforeEach(() => {
+  let walletStub: StubWallet;
+  const onDisconnect = jest.fn();
+  const onConnect = jest.fn();
+  const onChangeNetwork = jest.fn();
+  let originalKit: MiniContractKit;
+
+  beforeAll(() => setApplicationLogger(mockLogger));
+
+  beforeEach(async () => {
+    walletStub = new StubWallet();
     connector = new LedgerConnector(Alfajores, 0, CeloContract.GoldToken);
+    connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
+    connector.on(ConnectorEvents.CONNECTED, onConnect);
+    connector.on(ConnectorEvents.NETWORK_CHANGED, onChangeNetwork);
+
+    jest
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      .spyOn<any, any>(connector, 'createWallet')
+      .mockImplementation(function () {
+        return walletStub;
+      });
+
+    jest
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      .spyOn<any, any>(connector, 'getWallet')
+      .mockImplementation(function () {
+        return walletStub;
+      });
+    jest.spyOn(walletStub, 'getAccounts');
+    await connector.initialise();
+    originalKit = connector.kit;
   });
 
-  it('remembers info in localStorage', () => {
-    expect(localStorage.getItem(localStorageKeys.lastUsedFeeCurrency)).toEqual(
-      null
-    );
+  // it.skip(
+  //   'does not need to support ADDRESS CHANGE since the device cannot do this'
+  // );
 
-    expect(localStorage.getItem(localStorageKeys.lastUsedWalletType)).toEqual(
-      WalletTypes.Ledger
-    );
+  describe('initialise', () => {
+    it('emits CONNECTED with index, network, walletType params', () => {
+      expect(onConnect).toBeCalledWith({
+        networkName: Alfajores.name,
+        walletType: WalletTypes.Ledger,
+        index: 0,
+      });
+    });
+    it('gets account from wallet', () => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(walletStub.getAccounts).toBeCalled();
+    });
+  });
 
-    expect(
-      localStorage.getItem(localStorageKeys.lastUsedWalletArguments)
-    ).toEqual('[0]');
+  describe('startNetworkChangeFromApp()', () => {
+    beforeEach(async () => {
+      await connector.startNetworkChangeFromApp(Baklava);
+    });
+    it('emits NETWORK_CHANGED EVENT', () => {
+      expect(onChangeNetwork).toBeCalledWith(Baklava.name);
+    });
 
-    expect(localStorage.getItem(localStorageKeys.lastUsedNetwork)).toEqual(
-      'Alfajores'
-    );
+    it('creates a new kit', () => {
+      expect(connector.kit).not.toBe(originalKit);
+    });
   });
 
   describe('close()', () => {
-    it('clears out localStorage', () => {
+    beforeEach(() => {
       connector.close();
-
-      expect(
-        localStorage.getItem(localStorageKeys.lastUsedFeeCurrency)
-      ).toEqual(null);
-
-      expect(
-        localStorage.getItem(localStorageKeys.lastUsedWalletArguments)
-      ).toEqual(null);
-
-      expect(localStorage.getItem(localStorageKeys.lastUsedNetwork)).toEqual(
-        null
-      );
+    });
+    it('emits DISCONNECTED event', () => {
+      expect(onDisconnect).toBeCalled();
     });
   });
   describe('updateFeeCurrency', () => {

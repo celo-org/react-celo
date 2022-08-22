@@ -2,7 +2,7 @@ import { AddressRegistry } from '@celo/contractkit/lib/address-registry';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import { useMemo } from 'react';
 
-import { Connector } from './types';
+import { Connector } from '../types';
 
 export type ContractCacheBuilder<K = unknown> = (
   connection: MiniContractKit['connection'],

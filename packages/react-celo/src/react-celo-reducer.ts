@@ -1,10 +1,7 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 
-import { UnauthenticatedConnector } from './connectors';
-import { localStorageKeys } from './constants';
 import { Connector, Dapp, Maybe, Network, Theme } from './types';
-import { clearPreviousConfig } from './utils/helpers';
-import localStorage from './utils/localStorage';
+import { getApplicationLogger } from './utils/logger';
 
 export function celoReactReducer(
   state: ReducerState,
@@ -21,11 +18,6 @@ export function celoReactReducer(
       if (action.payload === state.address) {
         return state;
       }
-      if (action.payload) {
-        localStorage.setItem(localStorageKeys.lastUsedAddress, action.payload);
-      } else {
-        localStorage.removeItem(localStorageKeys.lastUsedAddress);
-      }
       return {
         ...state,
         address: action.payload,
@@ -34,51 +26,39 @@ export function celoReactReducer(
       if (action.payload === state.network) {
         return state;
       }
-      localStorage.setItem(
-        localStorageKeys.lastUsedNetwork,
-        action.payload.name
-      );
       return {
         ...state,
         network: action.payload,
       };
-
-    case 'setConnector':
-      localStorage.removeItem(localStorageKeys.lastUsedAddress);
-      return {
-        ...state,
-        connector: action.payload,
-        connectorInitError: null,
-        address: null,
-      };
+    case 'setNetworkByName': {
+      const network = state.networks.find((net) => net.name === action.payload);
+      if (network) {
+        return { ...state, network };
+      }
+      return state;
+    }
     case 'setFeeCurrency':
       if (action.payload === state.feeCurrency) {
         return state;
       }
-      localStorage.setItem(
-        localStorageKeys.lastUsedFeeCurrency,
-        action.payload
-      );
       return { ...state, feeCurrency: action.payload };
     case 'initialisedConnector': {
-      const newConnector = action.payload;
-      const address = newConnector.kit.connection.defaultAccount ?? null;
-      if (address) {
-        localStorage.setItem(localStorageKeys.lastUsedAddress, address);
-      }
       return {
         ...state,
         connector: action.payload,
-        address,
       };
     }
-
-    case 'destroy':
-      clearPreviousConfig();
+    case 'connect': {
+      const network = state.networks.find(
+        (net) => net.name === action.payload.networkName
+      );
+      return { ...state, address: action.payload.address, network: network! };
+    }
+    case 'disconnect':
       return {
         ...state,
         address: null,
-        connector: new UnauthenticatedConnector(state.network),
+        // connector is overwritten by the disconnect method init of a new Unauthenticated Connector, so no need to do here
       };
 
     default:
@@ -94,10 +74,9 @@ export function celoReactReducer(
           [key]: action.payload,
         };
       } else {
-        console.error(
-          new Error(
-            `Unrecognized action type ${action.type} in celoReactReducer`
-          )
+        getApplicationLogger().error(
+          '[reducer]',
+          new Error(`Unrecognized action type ${action.type}`)
         );
       }
       return state;
@@ -106,6 +85,9 @@ export function celoReactReducer(
 
 export interface ReducerState {
   connector: Connector;
+  /**
+   * Initialisation error, if applicable.
+   */
   connectorInitError: Maybe<Error>;
   dapp: Dapp;
   network: Network;
@@ -114,7 +96,6 @@ export interface ReducerState {
   address: Maybe<string>;
   feeCurrency: CeloTokenContract;
   theme: Maybe<Theme>;
-
   connectionCallback: Maybe<(connector: Connector | false) => void>;
 }
 
@@ -127,7 +108,9 @@ type SetActions = {
 export interface ActionsMap extends SetActions {
   decrementPendingActionCount: undefined;
   initialisedConnector: Connector;
-  destroy: undefined;
+  disconnect: undefined;
+  connect: { address: string; networkName: string };
+  setNetworkByName: string;
 }
 
 // This converts the `ActionsMap` into a union of possible actions

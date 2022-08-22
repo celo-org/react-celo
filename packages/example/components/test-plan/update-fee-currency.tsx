@@ -17,7 +17,7 @@ export function UpdateFeeCurrency() {
   useEffect(() => {
     if (address && supportsFeeCurrency !== undefined && !supportsFeeCurrency) {
       setDisabledTest(true);
-      setStatus.error('Wallet does not support updating fee currency.');
+      setStatus.failed('Wallet does not support updating fee currency.');
     }
   }, [address, supportsFeeCurrency, setStatus, setDisabledTest]);
 

@@ -6,11 +6,11 @@ import ConnectorScreen from '../components/connector-screen';
 import { CopyText } from '../components/copy';
 import PrettyQrCode from '../components/qrcode';
 import Spinner from '../components/spinner';
-import { useWalletConnectConnector } from '../connectors/useWalletConnectConnector';
 import { Platform } from '../constants';
+import useTheme from '../hooks/use-theme';
+import useWalletConnectConnector from '../hooks/use-wallet-connect-connector';
 import { Connector, WalletConnectProvider } from '../types';
 import cls from '../utils/tailwind';
-import useTheme from '../utils/useTheme';
 
 const styles = cls({
   contentContainer: `
@@ -57,7 +57,7 @@ const styles = cls({
 
 export interface Props {
   onSubmit: (connector: Connector) => void;
-  provider?: WalletConnectProvider;
+  provider: WalletConnectProvider;
 }
 
 export const WalletConnect = ({ onSubmit, provider }: Props) => {
@@ -65,10 +65,10 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
   const { uri, error, loading, retry } = useWalletConnectConnector(
     onSubmit,
     isMobile,
-    provider?.getLink &&
-      ((uri: string) =>
-        provider.getLink!(uri, isMobile ? Platform.Mobile : Platform.Desktop)),
-    provider?.walletConnectId
+    provider.walletConnectId,
+    provider.getLink &&
+      ((URI: string) =>
+        provider.getLink!(URI, isMobile ? Platform.Mobile : Platform.Desktop))
   );
 
   const onClickPlatform = useCallback(

@@ -3,10 +3,13 @@
 import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useCallback, useEffect, useState } from 'react';
 
+import { WalletConnectConnector } from '../connectors';
+import { ConnectorEvents } from '../connectors/common';
+import { buildOptions } from '../connectors/wallet-connect';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
-import { useWalletVersion } from '../utils/useWalletVersion';
-import { WalletConnectConnector } from './connectors';
+import { getApplicationLogger } from '../utils/logger';
+import { useWalletVersion } from './use-wallet-version';
 
 interface UseWalletConnectConnector {
   error: Maybe<string>;
@@ -15,13 +18,13 @@ interface UseWalletConnectConnector {
   retry: () => void;
 }
 
-export function useWalletConnectConnector(
+export default function useWalletConnectConnector(
   onSubmit: (connector: Connector) => void,
   autoOpen: boolean,
-  getDeeplinkUrl?: (uri: string) => string | false,
-  walletId?: string
+  walletId: string,
+  getDeeplinkUrl?: (uri: string) => string | false
 ): UseWalletConnectConnector {
-  const { network, feeCurrency, initConnector, destroy } = useCeloInternal();
+  const { network, feeCurrency, initConnector, disconnect } = useCeloInternal();
   const [uri, setUri] = useState<Maybe<string>>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Maybe<string>>(null);
@@ -41,8 +44,9 @@ export function useWalletConnectConnector(
 
     void (async () => {
       if (version == null) {
-        console.warn(
-          'WalletconnectConnector initialization awaiting for registry'
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Initialization awaiting for registry'
         );
         return;
       }
@@ -50,52 +54,49 @@ export function useWalletConnectConnector(
       connector = new WalletConnectConnector(
         network,
         feeCurrency,
-        {
-          connect: {
-            chainId: network.chainId,
-            // Uncomment with WCV2 support
-            // metadata: {
-            //   name: dapp.name,
-            //   description: dapp.description,
-            //   url: dapp.url,
-            //   icons: [dapp.icon],
-            // },
-            // permissions: {
-            //   blockchain: {
-            //     chains: [`eip155:${}`],
-            //   },
-            //   jsonrpc: {
-            //     methods: Object.values(SupportedMethods),
-            //   },
-            // },
-          },
-        },
+        buildOptions(network),
         autoOpen,
         getDeeplinkUrl,
-        version
+        version,
+        walletId
       );
-      connector.onUri((newUri) => {
+      connector.on(ConnectorEvents.WC_URI_RECEIVED, (nextURI) => {
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Generated WC URI',
+          nextURI
+        );
         if (mounted) {
-          setUri(newUri);
+          setUri(nextURI);
         }
       });
-      connector.onConnect(() => {
-        setLoading(true);
+      connector.on(ConnectorEvents.DISCONNECTED, () => {
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'Lost connection to WC servers'
+        );
+        setError('Connection with wallet was closed.');
+        setUri(null);
       });
-      connector.onClose(() => {
-        void destroy().then(() => {
-          setError('Connection with wallet was closed.');
-          setUri(null);
-        });
-      });
+
       try {
         await initConnector(connector);
 
         onSubmit(connector);
       } catch (reason) {
         if (reason === CANCELED) {
-          return;
+          getApplicationLogger().debug(
+            '[useWalletConnectConnector]',
+            'User canceled connection'
+          );
+          // disconnect so we dont have open connectors all over the place
+          return disconnect();
         }
+        getApplicationLogger().debug(
+          '[useWalletConnectConnector]',
+          'WC error',
+          reason
+        );
         setError((reason as Error).message);
       }
     })();
@@ -105,7 +106,8 @@ export function useWalletConnectConnector(
       // if initialised is false, it means the connection was canceled or errored.
       // We should cleanup the state
       if (!connector?.initialised) {
-        void connector?.close('Connection canceled');
+        // disconnect so we dont have open connectors all over the place
+        void disconnect();
       }
 
       setUri(null);

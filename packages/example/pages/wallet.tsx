@@ -70,7 +70,7 @@ export default function Wallet(): React.ReactElement {
       kit.contracts.getStableToken(StableToken.cEUR),
     ]);
 
-    const [summary, celo, cusd, ceur] = await Promise.all([
+    const [accountSummary, celo, cusd, ceur] = await Promise.all([
       accounts.getAccountSummary(account.address).catch((e) => {
         console.error(e);
         return defaultSummary;
@@ -81,7 +81,7 @@ export default function Wallet(): React.ReactElement {
     ]);
 
     setSummary({
-      ...summary,
+      ...accountSummary,
       celo,
       cusd,
       ceur,
@@ -253,7 +253,7 @@ export default function Wallet(): React.ReactElement {
 
   const handleNewRequests = useCallback(
     (
-      error: Error | null,
+      err: Error | null,
       payload:
         | AccountsProposal
         | SignTransactionProposal
@@ -262,7 +262,7 @@ export default function Wallet(): React.ReactElement {
         | DecryptProposal
         | ComputeSharedSecretProposal
     ): void => {
-      if (error) return setError(error.message);
+      if (err) return setError(err.message);
 
       console.log('call_request', payload);
       let decodedMessage: string;
@@ -367,14 +367,16 @@ export default function Wallet(): React.ReactElement {
 
     connector.on(
       CLIENT_EVENTS.session_request,
-      (error, payload: SessionProposal) => {
-        if (error) return setError(error.message);
+      (requestError, payload: SessionProposal) => {
+        if (requestError) return setError(requestError.message);
 
         setApprovalData({
           accept: approveConnection,
           reject: rejectConnection,
           meta: {
-            title: `new connection from dApp ${payload.params[0].peerMeta.name}`,
+            title: `new connection from dApp ${
+              payload?.params[0]?.peerMeta?.name || ''
+            }`,
             raw: payload,
           },
         });
@@ -383,18 +385,18 @@ export default function Wallet(): React.ReactElement {
 
     connector.on(
       CLIENT_EVENTS.connect,
-      (error, payload: Request<unknown[]>) => {
-        if (error) return setError(error.message);
+      (connectError, payload: Request<unknown[]>) => {
+        if (connectError) return setError(connectError.message);
 
         console.log(CLIENT_EVENTS.connect, payload);
 
         connector.on(
           CLIENT_EVENTS.disconnect,
-          (error, payload: Request<unknown[]>) => {
-            if (error) return setError(error.message);
+          (disconnectError, disconnectPayload: Request<unknown[]>) => {
+            if (disconnectError) return setError(disconnectError.message);
             if (!connector) return;
 
-            console.log(CLIENT_EVENTS.disconnect, payload);
+            console.log(CLIENT_EVENTS.disconnect, disconnectPayload);
             setConnector(null);
             setApprovalData(null);
           }
@@ -404,24 +406,24 @@ export default function Wallet(): React.ReactElement {
 
     connector.on(
       CLIENT_EVENTS.session_update,
-      (error, payload: Request<unknown[]>) => {
-        if (error) return setError(error.message);
+      (updateError, payload: Request<unknown[]>) => {
+        if (updateError) return setError(updateError.message);
 
         console.log(CLIENT_EVENTS.session_update, payload);
       }
     );
     connector.on(
       CLIENT_EVENTS.wc_sessionRequest,
-      (error, payload: Request<unknown[]>) => {
-        if (error) return setError(error.message);
+      (requestError, payload: Request<unknown[]>) => {
+        if (requestError) return setError(requestError.message);
 
         console.log(CLIENT_EVENTS.wc_sessionRequest, payload);
       }
     );
     connector.on(
       CLIENT_EVENTS.wc_sessionUpdate,
-      (error, payload: Request<unknown[]>) => {
-        if (error) return setError(error.message);
+      (updateError, payload: Request<unknown[]>) => {
+        if (updateError) return setError(updateError.message);
 
         console.log(CLIENT_EVENTS.wc_sessionUpdate, payload);
       }
@@ -444,7 +446,9 @@ export default function Wallet(): React.ReactElement {
       </Head>
 
       <main>
-        <div className="font-semibold text-2xl">react-celo wallet</div>
+        <div className="font-semibold text-2xl dark:text-slate-200">
+          react-celo wallet
+        </div>
 
         <input
           style={{
@@ -471,9 +475,9 @@ export default function Wallet(): React.ReactElement {
         <div className={error ? '' : 'hidden'}>
           <span className="text-red-500">{error}</span>
         </div>
-        <div className="w-64 md:w-96 space-y-4 text-slate-700">
+        <div className="w-64 md:w-96 space-y-4 text-slate-700 dark:text-slate-100">
           <div className="mb-4">
-            <div className="text-lg font-bold mb-2 text-slate-900">
+            <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-200">
               Account summary
             </div>
             <div className="space-y-2">
@@ -496,7 +500,7 @@ export default function Wallet(): React.ReactElement {
             </div>
           </div>
           <div>
-            <div className="text-lg font-bold mb-2 text-slate-900">
+            <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-200">
               Balances
             </div>
             <div className="space-y-2">
@@ -524,13 +528,13 @@ export default function Wallet(): React.ReactElement {
           }}
           contentLabel="Approve walletconnect request?"
         >
-          <h2>
+          <h2 className="dark:text-slate-200">
             Approve: <b>{approvalData?.meta.title}</b> ?
           </h2>
           <pre style={{ fontSize: 8 }}>
             {JSON.stringify(approvalData, null, 2)}
           </pre>
-          <div className="flex flex-col md:flex-row md:space-x-4 mb-6">
+          <div className="flex flex-col md:flex-row md:space-x-4 mb-6 dark:text-slate-200">
             <PrimaryButton
               onClick={approvalData?.reject}
               className="w-full md:w-max"

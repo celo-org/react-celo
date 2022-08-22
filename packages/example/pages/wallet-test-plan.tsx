@@ -3,7 +3,11 @@ import React from 'react';
 
 import { ConnectWalletCheck } from '../components/test-plan/connect-wallet';
 import DisconnectButton from '../components/test-plan/disconnect-button';
-import { SendTransaction } from '../components/test-plan/send-transaction';
+import {
+  SendTransaction,
+  Sign,
+  SignTypedData,
+} from '../components/test-plan/perform-actions';
 import { SwitchNetwork } from '../components/test-plan/switch-networks';
 import { UpdateFeeCurrency } from '../components/test-plan/update-fee-currency';
 
@@ -22,8 +26,10 @@ export default function WalletTestPlan(): React.ReactElement {
       }}
     >
       <div>
-        <div className="font-semibold text-2xl">Wallet Test Plan</div>
-        <div className="text-slate-600 mt-2">
+        <div className="font-semibold text-2xl dark:text-slate-100">
+          Wallet Test Plan
+        </div>
+        <div className="text-slate-600 mt-2 dark:text-slate-100">
           A set of steps to help verify how well a given wallet interacts with
           react-celo.
           <br />
@@ -37,6 +43,8 @@ export default function WalletTestPlan(): React.ReactElement {
         <SwitchNetwork />
         <UpdateFeeCurrency />
         <SendTransaction />
+        <SignTypedData />
+        <Sign />
       </div>
     </CeloProvider>
   );

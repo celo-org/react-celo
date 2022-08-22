@@ -3,102 +3,53 @@ import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
-import { CONNECTOR_TYPES } from './connectors';
-import {
-  localStorageKeys,
-  STATIC_NETWORK_WALLETS,
-  WalletTypes,
-} from './constants';
+import { UnauthenticatedConnector } from './connectors';
+import { STATIC_NETWORK_WALLETS, WalletTypes } from './constants';
 import {
   ContractCacheBuilder,
   useContractsCache,
-} from './ContractCacheBuilder';
-import { Dispatcher } from './react-celo-provider';
-import defaultTheme from './theme/default';
+} from './hooks/use-contracts-cache';
+import { Dispatcher } from './react-celo-provider-state';
 import { Connector, Network, Theme } from './types';
-import { RGBToHex } from './utils/helpers';
+import { contrastCheck, fixTheme } from './utils/colors';
+import { getApplicationLogger } from './utils/logger';
+import networkWatcher from './utils/network-watcher';
+import persistor from './utils/persistor';
+import { updater } from './utils/updater';
+
+interface CeloMethodsInput {
+  connector: Connector;
+  networks: Network[];
+  network: Network;
+}
 
 export function useCeloMethods(
-  {
-    connector,
-    networks,
-    network,
-  }: {
-    connector: Connector;
-    networks: Network[];
-    network: Network;
-  },
+  { connector, networks, network }: CeloMethodsInput,
   dispatch: Dispatcher,
   buildContractsCache?: ContractCacheBuilder
 ): CeloMethods {
-  const destroy = useCallback(async () => {
-    await connector.close();
-    dispatch('destroy');
-  }, [dispatch, connector]);
-
   const initConnector = useCallback(
     async (nextConnector: Connector) => {
       try {
+        // need to set the event listeners here before initialise()
+        updater(nextConnector, dispatch);
+        persistor(nextConnector);
+        networkWatcher(nextConnector, networks);
         const initialisedConnector = await nextConnector.initialise();
         dispatch('initialisedConnector', initialisedConnector);
-
-        // If the new wallet already has a specific network it's
-        // using then we should go with that one.
-        const netId =
-          await initialisedConnector.kit.connection.web3.eth.net.getId();
-        const newNetwork = networks.find((n) => netId === n.chainId);
-        if (newNetwork !== network) {
-          dispatch('setNetwork', network);
-        }
-
-        // This happens if the network changes on the wallet side
-        // and we need to update what network we're storing
-        // accordingly.
-        initialisedConnector.onNetworkChange?.((chainId) => {
-          const network = networks.find((n) => n.chainId === chainId);
-          if (netId === chainId || !network) return;
-
-          // TODO: We should probably throw an error if we can't find the new chainId
-
-          if (network) {
-            dispatch('setNetwork', network);
-            initialisedConnector.updateKitWithNetwork &&
-              initialisedConnector
-                .updateKitWithNetwork(network)
-                .then(() => {
-                  dispatch('initialisedConnector', initialisedConnector);
-                })
-                .catch((e) => {
-                  console.error(
-                    '[react-celo] Error switching network',
-                    nextConnector.type,
-                    e
-                  );
-                  const error =
-                    e instanceof Error
-                      ? e
-                      : new Error(
-                          `Failed to initialise connector with ${network.name}`
-                        );
-                  dispatch('setConnectorInitError', error);
-                  throw e;
-                });
-          }
-        });
-        initialisedConnector.onAddressChange?.((address) => {
-          dispatch('setAddress', address);
-        });
       } catch (e) {
         if (typeof e === 'symbol') {
-          console.info(
-            '[react-celo] Ignoring error initializing connector with reason',
+          getApplicationLogger().debug(
+            '[initConnector]',
+            'Ignoring error initializing connector with reason',
             e.description
           );
           throw e;
         }
 
-        console.error(
-          '[react-celo] Error initializing connector',
+        getApplicationLogger().error(
+          '[initConnector]',
+          'Error initializing connector',
           nextConnector.type,
           e
         );
@@ -109,35 +60,31 @@ export function useCeloMethods(
         throw e;
       }
     },
-    [dispatch, network, networks]
+    [dispatch, networks]
   );
+  const disconnect = useCallback(async () => {
+    await connector.close();
+    const passiveConnector = new UnauthenticatedConnector(network);
+    await initConnector(passiveConnector);
+  }, [connector, network, initConnector]);
 
   // This is just to be used to for users to explicitly change
   // the network. It doesn't work for all wallets.
   const updateNetwork = useCallback(
     async (newNetwork: Network) => {
+      getApplicationLogger().debug(
+        '[updateNetwork]',
+        newNetwork,
+        connector.type
+      );
       if (STATIC_NETWORK_WALLETS.includes(connector.type)) {
         throw new Error(
           "The connected wallet's network must be changed from the wallet."
         );
       }
-      if (network === newNetwork) return;
-      if (connector.initialised) {
-        const connectorArgs = JSON.parse(
-          localStorage.getItem(localStorageKeys.lastUsedWalletArguments) || '[]'
-        ) as unknown[];
-        await connector.close();
-        const ConnectorConstructor = CONNECTOR_TYPES[connector.type];
-        const newConnector = new ConnectorConstructor(
-          newNetwork,
-          ...connectorArgs
-        );
-        await initConnector(newConnector);
-      }
-
-      dispatch('setNetwork', newNetwork);
+      await connector.startNetworkChangeFromApp(newNetwork);
     },
-    [dispatch, connector, network, initConnector]
+    [connector]
   );
 
   const connect = useCallback(async (): Promise<Connector> => {
@@ -173,7 +120,8 @@ export function useCeloMethods(
           dispatch('setFeeCurrency', newFeeCurrency);
         }
       } catch (error) {
-        console.warn(
+        getApplicationLogger().warn(
+          '[updateFeeCurrency]',
           'updating Fee Currency not supported by this wallet or network',
           error
         );
@@ -185,23 +133,12 @@ export function useCeloMethods(
   const updateTheme = useCallback(
     (theme: Theme | null) => {
       if (!theme) return dispatch('setTheme', null);
-      Object.entries(theme).forEach(([key, value]: [string, string]) => {
-        if (!(key in defaultTheme.light)) {
-          console.warn(`Theme key ${key} is not valid.`);
-        }
-        const _key = key as keyof Theme;
-        if (value.startsWith('rgb')) {
-          theme[_key] = RGBToHex(value);
-          console.warn(
-            `RGB values not officially supported, but were translated to hex (${value} -> ${theme[_key]})`
-          );
-        } else if (!value.startsWith('#')) {
-          theme[_key] = `#${value}`;
-          console.warn(
-            `Malformed hex value was missing # (${value} -> ${theme[_key]})`
-          );
-        }
-      });
+
+      if (process.env.NODE_ENV !== 'production') {
+        fixTheme(theme);
+        contrastCheck(theme);
+      }
+
       dispatch('setTheme', theme);
     },
     [dispatch]
@@ -242,7 +179,8 @@ export function useCeloMethods(
   }, [dispatch]);
 
   return {
-    destroy,
+    destroy: disconnect,
+    disconnect,
     initConnector,
     resetInitError,
     updateNetwork,
@@ -256,16 +194,67 @@ export function useCeloMethods(
 }
 
 export interface CeloMethods {
-  resetInitError: () => void;
+  /**
+   * @deprecated use `disconnect` (same behavior better name)
+   *
+   */
   destroy: () => Promise<void>;
-  initConnector: (connector: Connector) => Promise<void>;
-  updateNetwork: (network: Network) => Promise<void>;
+  /**
+   * `disconnect` closes the connection to the wallet and reses state
+   */
+  disconnect: () => Promise<void>;
+  /**
+   * `updateNetwork` changes the network used in the wallet.
+   *
+   * Note: _not compatible with all wallets_
+   */
+  updateNetwork: (network: Network, forceUpdate?: boolean) => Promise<void>;
+  /**
+   * `connect` initiates the connection to a wallet and
+   * opens a modal from which the user can choose a
+   * wallet to connect to.
+   */
   connect: () => Promise<Connector>;
+  /**
+   * `getConnectedKit` gets the connected instance of MiniContractKit.
+   * If the user is not connected, this opens up the connection modal.
+   */
   getConnectedKit: () => Promise<MiniContractKit>;
+  /**
+   * `performActions` is a helper function for handling any interaction with a Celo wallet.
+   * Perform action will:
+   * - open the action modal
+   * - handle multiple transactions in order
+   */
   performActions: (
     ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
   ) => Promise<unknown[]>;
+  /**
+   * `updateFeeCurrency` updates the currency that will be used
+   * in future transactions.
+   *
+   * Note: _not compatible with all wallets_
+   */
   updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
-  contractsCache?: undefined | unknown;
+
+  contractsCache?: unknown;
+  /**
+   * `updateTheme` programmaticaly updates the theme used in the
+   * wallet connection modal. This is useful if you want to give
+   * the user the option to change the theme.
+   */
   updateTheme: (theme: Theme | null) => void;
+  /**
+   * @internal
+   * resetInitError cleans up the error that occurred
+   * when trying to initialize a wallet connector.
+   */
+  resetInitError: () => void;
+  /**
+   * @internal
+   *
+   * `initConnector` is used to initialize a connector
+   *  for the wallet chosen by the user.
+   */
+  initConnector: (connector: Connector) => Promise<void>;
 }

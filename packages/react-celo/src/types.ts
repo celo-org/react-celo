@@ -2,6 +2,7 @@ import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import React from 'react';
 
+import { ConnectorEvents, EventsMap } from './connectors/common';
 import { Platform, Priorities, WalletTypes } from './constants';
 
 export type Maybe<T> = T | null | undefined;
@@ -39,7 +40,7 @@ export interface CeloNetwork extends Network {
  */
 export interface Provider {
   name: string;
-  type: WalletTypes;
+  type: Omit<WalletTypes.WalletConnect, WalletTypes>;
   description: string | JSX.Element;
   icon: string | React.FC<React.SVGProps<SVGSVGElement>>;
   canConnect: () => boolean;
@@ -49,8 +50,9 @@ export interface Provider {
 }
 
 export interface WalletConnectProvider extends Provider {
-  walletConnectId?: string;
-  supportedPlatforms?: Platform[];
+  type: WalletTypes.WalletConnect;
+  walletConnectId: string;
+  supportedPlatforms: Platform[];
   getLink?: (uri: string, platform: Platform) => string | false;
 }
 
@@ -60,18 +62,34 @@ export interface WalletConnectProvider extends Provider {
 export interface Connector {
   kit: MiniContractKit;
   type: WalletTypes;
-  account: Maybe<string>;
   feeCurrency: CeloTokenContract;
+  /**
+   * `initialised` indicates if the connector
+   * has been fully loaded.
+   */
   initialised: boolean;
+  /**
+   * `initialise` loads the connector
+   *  and saves it to local storage.
+   */
   initialise: () => Promise<this> | this;
   close: () => Promise<void> | void;
+  on<E extends ConnectorEvents>(e: E, fn: (arg: EventsMap[E]) => void): void;
   updateFeeCurrency?: (token: CeloTokenContract) => Promise<void>;
   supportsFeeCurrency: () => boolean;
   getDeeplinkUrl?: (uri: string) => string | false;
-  updateKitWithNetwork?: (network: Network) => Promise<void>;
-  onNetworkChange?: (callback: (chainId: number) => void) => void;
-  onAddressChange?: (callback: (address: Maybe<string>) => void) => void;
-  persist: () => void;
+  /**
+   * This isn't the method you want
+   * used when wallet changes chain. To change chain from app use startNetworkChangeFromApp()
+   */
+  continueNetworkUpdateFromWallet?: (network: Network) => void;
+
+  /**
+   * when network is changed from dapp side
+   * connectors / wallets that dont support this should do X
+   * connectors that do support MUST emit a NETWORK_CHANGED event
+   */
+  startNetworkChangeFromApp: (network: Network) => Promise<void> | void;
 }
 
 /**

@@ -5,10 +5,10 @@ import { isMobile } from 'react-device-detect';
 // @ts-expect-error
 import { version } from '../../package';
 import { Priorities, SupportedProviders } from '../constants';
+import useProviders from '../hooks/use-providers';
+import useTheme from '../hooks/use-theme';
 import { Maybe } from '../types';
 import cls from '../utils/tailwind';
-import useProviders from '../utils/useProviders';
-import useTheme from '../utils/useTheme';
 import { ProviderSelect } from './provider-select';
 
 function priorityToText(priority: Priorities) {
@@ -24,6 +24,7 @@ function priorityToText(priority: Priorities) {
 }
 
 const styles = cls({
+  spacer: `tw-h-10`,
   title: `
     tw-pb-2
     tw-text-md
@@ -46,7 +47,6 @@ const styles = cls({
     tw-overflow-y-auto
     tw-overflow-x-hidden
     tw-overscroll-contain
-    tw-min-h-full
     tw-pr-1`,
   subtitle: `
     tw-font-medium
@@ -106,7 +106,7 @@ interface Props {
 }
 
 export default function Tray({
-  providers,
+  providers: providersByPriority,
   title,
   onClickProvider,
   selectedProvider,
@@ -115,7 +115,7 @@ export default function Tray({
 }: Props) {
   const theme = useTheme();
 
-  const nPriorities = providers.reduce((acc, [prio]) => {
+  const nPriorities = providersByPriority.reduce((acc, [prio]) => {
     if (!acc.includes(prio)) acc.push(prio);
     return acc;
   }, [] as Priorities[]);
@@ -155,7 +155,7 @@ export default function Tray({
   return (
     <>
       <div className={styles.verticalContainer}>
-        <div className={styles.scrollableList}>
+        <div className={`${styles.scrollableList} rc-tray-ios-fix`}>
           <div
             className={styles.title}
             style={{ color: theme.textSecondary, background: theme.background }}
@@ -163,7 +163,7 @@ export default function Tray({
             <h1>{title}</h1>
             {isMobile && searchElem}
           </div>
-          {!providers.length && (
+          {!providersByPriority.length && (
             <div className={styles.noMatchesContainer}>
               <span
                 className={styles.noMatchesSpan}
@@ -173,8 +173,13 @@ export default function Tray({
               </span>
             </div>
           )}
-          {providers.map(([priority, providers]) => (
-            <div key={priority} className={styles.container}>
+          {providersByPriority.map(([priority, providers], i) => (
+            <div
+              key={priority}
+              className={
+                nPriorities.length === 1 || i > 0 ? styles.container : ''
+              }
+            >
               {!isMobile && nPriorities.length !== 1 && (
                 <span
                   className={styles.subtitle}
@@ -196,6 +201,8 @@ export default function Tray({
                     />
                   );
                 })}
+                {/* add spacer  to ensure there is room below to push up the last wallet from being hidden by ios tool bars etc. this is better than decreasing height as it just adds whitespace instead of taking away screen space*/}
+                {isMobile && <span className={styles.spacer} />}
               </div>
             </div>
           ))}

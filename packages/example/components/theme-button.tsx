@@ -10,6 +10,7 @@ export function ThemeButton({ theme, currentTheme, onClick }: Props) {
   const selected = currentTheme === theme;
   return (
     <button
+      aria-label="Theme button"
       className={`flex flex-row rounded gap-y-1 justify-between border cursor-pointer text-xs`}
       style={{
         background: theme.background,
@@ -19,7 +20,7 @@ export function ThemeButton({ theme, currentTheme, onClick }: Props) {
       }}
       onClick={() => onClick(selected ? null : theme)}
     >
-      <div className="flex flex-col gap-y-2 w-full">
+      <div className="flex flex-col gap-y-1 w-full">
         <div
           className="w-1/3 h-0.5 rounded"
           style={{ background: theme.text }}
@@ -64,7 +65,7 @@ const defaultDark = {
 const defaultLight = {
   primary: '#6366f1',
   secondary: '#eef2ff',
-  text: '#000000',
+  text: '#000',
   textSecondary: '#1f2937',
   textTertiary: '#64748b',
   muted: '#e2e8f0',
@@ -74,7 +75,7 @@ const defaultLight = {
 const greenCustom = {
   primary: '#34d399',
   secondary: '#ecfccb',
-  text: '#fff',
+  text: 'hsla(81, 88%, 80%)',
   textSecondary: '#d9f99d',
   textTertiary: '#bef264',
   muted: '#3f6212',

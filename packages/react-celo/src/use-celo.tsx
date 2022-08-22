@@ -1,119 +1,101 @@
-import { CeloTokenContract } from '@celo/contractkit/lib/base';
-import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
-
-import { WalletTypes } from './constants';
 import { useReactCeloContext } from './react-celo-provider';
-import { Connector, Dapp, Maybe, Network, Theme } from './types';
+import { ReducerState } from './react-celo-reducer';
+import { Maybe } from './types';
+import { CeloMethods } from './use-celo-methods';
 
-export interface UseCelo {
-  dapp: Dapp;
-  kit: MiniContractKit;
-  walletType: WalletTypes;
-  feeCurrency: CeloTokenContract;
+type SomeReducerStateProps = Pick<
+  ReducerState,
+  'dapp' | 'address' | 'network' | 'feeCurrency'
+>;
 
-  /**
-   * Name of the account.
-   */
-  account: Maybe<string>;
+type DerivedFromReducerStateProps = {
+  networks: readonly ReducerState['network'][];
+  initError: ReducerState['connectorInitError'];
+};
 
-  address: Maybe<string>;
-  connect: () => Promise<Connector>;
-  destroy: () => Promise<void>;
-  network: Network;
-  networks: readonly Network[];
-  updateNetwork: (network: Network) => Promise<void>;
-  updateFeeCurrency: (newFeeCurrency: CeloTokenContract) => Promise<void>;
-  updateTheme: (theme: Theme | null) => void;
-  supportsFeeCurrency: boolean;
-  /**
-   * Helper function for handling any interaction with a Celo wallet. Perform action will
-   * - open the action modal
-   * - handle multiple transactions in order
-   */
-  performActions: (
-    ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
-  ) => Promise<unknown[]>;
+type SomeReducerConnectorProps = Pick<
+  ReducerState['connector'],
+  'kit' | 'initialised'
+>;
 
-  /**
-   * Whether or not the connector has been fully loaded.
-   */
-  initialised: boolean;
-  /**
-   * Initialisation error, if applicable.
-   */
-  initError: Maybe<Error>;
+type DerivedFromConnectorProps = {
+  supportsFeeCurrency: ReturnType<
+    ReducerState['connector']['supportsFeeCurrency']
+  >;
+  walletType: ReducerState['connector']['type'];
+};
 
-  /**
-   * Gets the connected instance of MiniContractKit.
-   * If the user is not connected, this opens up the connection modal.
-   */
-  getConnectedKit: () => Promise<MiniContractKit>;
-
-  contractsCache?: unknown;
-}
+type SomeCeloMethods = Omit<CeloMethods, 'resetInitError' | 'initConnector'>;
+export type UseCelo = SomeReducerStateProps &
+  DerivedFromReducerStateProps &
+  SomeReducerConnectorProps &
+  DerivedFromConnectorProps &
+  SomeCeloMethods & { account: Maybe<string> };
 
 export function useCelo<CC = undefined>(): UseCelo {
-  const [
-    {
-      dapp,
-      connector,
-      connectorInitError,
-      address,
-      network,
-      feeCurrency,
-      networks,
-    },
-    _dispatch,
-    {
-      destroy,
-      updateNetwork,
-      connect,
-      getConnectedKit,
-      performActions,
-      updateFeeCurrency,
-      contractsCache,
-      updateTheme,
-    },
-  ] = useReactCeloContext();
+  const [reducerState, _dispatch, celoMethods] = useReactCeloContext();
+
+  const {
+    dapp,
+    address,
+    network,
+    feeCurrency,
+    connectorInitError,
+    networks,
+    connector,
+  } = reducerState;
+
+  const {
+    destroy,
+    disconnect,
+    updateNetwork,
+    connect,
+    getConnectedKit,
+    performActions,
+    updateFeeCurrency,
+    contractsCache,
+    updateTheme,
+  } = celoMethods;
 
   return {
-    address,
     dapp,
+    address, // The account address
     network,
+    feeCurrency,
+    initError: connectorInitError,
     // Copy to ensure any accidental mutations dont affect global state
     networks: networks.map((net) => ({ ...net })),
-    updateNetwork,
-    kit: connector.kit,
-    contractsCache: contractsCache as CC,
-    walletType: connector.type,
-    account: connector.account,
-    initialised: connector.initialised,
-    feeCurrency,
-    updateFeeCurrency,
-    supportsFeeCurrency: connector.supportsFeeCurrency(),
-    performActions,
-    getConnectedKit,
-    connect,
-    destroy,
-    updateTheme,
 
-    initError: connectorInitError,
+    kit: connector.kit,
+    // the wallet address from Account.getWalletAddress => The address at which the account expects to receive transfers.
+    // If it's empty/0x0, the account indicates that an address exchange should be initiated with the dataEncryptionKey
+    /*
+     * @deprecated this will likely be removed in favor of just address
+     */
+    account: connector.kit.connection.defaultAccount,
+    initialised: connector.initialised,
+    walletType: connector.type,
+    supportsFeeCurrency: connector.supportsFeeCurrency(),
+    destroy,
+    disconnect,
+    updateNetwork,
+    connect,
+    getConnectedKit,
+    performActions,
+    updateFeeCurrency,
+    contractsCache: contractsCache as CC,
+    updateTheme,
   };
 }
 
 /**
- *
  * @deprecated Use the alias {@link useCelo} hook instead.
  */
 export const useContractKit = useCelo;
 
-interface UseCeloInternal extends UseCelo {
-  connectionCallback: Maybe<(connector: Connector | false) => void>;
-  initConnector: (connector: Connector) => Promise<void>;
-  pendingActionCount: number;
-  theme: Maybe<Theme>;
-  resetInitError: () => void;
-}
+type UseCeloInternal = UseCelo &
+  Pick<ReducerState, 'connectionCallback' | 'pendingActionCount' | 'theme'> &
+  Pick<CeloMethods, 'initConnector' | 'resetInitError'>;
 
 /**
  * @internal useCelo with internal methods exposed. Package use only.

@@ -5,8 +5,8 @@ import { ErrorIcon } from './error-icon';
 import { Status } from './useTestStatus';
 
 export function TestTag({ type }: { type: Status }) {
-  const getText = (type: Status) => {
-    return type.replace('-', ' ');
+  const getText = (text: Status) => {
+    return text.replace('-', ' ');
   };
 
   return (
@@ -29,7 +29,7 @@ export function TestBlock({
   onRunTest: () => void;
 }>) {
   return (
-    <div className="test-block">
+    <div className="test-block dark:text-slate-100">
       <div className="tag-column">
         <TestTag type={status} />
       </div>
@@ -52,7 +52,7 @@ export function TestBlock({
 }
 
 export const Header: React.FC = (props) => (
-  <h3 className="font-semibold text-base" {...props} />
+  <h3 className="font-semibold text-base mr-2" {...props} />
 );
 
 export const Text: React.FC = (props) => (
@@ -88,7 +88,7 @@ export const Success: React.FC = (props) => {
 
 export const ErrorText: React.FC = (props) => {
   const context = useResultContext();
-  return context === Status.Error ? (
+  return context === Status.Failed ? (
     <p className="text-[#f94144] flex items-center gap-[5px]">
       <ErrorIcon /> {props.children}
     </p>

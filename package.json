@@ -4,6 +4,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "pkgs": {
+    "path": "./packages"
+  },
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
     "build": "lerna link && lerna run clean && lerna run build --scope 'example' --include-dependencies",
@@ -13,10 +16,13 @@
     "test": "lerna link && COVERAGE=ON lerna run --stream --no-bail test",
     "prepare": "husky install",
     "reset-modules": "rm -rf node_modules/ packages/*/node_modules",
-    "publish-packages": "ts-node ./scripts/publish-packages.ts",
-    "deprecate-version": "ts-node ./scripts/deprecate-version.ts"
+    "publish-packages-script": "ts-node ./scripts/publish-packages.ts",
+    "deprecate-version": "ts-node ./scripts/deprecate-version.ts",
+    "publish-packages": "pkgs publish",
+    "bump-versions": "pkgs bump-versions"
   },
   "devDependencies": {
+    "@clabs/packages-publisher": "0.0.1-alpha.3",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@types/jest": "^27.5.1",

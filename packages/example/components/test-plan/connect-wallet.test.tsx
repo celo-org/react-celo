@@ -5,6 +5,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { generateTestingUtils } from 'eth-testing';
 import { TestingUtils } from 'eth-testing/lib/testing-utils';
 
+import { mockLogger } from '../mock-logger';
 import { ConnectWalletCheck } from './connect-wallet';
 
 declare global {
@@ -12,7 +13,6 @@ declare global {
     ethereum: ReturnType<TestingUtils['getProvider']> & { send?: () => void };
   }
 }
-
 describe('ConnectWalletCheck', () => {
   const testingUtils = generateTestingUtils({ providerType: 'MetaMask' });
 
@@ -48,6 +48,7 @@ describe('ConnectWalletCheck', () => {
         connectModal={{
           providersOptions: { searchable: true },
         }}
+        logger={mockLogger}
       >
         <ConnectWalletCheck />
       </CeloProvider>
