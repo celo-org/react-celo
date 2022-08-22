@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "4.1.0-beta.3",
+  "version": "4.1.0",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@celo/react-celo": "4.1.0-beta.3",
+    "@celo/react-celo": "4.1.0",
     "@celo/contractkit": "^2.0.0",
     "@celo/utils": "^2.0.0",
     "next": "^12.1.6",
