@@ -1,7 +1,11 @@
 import { ConnectorEvents, ConnectorParams } from '../connectors/common';
 import { localStorageKeys } from '../constants';
 import { Connector } from '../types';
-import { clearPreviousConfig, setTypedStorageKey } from './local-storage';
+import {
+  clearPreviousConfig,
+  rememberWallet,
+  setTypedStorageKey,
+} from './local-storage';
 
 type Updater = (connector: Connector) => void;
 
@@ -25,6 +29,7 @@ const persistor: Updater = (connector: Connector) => {
     if (params.walletId) {
       setTypedStorageKey(localStorageKeys.lastUsedWalletId, params.walletId);
     }
+    rememberWallet(params.walletType, params.walletId);
   });
 
   connector.on(ConnectorEvents.DISCONNECTED, () => {

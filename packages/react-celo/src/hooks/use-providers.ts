@@ -2,15 +2,14 @@ import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import {
-  localStorageKeys,
   Platform,
   Priorities,
   PROVIDERS,
   SupportedProviders,
   WalletTypes,
 } from '../constants';
-import { Maybe, Provider, WalletConnectProvider, WalletEntry } from '../types';
-import { getTypedStorageKey } from '../utils/local-storage';
+import { Provider, WalletConnectProvider, WalletEntry } from '../types';
+import { getRecentWallets } from '../utils/local-storage';
 import { defaultProviderSort } from '../utils/sort';
 
 export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
@@ -29,21 +28,37 @@ export function walletToProvider(wallet: WalletEntry): WalletConnectProvider {
   };
 }
 
-export function getRecent(): Maybe<Provider> {
-  const type = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
-  const id = getTypedStorageKey(localStorageKeys.lastUsedWalletId);
-  let provider: Maybe<Provider>;
+export function getRecent(): { ids: Set<string>; providers: Provider[] } {
+  const listOfRecentWalletTypeIds = getRecentWallets();
 
-  if (id && WalletTypes.WalletConnect === type) {
-    provider = Object.values(PROVIDERS).find(
-      (p) => (p as WalletConnectProvider).walletConnectId === id
-    );
-  } else {
-    provider = Object.values(PROVIDERS).find((p) => p.type === type);
-  }
+  // create mapping by the identifier we saved so its easy to get the recent provider from the id
+  const providersByTypeId = Object.values(PROVIDERS).reduce(
+    (collection, current) => {
+      const unifiedID =
+        current.type === WalletTypes.WalletConnect
+          ? `${(current as WalletConnectProvider).type}:${
+              (current as WalletConnectProvider).walletConnectId
+            }`
+          : current.type;
+      collection.set(unifiedID as string, current);
+      return collection;
+    },
+    new Map<string, Provider>()
+  );
 
-  if (provider) return provider;
-  return null;
+  // map over type-ids and get the actual provider
+  const recentProviders = listOfRecentWalletTypeIds
+    .map((unifiedID) => {
+      const provider = providersByTypeId.get(unifiedID);
+      return provider;
+    })
+    .filter((p) => p !== undefined);
+
+  return {
+    providers: recentProviders as Provider[],
+    // return as a set to make it easy to filter these out of the default list
+    ids: new Set(listOfRecentWalletTypeIds),
+  };
 }
 
 export default function useProviders(
@@ -84,21 +99,26 @@ export default function useProviders(
     return [];
   }
 
-  const recentlyUsedProvider = getRecent();
-  if (recentlyUsedProvider) {
-    const index = providers.findIndex(
-      ([providerKey]) => providerKey === recentlyUsedProvider.name
-    );
+  const recentlyUsedProviders = getRecent();
+  if (recentlyUsedProviders.ids.size !== 0) {
+    const recent = recentlyUsedProviders.providers.map((provider) => {
+      return [provider.name, provider] as [string, Provider];
+    });
+    console.info('recent', recent);
+    const rest = providers.filter(([_, provider]) => {
+      const unifiedID =
+        provider.type === WalletTypes.WalletConnect
+          ? `${(provider as WalletConnectProvider).type}:${
+              (provider as WalletConnectProvider).walletConnectId
+            }`
+          : (provider.type as string);
+      return !recentlyUsedProviders.ids.has(unifiedID);
+    });
 
-    if (index > -1) {
-      return [
-        [
-          Priorities.Recent,
-          [[recentlyUsedProvider.name, recentlyUsedProvider]],
-        ],
-        [Priorities.Default, providers.filter((_, i) => index !== i)],
-      ];
-    }
+    return [
+      [Priorities.Recent, recent],
+      [Priorities.Default, rest],
+    ];
   }
 
   return [[Priorities.Default, providers]];
