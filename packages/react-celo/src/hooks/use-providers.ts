@@ -104,7 +104,6 @@ export default function useProviders(
     const recent = recentlyUsedProviders.providers.map((provider) => {
       return [provider.name, provider] as [string, Provider];
     });
-    console.info('recent', recent);
     const rest = providers.filter(([_, provider]) => {
       const unifiedID =
         provider.type === WalletTypes.WalletConnect
