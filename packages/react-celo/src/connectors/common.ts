@@ -50,6 +50,7 @@ export enum ConnectorEvents {
 interface ConnectorParamsCommon {
   networkName: string;
   walletType: WalletTypes;
+  walletChainId: number | null;
   address: string;
   walletId?: string;
   index?: number;

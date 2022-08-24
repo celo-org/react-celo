@@ -9,6 +9,7 @@ type SomeReducerStateProps = Pick<
 >;
 
 type DerivedFromReducerStateProps = {
+  walletChainId: ReducerState['walletChainId'];
   networks: readonly ReducerState['network'][];
   initError: ReducerState['connectorInitError'];
 };
@@ -39,6 +40,7 @@ export function useCelo<CC = undefined>(): UseCelo {
     dapp,
     address,
     network,
+    walletChainId,
     feeCurrency,
     connectorInitError,
     networks,
@@ -61,6 +63,7 @@ export function useCelo<CC = undefined>(): UseCelo {
     dapp,
     address, // The account address
     network,
+    walletChainId,
     feeCurrency,
     initError: connectorInitError,
     // Copy to ensure any accidental mutations dont affect global state

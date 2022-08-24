@@ -25,6 +25,7 @@ const initialState: ReducerState = {
     url: 'https://celo.org',
     icon: 'https://celo.org/favicon.ico',
   },
+  walletChainId: null,
   network: Mainnet,
   networks: DEFAULT_NETWORKS,
   pendingActionCount: 0,

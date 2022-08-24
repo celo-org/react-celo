@@ -237,6 +237,11 @@ describe('CeloProvider', () => {
           expect(result.current.network).toEqual(customRPCMainnet);
         });
       });
+
+      it('gives null as chainId when no wallet is connected', () => {
+        const { result } = renderUseCelo({});
+        expect(result.current.walletChainId).toBe(null);
+      });
     });
 
     describe('regarding feeCurrency', () => {

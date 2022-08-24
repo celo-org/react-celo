@@ -245,6 +245,7 @@ export default class WalletConnectConnector
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
       walletId: this.walletId as string,
+      walletChainId: session.params[0].chainId,
       networkName: this.network.name,
       address: sessionAccount,
     });

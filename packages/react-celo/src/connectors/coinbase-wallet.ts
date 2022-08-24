@@ -72,11 +72,19 @@ export default class CoinbaseWalletConnector
 
     this.removeListeners();
 
-    await switchToNetwork(
-      this.network,
-      this.provider as unknown as Ethereum,
-      () => web3.eth.getChainId()
-    );
+    try {
+      await switchToNetwork(
+        this.network,
+        this.provider as unknown as Ethereum,
+        () => web3.eth.getChainId()
+      );
+    } catch (e) {
+      // if user rejects the switch it will throw but we dont want it to disrupt everything
+    }
+
+    const walletChainId: string = await this.provider.request({
+      method: 'eth_chainId',
+    });
 
     this.provider.on('chainChanged', this.onChainChanged);
     this.provider.on('accountsChanged', this.onAccountsChanged);
@@ -86,6 +94,7 @@ export default class CoinbaseWalletConnector
 
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
+      walletChainId: parseInt(walletChainId, 16),
       networkName: this.network.name,
       address: defaultAccount,
     });

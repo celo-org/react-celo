@@ -61,6 +61,7 @@ describe('MetaMaskConnector', () => {
       expect(connector.account).toEqual(ACCOUNT);
       expect(connector.initialised).toBe(true);
       expect(onConnect).toBeCalledWith({
+        walletChainId: Alfajores.chainId,
         walletType: WalletTypes.MetaMask,
         networkName: Alfajores.name,
         address: ACCOUNT,

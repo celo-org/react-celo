@@ -22,6 +22,8 @@ export function celoReactReducer(
         ...state,
         address: action.payload,
       };
+    case 'setWalletChainId':
+      return { ...state, walletChainId: action.payload };
     case 'setNetwork':
       if (action.payload === state.network) {
         return state;
@@ -52,7 +54,12 @@ export function celoReactReducer(
       const network = state.networks.find(
         (net) => net.name === action.payload.networkName
       );
-      return { ...state, address: action.payload.address, network: network! };
+      return {
+        ...state,
+        address: action.payload.address,
+        network: network!,
+        walletChainId: action.payload.walletChainId,
+      };
     }
     case 'disconnect':
       return {
@@ -90,6 +97,12 @@ export interface ReducerState {
    */
   connectorInitError: Maybe<Error>;
   dapp: Dapp;
+  /**
+   * the chain id of the wallet (if applicable), may be different than dapp at certain moments,
+   * exposed here to give developer optionality in handling network behavior
+   * null when not known or wallet doesn't have a network (like ledger)
+   */
+  walletChainId: number | null;
   network: Network;
   networks: Network[];
   pendingActionCount: number;
@@ -109,7 +122,11 @@ export interface ActionsMap extends SetActions {
   decrementPendingActionCount: undefined;
   initialisedConnector: Connector;
   disconnect: undefined;
-  connect: { address: string; networkName: string };
+  connect: {
+    address: string;
+    networkName: string;
+    walletChainId: number | null;
+  };
   setNetworkByName: string;
 }
 

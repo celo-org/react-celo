@@ -58,6 +58,7 @@ describe('CoinbaseWalletConnector', () => {
     expect(onConnect).toHaveBeenCalledWith({
       address: '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf',
       networkName: 'Alfajores',
+      walletChainId: Alfajores.chainId,
       walletType: 'CoinbaseWallet',
     });
   });

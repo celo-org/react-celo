@@ -9,7 +9,7 @@ import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
 import { getApplicationLogger } from '../utils/logger';
-import { switchToNetwork } from '../utils/metamask';
+import { getWalletChainId, switchToNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
 export default class InjectedConnector
@@ -59,10 +59,13 @@ export default class InjectedConnector
 
     this.newKit(web3 as unknown as Web3Type, defaultAccount);
 
+    const walletChainId = await ethereum.request({ method: 'eth_chainId' });
+
     this.initialised = true;
 
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
+      walletChainId: parseInt(walletChainId, 16),
       address: defaultAccount,
       networkName: this.network.name,
     });
