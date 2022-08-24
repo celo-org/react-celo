@@ -26,9 +26,9 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "@walletconnect/client-v1": "npm:@walletconnect/client@1.6.6",
-    "@walletconnect/types-v1": "npm:@walletconnect/types@1.6.6",
-    "@walletconnect/utils-v1": "npm:@walletconnect/utils@1.6.6",
+    "@walletconnect/client": "1.8.0",
+    "@walletconnect/types": "1.8.0",
+    "@walletconnect/utils": "1.8.0",
     "debug": "^4.3.3"
   },
   "engines": {

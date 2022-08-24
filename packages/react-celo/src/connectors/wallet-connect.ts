@@ -50,6 +50,7 @@ export default class WalletConnectConnector
     const wallet = new WalletConnectWalletV1(options);
 
     this.kit = newKit(network.rpcUrl, wallet);
+    this.kit.connection.estimateGas;
   }
 
   // this is called automatically and is what gives us the uri for the qr code to be scanned

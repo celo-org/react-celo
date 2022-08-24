@@ -1,8 +1,6 @@
-/// <reference path='../../../../node_modules/@walletconnect/types-v1/index.d.ts' />
-
 import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { toChecksumAddress } from '@celo/utils/lib/address';
-import WalletConnect from '@walletconnect/client-v1';
+import WalletConnect from '@walletconnect/client';
 import { IInternalEvent } from '@walletconnect/types';
 import debugConfig from 'debug';
 

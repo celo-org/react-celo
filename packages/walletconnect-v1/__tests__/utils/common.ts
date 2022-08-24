@@ -2,7 +2,7 @@ import { Address } from '@celo/base';
 import { CeloTx } from '@celo/connect';
 import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
-import { toChecksumAddress } from '@walletconnect/utils-v1';
+import { toChecksumAddress } from '@walletconnect/utils';
 // personal_sign is the one RPC that has [payload, from] rather
 // than [from, payload]
 export function parsePersonalSign(params: [string, string]): {
