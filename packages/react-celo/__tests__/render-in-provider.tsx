@@ -16,6 +16,7 @@ const defaultProps: CeloProviderProps = {
     url: 'https://celo.developers',
     icon: '',
   },
+  manualNetworkMode: false,
   children: null,
   logger: mockLogger,
 };

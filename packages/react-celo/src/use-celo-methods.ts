@@ -21,10 +21,11 @@ interface CeloMethodsInput {
   connector: Connector;
   networks: Network[];
   network: Network;
+  manualNetworkMode: boolean;
 }
 
 export function useCeloMethods(
-  { connector, networks, network }: CeloMethodsInput,
+  { connector, networks, network, manualNetworkMode }: CeloMethodsInput,
   dispatch: Dispatcher,
   buildContractsCache?: ContractCacheBuilder
 ): CeloMethods {
@@ -34,7 +35,7 @@ export function useCeloMethods(
         // need to set the event listeners here before initialise()
         updater(nextConnector, dispatch);
         persistor(nextConnector);
-        networkWatcher(nextConnector, networks);
+        networkWatcher(nextConnector, networks, manualNetworkMode);
         const initialisedConnector = await nextConnector.initialise();
         dispatch('initialisedConnector', initialisedConnector);
       } catch (e) {

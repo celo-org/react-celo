@@ -5,9 +5,12 @@ import { WalletTypes } from '../../src';
 import { ConnectorEvents, MetaMaskConnector } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
 import { setApplicationLogger } from '../../src/utils/logger';
+import * as metamaskUtils from '../../src/utils/metamask';
 import { mockLogger } from '../test-logger';
 
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
+
+jest.spyOn(metamaskUtils, 'switchToNetwork');
 
 describe('MetaMaskConnector', () => {
   const testingUtils = generateTestingUtils({
@@ -30,6 +33,7 @@ describe('MetaMaskConnector', () => {
   afterEach(() => {
     // Clear all mocks between tests
     testingUtils.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('initialise()', () => {
@@ -42,6 +46,7 @@ describe('MetaMaskConnector', () => {
     it('is idempotent', async () => {
       const connector = new MetaMaskConnector(
         Alfajores,
+        false,
         CeloContract.GoldToken
       );
       connector.on(ConnectorEvents.CONNECTED, onConnect);
@@ -53,10 +58,13 @@ describe('MetaMaskConnector', () => {
     it('initialises', async () => {
       const connector = new MetaMaskConnector(
         Alfajores,
+        false,
         CeloContract.GoldToken
       );
       connector.on(ConnectorEvents.CONNECTED, onConnect);
       await connector.initialise();
+
+      expect(metamaskUtils.switchToNetwork).toBeCalled();
 
       expect(connector.account).toEqual(ACCOUNT);
       expect(connector.initialised).toBe(true);
@@ -65,6 +73,17 @@ describe('MetaMaskConnector', () => {
         walletType: WalletTypes.MetaMask,
         networkName: Alfajores.name,
         address: ACCOUNT,
+      });
+    });
+    describe('when manual networking is set to true', () => {
+      it('does not ask wallet in switch networks', async () => {
+        const connector = new MetaMaskConnector(
+          Alfajores,
+          true,
+          CeloContract.GoldToken
+        );
+        await connector.initialise();
+        expect(metamaskUtils.switchToNetwork).not.toBeCalled();
       });
     });
   });
@@ -76,7 +95,11 @@ describe('MetaMaskConnector', () => {
       testingUtils.mockConnectedWallet([ACCOUNT], {
         chainId: `0x${Alfajores.chainId.toString(16)}`,
       });
-      connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
+      connector = new MetaMaskConnector(
+        Alfajores,
+        false,
+        CeloContract.GoldToken
+      );
       connector.on(ConnectorEvents.NETWORK_CHANGED, onChangeNetwork);
     });
 
@@ -101,7 +124,11 @@ describe('MetaMaskConnector', () => {
       testingUtils.mockConnectedWallet([ACCOUNT], {
         chainId: `0x${Alfajores.chainId.toString(16)}`,
       });
-      connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
+      connector = new MetaMaskConnector(
+        Alfajores,
+        false,
+        CeloContract.GoldToken
+      );
       connector.on(ConnectorEvents.ADDRESS_CHANGED, onAddressChange);
       // Seems to only work when  init is called after the callback is set
       await connector.initialise();
@@ -117,7 +144,11 @@ describe('MetaMaskConnector', () => {
     let connector: MetaMaskConnector;
     const onDisconnect = jest.fn();
     beforeEach(() => {
-      connector = new MetaMaskConnector(Alfajores, CeloContract.GoldToken);
+      connector = new MetaMaskConnector(
+        Alfajores,
+        false,
+        CeloContract.GoldToken
+      );
       connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
     });
     it('emits DISCONNECTED event', () => {

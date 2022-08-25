@@ -104,6 +104,7 @@ export interface ReducerState {
    */
   walletChainId: number | null;
   network: Network;
+  manualNetworkMode: boolean;
   networks: Network[];
   pendingActionCount: number;
   address: Maybe<string>;

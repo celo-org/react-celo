@@ -128,7 +128,7 @@ describe('CeloProvider', () => {
       });
 
     const renderUseCeloInternal = (props: Partial<CeloProviderProps>) =>
-      renderHookInCKProvider<UseCelo & { theme: Maybe<Theme> }>(
+      renderHookInCKProvider<ReturnType<typeof useCeloInternal>>(
         useCeloInternal,
         {
           providerProps: props,
@@ -241,6 +241,13 @@ describe('CeloProvider', () => {
       it('gives null as chainId when no wallet is connected', () => {
         const { result } = renderUseCelo({});
         expect(result.current.walletChainId).toBe(null);
+      });
+
+      describe('when manualNetworkMode is true', () => {
+        it('sets as so in the store', () => {
+          const { result } = renderUseCeloInternal({ manualNetworkMode: true });
+          expect(result.current.manualNetworkMode).toEqual(true);
+        });
       });
     });
 

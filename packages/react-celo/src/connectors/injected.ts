@@ -9,7 +9,7 @@ import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
 import { getApplicationLogger } from '../utils/logger';
-import { getWalletChainId, switchToNetwork } from '../utils/metamask';
+import { switchToNetwork } from '../utils/metamask';
 import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
 
 export default class InjectedConnector
@@ -23,6 +23,7 @@ export default class InjectedConnector
 
   constructor(
     network: Network,
+    private manualNetworkMode: boolean,
     public feeCurrency: CeloTokenContract,
     defaultType: WalletTypes = WalletTypes.Injected
   ) {
@@ -51,9 +52,12 @@ export default class InjectedConnector
 
     ethereum.removeListener('chainChanged', this.onChainChanged);
     ethereum.removeListener('accountsChanged', this.onAccountsChanged);
-    await switchToNetwork(this.network, ethereum, () =>
-      this.kit.connection.chainId()
-    );
+    if (!this.manualNetworkMode) {
+      await switchToNetwork(this.network, ethereum, () =>
+        this.kit.connection.chainId()
+      );
+    }
+
     ethereum.on('chainChanged', this.onChainChanged);
     ethereum.on('accountsChanged', this.onAccountsChanged);
 

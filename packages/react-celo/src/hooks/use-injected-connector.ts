@@ -12,6 +12,7 @@ export function useInjectedConnector(
 ): UseInjectedConnector {
   const {
     network,
+    manualNetworkMode,
     feeCurrency,
     initConnector,
     initError: error,
@@ -23,8 +24,8 @@ export function useInjectedConnector(
     let stale;
     void (async () => {
       const connector = isMetaMask
-        ? new MetaMaskConnector(network, feeCurrency)
-        : new InjectedConnector(network, feeCurrency);
+        ? new MetaMaskConnector(network, manualNetworkMode, feeCurrency)
+        : new InjectedConnector(network, manualNetworkMode, feeCurrency);
 
       try {
         await initConnector(connector);
@@ -39,7 +40,14 @@ export function useInjectedConnector(
     return () => {
       stale = true;
     };
-  }, [initConnector, network, onSubmit, isMetaMask, feeCurrency]);
+  }, [
+    initConnector,
+    network,
+    onSubmit,
+    isMetaMask,
+    feeCurrency,
+    manualNetworkMode,
+  ]);
 
   const getTokens = useCallback(async (): Promise<CeloTokens> => {
     return kit.celoTokens.getWrappers() as Promise<CeloTokens>;

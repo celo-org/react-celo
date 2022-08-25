@@ -50,10 +50,6 @@ const defaultInitOptions: IWalletConnectSDKOptions = {
   },
 };
 
-const defaultConnectOptions: ICreateSessionOptions = {
-  chainId: 42220, // Celo Mainnet
-};
-
 export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   private initOptions: IWalletConnectSDKOptions;
   private connectOptions: ICreateSessionOptions;
@@ -66,7 +62,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     this.canceler = new Canceler();
     this.initOptions = { ...defaultInitOptions, ...(init ?? {}) };
-    this.connectOptions = { ...defaultConnectOptions, ...(connect ?? {}) };
+    this.connectOptions = connect ?? {};
   }
 
   /**

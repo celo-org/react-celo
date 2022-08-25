@@ -7,6 +7,7 @@ import { celoReactReducer, ReducerState } from '../../src/react-celo-reducer';
 const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Alfajores),
   connectorInitError: null,
+  manualNetworkMode: false,
   dapp: {
     name: 'react-celo demo',
     description: 'A demo DApp to showcase functionality',

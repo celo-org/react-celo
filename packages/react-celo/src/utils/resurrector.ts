@@ -16,7 +16,11 @@ import { Dapp, Network } from '../types';
 import { getTypedStorageKey } from './local-storage';
 import { getApplicationLogger } from './logger';
 
-export function resurrector(networks: Network[], dapp: Dapp) {
+export function resurrector(
+  networks: Network[],
+  dapp: Dapp,
+  manualNetworkingMode: boolean
+) {
   const walletType = getTypedStorageKey(localStorageKeys.lastUsedWalletType);
   const network = getNetwork(networks);
 
@@ -43,9 +47,18 @@ export function resurrector(networks: Network[], dapp: Dapp) {
           CeloContract.GoldToken
         );
       case WalletTypes.MetaMask:
-        return new MetaMaskConnector(network, CeloContract.GoldToken);
+        return new MetaMaskConnector(
+          network,
+          manualNetworkingMode,
+          CeloContract.GoldToken
+        );
       case WalletTypes.Injected:
-        return new InjectedConnector(network, CeloContract.GoldToken);
+        return new InjectedConnector(
+          network,
+          manualNetworkingMode,
+          CeloContract.GoldToken,
+          undefined
+        );
       case WalletTypes.PrivateKey: {
         const privateKey = getTypedStorageKey(
           localStorageKeys.lastUsedPrivateKey
@@ -57,7 +70,7 @@ export function resurrector(networks: Network[], dapp: Dapp) {
         );
       }
       case WalletTypes.CoinbaseWallet:
-        return new CoinbaseWalletConnector(network, dapp);
+        return new CoinbaseWalletConnector(network, manualNetworkingMode, dapp);
       case WalletTypes.CeloDance:
       case WalletTypes.CeloTerminal:
       case WalletTypes.CeloWallet:
@@ -65,6 +78,7 @@ export function resurrector(networks: Network[], dapp: Dapp) {
       case WalletTypes.WalletConnect: {
         return new WalletConnectConnector(
           network,
+          manualNetworkingMode,
           CeloContract.GoldToken,
           buildOptions(network)
         );

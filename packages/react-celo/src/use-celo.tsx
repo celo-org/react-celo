@@ -97,7 +97,10 @@ export function useCelo<CC = undefined>(): UseCelo {
 export const useContractKit = useCelo;
 
 type UseCeloInternal = UseCelo &
-  Pick<ReducerState, 'connectionCallback' | 'pendingActionCount' | 'theme'> &
+  Pick<
+    ReducerState,
+    'connectionCallback' | 'pendingActionCount' | 'theme' | 'manualNetworkMode'
+  > &
   Pick<CeloMethods, 'initConnector' | 'resetInitError'>;
 
 /**
@@ -105,13 +108,14 @@ type UseCeloInternal = UseCelo &
  */
 export const useCeloInternal = (): UseCeloInternal => {
   const [
-    { pendingActionCount, connectionCallback, theme },
+    { pendingActionCount, connectionCallback, theme, manualNetworkMode },
     _dispatch,
     { initConnector, resetInitError },
   ] = useReactCeloContext();
 
   return {
     ...useCelo(),
+    manualNetworkMode,
     connectionCallback,
     initConnector,
     pendingActionCount,

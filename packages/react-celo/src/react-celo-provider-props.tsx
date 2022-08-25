@@ -16,6 +16,12 @@ export interface CeloProviderProps {
   network?: Network;
   defaultNetwork?: string; // must match the name of a network in networks Array
   networks?: Network[];
+  /*
+   * Set to true to turn off automatically switching network (require updateNetwork call for all chain changes)
+   *
+   * @defaultValue false
+   */
+  manualNetworkMode?: boolean;
   theme?: Theme;
   feeCurrency?: CeloTokenContract;
   buildContractsCache?: ContractCacheBuilder;

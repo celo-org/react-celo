@@ -27,7 +27,11 @@ export default class CoinbaseWalletConnector
 
   private provider: CoinbaseWalletProvider | null = null;
 
-  constructor(private network: Network, dapp: Pick<Dapp, 'name' | 'icon'>) {
+  constructor(
+    private network: Network,
+    private manualNetworkingMode: boolean,
+    dapp: Pick<Dapp, 'name' | 'icon'>
+  ) {
     super();
     this.kit = newKit(network.rpcUrl);
 
@@ -73,13 +77,16 @@ export default class CoinbaseWalletConnector
     this.removeListeners();
 
     try {
-      await switchToNetwork(
-        this.network,
-        this.provider as unknown as Ethereum,
-        () => web3.eth.getChainId()
-      );
+      if (!this.manualNetworkingMode) {
+        await switchToNetwork(
+          this.network,
+          this.provider as unknown as Ethereum,
+          () => web3.eth.getChainId()
+        );
+      }
     } catch (e) {
       // if user rejects the switch it will throw but we dont want it to disrupt everything
+      // they different chain ids will be enough for dapp devs to decided to reprompt
     }
 
     const walletChainId: string = await this.provider.request({
