@@ -92,7 +92,11 @@ export function useCeloState({
   );
 
   const connector = useMemo(() => {
-    return resurrector(networks, dapp, manualNetworkMode);
+    return resurrector(
+      networks,
+      dapp,
+      manualNetworkMode ?? initialState.manualNetworkMode
+    );
     /* eslint-disable-next-line */
   }, []);
 
