@@ -38,7 +38,7 @@ export function useCoinbaseWalletConnector(
     return () => {
       stale = true;
     };
-  }, [initConnector, network, dapp, onSubmit, feeCurrency]);
+  }, [initConnector, network, dapp, onSubmit, feeCurrency, manualNetworkMode]);
 
   return { error, dapp, network };
 }

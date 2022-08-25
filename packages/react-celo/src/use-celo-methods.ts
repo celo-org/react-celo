@@ -61,7 +61,7 @@ export function useCeloMethods(
         throw e;
       }
     },
-    [dispatch, networks]
+    [dispatch, networks, manualNetworkMode]
   );
   const disconnect = useCallback(async () => {
     await connector.close();

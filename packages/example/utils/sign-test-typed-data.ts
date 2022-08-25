@@ -1,3 +1,4 @@
+import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import { UseCelo } from '@celo/react-celo';
 
 import { TYPED_DATA } from '.';
@@ -5,7 +6,7 @@ import { TYPED_DATA } from '.';
 export async function signTestTypedData(
   performActions: UseCelo['performActions']
 ) {
-  await performActions(async (kit) => {
+  await performActions(async (kit: MiniContractKit) => {
     if (kit.connection.defaultAccount) {
       return await kit.connection.signTypedData(
         kit.connection.defaultAccount,
