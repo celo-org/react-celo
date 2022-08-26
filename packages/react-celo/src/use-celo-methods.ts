@@ -30,13 +30,13 @@ export function useCeloMethods(
   buildContractsCache?: ContractCacheBuilder
 ): CeloMethods {
   const initConnector = useCallback(
-    async (nextConnector: Connector) => {
+    async (nextConnector: Connector, lastUsedAddress?: string) => {
       try {
         // need to set the event listeners here before initialise()
         updater(nextConnector, dispatch);
         persistor(nextConnector);
         networkWatcher(nextConnector, networks, manualNetworkMode);
-        const initialisedConnector = await nextConnector.initialise();
+        const initialisedConnector = await nextConnector.initialise(lastUsedAddress);
         dispatch('initialisedConnector', initialisedConnector);
       } catch (e) {
         if (typeof e === 'symbol') {
@@ -261,5 +261,8 @@ export interface CeloMethods {
    * `initConnector` is used to initialize a connector
    *  for the wallet chosen by the user.
    */
-  initConnector: (connector: Connector) => Promise<void>;
+  initConnector: (
+    connector: Connector,
+    lastUsedAddress?: string
+  ) => Promise<void>;
 }

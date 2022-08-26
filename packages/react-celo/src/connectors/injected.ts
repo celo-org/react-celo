@@ -33,10 +33,12 @@ export default class InjectedConnector
     this.network = network;
   }
 
-  async initialise(): Promise<this> {
+  async initialise(lastUsedAddress?: string): Promise<this> {
     if (this.initialised) {
       return this;
     }
+
+    let defaultAccount = lastUsedAddress;
 
     const injected = await getInjectedEthereum();
     if (!injected) {
@@ -45,11 +47,13 @@ export default class InjectedConnector
     const { web3, ethereum, isMetaMask } = injected;
 
     this.type = isMetaMask ? WalletTypes.MetaMask : WalletTypes.Injected;
-
-    const [defaultAccount] = await ethereum.request({
-      method: 'eth_requestAccounts',
-    });
-
+    const isUnlocked = isMetaMask && (await ethereum._metamask?.isUnlocked());
+    const isConnected = ethereum.isConnected();
+    if (isUnlocked || !isConnected || !lastUsedAddress) {
+      [defaultAccount] = await ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+    }
     ethereum.removeListener('chainChanged', this.onChainChanged);
     ethereum.removeListener('accountsChanged', this.onAccountsChanged);
     if (!this.manualNetworkMode) {
@@ -61,7 +65,7 @@ export default class InjectedConnector
     ethereum.on('chainChanged', this.onChainChanged);
     ethereum.on('accountsChanged', this.onAccountsChanged);
 
-    this.newKit(web3 as unknown as Web3Type, defaultAccount);
+    this.newKit(web3 as unknown as Web3Type, defaultAccount as string);
 
     const walletChainId = await ethereum.request({ method: 'eth_chainId' });
 
@@ -69,9 +73,9 @@ export default class InjectedConnector
 
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
-      walletChainId: parseInt(walletChainId, 16),
-      address: defaultAccount,
+      address: defaultAccount as string,
       networkName: this.network.name,
+      walletChainId: parseInt(walletChainId, 16),
     });
 
     return this;
