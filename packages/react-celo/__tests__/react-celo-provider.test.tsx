@@ -186,11 +186,30 @@ describe('CeloProvider', () => {
         await act(async () => {
           await result.current.updateNetwork(networks[1]);
         });
-
         rerender();
 
         expect(result.current.network).toEqual(networks[1]);
         unmount();
+      });
+
+      describe('updateNetwork with dappOnly True', () => {
+        it('sets network in the state/connector', async () => {
+          const { result, rerender, unmount } = renderUseCelo({
+            networks,
+            defaultNetwork: networks[0].name,
+          });
+
+          expect(result.current.network).toEqual(networks[0]);
+
+          await act(async () => {
+            await result.current.updateNetwork(networks[1], true);
+          });
+
+          rerender();
+
+          expect(result.current.network).toEqual(networks[1]);
+          unmount();
+        });
       });
 
       it('still allows old network prop to be used ', () => {
