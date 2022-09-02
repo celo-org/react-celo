@@ -2,10 +2,15 @@
   "name": "react-celo-root",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/example",
+    "packages/react-celo",
+    "packages/walletconnect-v1"
   ],
   "pkgs": {
     "path": "./packages"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   },
   "scripts": {
     "dev": "lerna run dev --stream --parallel",

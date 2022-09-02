@@ -7,7 +7,7 @@
     "build": "tsc -b && yarn run build-styles",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --forceExit",
     "test:watch": "jest --runInBand --watch",
     "clean": "rm -rf lib coverage",
     "dev": "yarn run build && tsc-watch --onSuccess \"yarn run build-styles\"",

@@ -17,7 +17,7 @@
     "dev": "yarn run build && tsc-watch",
     "build": "tsc -b .",
     "clean": "rm -rf lib coverage",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --forceExit",
     "test:watch": "jest --runInBand --watch",
     "test-staging": "WALLET_CONNECT_BRIDGE=wss://walletconnect.celo-networks-dev.org yarn test",
     "test-production": "WALLET_CONNECT_BRIDGE=wss://walletconnect.celo.org yarn test",
