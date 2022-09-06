@@ -18,7 +18,7 @@ export const defaultScreens: {
   [SupportedProviders.CeloDance]: WalletConnect,
   [SupportedProviders.CeloTerminal]: WalletConnect,
   [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
-  [SupportedProviders.Steakwallet]: WalletConnect,
+  [SupportedProviders.OMNI]: WalletConnect,
   [SupportedProviders.Injected]: MetaMaskOrInjectedWallet,
   [SupportedProviders.PrivateKey]: PrivateKey,
   [SupportedProviders.CoinbaseWallet]: CoinbaseWallet,
