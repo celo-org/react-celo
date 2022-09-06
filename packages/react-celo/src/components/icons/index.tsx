@@ -7,6 +7,6 @@ export { default as Ethereum } from './ethereum';
 export { default as Ledger } from './ledger';
 export { default as MetaMask } from './metamask';
 export { default as PrivateKey } from './private-key';
-export { default as OMNI } from './omni';
+export { default as Omni } from './omni';
 export { default as Valora } from './valora';
 export { default as WalletConnect } from './wallet-connect';

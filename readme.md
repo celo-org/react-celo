@@ -38,7 +38,7 @@ yarn add @celo/react-celo @celo/contractkit
 - Ledger
 - MetaMask
 - Plaintext private key
-- [OMNI](https://omni.app)
+- [Omni](https://omni.app)
 - Valora
 - WalletConnect
 
