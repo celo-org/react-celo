@@ -184,7 +184,7 @@ export default class WalletConnectConnector
       await this.combinedSessionUpdater(params);
     } catch (e) {
       getApplicationLogger().error(e);
-      this.emit(ConnectorEvents.WC_ERROR, e);
+      this.emit(ConnectorEvents.WC_ERROR, e as Error);
     }
   }
 
