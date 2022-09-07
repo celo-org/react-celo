@@ -140,14 +140,22 @@ export default class WalletConnectConnector
     _error: Error | null,
     session: SessionConnect
   ) {
-    // TODO HANDLE FAILED TO CONNECT STATE
     const connectSession = session;
-    await this.onConnected(connectSession);
+    await this.onConnected(connectSession).catch((e: Error) => {
+      this.emit(ConnectorEvents.WC_ERROR, e);
+      getApplicationLogger().error(
+        'wallet-connect',
+        'onSessionCreated',
+        'error',
+        e
+      );
+    });
   }
 
   private onCallRequest(error: Error | null, payload: EthProposal) {
     getApplicationLogger().debug(
-      '[wallet-connect] onCallRequest => Payload:',
+      'wallet-connect',
+      'onCallRequest',
       payload,
       error ? `Error ${error.name} ${error.message}` : ''
     );
@@ -179,8 +187,12 @@ export default class WalletConnectConnector
     );
     const params = session.params[0];
 
-    // TODO emit event when there is an error
-    await this.combinedSessionUpdater(params);
+    try {
+      await this.combinedSessionUpdater(params);
+    } catch (e) {
+      getApplicationLogger().error(e);
+      this.emit(ConnectorEvents.WC_ERROR, e as Error);
+    }
   }
 
   private onSessionDeleted(_error: Error | null, session: SessionDisconnect) {

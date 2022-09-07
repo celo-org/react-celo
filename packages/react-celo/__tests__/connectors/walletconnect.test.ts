@@ -63,7 +63,7 @@ describe('WalletConnectConnector', () => {
       false,
       (x: string) => x,
       1,
-      WalletIds.Steakwallet
+      WalletIds.Omni
     );
     jest.spyOn(connector.kit, 'getWallet').mockImplementation(() => wallet);
     connector.on(ConnectorEvents.CONNECTED, onConnect);

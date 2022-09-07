@@ -34,7 +34,9 @@ export enum SupportedProviders {
   PrivateKey = 'Private key',
   Valora = 'Valora',
   WalletConnect = 'WalletConnect',
-  Steakwallet = 'Steakwallet',
+  // backwards compatibility
+  Steakwallet = 'Omni',
+  Omni = 'Omni',
   CoinbaseWallet = 'Coinbase Wallet',
 }
 export enum WalletTypes {
@@ -72,8 +74,7 @@ export const WalletIds = {
   CeloDance: 'TODO',
   CeloTerminal:
     '8f8506b7f191a8ab95a8295fc8ca147aa152b1358bee4283d6ad2468d97e0ca4',
-  Steakwallet:
-    'afbd95522f4041c71dd4f1a065f971fd32372865b416f95a0b1db759ae33f2a7',
+  Omni: 'afbd95522f4041c71dd4f1a065f971fd32372865b416f95a0b1db759ae33f2a7',
 };
 
 export const PROVIDERS: {
@@ -220,21 +221,21 @@ export const PROVIDERS: {
       }
     },
   } as WalletConnectProvider,
-  [SupportedProviders.Steakwallet]: {
-    name: SupportedProviders.Steakwallet,
+  [SupportedProviders.Omni]: {
+    name: SupportedProviders.Omni,
     description: 'Scan a QR code to connect your wallet',
     type: WalletTypes.WalletConnect,
-    icon: Icons.SteakWallet,
+    icon: Icons.Omni,
     canConnect: () => true,
     showInList: () => true,
     listPriority: () => Priorities.Default,
-    installURL: 'https://steakwallet.fi/',
-    walletConnectId: WalletIds.Steakwallet,
+    installURL: 'https://omniwallet.app.link',
+    walletConnectId: WalletIds.Omni,
     supportedPlatforms: [Platform.Mobile],
     getLink: (uri: string, platform = Platform.Mobile) => {
       switch (platform) {
         case Platform.Mobile:
-          return `steakwallet://wallet/wc?uri=${uri}`;
+          return `omni://wc?uri=${uri}`;
         default:
           return false;
       }

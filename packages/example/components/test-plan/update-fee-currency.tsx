@@ -34,7 +34,7 @@ export function UpdateFeeCurrency() {
       status={status}
       title="Update fee currency"
       disabledTest={disabledTest}
-      onRunTest={onUpdateCurrency}
+      onRunTest={() => void onUpdateCurrency()}
     >
       <Result status={status}>
         <p>Fee currency used: {feeCurrency}</p>

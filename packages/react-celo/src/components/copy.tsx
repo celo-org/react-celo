@@ -41,7 +41,7 @@ export const CopyText: React.FC<Props> = ({ text, payload }: Props) => {
 
   return (
     <button
-      onClick={onClick}
+      onClick={void onClick}
       className={styles.button}
       style={{
         color: theme.textTertiary,
