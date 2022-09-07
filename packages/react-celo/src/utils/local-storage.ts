@@ -86,7 +86,9 @@ export function rememberWallet(type: WalletTypes, id?: string) {
 }
 
 export function getRecentWallets(): string[] {
-  const raw = localStorage.getItem(localStorageKeys.lastUsedWallets);
+  const raw = localStorage.getItem(
+    localStorageKeys.lastUsedWallets as localStorageKeys.lastUsedWallets
+  );
   if (!raw) {
     return [];
   }

@@ -92,12 +92,12 @@ describe('rememberWallet', () => {
     it('adds it and removes last item', () => {
       rememberWallet(WalletTypes.Valora, WalletIds.Valora);
       rememberWallet(WalletTypes.MetaMask);
-      rememberWallet(WalletTypes.WalletConnect, WalletIds.Steakwallet);
+      rememberWallet(WalletTypes.WalletConnect, WalletIds.Omni);
       rememberWallet(WalletTypes.CeloTerminal, WalletIds.CeloTerminal);
 
       expect(getRecentWallets()).toEqual([
         `${WalletTypes.CeloTerminal}:${WalletIds.CeloTerminal}`,
-        `${WalletTypes.WalletConnect}:${WalletIds.Steakwallet}`,
+        `${WalletTypes.WalletConnect}:${WalletIds.Omni}`,
         WalletTypes.MetaMask,
       ]);
     });
