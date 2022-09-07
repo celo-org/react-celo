@@ -30,7 +30,7 @@ describe('CeloProvider', () => {
   describe('user interface', () => {
     const ConnectButton = () => {
       const { connect } = useCelo();
-      return <button onClick={connect}>Connect</button>;
+      return <button onClick={void connect}>Connect</button>;
     };
 
     async function stepsToOpenModal(props: Partial<CeloProviderProps> = {}) {

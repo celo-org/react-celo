@@ -23,6 +23,7 @@ export class WalletConnectSigner implements Signer {
   }
 
   private request<T>(method: SupportedMethods, params: unknown[]): Promise<T> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     return this.client.sendCustomRequest({
       method,
       params,

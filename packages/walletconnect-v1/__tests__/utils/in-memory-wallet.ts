@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { toChecksumAddress } from '@celo/utils/lib/address';
 import WalletConnect from '@walletconnect/client';
