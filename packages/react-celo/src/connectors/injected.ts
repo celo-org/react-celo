@@ -47,7 +47,8 @@ export default class InjectedConnector
     const { web3, ethereum, isMetaMask } = injected;
 
     this.type = isMetaMask ? WalletTypes.MetaMask : WalletTypes.Injected;
-    const isUnlocked = isMetaMask && (await ethereum._metamask?.isUnlocked());
+    const metamask = ethereum._metamask;
+    const isUnlocked = isMetaMask && (await metamask?.isUnlocked());
     const isConnected = ethereum.isConnected();
     if (isUnlocked || !isConnected || !lastUsedAddress) {
       [defaultAccount] = await ethereum.request({
