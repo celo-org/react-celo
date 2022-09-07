@@ -58,8 +58,44 @@ type ParamType = {
   [localStorageKeys.lastUsedFeeCurrency]: CeloTokenContract;
   [localStorageKeys.lastUsedIndex]: number;
   [localStorageKeys.lastUsedWalletType]: WalletTypes;
-  [localStorageKeys.lastUsedWalletArguments]: [];
+  [localStorageKeys.lastUsedWallets]: string;
 };
+
+const MAX_WALLETS = 3;
+
+// adds wallet to top of stack
+// if stack already has wallet pull to top
+export function rememberWallet(type: WalletTypes, id?: string) {
+  const unifiedID = id ? `${type}:${id}` : type;
+  const stack = getRecentWallets();
+  const index = stack.indexOf(unifiedID);
+
+  if (index > -1) {
+    stack.splice(index, 1);
+  }
+
+  const newLength = stack.unshift(unifiedID);
+  if (newLength > MAX_WALLETS) {
+    // remove oldest
+    stack.pop();
+  }
+
+  const serialized = JSON.stringify(stack);
+
+  localStorage.setItem(localStorageKeys.lastUsedWallets, serialized);
+}
+
+export function getRecentWallets(): string[] {
+  const raw = localStorage.getItem(
+    localStorageKeys.lastUsedWallets as localStorageKeys.lastUsedWallets
+  );
+  if (!raw) {
+    return [];
+  }
+  const stack = JSON.parse(raw) as string[];
+
+  return stack;
+}
 
 export function getTypedStorageKey<T extends localStorageKeys>(key: T) {
   const item = localStorage.getItem(key);
@@ -79,10 +115,6 @@ export function setTypedStorageKey<
   localStorage.setItem(key, value.toString());
 }
 
-export function removeLastUsedAddress() {
-  localStorage.removeItem(localStorageKeys.lastUsedAddress);
-}
-
 export type WalletArgs =
   | [string]
   | [CeloTokenContract]
@@ -90,23 +122,17 @@ export type WalletArgs =
   | [number]
   | [];
 
-export function getLastUsedWalletArgs(): WalletArgs | null {
-  const args = localStorage.getItem(localStorageKeys.lastUsedWalletArguments);
-  if (args && args.length) {
-    const parsed = JSON.parse(args) as WalletArgs;
-
-    return parsed;
-  }
-
-  return null;
-}
-
 export function clearPreviousConfig(): void {
   Object.values(localStorageKeys).forEach((val) => {
     if (val === localStorageKeys.lastUsedWalletId) return;
     if (val === localStorageKeys.lastUsedWalletType) return;
+    if (val === localStorageKeys.lastUsedWallets) return;
     localStorage.removeItem(val);
   });
+}
+
+export function wipeStorage() {
+  localStorage.clear();
 }
 
 export function localStorageAvailable() {

@@ -72,7 +72,10 @@ describe('Persistor', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedWalletId)).toEqual(
         WalletIds.Omni
       );
-      expect(getRecent()).toEqual(PROVIDERS.Omni);
+      expect(getRecent()).toEqual({
+        providers: [PROVIDERS.Omni],
+        ids: new Set([`${WalletTypes.WalletConnect}:${WalletIds.Omni}`]),
+      });
     });
   });
   describe(`when connector emits ${ConnectorEvents.DISCONNECTED}`, () => {
