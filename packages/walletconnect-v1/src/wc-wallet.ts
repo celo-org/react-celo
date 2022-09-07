@@ -1,9 +1,9 @@
-/// <reference path='../../../node_modules/@walletconnect/types-v1/index.d.ts' />
-
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { sleep } from '@celo/base';
 import { CeloTx, EncodedTransaction } from '@celo/connect/lib/types';
 import { RemoteWallet } from '@celo/wallet-remote';
-import WalletConnect from '@walletconnect/client-v1';
+import WalletConnect from '@walletconnect/client';
 import {
   ICreateSessionOptions,
   IWalletConnectSDKOptions,
@@ -66,7 +66,10 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     this.canceler = new Canceler();
     this.initOptions = { ...defaultInitOptions, ...(init ?? {}) };
-    this.connectOptions = { ...defaultConnectOptions, ...(connect ?? {}) };
+    this.connectOptions = {
+      ...defaultConnectOptions,
+      ...(connect ?? ({} as ICreateSessionOptions)),
+    };
   }
 
   /**
@@ -83,13 +86,31 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     this.client = this.getWalletConnectClient();
 
-    this.client.on(CLIENT_EVENTS.connect, this.onSessionCreated);
-    this.client.on(CLIENT_EVENTS.disconnect, this.onSessionDeleted);
-    this.client.on(CLIENT_EVENTS.session_request, this.onSessionRequest);
-    this.client.on(CLIENT_EVENTS.session_update, this.onSessionUpdated);
-    this.client.on(CLIENT_EVENTS.call_request, this.onCallRequest);
-    this.client.on(CLIENT_EVENTS.wc_sessionRequest, this.onWcSessionRequest);
-    this.client.on(CLIENT_EVENTS.wc_sessionUpdate, this.onWcSessionUpdate);
+    this.client.on(CLIENT_EVENTS.connect, this.onSessionCreated as () => void);
+    this.client.on(
+      CLIENT_EVENTS.disconnect,
+      this.onSessionDeleted as () => void
+    );
+    this.client.on(
+      CLIENT_EVENTS.session_request,
+      this.onSessionRequest as () => void
+    );
+    this.client.on(
+      CLIENT_EVENTS.session_update,
+      this.onSessionUpdated as () => void
+    );
+    this.client.on(
+      CLIENT_EVENTS.call_request,
+      this.onCallRequest as () => void
+    );
+    this.client.on(
+      CLIENT_EVENTS.wc_sessionRequest,
+      this.onWcSessionRequest as () => void
+    );
+    this.client.on(
+      CLIENT_EVENTS.wc_sessionUpdate,
+      this.onWcSessionUpdate as () => void
+    );
 
     // Check if connection is already established
     if (!this.client.connected) {

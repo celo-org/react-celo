@@ -1,4 +1,4 @@
-import { convertBufferToNumber } from '@walletconnect/utils-v1';
+import { convertBufferToNumber } from '@walletconnect/utils';
 
 export interface ECDSASignature {
   v: number;

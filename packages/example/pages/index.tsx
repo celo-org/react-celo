@@ -183,11 +183,13 @@ function HomePage(): React.ReactElement {
           </h1>
 
           {address ? (
-            <PrimaryButton onClick={disconnect}>Disconnect</PrimaryButton>
+            <PrimaryButton onClick={() => void disconnect()}>
+              Disconnect
+            </PrimaryButton>
           ) : (
             <PrimaryButton
               onClick={() =>
-                connect().catch((e) => toast.error((e as Error).message))
+                void connect().catch((e) => toast.error((e as Error).message))
               }
             >
               Use Celo Now
@@ -203,19 +205,22 @@ function HomePage(): React.ReactElement {
               address || 'hidden'
             }`}
           >
-            <SecondaryButton disabled={sending} onClick={testSendTransaction}>
+            <SecondaryButton
+              disabled={sending}
+              onClick={() => void testSendTransaction()}
+            >
               Test sendTransaction
             </SecondaryButton>
             <SecondaryButton
               disabled={sending}
-              onClick={testSignTypedData}
+              onClick={() => void testSignTypedData()}
               className="w-full md:w-max"
             >
               Test signTypedData
             </SecondaryButton>
             <SecondaryButton
               disabled={sending}
-              onClick={testSignPersonal}
+              onClick={() => void testSignPersonal()}
               className="w-full md:w-max"
             >
               Test signPersonal
@@ -308,7 +313,9 @@ function HomePage(): React.ReactElement {
                     disabled={!supportsFeeCurrency}
                     value={feeCurrency}
                     onChange={(event) =>
-                      updateFeeCurrency(event.target.value as CeloTokenContract)
+                      void updateFeeCurrency(
+                        event.target.value as CeloTokenContract
+                      )
                     }
                     className="border border-slate-300 rounded px-4 py-2"
                   >
@@ -412,10 +419,10 @@ function SelectChain() {
     <select
       className="border border-celo-gold outline-celo-gold-light text-slate-800 rounded px-1 py-1 mr-1"
       value={network.name}
-      onChange={async (e) => {
+      onChange={(e) => {
         const newNetwork = networks.find((n) => n.name === e.target.value);
         if (newNetwork) {
-          await updateNetwork(newNetwork);
+          void updateNetwork(newNetwork);
         }
       }}
     >

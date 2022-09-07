@@ -63,7 +63,7 @@ export function PerformActionInWallet({
         status={status}
         title={title}
         disabledTest={disabled}
-        onRunTest={onRunTest}
+        onRunTest={() => void onRunTest()}
       >
         <Result status={status}>
           <p>{description}</p>
