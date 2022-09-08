@@ -184,11 +184,15 @@ export default class WalletConnectConnector
     );
     const params = session.params[0];
 
-    // TODO emit event when there is an error
     if (error) {
       this.emit(ConnectorEvents.WC_ERROR, error);
     }
-    await this.combinedSessionUpdater(params);
+    try {
+      await this.combinedSessionUpdater(params);
+    } catch (e) {
+      getApplicationLogger().error('wallet-connect', 'on-session-update', e);
+      this.emit(ConnectorEvents.WC_ERROR, e as Error);
+    }
   }
 
   private onSessionDeleted(_error: Error | null, session: SessionDisconnect) {
