@@ -49,7 +49,7 @@ export default class InjectedConnector
     this.type = isMetaMask ? WalletTypes.MetaMask : WalletTypes.Injected;
     const metamask = ethereum._metamask;
     const isUnlocked = isMetaMask && (await metamask?.isUnlocked());
-    const isConnected = ethereum.isConnected();
+    const isConnected = ethereum.isConnected && ethereum.isConnected();
     if (isUnlocked || !isConnected || !lastUsedAddress) {
       [defaultAccount] = await ethereum.request({
         method: 'eth_requestAccounts',
