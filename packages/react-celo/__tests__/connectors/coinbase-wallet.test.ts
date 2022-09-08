@@ -4,6 +4,7 @@ import { generateTestingUtils } from 'eth-testing';
 import { CoinbaseWalletConnector, ConnectorEvents } from '../../src/connectors';
 import { Alfajores, Baklava } from '../../src/constants';
 import { setApplicationLogger } from '../../src/utils/logger';
+import * as metamaskUtils from '../../src/utils/metamask';
 import { mockLogger } from '../test-logger';
 
 const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
@@ -31,6 +32,10 @@ describe('CoinbaseWalletConnector', () => {
       },
     });
     setApplicationLogger(mockLogger);
+  });
+
+  beforeEach(() => {
+    jest.spyOn(metamaskUtils, 'switchToNetwork');
     testingUtils.mockConnectedWallet([ACCOUNT], {
       chainId: `0x${Alfajores.chainId.toString(16)}`,
     });
@@ -43,6 +48,7 @@ describe('CoinbaseWalletConnector', () => {
   afterEach(() => {
     // Clear all mocks between tests
     testingUtils.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   const dapp = { name: 'CB', icon: 'wallet.png' };
@@ -50,15 +56,32 @@ describe('CoinbaseWalletConnector', () => {
   const onConnect = jest.fn();
 
   it('initialises', async () => {
-    const connector = new CoinbaseWalletConnector(Alfajores, dapp);
+    const connector = new CoinbaseWalletConnector(Alfajores, false, dapp);
     connector.on(ConnectorEvents.CONNECTED, onConnect);
     await connector.initialise();
     expect(connector.account).toEqual(ACCOUNT);
     expect(connector.initialised).toBe(true);
+    expect(metamaskUtils.switchToNetwork).toBeCalled();
     expect(onConnect).toHaveBeenCalledWith({
       address: '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf',
       networkName: 'Alfajores',
+      walletChainId: Alfajores.chainId,
       walletType: 'CoinbaseWallet',
+    });
+  });
+
+  describe('when manual networking mode is on', () => {
+    it('does not try to switch networks', async () => {
+      const connector = new CoinbaseWalletConnector(Alfajores, true, dapp);
+      connector.on(ConnectorEvents.CONNECTED, onConnect);
+      await connector.initialise();
+      expect(metamaskUtils.switchToNetwork).not.toBeCalled();
+      expect(onConnect).toHaveBeenCalledWith({
+        address: '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf',
+        networkName: 'Alfajores',
+        walletChainId: Alfajores.chainId,
+        walletType: 'CoinbaseWallet',
+      });
     });
   });
 
@@ -71,7 +94,7 @@ describe('CoinbaseWalletConnector', () => {
       testingUtils.mockConnectedWallet([ACCOUNT], {
         chainId: `0x${Alfajores.chainId.toString(16)}`,
       });
-      connector = new CoinbaseWalletConnector(Alfajores, dapp);
+      connector = new CoinbaseWalletConnector(Alfajores, false, dapp);
       connector.on(ConnectorEvents.NETWORK_CHANGED, onChangeNetwork);
     });
 
@@ -95,7 +118,7 @@ describe('CoinbaseWalletConnector', () => {
       testingUtils.mockConnectedWallet([ACCOUNT], {
         chainId: `0x${Alfajores.chainId.toString(16)}`,
       });
-      connector = new CoinbaseWalletConnector(Alfajores, dapp);
+      connector = new CoinbaseWalletConnector(Alfajores, false, dapp);
       connector.on(ConnectorEvents.ADDRESS_CHANGED, onAddressChange);
       // Seems to only work when  init is called after the callback is set
       await connector.initialise();
@@ -111,7 +134,7 @@ describe('CoinbaseWalletConnector', () => {
     const onDisconnect = jest.fn();
     let connector: CoinbaseWalletConnector;
     beforeEach(() => {
-      connector = new CoinbaseWalletConnector(Alfajores, dapp);
+      connector = new CoinbaseWalletConnector(Alfajores, false, dapp);
       connector.on(ConnectorEvents.DISCONNECTED, onDisconnect);
     });
     it('emits DISCONNECTED event', () => {

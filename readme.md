@@ -297,6 +297,10 @@ If you'd prefer your DApp to only access a specific network (maybe you're deploy
 
 You can also pass in a `network` prop to the `CeloProvider` as the default starting network
 
+#### walletChainId vs network
+
+`useCelo` returns two properties. network, an object with a name, chainId and rpc url. it is which chain/network the dapp is communicating with. `walletChainId` is the chainID the wallet/signer is connected to (assuming it this is a concept that it has one) or will be null. unless Manual Networking mode is enabled these will eventually be consistent or walletChainId will be null.
+
 ```javascript
 import { CeloProvider, Alfajores, NetworkNames } from '@celo/react-celo';
 
@@ -339,6 +343,10 @@ function App() {
 #### Extending Supported Networks
 
 By default Use-Contractkit only supports Celo Blockchain Networks. You can however extend this to include other chains you choose such as Ethereum, Polygon, Avalanche etc by Passing your array of `Network`s into `CeloProvider`. Note this feature is considered experimental and works better with wallets like Metamask.
+
+#### Manual Networking Mode
+
+Opt out of the React-Celo automatically switching which network the dapp / wallet are on. `walletChainId` might be different to dapp's `network.chainId`. You MUST use `updateNetwork` to set the desired chain in this case.
 
 ### Adjust FeeCurrency
 

@@ -17,6 +17,12 @@ describe('Updater', () => {
   afterEach(() => {
     dispatchStub.mockReset();
   });
+  describe(`when connector emits ${ConnectorEvents.WALLET_CHAIN_CHANGED}`, () => {
+    it('dispatches the chainID to the reducer', () => {
+      connector.testEmit(ConnectorEvents.WALLET_CHAIN_CHANGED, 0);
+      expect(dispatchStub).toHaveBeenCalledWith('setWalletChainId', 0);
+    });
+  });
   describe(`when connector emits ${ConnectorEvents.ADDRESS_CHANGED}`, () => {
     it('dispatches the new address to Reducer', () => {
       connector.testEmit(ConnectorEvents.ADDRESS_CHANGED, '0x12312823y471');
@@ -36,6 +42,7 @@ describe('Updater', () => {
       index: 2,
       privateKey: 'PRIVATE',
       walletType: WalletTypes.PrivateKey,
+      walletChainId: null,
     };
     beforeEach(() => {
       connector.testEmit(ConnectorEvents.CONNECTED, params);

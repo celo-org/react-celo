@@ -28,6 +28,8 @@ describe('CeloExtensionWalletConnector', () => {
     // @ts-ignore
     (global.window.celo = {
       ...provider,
+      request: ({ method, params }: { method: string; params: unknown[] }) =>
+        provider.request({ method, params }),
       send: (params, cb) =>
         cb(null, {
           jsonrpc: params.jsonrpc,
@@ -46,6 +48,7 @@ describe('CeloExtensionWalletConnector', () => {
       });
     testingUtils.mockAccounts([ACCOUNT]);
     testingUtils.mockRequestAccounts([ACCOUNT]);
+    testingUtils.mockChainId(`0x${Baklava.chainId.toString(16)}`);
     setApplicationLogger(mockLogger);
   });
   let connector: CeloExtensionWalletConnector;
@@ -75,6 +78,7 @@ describe('CeloExtensionWalletConnector', () => {
       expect(onConnect).toBeCalledWith({
         networkName: Alfajores.name,
         address: ACCOUNT,
+        walletChainId: Baklava.chainId,
         walletType: WalletTypes.CeloExtensionWallet,
       });
     });

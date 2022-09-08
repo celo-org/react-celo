@@ -57,10 +57,11 @@ describe('WalletConnectConnector', () => {
   beforeEach(() => {
     connector = new WalletConnectConnector(
       Alfajores,
+      false,
       CeloContract.GoldToken,
       buildOptions(Alfajores),
       false,
-      (x) => x,
+      (x: string) => x,
       1,
       WalletIds.Omni
     );

@@ -44,7 +44,7 @@ describe('resurrector', () => {
 
   describe('when no walletType in Local Storage', () => {
     it('returns null', () => {
-      expect(resurrector(DEFAULT_NETWORKS, dapp)).toEqual(null);
+      expect(resurrector(DEFAULT_NETWORKS, dapp, false)).toEqual(null);
     });
   });
   Object.keys(WalletTypes)
@@ -67,7 +67,7 @@ describe('resurrector', () => {
           setTypedStorageKey(localStorageKeys.lastUsedIndex, 1);
         });
         it('creates the Connector for that type', () => {
-          const resurrected = resurrector(DEFAULT_NETWORKS, dapp);
+          const resurrected = resurrector(DEFAULT_NETWORKS, dapp, false);
           expect(resurrected).toBeInstanceOf(
             CONNECTOR_TYPES[wt as WalletTypes]
           );
@@ -75,7 +75,7 @@ describe('resurrector', () => {
 
         describe('when network in local Storage cant be found', () => {
           it('does not resurrect', () => {
-            expect(resurrector([Baklava], dapp)).toBe(null);
+            expect(resurrector([Baklava], dapp, false)).toBe(null);
           });
         });
       });

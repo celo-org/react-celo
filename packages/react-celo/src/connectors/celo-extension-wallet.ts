@@ -51,7 +51,12 @@ export default class CeloExtensionWalletConnector
 
     this.initialised = true;
 
+    const walletChainId = (await celo.request!({
+      method: 'eth_chainId',
+    })) as string;
+
     this.emit(ConnectorEvents.CONNECTED, {
+      walletChainId: parseInt(walletChainId, 16),
       walletType: WalletTypes.CeloExtensionWallet,
       address: defaultAccount,
       networkName: this.network.name,

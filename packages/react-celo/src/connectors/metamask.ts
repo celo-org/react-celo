@@ -5,7 +5,11 @@ import { Network } from '../types';
 import InjectedConnector from './injected';
 
 export default class MetaMaskConnector extends InjectedConnector {
-  constructor(network: Network, feeCurrency: CeloTokenContract) {
-    super(network, feeCurrency, WalletTypes.MetaMask);
+  constructor(
+    network: Network,
+    manualNetworkingMode: boolean,
+    feeCurrency: CeloTokenContract
+  ) {
+    super(network, manualNetworkingMode, feeCurrency, WalletTypes.MetaMask);
   }
 }

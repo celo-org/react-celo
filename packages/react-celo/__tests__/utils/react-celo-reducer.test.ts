@@ -7,12 +7,14 @@ import { celoReactReducer, ReducerState } from '../../src/react-celo-reducer';
 const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Alfajores),
   connectorInitError: null,
+  manualNetworkMode: false,
   dapp: {
     name: 'react-celo demo',
     description: 'A demo DApp to showcase functionality',
     url: 'https://react-celo.vercel.app',
     icon: 'https://react-celo.vercel.app/favicon.ico',
   },
+  walletChainId: null,
   network: Alfajores,
   networks: [Alfajores, Baklava],
   pendingActionCount: 0,
@@ -58,10 +60,14 @@ describe('disconnect', () => {
 });
 
 describe('connect', () => {
-  it('sets the address and network', () => {
+  it('sets the address, network, and chain Id wallet is set to', () => {
     const state = celoReactReducer(initialState, {
       type: 'connect',
-      payload: { address: '0x1234567890', networkName: Baklava.name },
+      payload: {
+        address: '0x1234567890',
+        networkName: Baklava.name,
+        walletChainId: 1,
+      },
     });
 
     expect(state).toHaveProperty('address', '0x1234567890');
