@@ -36,7 +36,9 @@ export function useCeloMethods(
         updater(nextConnector, dispatch);
         persistor(nextConnector);
         networkWatcher(nextConnector, networks, manualNetworkMode);
-        const initialisedConnector = await nextConnector.initialise(lastUsedAddress);
+        const initialisedConnector = await nextConnector.initialise(
+          lastUsedAddress
+        );
         dispatch('initialisedConnector', initialisedConnector);
       } catch (e) {
         if (typeof e === 'symbol') {
