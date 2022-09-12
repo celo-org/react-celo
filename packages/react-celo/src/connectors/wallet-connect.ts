@@ -136,10 +136,15 @@ export default class WalletConnectConnector
     }
   }
 
-  private async onSessionCreated(
-    _error: Error | null,
-    session: SessionConnect
-  ) {
+  private async onSessionCreated(error: Error | null, session: SessionConnect) {
+    if (error) {
+      getApplicationLogger().error(
+        '[wallet-connect] Error while connecting',
+        error.name,
+        error.message
+      );
+      this.emit(ConnectorEvents.WC_ERROR, error);
+    }
     const connectSession = session;
     await this.onConnected(connectSession).catch((e: Error) => {
       this.emit(ConnectorEvents.WC_ERROR, e);
@@ -178,19 +183,22 @@ export default class WalletConnectConnector
     await this.combinedSessionUpdater(params);
   }
 
-  private async onSessionUpdated(_error: Error | null, session: SessionUpdate) {
+  private async onSessionUpdated(error: Error | null, session: SessionUpdate) {
     getApplicationLogger().debug(
       'wallet-connect',
       'on-session-update',
       session,
-      _error
+      error
     );
     const params = session.params[0];
 
+    if (error) {
+      this.emit(ConnectorEvents.WC_ERROR, error);
+    }
     try {
       await this.combinedSessionUpdater(params);
     } catch (e) {
-      getApplicationLogger().error(e);
+      getApplicationLogger().error('wallet-connect', 'on-session-update', e);
       this.emit(ConnectorEvents.WC_ERROR, e as Error);
     }
   }
