@@ -57,6 +57,7 @@ export default class LedgerConnector
     this.initialised = true;
 
     this.emit(ConnectorEvents.CONNECTED, {
+      walletChainId: null,
       walletType: this.type,
       address: this.kit.connection.defaultAccount as string,
       index: this.index,

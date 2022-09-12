@@ -43,6 +43,7 @@ describe('Persistor', () => {
       networkName: 'Celo',
       index: 2,
       walletId: WalletIds.Omni,
+      walletChainId: 1,
     };
     beforeEach(() => {
       connector.testEmit(ConnectorEvents.CONNECTED, params);

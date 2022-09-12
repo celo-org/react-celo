@@ -24,6 +24,10 @@ export class ConnectorStub extends AbstractConnector implements Connector {
     // no op
   }
 
+  continueNetworkUpdateFromWallet() {
+    //
+  }
+
   initialise = () => Promise.resolve(this);
 
   testEmit = <E extends ConnectorEvents>(event: E, args?: EventsMap[E]) => {

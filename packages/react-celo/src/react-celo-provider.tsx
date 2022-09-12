@@ -41,6 +41,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   connectModal,
   actionModal,
   dapp,
+  manualNetworkMode,
   network, // TODO:#246 remove when network prop is removed
   defaultNetwork = Mainnet.name,
   theme,
@@ -55,6 +56,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
 
   const [state, dispatch] = useCeloState({
     dapp,
+    manualNetworkMode,
     network,
     defaultNetwork,
     theme,

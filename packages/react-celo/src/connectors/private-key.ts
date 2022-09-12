@@ -40,6 +40,7 @@ export default class PrivateKeyConnector
     this.emit(ConnectorEvents.CONNECTED, {
       networkName: this.network.name,
       walletType: this.type,
+      walletChainId: null,
       address: this.kit.connection.defaultAccount as string,
     });
     return this;

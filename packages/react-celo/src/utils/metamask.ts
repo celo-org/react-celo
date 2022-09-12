@@ -280,7 +280,7 @@ export const networkHasUpdated = async (
   }
 };
 
-async function getWalletChainId(ethereum: Ethereum) {
+export async function getWalletChainId(ethereum: Ethereum) {
   const walletChainId = ethereum.chainId
     ? ethereum.chainId
     : await ethereum.request({ method: 'eth_chainId' });

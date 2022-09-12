@@ -38,6 +38,7 @@ export default class WalletConnectConnector
 
   constructor(
     private network: Network,
+    manualNetworkMode: boolean,
     public feeCurrency: CeloTokenContract,
     // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     readonly options: WalletConnectWalletOptionsV1,
@@ -47,7 +48,14 @@ export default class WalletConnectConnector
     readonly walletId?: string
   ) {
     super();
-    const wallet = new WalletConnectWalletV1(options);
+    const wallet = new WalletConnectWalletV1(
+      manualNetworkMode
+        ? {
+            init: options.init,
+            connect: { ...options.connect, chainId: undefined },
+          }
+        : options
+    );
 
     this.kit = newKit(network.rpcUrl, wallet);
   }
@@ -265,6 +273,7 @@ export default class WalletConnectConnector
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
       walletId: this.walletId as string,
+      walletChainId: session.params[0].chainId,
       networkName: this.network.name,
       address: sessionAccount,
     });

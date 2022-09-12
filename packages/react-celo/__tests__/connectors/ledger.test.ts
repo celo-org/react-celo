@@ -55,6 +55,7 @@ describe('LedgerConnector', () => {
       expect(onConnect).toBeCalledWith({
         networkName: Alfajores.name,
         walletType: WalletTypes.Ledger,
+        walletChainId: null,
         index: 0,
       });
     });
