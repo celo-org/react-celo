@@ -21,6 +21,9 @@ declare global {
 }
 
 interface Ethereum extends Exclude<AbstractProvider, 'request'> {
+  _metamask: {
+    isUnlocked: () => Promise<boolean>;
+  };
   on: AddEthereumEventListener;
   removeListener: RemoveEthereumEventListener;
   isMetaMask?: boolean;
