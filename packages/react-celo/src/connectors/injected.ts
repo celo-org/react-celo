@@ -50,7 +50,7 @@ export default class InjectedConnector
     const metamask = ethereum._metamask;
     const isUnlocked = isMetaMask && (await metamask?.isUnlocked());
     const isConnected = ethereum.isConnected && ethereum.isConnected();
-    if (isUnlocked || !isConnected || !lastUsedAddress) {
+    if (isUnlocked || !isConnected || !defaultAccount) {
       [defaultAccount] = await ethereum.request({
         method: 'eth_requestAccounts',
       });
@@ -66,7 +66,7 @@ export default class InjectedConnector
     ethereum.on('chainChanged', this.onChainChanged);
     ethereum.on('accountsChanged', this.onAccountsChanged);
 
-    this.newKit(web3 as unknown as Web3Type, defaultAccount as string);
+    this.newKit(web3 as unknown as Web3Type, defaultAccount);
 
     const walletChainId = await ethereum.request({ method: 'eth_chainId' });
 
@@ -74,7 +74,7 @@ export default class InjectedConnector
 
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
-      address: defaultAccount as string,
+      address: defaultAccount,
       networkName: this.network.name,
       walletChainId: parseInt(walletChainId, 16),
     });
