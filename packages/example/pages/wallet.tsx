@@ -284,7 +284,7 @@ export default function Wallet(): React.ReactElement {
           break;
         case SupportedMethods.signTransaction:
           return setApprovalData({
-            accept: () => void signTransaction(payload.id, payload.params[0]),
+            accept: () => signTransaction(payload.id, payload.params[0]),
             reject: () =>
               reject(payload.id, `User rejected transaction ${payload.id}`),
             meta: {
@@ -300,7 +300,7 @@ export default function Wallet(): React.ReactElement {
             'hex'
           ).toString('utf8');
           return setApprovalData({
-            accept: () => void personalSign(payload.id, payload.params[0]),
+            accept: () => personalSign(payload.id, payload.params[0]),
             reject: () =>
               reject(payload.id, `User rejected personalSign ${payload.id}`),
             meta: {
@@ -311,7 +311,7 @@ export default function Wallet(): React.ReactElement {
         case SupportedMethods.signTypedData:
           return setApprovalData({
             accept: () =>
-              void signTypedData(
+              signTypedData(
                 payload.id,
                 JSON.parse(payload.params[1]) as EIP712TypedData
               ),
@@ -324,7 +324,7 @@ export default function Wallet(): React.ReactElement {
           });
         case SupportedMethods.decrypt:
           return setApprovalData({
-            accept: () => void decrypt(payload.id, payload.params[1]),
+            accept: () => decrypt(payload.id, payload.params[1]),
             reject: () =>
               reject(payload.id, `User rejected decrypt ${payload.id}`),
             meta: {
@@ -334,8 +334,7 @@ export default function Wallet(): React.ReactElement {
           });
         case SupportedMethods.computeSharedSecret:
           return setApprovalData({
-            accept: () =>
-              void computeSharedSecret(payload.id, payload.params[1]),
+            accept: () => computeSharedSecret(payload.id, payload.params[1]),
             reject: () =>
               reject(
                 payload.id,
@@ -373,7 +372,7 @@ export default function Wallet(): React.ReactElement {
 
         setApprovalData({
           accept: approveConnection,
-          reject: () => void rejectConnection(),
+          reject: () => rejectConnection(),
           meta: {
             title: `new connection from dApp ${
               payload?.params[0]?.peerMeta?.name || ''
@@ -464,7 +463,7 @@ export default function Wallet(): React.ReactElement {
         />
         <PrimaryButton
           onClick={() =>
-            void (connector?.session.connected ? rejectConnection() : connect())
+            connector?.session.connected ? rejectConnection() : connect()
           }
         >
           {connector?.session.connected

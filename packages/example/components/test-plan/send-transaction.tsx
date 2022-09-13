@@ -21,7 +21,7 @@ export function SendTransaction() {
       status={status}
       title="Send transaction"
       disabledTest={disabled}
-      onRunTest={() => void onRunTest()}
+      onRunTest={onRunTest}
     >
       <Result status={status}>
         <p>This sends a very small transaction to impact market contract.</p>

@@ -62,7 +62,7 @@ export const PrivateKey = ({ onSubmit }: ConnectorProps) => {
             <Button
               as="button"
               className={styles.button}
-              onClick={void handleSubmit}
+              onClick={handleSubmit}
             >
               Submit
             </Button>

@@ -81,31 +81,13 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     this.client = this.getWalletConnectClient();
 
-    this.client.on(CLIENT_EVENTS.connect, this.onSessionCreated as () => void);
-    this.client.on(
-      CLIENT_EVENTS.disconnect,
-      this.onSessionDeleted as () => void
-    );
-    this.client.on(
-      CLIENT_EVENTS.session_request,
-      this.onSessionRequest as () => void
-    );
-    this.client.on(
-      CLIENT_EVENTS.session_update,
-      this.onSessionUpdated as () => void
-    );
-    this.client.on(
-      CLIENT_EVENTS.call_request,
-      this.onCallRequest as () => void
-    );
-    this.client.on(
-      CLIENT_EVENTS.wc_sessionRequest,
-      this.onWcSessionRequest as () => void
-    );
-    this.client.on(
-      CLIENT_EVENTS.wc_sessionUpdate,
-      this.onWcSessionUpdate as () => void
-    );
+    this.client.on(CLIENT_EVENTS.connect, this.onSessionCreated);
+    this.client.on(CLIENT_EVENTS.disconnect, this.onSessionDeleted);
+    this.client.on(CLIENT_EVENTS.session_request, this.onSessionRequest);
+    this.client.on(CLIENT_EVENTS.session_update, this.onSessionUpdated);
+    this.client.on(CLIENT_EVENTS.call_request, this.onCallRequest);
+    this.client.on(CLIENT_EVENTS.wc_sessionRequest, this.onWcSessionRequest);
+    this.client.on(CLIENT_EVENTS.wc_sessionUpdate, this.onWcSessionUpdate);
 
     // Check if connection is already established
     if (!this.client.connected) {
