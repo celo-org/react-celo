@@ -56,7 +56,7 @@ export function SwitchNetwork() {
       status={status}
       title="Switch network"
       disabledTest={disabledTest}
-      onRunTest={() => void onSwitchNetworks()}
+      onRunTest={onSwitchNetworks}
     >
       <Result status={status}>
         <Result.Default>

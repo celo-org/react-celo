@@ -9,7 +9,7 @@ export default function DisconnectButton() {
   return (
     <button
       className="inline underline text-rc-violet dark:rc-violet-light"
-      onClick={() => void destroy()}
+      onClick={destroy}
     >
       Disconnect wallet
     </button>

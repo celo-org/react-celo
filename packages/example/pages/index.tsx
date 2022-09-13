@@ -183,13 +183,11 @@ function HomePage(): React.ReactElement {
           </h1>
 
           {address ? (
-            <PrimaryButton onClick={() => void disconnect()}>
-              Disconnect
-            </PrimaryButton>
+            <PrimaryButton onClick={disconnect}>Disconnect</PrimaryButton>
           ) : (
             <PrimaryButton
               onClick={() =>
-                void connect().catch((e) => toast.error((e as Error).message))
+                connect().catch((e) => toast.error((e as Error).message))
               }
             >
               Use Celo Now
@@ -205,22 +203,19 @@ function HomePage(): React.ReactElement {
               address || 'hidden'
             }`}
           >
-            <SecondaryButton
-              disabled={sending}
-              onClick={() => void testSendTransaction()}
-            >
+            <SecondaryButton disabled={sending} onClick={testSendTransaction}>
               Test sendTransaction
             </SecondaryButton>
             <SecondaryButton
               disabled={sending}
-              onClick={() => void testSignTypedData()}
+              onClick={testSignTypedData}
               className="w-full md:w-max"
             >
               Test signTypedData
             </SecondaryButton>
             <SecondaryButton
               disabled={sending}
-              onClick={() => void testSignPersonal()}
+              onClick={testSignPersonal}
               className="w-full md:w-max"
             >
               Test signPersonal
@@ -313,9 +308,7 @@ function HomePage(): React.ReactElement {
                     disabled={!supportsFeeCurrency}
                     value={feeCurrency}
                     onChange={(event) =>
-                      void updateFeeCurrency(
-                        event.target.value as CeloTokenContract
-                      )
+                      updateFeeCurrency(event.target.value as CeloTokenContract)
                     }
                     className="border border-slate-300 rounded px-4 py-2"
                   >

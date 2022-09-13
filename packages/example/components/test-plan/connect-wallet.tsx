@@ -26,9 +26,7 @@ export function ConnectWalletCheck() {
       status={status}
       title="Connect wallet to mainnet"
       disabledTest={status !== Status.NotStarted}
-      onRunTest={() => {
-        void onConnectWallet();
-      }}
+      onRunTest={onConnectWallet}
     >
       <Result status={status}>
         <Result.Default>
