@@ -72,7 +72,7 @@ export interface Connector {
    * `initialise` loads the connector
    *  and saves it to local storage.
    */
-  initialise: () => Promise<this> | this;
+  initialise: (lastUsedAddress?: string) => Promise<this> | this;
   close: () => Promise<void> | void;
   on<E extends ConnectorEvents>(e: E, fn: (arg: EventsMap[E]) => void): void;
   updateFeeCurrency?: (token: CeloTokenContract) => Promise<void>;

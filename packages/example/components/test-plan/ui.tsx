@@ -51,8 +51,9 @@ export function TestBlock({
   );
 }
 
-export const Header: React.FC = (props) => (
-  <h3 className="font-semibold text-base mr-2" {...props} />
+type HeaderProps = { children: React.ReactNode };
+export const Header: React.FC<HeaderProps> = (props) => (
+  <h3 className="font-semibold text-base mr-2">{props.children}</h3>
 );
 
 export const Text: React.FC = (props) => (
@@ -77,7 +78,8 @@ export function Result(props: React.PropsWithChildren<{ status: Status }>) {
   );
 }
 
-export const Success: React.FC = (props) => {
+type ResultSuccessProps = { children: React.ReactNode };
+export const ResultSuccess: React.FC<ResultSuccessProps> = (props) => {
   const context = useResultContext();
   return context === Status.Success ? (
     <p className="text-[#43aa8b] flex items-center gap-[5px]">
@@ -86,7 +88,9 @@ export const Success: React.FC = (props) => {
   ) : null;
 };
 
-export const ErrorText: React.FC = (props) => {
+type ResultErrorProps = { children: React.ReactNode };
+
+export const ResultError: React.FC<ResultErrorProps> = (props) => {
   const context = useResultContext();
   return context === Status.Failed ? (
     <p className="text-[#f94144] flex items-center gap-[5px]">
@@ -95,13 +99,14 @@ export const ErrorText: React.FC = (props) => {
   ) : null;
 };
 
-export const Default: React.FC = (props) => {
+type ResultDefaultProps = { children: React.ReactNode };
+export const ResultDefault: React.FC<ResultDefaultProps> = (props) => {
   const context = useResultContext();
   return context === Status.NotStarted || context === Status.Pending ? (
     <>{props.children}</>
   ) : null;
 };
 
-Result.Success = Success;
-Result.Error = ErrorText;
-Result.Default = Default;
+Result.Success = ResultSuccess;
+Result.Error = ResultError;
+Result.Default = ResultDefault;

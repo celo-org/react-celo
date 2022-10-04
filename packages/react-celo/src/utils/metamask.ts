@@ -30,7 +30,12 @@ const BAKLAVA_PARAMS = Object.freeze({
   },
 });
 
-const PARAMS: { [chain in ChainId]: typeof CELO_PARAMS } = {
+type CHAIN_PARAMS =
+  | typeof CELO_PARAMS
+  | typeof ALFAJORES_PARAMS
+  | typeof BAKLAVA_PARAMS;
+
+const PARAMS: { [chain in ChainId]: CHAIN_PARAMS } = {
   [ChainId.Mainnet]: CELO_PARAMS,
   [ChainId.Alfajores]: ALFAJORES_PARAMS,
   [ChainId.Baklava]: BAKLAVA_PARAMS,
@@ -275,7 +280,7 @@ export const networkHasUpdated = async (
   }
 };
 
-async function getWalletChainId(ethereum: Ethereum) {
+export async function getWalletChainId(ethereum: Ethereum) {
   const walletChainId = ethereum.chainId
     ? ethereum.chainId
     : await ethereum.request({ method: 'eth_chainId' });

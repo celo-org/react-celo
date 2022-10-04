@@ -57,12 +57,13 @@ describe('WalletConnectConnector', () => {
   beforeEach(() => {
     connector = new WalletConnectConnector(
       Alfajores,
+      false,
       CeloContract.GoldToken,
       buildOptions(Alfajores),
       false,
-      (x) => x,
+      (x: string) => x,
       1,
-      WalletIds.Steakwallet
+      WalletIds.Omni
     );
     jest.spyOn(connector.kit, 'getWallet').mockImplementation(() => wallet);
     connector.on(ConnectorEvents.CONNECTED, onConnect);

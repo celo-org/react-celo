@@ -13,7 +13,7 @@ import {
 } from '../src/constants';
 import CeloProviderProps from '../src/react-celo-provider-props';
 import defaultTheme from '../src/theme/default';
-import { Maybe, Network, Theme } from '../src/types';
+import { Network } from '../src/types';
 import { UseCelo, useCelo, useCeloInternal } from '../src/use-celo';
 import { clearPreviousConfig } from '../src/utils/local-storage';
 import {
@@ -128,7 +128,7 @@ describe('CeloProvider', () => {
       });
 
     const renderUseCeloInternal = (props: Partial<CeloProviderProps>) =>
-      renderHookInCKProvider<UseCelo & { theme: Maybe<Theme> }>(
+      renderHookInCKProvider<ReturnType<typeof useCeloInternal>>(
         useCeloInternal,
         {
           providerProps: props,
@@ -186,11 +186,30 @@ describe('CeloProvider', () => {
         await act(async () => {
           await result.current.updateNetwork(networks[1]);
         });
-
         rerender();
 
         expect(result.current.network).toEqual(networks[1]);
         unmount();
+      });
+
+      describe('updateNetwork with dappOnly True', () => {
+        it('sets network in the state/connector', async () => {
+          const { result, rerender, unmount } = renderUseCelo({
+            networks,
+            defaultNetwork: networks[0].name,
+          });
+
+          expect(result.current.network).toEqual(networks[0]);
+
+          await act(async () => {
+            await result.current.updateNetwork(networks[1], true);
+          });
+
+          rerender();
+
+          expect(result.current.network).toEqual(networks[1]);
+          unmount();
+        });
       });
 
       it('still allows old network prop to be used ', () => {
@@ -235,6 +254,18 @@ describe('CeloProvider', () => {
           });
 
           expect(result.current.network).toEqual(customRPCMainnet);
+        });
+      });
+
+      it('gives null as chainId when no wallet is connected', () => {
+        const { result } = renderUseCelo({});
+        expect(result.current.walletChainId).toBe(null);
+      });
+
+      describe('when manualNetworkMode is true', () => {
+        it('sets as so in the store', () => {
+          const { result } = renderUseCeloInternal({ manualNetworkMode: true });
+          expect(result.current.manualNetworkMode).toEqual(true);
         });
       });
     });

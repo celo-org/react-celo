@@ -1,9 +1,9 @@
-/// <reference path='../../../node_modules/@walletconnect/types-v1/index.d.ts' />
-
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { sleep } from '@celo/base';
 import { CeloTx, EncodedTransaction } from '@celo/connect/lib/types';
 import { RemoteWallet } from '@celo/wallet-remote';
-import WalletConnect from '@walletconnect/client-v1';
+import WalletConnect from '@walletconnect/client';
 import {
   ICreateSessionOptions,
   IWalletConnectSDKOptions,
@@ -50,10 +50,6 @@ const defaultInitOptions: IWalletConnectSDKOptions = {
   },
 };
 
-const defaultConnectOptions: ICreateSessionOptions = {
-  chainId: 42220, // Celo Mainnet
-};
-
 export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   private initOptions: IWalletConnectSDKOptions;
   private connectOptions: ICreateSessionOptions;
@@ -66,7 +62,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     this.canceler = new Canceler();
     this.initOptions = { ...defaultInitOptions, ...(init ?? {}) };
-    this.connectOptions = { ...defaultConnectOptions, ...(connect ?? {}) };
+    this.connectOptions = {
+      ...(connect ?? ({} as ICreateSessionOptions)),
+    };
   }
 
   /**

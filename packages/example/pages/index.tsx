@@ -132,7 +132,7 @@ function HomePage(): React.ReactElement {
     sendTestTransaction,
     'sendTransaction'
   );
-  const testSignTypedData = wrapAction(signTestTypedData, 'sendTransaction');
+  const testSignTypedData = wrapAction(signTestTypedData, 'signTypedData');
   const testSignPersonal = wrapAction(signTest, 'signPersonal');
 
   const toggleDarkMode = useCallback(() => {
@@ -412,10 +412,10 @@ function SelectChain() {
     <select
       className="border border-celo-gold outline-celo-gold-light text-slate-800 rounded px-1 py-1 mr-1"
       value={network.name}
-      onChange={async (e) => {
+      onChange={(e) => {
         const newNetwork = networks.find((n) => n.name === e.target.value);
         if (newNetwork) {
-          await updateNetwork(newNetwork);
+          void updateNetwork(newNetwork);
         }
       }}
     >

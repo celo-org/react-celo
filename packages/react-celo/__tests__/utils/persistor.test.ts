@@ -42,7 +42,8 @@ describe('Persistor', () => {
       address: '0x9e81622',
       networkName: 'Celo',
       index: 2,
-      walletId: WalletIds.Steakwallet,
+      walletId: WalletIds.Omni,
+      walletChainId: 1,
     };
     beforeEach(() => {
       connector.testEmit(ConnectorEvents.CONNECTED, params);
@@ -69,9 +70,12 @@ describe('Persistor', () => {
 
     it('remembers walletID so it can be used to find recently used wallet', () => {
       expect(getTypedStorageKey(localStorageKeys.lastUsedWalletId)).toEqual(
-        WalletIds.Steakwallet
+        WalletIds.Omni
       );
-      expect(getRecent()).toEqual(PROVIDERS.Steakwallet);
+      expect(getRecent()).toEqual({
+        providers: [PROVIDERS.Omni],
+        ids: new Set([`${WalletTypes.WalletConnect}:${WalletIds.Omni}`]),
+      });
     });
   });
   describe(`when connector emits ${ConnectorEvents.DISCONNECTED}`, () => {

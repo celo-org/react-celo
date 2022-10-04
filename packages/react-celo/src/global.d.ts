@@ -21,6 +21,9 @@ declare global {
 }
 
 interface Ethereum extends Exclude<AbstractProvider, 'request'> {
+  _metamask: {
+    isUnlocked: () => Promise<boolean>;
+  };
   on: AddEthereumEventListener;
   removeListener: RemoveEthereumEventListener;
   isMetaMask?: boolean;
@@ -57,6 +60,16 @@ interface EthereumRequestReturns {
   wallet_watchAsset: boolean;
   wallet_switchEthereumChain: null;
   eth_chainId: string;
+}
+
+interface BitMatrix {
+  size: number;
+  reservedBits: Uint8Array;
+  data: Uint8Array;
+}
+
+interface QRCodeClass extends QRCode.QRCode {
+  modules: BitMatrix;
 }
 
 interface BitMatrix {

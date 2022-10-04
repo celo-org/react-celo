@@ -24,7 +24,8 @@ export default function useWalletConnectConnector(
   walletId: string,
   getDeeplinkUrl?: (uri: string) => string | false
 ): UseWalletConnectConnector {
-  const { network, feeCurrency, initConnector, disconnect } = useCeloInternal();
+  const { network, feeCurrency, initConnector, disconnect, manualNetworkMode } =
+    useCeloInternal();
   const [uri, setUri] = useState<Maybe<string>>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Maybe<string>>(null);
@@ -53,6 +54,7 @@ export default function useWalletConnectConnector(
 
       connector = new WalletConnectConnector(
         network,
+        manualNetworkMode,
         feeCurrency,
         buildOptions(network),
         autoOpen,

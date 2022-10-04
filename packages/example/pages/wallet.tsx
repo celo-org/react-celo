@@ -15,7 +15,7 @@ import {
   SignTypedSignProposal,
   SupportedMethods,
 } from '@celo/wallet-walletconnect-v1';
-import WalletConnect from '@walletconnect/client-v1';
+import WalletConnect from '@walletconnect/client';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { createRef, useCallback, useEffect, useState } from 'react';
@@ -372,7 +372,7 @@ export default function Wallet(): React.ReactElement {
 
         setApprovalData({
           accept: approveConnection,
-          reject: rejectConnection,
+          reject: () => rejectConnection(),
           meta: {
             title: `new connection from dApp ${
               payload?.params[0]?.peerMeta?.name || ''

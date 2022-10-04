@@ -1,5 +1,3 @@
-/// <reference path='../../../node_modules/@walletconnect/types-v1/index.d.ts' />
-
 import {
   IClientMeta,
   ICreateSessionOptions,

@@ -37,6 +37,7 @@ describe('PrivateKeyConnector', () => {
       expect(onConnect).toBeCalledWith({
         networkName: Alfajores.name,
         walletType: WalletTypes.PrivateKey,
+        walletChainId: null,
         address: '0x6df18c5837718a83581ead5e26bfcdb8a548e409',
       });
     });

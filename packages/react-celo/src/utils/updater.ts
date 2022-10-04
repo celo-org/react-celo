@@ -19,6 +19,11 @@ export const updater: Updater = (connector, dispatch) => {
     dispatch('connect', params);
   });
 
+  connector.on(ConnectorEvents.WALLET_CHAIN_CHANGED, (chainId) => {
+    logger.log(`Wallet Chain Id is ${chainId}`);
+    dispatch('setWalletChainId', chainId);
+  });
+
   connector.on(ConnectorEvents.DISCONNECTED, () => {
     logger.log('Updater witnessed disconnection');
     dispatch('disconnect');

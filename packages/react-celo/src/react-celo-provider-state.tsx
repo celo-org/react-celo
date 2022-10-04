@@ -19,12 +19,14 @@ import { resurrector } from './utils/resurrector';
 const initialState: ReducerState = {
   connector: new UnauthenticatedConnector(Mainnet),
   connectorInitError: null,
+  manualNetworkMode: false,
   dapp: {
     name: 'Celo dApp',
     description: 'Celo dApp',
     url: 'https://celo.org',
     icon: 'https://celo.org/favicon.ico',
   },
+  walletChainId: null,
   network: Mainnet,
   networks: DEFAULT_NETWORKS,
   pendingActionCount: 0,
@@ -63,13 +65,20 @@ function useDispatch(dispatch: React.Dispatch<Actions>): Dispatcher {
 
 type CeloStateProps = Pick<
   CeloProviderProps,
-  'dapp' | 'theme' | 'network' | 'defaultNetwork' | 'networks' | 'feeCurrency'
+  | 'dapp'
+  | 'theme'
+  | 'network'
+  | 'defaultNetwork'
+  | 'networks'
+  | 'feeCurrency'
+  | 'manualNetworkMode'
 > & { networks: Network[] };
 
 export function useCeloState({
   dapp,
   network,
   defaultNetwork,
+  manualNetworkMode,
   theme,
   networks,
   feeCurrency,
@@ -83,7 +92,11 @@ export function useCeloState({
   );
 
   const connector = useMemo(() => {
-    return resurrector(networks, dapp);
+    return resurrector(
+      networks,
+      dapp,
+      manualNetworkMode ?? initialState.manualNetworkMode
+    );
     /* eslint-disable-next-line */
   }, []);
 
@@ -96,6 +109,7 @@ export function useCeloState({
 
   const [state, _dispatch] = useReducer(celoReactReducer, {
     ...initialState,
+    manualNetworkMode: manualNetworkMode ?? initialState.manualNetworkMode,
     address: stateFromLocalStorage.address,
     connector: connector || initialState.connector,
     network: initialNetwork,

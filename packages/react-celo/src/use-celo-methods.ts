@@ -21,21 +21,24 @@ interface CeloMethodsInput {
   connector: Connector;
   networks: Network[];
   network: Network;
+  manualNetworkMode: boolean;
 }
 
 export function useCeloMethods(
-  { connector, networks, network }: CeloMethodsInput,
+  { connector, networks, network, manualNetworkMode }: CeloMethodsInput,
   dispatch: Dispatcher,
   buildContractsCache?: ContractCacheBuilder
 ): CeloMethods {
   const initConnector = useCallback(
-    async (nextConnector: Connector) => {
+    async (nextConnector: Connector, lastUsedAddress?: string) => {
       try {
         // need to set the event listeners here before initialise()
         updater(nextConnector, dispatch);
         persistor(nextConnector);
-        networkWatcher(nextConnector, networks);
-        const initialisedConnector = await nextConnector.initialise();
+        networkWatcher(nextConnector, networks, manualNetworkMode);
+        const initialisedConnector = await nextConnector.initialise(
+          lastUsedAddress
+        );
         dispatch('initialisedConnector', initialisedConnector);
       } catch (e) {
         if (typeof e === 'symbol') {
@@ -60,7 +63,7 @@ export function useCeloMethods(
         throw e;
       }
     },
-    [dispatch, networks]
+    [dispatch, networks, manualNetworkMode]
   );
   const disconnect = useCallback(async () => {
     await connector.close();
@@ -71,17 +74,20 @@ export function useCeloMethods(
   // This is just to be used to for users to explicitly change
   // the network. It doesn't work for all wallets.
   const updateNetwork = useCallback(
-    async (newNetwork: Network) => {
+    async (newNetwork: Network, dappOnly = false) => {
       getApplicationLogger().debug(
         '[updateNetwork]',
         newNetwork,
         connector.type
       );
-      if (STATIC_NETWORK_WALLETS.includes(connector.type)) {
+      if (dappOnly && connector.continueNetworkUpdateFromWallet) {
+        connector.continueNetworkUpdateFromWallet(newNetwork);
+      } else if (STATIC_NETWORK_WALLETS.includes(connector.type)) {
         throw new Error(
           "The connected wallet's network must be changed from the wallet."
         );
       }
+
       await connector.startNetworkChangeFromApp(newNetwork);
     },
     [connector]
@@ -205,10 +211,11 @@ export interface CeloMethods {
   disconnect: () => Promise<void>;
   /**
    * `updateNetwork` changes the network used in the wallet.
-   *
+   *  optional dappOnly if the wallet is known to already be on the correct chain
+   *  useful when in manualNetworkingMode
    * Note: _not compatible with all wallets_
    */
-  updateNetwork: (network: Network, forceUpdate?: boolean) => Promise<void>;
+  updateNetwork: (network: Network, dappOnly?: boolean) => Promise<void>;
   /**
    * `connect` initiates the connection to a wallet and
    * opens a modal from which the user can choose a
@@ -256,5 +263,8 @@ export interface CeloMethods {
    * `initConnector` is used to initialize a connector
    *  for the wallet chosen by the user.
    */
-  initConnector: (connector: Connector) => Promise<void>;
+  initConnector: (
+    connector: Connector,
+    lastUsedAddress?: string
+  ) => Promise<void>;
 }

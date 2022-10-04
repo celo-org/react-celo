@@ -38,6 +38,7 @@ export default class WalletConnectConnector
 
   constructor(
     private network: Network,
+    manualNetworkMode: boolean,
     public feeCurrency: CeloTokenContract,
     // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     readonly options: WalletConnectWalletOptionsV1,
@@ -47,7 +48,14 @@ export default class WalletConnectConnector
     readonly walletId?: string
   ) {
     super();
-    const wallet = new WalletConnectWalletV1(options);
+    const wallet = new WalletConnectWalletV1(
+      manualNetworkMode
+        ? {
+            init: options.init,
+            connect: { ...options.connect, chainId: undefined },
+          }
+        : options
+    );
 
     this.kit = newKit(network.rpcUrl, wallet);
   }
@@ -128,18 +136,31 @@ export default class WalletConnectConnector
     }
   }
 
-  private async onSessionCreated(
-    _error: Error | null,
-    session: SessionConnect
-  ) {
-    // TODO HANDLE FAILED TO CONNECT STATE
+  private async onSessionCreated(error: Error | null, session: SessionConnect) {
+    if (error) {
+      getApplicationLogger().error(
+        '[wallet-connect] Error while connecting',
+        error.name,
+        error.message
+      );
+      this.emit(ConnectorEvents.WC_ERROR, error);
+    }
     const connectSession = session;
-    await this.onConnected(connectSession);
+    await this.onConnected(connectSession).catch((e: Error) => {
+      this.emit(ConnectorEvents.WC_ERROR, e);
+      getApplicationLogger().error(
+        'wallet-connect',
+        'onSessionCreated',
+        'error',
+        e
+      );
+    });
   }
 
   private onCallRequest(error: Error | null, payload: EthProposal) {
     getApplicationLogger().debug(
-      '[wallet-connect] onCallRequest => Payload:',
+      'wallet-connect',
+      'onCallRequest',
       payload,
       error ? `Error ${error.name} ${error.message}` : ''
     );
@@ -162,17 +183,24 @@ export default class WalletConnectConnector
     await this.combinedSessionUpdater(params);
   }
 
-  private async onSessionUpdated(_error: Error | null, session: SessionUpdate) {
+  private async onSessionUpdated(error: Error | null, session: SessionUpdate) {
     getApplicationLogger().debug(
       'wallet-connect',
       'on-session-update',
       session,
-      _error
+      error
     );
     const params = session.params[0];
 
-    // TODO emit event when there is an error
-    await this.combinedSessionUpdater(params);
+    if (error) {
+      this.emit(ConnectorEvents.WC_ERROR, error);
+    }
+    try {
+      await this.combinedSessionUpdater(params);
+    } catch (e) {
+      getApplicationLogger().error('wallet-connect', 'on-session-update', e);
+      this.emit(ConnectorEvents.WC_ERROR, e as Error);
+    }
   }
 
   private onSessionDeleted(_error: Error | null, session: SessionDisconnect) {
@@ -245,6 +273,7 @@ export default class WalletConnectConnector
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
       walletId: this.walletId as string,
+      walletChainId: session.params[0].chainId,
       networkName: this.network.name,
       address: sessionAccount,
     });
