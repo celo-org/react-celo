@@ -1,6 +1,6 @@
 {
   "name": "@celo/react-celo",
-  "version": "4.2.0-alpha.1-dev",
+  "version": "4.2.0",
   "private": false,
   "scripts": {
     "prebuild": "mkdir -p lib && node ./scripts/json-to-ts.js package.json lib",
@@ -17,18 +17,19 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib",
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
     "README.md"
   ],
   "homepage": "https://react-celo.vercel.app",
   "readme": "../../readme.md",
   "license": "MIT",
   "dependencies": {
-    "@celo/wallet-base": "^2.0.0",
-    "@celo/wallet-ledger": "^2.0.0",
-    "@celo/wallet-local": "^2.0.0",
-    "@celo/wallet-remote": "^2.0.0",
-    "@celo/wallet-walletconnect-v1": "4.2.0-alpha.1",
+    "@celo/wallet-base": "^2.2.0",
+    "@celo/wallet-ledger": "^2.2.0",
+    "@celo/wallet-local": "^2.2.0",
+    "@celo/wallet-remote": "^2.2.0",
+    "@celo/wallet-walletconnect-v1": "4.2.0",
     "@coinbase/wallet-sdk": "^3.2.0",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
