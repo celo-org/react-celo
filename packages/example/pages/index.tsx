@@ -133,11 +133,13 @@ function HomePage(): React.ReactElement {
     sendTestTransaction,
     'sendTransaction'
   );
+
   const testSendTransactionStable = wrapAction(
     sendTestTransactionStable,
     'sendTransaction'
   );
-  const testSignTypedData = wrapAction(signTestTypedData, 'sendTransaction');
+  
+  const testSignTypedData = wrapAction(signTestTypedData, 'signTypedData');
   const testSignPersonal = wrapAction(signTest, 'signPersonal');
 
   const toggleDarkMode = useCallback(() => {

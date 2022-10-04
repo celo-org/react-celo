@@ -9,7 +9,14 @@ export type PackageJson = {
 };
 
 export const VERSIONS = ['major', 'minor', 'patch'];
-export const DONT_OPEN = ['node_modules', 'src', 'lib', 'example'];
+export const DONT_OPEN = [
+  'node_modules',
+  'src',
+  'lib',
+  'example',
+  // Let's skip publishing this until we re-implement WCv2
+  'wallet-walletconnect',
+];
 
 export function findPackagePaths(dir: string): string[] {
   return fs
