@@ -132,7 +132,7 @@ function HomePage(): React.ReactElement {
     sendTestTransaction,
     'sendTransaction'
   );
-  const testSignTypedData = wrapAction(signTestTypedData, 'sendTransaction');
+  const testSignTypedData = wrapAction(signTestTypedData, 'signTypedData');
   const testSignPersonal = wrapAction(signTest, 'signPersonal');
 
   const toggleDarkMode = useCallback(() => {
