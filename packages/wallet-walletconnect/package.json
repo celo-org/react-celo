@@ -28,10 +28,10 @@
     "prepublishOnly": "yarn build"
   },
   "dependencies": {
-    "@celo/connect": "^2.2.0-alpha.2",
-    "@celo/utils": "^2.2.0-alpha.2",
-    "@celo/wallet-base": "^2.2.0-alpha.2",
-    "@celo/wallet-remote": "^2.2.0-alpha.2",
+    "@celo/connect": "^2.2.0-beta.1",
+    "@celo/utils": "^2.2.0-beta.1",
+    "@celo/wallet-base": "^2.2.0-beta.1",
+    "@celo/wallet-remote": "^2.2.0-beta.1",
     "@walletconnect/client": "2.0.0-beta.21",
     "@walletconnect/types": "2.0.0-beta.21",
     "@walletconnect/utils": "2.0.0-beta.21",
