@@ -436,6 +436,16 @@
     eth-lib "^0.2.8"
     ethereumjs-util "^5.2.0"
 
+"@celo/wallet-walletconnect-v1@4.2.1":
+  version "4.2.1"
+  resolved "https://registry.npmjs.org/@celo/wallet-walletconnect-v1/-/wallet-walletconnect-v1-4.2.1.tgz#032ad9e969d79932dd0d3a9676380caa405ed03f"
+  integrity sha512-slkBtY/KfYMW4V5VD29MncetZDQ/A5Yip6F/cPIoprG/vTwkSrPCIOpJFVUKZXLjVy00lICJp9aukh6oIOoHlw==
+  dependencies:
+    "@walletconnect/client" "1.8.0"
+    "@walletconnect/types" "1.8.0"
+    "@walletconnect/utils" "1.8.0"
+    debug "^4.3.3"
+
 "@clabs/packages-publisher@0.0.1-alpha.3":
   version "0.0.1-alpha.3"
   resolved "https://registry.npmjs.org/@clabs/packages-publisher/-/packages-publisher-0.0.1-alpha.3.tgz#fbaf6866e3751ada30cb6e2e8d622bfa97c86a4b"
