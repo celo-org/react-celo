@@ -1,6 +1,5 @@
 import { useReactCeloContext } from './react-celo-provider';
 import { ReducerState } from './react-celo-reducer';
-import { Maybe } from './types';
 import { CeloMethods } from './use-celo-methods';
 
 type SomeReducerStateProps = Pick<
@@ -16,7 +15,7 @@ type DerivedFromReducerStateProps = {
 
 type SomeReducerConnectorProps = Pick<
   ReducerState['connector'],
-  'kit' | 'initialised'
+  'kit' | 'initialised' | 'signer' | 'provider'
 >;
 
 type DerivedFromConnectorProps = {
@@ -31,7 +30,7 @@ export type UseCelo = SomeReducerStateProps &
   DerivedFromReducerStateProps &
   SomeReducerConnectorProps &
   DerivedFromConnectorProps &
-  SomeCeloMethods & { account: Maybe<string> };
+  SomeCeloMethods;
 
 export function useCelo<CC = undefined>(): UseCelo {
   const [reducerState, _dispatch, celoMethods] = useReactCeloContext();
@@ -52,7 +51,7 @@ export function useCelo<CC = undefined>(): UseCelo {
     disconnect,
     updateNetwork,
     connect,
-    getConnectedKit,
+    getConnectedSigner,
     performActions,
     updateFeeCurrency,
     contractsCache,
@@ -68,14 +67,9 @@ export function useCelo<CC = undefined>(): UseCelo {
     initError: connectorInitError,
     // Copy to ensure any accidental mutations dont affect global state
     networks: networks.map((net) => ({ ...net })),
-
+    signer: connector.signer,
+    provider: connector.provider,
     kit: connector.kit,
-    // the wallet address from Account.getWalletAddress => The address at which the account expects to receive transfers.
-    // If it's empty/0x0, the account indicates that an address exchange should be initiated with the dataEncryptionKey
-    /*
-     * @deprecated this will likely be removed in favor of just address
-     */
-    account: connector.kit.connection.defaultAccount,
     initialised: connector.initialised,
     walletType: connector.type,
     supportsFeeCurrency: connector.supportsFeeCurrency(),
@@ -83,7 +77,7 @@ export function useCelo<CC = undefined>(): UseCelo {
     disconnect,
     updateNetwork,
     connect,
-    getConnectedKit,
+    getConnectedSigner: getConnectedSigner,
     performActions,
     updateFeeCurrency,
     contractsCache: contractsCache as CC,

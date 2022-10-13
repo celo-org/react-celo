@@ -1,14 +1,11 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
-import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
+import { JsonRpcSigner } from '@ethersproject/providers';
+import { Signer } from 'ethers';
 import { useCallback } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { UnauthenticatedConnector } from './connectors';
 import { STATIC_NETWORK_WALLETS, WalletTypes } from './constants';
-import {
-  ContractCacheBuilder,
-  useContractsCache,
-} from './hooks/use-contracts-cache';
 import { Dispatcher } from './react-celo-provider-state';
 import { Connector, Network, Theme } from './types';
 import { contrastCheck, fixTheme } from './utils/colors';
@@ -26,8 +23,7 @@ interface CeloMethodsInput {
 
 export function useCeloMethods(
   { connector, networks, network, manualNetworkMode }: CeloMethodsInput,
-  dispatch: Dispatcher,
-  buildContractsCache?: ContractCacheBuilder
+  dispatch: Dispatcher
 ): CeloMethods {
   const initConnector = useCallback(
     async (nextConnector: Connector, lastUsedAddress?: string) => {
@@ -107,15 +103,15 @@ export function useCeloMethods(
     return newConnector;
   }, [dispatch]);
 
-  const getConnectedKit = useCallback(async (): Promise<MiniContractKit> => {
+  const getConnectedSigner = useCallback(async (): Promise<Signer> => {
     let initialisedConnection = connector;
     if (connector.type === WalletTypes.Unauthenticated) {
       initialisedConnection = await connect();
     } else if (!initialisedConnection.initialised) {
       await initConnector(initialisedConnection);
     }
-
-    return initialisedConnection.kit;
+    // TODO remove `as` when all connectors have signers
+    return initialisedConnection.signer as Signer;
   }, [connect, connector, initConnector]);
 
   const updateFeeCurrency = useCallback(
@@ -152,11 +148,11 @@ export function useCeloMethods(
 
   const performActions = useCallback(
     async (
-      ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
+      ...operations: ((signer: Signer) => unknown | Promise<unknown>)[]
     ) => {
-      const kit = await getConnectedKit();
+      const signer = await getConnectedSigner();
       dispatch('setPendingActionCount', operations.length);
-
+      console.info('signer', signer);
       const results: unknown[] = [];
       for (const op of operations) {
         try {
@@ -165,7 +161,7 @@ export function useCeloMethods(
             const url = connector.getDeeplinkUrl('');
             if (url) window.open(url, '_blank');
           }
-          results.push(await op(kit));
+          results.push(await op(signer));
         } catch (e) {
           dispatch('setPendingActionCount', 0);
           throw e;
@@ -175,10 +171,8 @@ export function useCeloMethods(
       }
       return results;
     },
-    [getConnectedKit, dispatch, connector]
+    [getConnectedSigner, dispatch, connector]
   );
-
-  const contractsCache = useContractsCache(buildContractsCache, connector);
 
   const resetInitError = useCallback(() => {
     dispatch('setConnectorInitError', null);
@@ -191,10 +185,9 @@ export function useCeloMethods(
     resetInitError,
     updateNetwork,
     connect,
-    getConnectedKit,
+    getConnectedSigner: getConnectedSigner,
     performActions,
     updateFeeCurrency,
-    contractsCache,
     updateTheme,
   };
 }
@@ -223,10 +216,10 @@ export interface CeloMethods {
    */
   connect: () => Promise<Connector>;
   /**
-   * `getConnectedKit` gets the connected instance of MiniContractKit.
+   * `getConnectedSigner` gets the connected instance of ethers Signer.
    * If the user is not connected, this opens up the connection modal.
    */
-  getConnectedKit: () => Promise<MiniContractKit>;
+  getConnectedSigner: () => Promise<Signer>;
   /**
    * `performActions` is a helper function for handling any interaction with a Celo wallet.
    * Perform action will:
@@ -234,7 +227,7 @@ export interface CeloMethods {
    * - handle multiple transactions in order
    */
   performActions: (
-    ...operations: ((kit: MiniContractKit) => unknown | Promise<unknown>)[]
+    ...operations: ((signer: Signer) => unknown | Promise<unknown>)[]
   ) => Promise<unknown[]>;
   /**
    * `updateFeeCurrency` updates the currency that will be used

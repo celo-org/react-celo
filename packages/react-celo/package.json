@@ -25,6 +25,7 @@
   "readme": "../../readme.md",
   "license": "MIT",
   "dependencies": {
+    "@celo-tools/celo-ethers-wrapper": "^0.3.0",
     "@celo/wallet-base": "^2.2.0",
     "@celo/wallet-ledger": "^2.2.0",
     "@celo/wallet-local": "^2.2.0",
@@ -34,6 +35,7 @@
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
     "@types/react-modal": "^3.13.1",
+    "ethers": "^5.7.1",
     "eventemitter3": "^4.0.7",
     "isomorphic-fetch": "^3.0.0",
     "qrcode": "^1.5.0",

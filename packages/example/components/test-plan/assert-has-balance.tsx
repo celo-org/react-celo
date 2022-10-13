@@ -1,6 +1,6 @@
 import { CeloTokenContract, ContractKit } from '@celo/contractkit';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
-import Web3 from 'web3';
+import ethers from 'ethers';
 
 import { feeTokenMap } from '../../utils';
 
@@ -19,7 +19,7 @@ export async function assertHasBalance(
       throw new Error(`Balance did not include any ${token}`);
     }
 
-    convertedBalance = Number(Web3.utils.fromWei(tokenBalance.toFixed()));
+    convertedBalance = Number(ethers.utils.formatEther(tokenBalance.toFixed()));
   } catch (error) {
     let message;
     if (error instanceof Error) {

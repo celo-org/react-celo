@@ -1,5 +1,5 @@
 import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
-import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
+import { StaticCeloProvider } from '@celo-tools/celo-ethers-wrapper';
 
 import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
@@ -17,11 +17,11 @@ export default class UnauthenticatedConnector
 {
   public initialised = true;
   public type = WalletTypes.Unauthenticated;
-  public kit: MiniContractKit;
+  public provider: StaticCeloProvider;
   public feeCurrency: CeloTokenContract = CeloContract.GoldToken;
   constructor(n: Network) {
     super();
-    this.kit = newKit(n.rpcUrl);
+    this.provider = new StaticCeloProvider(n.rpcUrl);
   }
 
   initialise(): this {
@@ -34,13 +34,14 @@ export default class UnauthenticatedConnector
   }
 
   startNetworkChangeFromApp(network: Network) {
-    this.kit = newKit(network.rpcUrl);
+    this.provider = new StaticCeloProvider(network.rpcUrl);
     this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
   }
 
   close(): void {
     try {
-      this.kit.connection.stop();
+      this.provider;
+      // this.kit.connection.stop();
     } finally {
       this.disconnect();
     }

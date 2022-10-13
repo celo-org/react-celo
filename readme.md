@@ -250,16 +250,16 @@ const { address } = useCelo();
 
 When a user refreshes or navigates back to your page, they may not necessarily have a connected account any longer, however we shouldn't need to prompt them to login again just to view the page, that can be done only when doing an action.
 
-For that functionality we have the `performActions` and `getConnectedKit` methods. Usage looks a little like this for `getConnectedKit`:
+For that functionality we have the `performActions` and `getConnectedSigner` methods. Usage looks a little like this for `getConnectedSigner`:
 
 ```javascript
 import { useCelo } from '@celo/react-celo';
 
 function App() {
-  const { getConnectedKit } = useCelo();
+  const { getConnectedSigner } = useCelo();
 
   async function transfer() {
-    const kit = await getConnectedKit();
+    const kit = await getConnectedSigner();
     const cUSD = await kit.contracts.getStableToken();
     await cUSD.transfer('0x...', 10000).sendAndWaitForReceipt();
   }

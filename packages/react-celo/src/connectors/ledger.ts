@@ -1,6 +1,7 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
 import { LedgerWallet, newLedgerWalletWithSetup } from '@celo/wallet-ledger';
+import { StaticCeloProvider } from '@celo-tools/celo-ethers-wrapper';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 import { WalletTypes } from '../constants';
@@ -18,6 +19,7 @@ export default class LedgerConnector
   public initialised = false;
   public type = WalletTypes.Ledger;
   public kit: MiniContractKit;
+  public provider: StaticCeloProvider;
   private wallet: LedgerWallet | undefined;
   constructor(
     private network: Network,
@@ -26,6 +28,7 @@ export default class LedgerConnector
   ) {
     super();
     this.kit = newKit(network.rpcUrl);
+    this.provider = new StaticCeloProvider(network.rpcUrl);
   }
 
   private getWallet() {

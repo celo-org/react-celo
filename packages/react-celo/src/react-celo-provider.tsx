@@ -47,7 +47,6 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
   theme,
   networks = DEFAULT_NETWORKS,
   feeCurrency = CeloContract.GoldToken,
-  buildContractsCache,
   logger,
 }: CeloProviderProps) => {
   if (logger) {
@@ -64,7 +63,7 @@ export const CeloProvider: React.FC<CeloProviderProps> = ({
     feeCurrency,
   });
 
-  const methods = useCeloMethods(state, dispatch, buildContractsCache);
+  const methods = useCeloMethods(state, dispatch);
 
   // what happens when i disconnect, need to be able to switch chains still.
   // need to init Unauthenticated connector both at startup and when last chain was disconnected or Replace the null object pattern

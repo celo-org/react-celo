@@ -1,16 +1,11 @@
-import { CeloTokenContract } from '@celo/contractkit/lib/base';
-import {
-  MiniContractKit,
-  newKit,
-  newKitFromWeb3,
-} from '@celo/contractkit/lib/mini-kit';
+import { Web3Provider } from '@ethersproject/providers';
 
 import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
 import { getEthereum, getInjectedEthereum } from '../utils/ethereum';
 import { getApplicationLogger } from '../utils/logger';
 import { switchToNetwork } from '../utils/metamask';
-import { AbstractConnector, ConnectorEvents, Web3Type } from './common';
+import { AbstractConnector, ConnectorEvents } from './common';
 
 export default class InjectedConnector
   extends AbstractConnector
@@ -18,18 +13,18 @@ export default class InjectedConnector
 {
   public initialised = false;
   public type = WalletTypes.Injected;
-  public kit: MiniContractKit;
+  public provider: Web3Provider;
   private network: Network;
 
   constructor(
     network: Network,
     private manualNetworkMode: boolean,
-    public feeCurrency: CeloTokenContract,
     defaultType: WalletTypes = WalletTypes.Injected
   ) {
     super();
     this.type = defaultType;
-    this.kit = newKit(network.rpcUrl);
+    this.provider = this.newProvider();
+
     this.network = network;
   }
 
@@ -41,15 +36,17 @@ export default class InjectedConnector
     let defaultAccount = lastUsedAddress;
 
     const injected = await getInjectedEthereum();
+
     if (!injected) {
       throw new Error('Ethereum wallet not installed');
     }
-    const { web3, ethereum, isMetaMask } = injected;
+    const { ethereum, isMetaMask } = injected;
 
     this.type = isMetaMask ? WalletTypes.MetaMask : WalletTypes.Injected;
     const metamask = ethereum._metamask;
     const isUnlocked = isMetaMask && (await metamask?.isUnlocked());
     const isConnected = ethereum.isConnected && ethereum.isConnected();
+
     if (isUnlocked || !isConnected || !defaultAccount) {
       [defaultAccount] = await ethereum.request({
         method: 'eth_requestAccounts',
@@ -57,16 +54,18 @@ export default class InjectedConnector
     }
     ethereum.removeListener('chainChanged', this.onChainChanged);
     ethereum.removeListener('accountsChanged', this.onAccountsChanged);
+
     if (!this.manualNetworkMode) {
-      await switchToNetwork(this.network, ethereum, () =>
-        this.kit.connection.chainId()
-      );
+      await switchToNetwork(this.network, ethereum, async () => {
+        const { chainId } = await this.provider.getNetwork();
+        return chainId;
+      });
     }
 
     ethereum.on('chainChanged', this.onChainChanged);
     ethereum.on('accountsChanged', this.onAccountsChanged);
 
-    this.newKit(web3 as unknown as Web3Type, defaultAccount);
+    this.provider = this.newProvider();
 
     const walletChainId = await ethereum.request({ method: 'eth_chainId' });
 
@@ -82,22 +81,30 @@ export default class InjectedConnector
     return this;
   }
 
-  private newKit(web3: Web3Type, defaultAccount: string) {
-    this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
-    this.kit.connection.defaultAccount = defaultAccount;
+  get signer() {
+    return this.provider.getSigner();
+  }
+
+  private newProvider() {
+    // @ts-expect-error this is right tho
+    return new Web3Provider(window.ethereum);
   }
 
   async startNetworkChangeFromApp(network: Network) {
     const ethereum = getEthereum();
-    await switchToNetwork(network, ethereum!, this.kit.connection.chainId);
+    await switchToNetwork(network, ethereum!, async () => {
+      const { chainId } = await this.provider.getNetwork();
+      return chainId;
+    });
+
     this.continueNetworkUpdateFromWallet(network);
   }
 
   //
   continueNetworkUpdateFromWallet(network: Network): void {
     this.network = network; // must set to prevent loop
-    const web3 = this.kit.connection.web3;
-    this.newKit(web3, this.account as string); // kit caches things so it need to be recreated
+    this.provider = this.newProvider();
+
     this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
   }
 
@@ -108,8 +115,10 @@ export default class InjectedConnector
   // else it dies.
   private onChainChanged = (chainIdHex: string) => {
     const chainId = parseInt(chainIdHex, 16);
+
     // if this change was initiated by app the chainIds will already match and we can abort
     getApplicationLogger().log('onChainChanged', chainId);
+
     if (this.network.chainId !== chainId) {
       this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, chainId);
     }
@@ -120,7 +129,8 @@ export default class InjectedConnector
       // wallet is locked properly close the connection.
       this.close();
     } else {
-      this.kit.connection.defaultAccount = accounts[0];
+      // almost certain we dont need to set the account/address on ethers
+
       this.emit(ConnectorEvents.ADDRESS_CHANGED, accounts[0]);
     }
   };
@@ -131,6 +141,7 @@ export default class InjectedConnector
 
   private removeListenersFromEth() {
     const ethereum = getEthereum();
+
     if (ethereum) {
       ethereum.removeListener('chainChanged', this.onChainChanged);
       ethereum.removeListener('accountsChanged', this.onAccountsChanged);
@@ -139,8 +150,10 @@ export default class InjectedConnector
 
   close(): void {
     this.removeListenersFromEth();
+
     try {
-      this.kit.connection.stop();
+      // TODO does ethers provider need stopping?
+      // this.kit.connection.stop();
     } finally {
       this.disconnect();
     }

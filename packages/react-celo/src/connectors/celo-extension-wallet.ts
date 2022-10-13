@@ -4,6 +4,7 @@ import {
   newKit,
   newKitFromWeb3,
 } from '@celo/contractkit/lib/mini-kit';
+import { Web3Provider } from '@ethersproject/providers';
 
 import { WalletTypes } from '../constants';
 import { Connector, Network } from '../types';
@@ -13,6 +14,7 @@ export default class CeloExtensionWalletConnector
   extends AbstractConnector
   implements Connector
 {
+  public provider: Web3Provider;
   public initialised = false;
   public type = WalletTypes.CeloExtensionWallet;
   public kit: MiniContractKit;
@@ -20,18 +22,22 @@ export default class CeloExtensionWalletConnector
   constructor(private network: Network, public feeCurrency: CeloTokenContract) {
     super();
     this.kit = newKit(network.rpcUrl);
-  }
-
-  async initialise(): Promise<this> {
-    const { default: Web3 } = await import('web3');
     const celo = window.celo;
     if (!celo) {
       throw new Error('Celo Extension Wallet not installed');
     }
-    const web3 = new Web3(celo);
+    //  @ts-expect-error This probably works right?
+    this.provider = new Web3Provider(celo);
+  }
+
+  async initialise(): Promise<this> {
+    const celo = window.celo;
+    if (!celo) {
+      throw new Error('Celo Extension Wallet not installed');
+    }
     await celo.enable();
     (
-      web3.currentProvider as unknown as {
+      this.provider as unknown as {
         publicConfigStore: {
           on: (
             event: string,
@@ -45,7 +51,6 @@ export default class CeloExtensionWalletConnector
       }
     });
 
-    this.kit = newKitFromWeb3(web3 as unknown as Web3Type);
     const [defaultAccount] = await this.kit.connection.web3.eth.getAccounts();
     this.kit.connection.defaultAccount = defaultAccount;
 

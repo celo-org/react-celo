@@ -1,7 +1,6 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { ReactNode } from 'react';
 
-import { ContractCacheBuilder } from './hooks/use-contracts-cache';
 import { ActionModalProps, ConnectModalProps } from './modals';
 import { Dapp, Network, Theme } from './types';
 import { ILogger } from './utils/logger';
@@ -24,7 +23,6 @@ export interface CeloProviderProps {
   manualNetworkMode?: boolean;
   theme?: Theme;
   feeCurrency?: CeloTokenContract;
-  buildContractsCache?: ContractCacheBuilder;
   connectModal?: ConnectModalProps;
   actionModal?: {
     reactModalProps?: Partial<ReactModal.Props>;

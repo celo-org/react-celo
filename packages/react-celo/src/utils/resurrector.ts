@@ -47,18 +47,9 @@ export function resurrector(
           CeloContract.GoldToken
         );
       case WalletTypes.MetaMask:
-        return new MetaMaskConnector(
-          network,
-          manualNetworkingMode,
-          CeloContract.GoldToken
-        );
+        return new MetaMaskConnector(network, manualNetworkingMode);
       case WalletTypes.Injected:
-        return new InjectedConnector(
-          network,
-          manualNetworkingMode,
-          CeloContract.GoldToken,
-          undefined
-        );
+        return new InjectedConnector(network, manualNetworkingMode);
       case WalletTypes.PrivateKey: {
         const privateKey = getTypedStorageKey(
           localStorageKeys.lastUsedPrivateKey

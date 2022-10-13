@@ -10,8 +10,7 @@ import {
 } from '@celo/react-celo';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
-import { useCallback, useEffect, useState } from 'react';
-import Web3 from 'web3';
+import { useCallback, useState } from 'react';
 
 import { PrimaryButton, SecondaryButton, toast } from '../components';
 import CeloLogo from '../components/celo-logo';
@@ -49,7 +48,6 @@ function isDark() {
 
 function HomePage(): React.ReactElement {
   const {
-    kit,
     address,
     network,
     connect,
@@ -63,50 +61,48 @@ function HomePage(): React.ReactElement {
   } = useCelo();
 
   const [_theme, selectTheme] = useState<Theme | null>(null);
-  const [summary, setSummary] = useState(defaultSummary);
+  const [summary] = useState(defaultSummary);
   const [sending, setSending] = useState(false);
 
-  const fetchSummary = useCallback(async () => {
-    if (!address) {
-      setSummary(defaultSummary);
-      return;
-    }
+  // const fetchSummary = useCallback(async () => {
+  //   if (!address) {
+  //     setSummary(defaultSummary);
+  //     return;
+  //   }
 
-    const [accounts, goldToken, stableTokens] = await Promise.all([
-      kit.contracts.getAccounts(),
-      kit.contracts.getGoldToken(),
-      Promise.all(
-        Object.values(StableToken).map(async (stable) => {
-          let contract;
-          try {
-            contract = await kit.contracts.getStableToken(stable);
-          } catch (e) {
-            contract = null;
-            console.error(e);
-          }
-          return {
-            symbol: stable,
-            contract: contract,
-          };
-        })
-      ),
-    ]);
+  //   // const [accounts, goldToken, stableTokens] = await Promise.all(
+  //   //   Promise.all(
+  //   //     Object.values(StableToken).map(async (stable) => {
+  //   //       let contract;
+  //   //       try {
+  //   //         contract = await kit.contracts.getStableToken(stable);
+  //   //       } catch (e) {
+  //   //         contract = null;
+  //   //         console.error(e);
+  //   //       }
+  //   //       return {
+  //   //         symbol: stable,
+  //   //         contract: contract,
+  //   //       };
+  //   //     })
+  //   //   ),
+  //   // ]);
 
-    const [accountSummary, celo, balances] = await Promise.all([
-      accounts.getAccountSummary(address).catch((e) => {
-        console.error(e);
-        return defaultSummary;
-      }),
-      goldToken.balanceOf(address),
-      getBalances(stableTokens, address),
-    ]);
+  //   const [accountSummary, celo, balances] = await Promise.all([
+  //     accounts.getAccountSummary(address).catch((e) => {
+  //       console.error(e);
+  //       return defaultSummary;
+  //     }),
+  //     goldToken.balanceOf(address),
+  //     getBalances(stableTokens, address),
+  //   ]);
 
-    setSummary({
-      ...accountSummary,
-      celo,
-      balances,
-    });
-  }, [address, kit]);
+  //   setSummary({
+  //     ...accountSummary,
+  //     celo,
+  //     balances,
+  //   });
+  // }, [address, kit]);
 
   const wrapAction =
     (
@@ -120,7 +116,7 @@ function HomePage(): React.ReactElement {
         await action(performActions);
 
         toast.success(`${actionName} succeeded`);
-        await fetchSummary();
+        // await fetchSummary();
       } catch (e) {
         toast.error((e as Error).message);
       } finally {
@@ -147,10 +143,6 @@ function HomePage(): React.ReactElement {
       html.classList.add('dark');
     }
   }, []);
-
-  useEffect(() => {
-    void fetchSummary();
-  }, [fetchSummary]);
 
   return (
     <div className="w-full">
@@ -282,22 +274,20 @@ function HomePage(): React.ReactElement {
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-100">
+                  {/* <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-100">
                     Balances
                   </div>
                   <div className="space-y-2">
-                    <div>
-                      CELO: {Web3.utils.fromWei(summary.celo.toFixed())}
-                    </div>
+                    <div>CELO: {utils.formatEther(summary.celo.toFixed())}</div>
                     {summary.balances.map((token) => (
                       <div key={token.symbol}>
                         {token.symbol}:{' '}
                         {token.value
-                          ? Web3.utils.fromWei(token.value.toFixed())
+                          ? utils.formatEther(token.value.toFixed())
                           : token.error}
                       </div>
                     ))}
-                  </div>
+                  </div> */}
                 </div>
                 <div>
                   <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-100">

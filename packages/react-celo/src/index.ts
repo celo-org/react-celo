@@ -1,5 +1,4 @@
 export * from './constants';
-export * from './ethers';
 export * from './react-celo-provider';
 export { defaultScreens as Screens } from './screens';
 export * from './types';

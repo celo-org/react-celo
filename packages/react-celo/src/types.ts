@@ -1,5 +1,7 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
+import { providers, Signer } from 'ethers';
+
 import React from 'react';
 
 import { ConnectorEvents, EventsMap } from './connectors/common';
@@ -60,9 +62,14 @@ export interface WalletConnectProvider extends Provider {
  * Connects to the blockchain.
  */
 export interface Connector {
-  kit: MiniContractKit;
+  provider: providers.Provider;
+  /**
+   * available except when connector is unauthenticated
+   */
+  signer?: Signer;
+  kit?: MiniContractKit;
   type: WalletTypes;
-  feeCurrency: CeloTokenContract;
+  feeCurrency?: CeloTokenContract;
   /**
    * `initialised` indicates if the connector
    * has been fully loaded.

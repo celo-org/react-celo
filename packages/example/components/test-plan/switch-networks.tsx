@@ -1,5 +1,5 @@
-import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import { Alfajores, Mainnet, useCelo } from '@celo/react-celo';
+import { providers } from 'ethers';
 
 import { SuccessIcon } from './success-icon';
 import { Result, TestBlock } from './ui';
@@ -9,7 +9,7 @@ import { useTestStatus } from './useTestStatus';
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // Hacky workaround to wait for the network to change.
 const hasNetworkUpdated = async (
-  kit: MiniContractKit,
+  provider: providers.Provider,
   expectedChainId: number
 ) => {
   let attempts = 0;
@@ -19,7 +19,7 @@ const hasNetworkUpdated = async (
     if (attempts >= 3) {
       throw new Error('Network did not change');
     }
-    const chainId = await kit.connection.chainId();
+    const { chainId } = await provider.getNetwork();
     if (chainId === expectedChainId) {
       isNetworkUpdated = true;
       return;
@@ -29,7 +29,7 @@ const hasNetworkUpdated = async (
 };
 
 export function SwitchNetwork() {
-  const { updateNetwork, kit } = useCelo();
+  const { updateNetwork, provider } = useCelo();
   const { status, errorMessage, wrapActionWithStatus, setStatus } =
     useTestStatus();
   const [disabledTest, setDisabledTest] = useDisabledTest();
@@ -39,9 +39,9 @@ export function SwitchNetwork() {
     await updateNetwork(Alfajores);
 
     try {
-      await hasNetworkUpdated(kit, Alfajores.chainId);
+      await hasNetworkUpdated(provider, Alfajores.chainId);
       await updateNetwork(Mainnet);
-      await hasNetworkUpdated(kit, Mainnet.chainId);
+      await hasNetworkUpdated(provider, Mainnet.chainId);
     } catch (error) {
       if (error instanceof Error) {
         setStatus.failed(error.message);

@@ -1,10 +1,10 @@
 import { UseCelo, useCelo } from '@celo/react-celo';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { sendTestTransaction } from '../../utils/send-test-transaction';
 import { signTest } from '../../utils/sign-test';
 import { signTestTypedData } from '../../utils/sign-test-typed-data';
-import { assertHasBalance } from './assert-has-balance';
+// import { assertHasBalance } from './assert-has-balance';
 import { SuccessIcon } from './success-icon';
 import { Result, TestBlock } from './ui';
 import { useTestStatus } from './useTestStatus';
@@ -25,9 +25,8 @@ export function PerformActionInWallet({
   action: (performActions: UseCelo['performActions']) => Promise<void>;
   successMessage: string;
 }) {
-  const { performActions, address, kit, feeCurrency } = useCelo();
-  const { status, errorMessage, wrapActionWithStatus, setStatus } =
-    useTestStatus();
+  const { performActions } = useCelo();
+  const { status, errorMessage, wrapActionWithStatus } = useTestStatus();
   const [disabled, setDisabled] = useState(true);
 
   const onRunTest = wrapActionWithStatus(async () => {
@@ -35,27 +34,27 @@ export function PerformActionInWallet({
     await action(performActions);
   });
 
-  useEffect(() => {
-    if (address) {
-      assertHasBalance(address, kit, feeCurrency)
-        .then(() => {
-          setDisabled(false);
-          setStatus.notStarted();
-        })
-        .catch((assertError) => {
-          setDisabled(true);
-          if (assertError instanceof Error) {
-            setStatus.failed(assertError.message);
-          } else {
-            setStatus.failed(
-              `Error when checking balance: ${JSON.stringify(assertError)}`
-            );
-          }
-        });
-    } else {
-      setDisabled(true);
-    }
-  }, [address, feeCurrency, kit, setDisabled, setStatus]);
+  // useEffect(() => {
+  //   if (address) {
+  //     assertHasBalance(address, feeCurrency)
+  //       .then(() => {
+  //         setDisabled(false);
+  //         setStatus.notStarted();
+  //       })
+  //       .catch((assertError) => {
+  //         setDisabled(true);
+  //         if (assertError instanceof Error) {
+  //           setStatus.failed(assertError.message);
+  //         } else {
+  //           setStatus.failed(
+  //             `Error when checking balance: ${JSON.stringify(assertError)}`
+  //           );
+  //         }
+  //       });
+  //   } else {
+  //     setDisabled(true);
+  //   }
+  // }, [address, feeCurrency, setDisabled, setStatus]);
 
   return (
     <>

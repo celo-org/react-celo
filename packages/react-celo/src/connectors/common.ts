@@ -30,9 +30,8 @@ export async function updateFeeCurrency(
   const address =
     feeContract === CeloContract.GoldToken
       ? undefined
-      : await this.kit.registry.addressFor(feeContract);
-
-  this.kit.connection.defaultFeeCurrency = address;
+      : await this.kit?.registry.addressFor(feeContract);
+  // this.kit?.connection.defaultFeeCurrency = address;
 }
 
 export enum ConnectorEvents {

@@ -9,9 +9,11 @@ import {
   WalletConnectWallet as WalletConnectWalletV1,
   WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
 } from '@celo/wallet-walletconnect-v1';
+import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { BigNumber } from 'bignumber.js';
 
 import { WalletTypes } from '../constants';
+import { CeloProvider } from '@celo-tools/celo-ethers-wrapper';
 import { Connector, Network } from '../types';
 import { getApplicationLogger } from '../utils/logger';
 import {
@@ -35,6 +37,7 @@ export default class WalletConnectConnector
   public initialised = false;
   public type: WalletTypes.WalletConnect = WalletTypes.WalletConnect;
   public kit: MiniContractKit;
+  public provider: CeloProvider;
 
   constructor(
     private network: Network,
@@ -56,7 +59,8 @@ export default class WalletConnectConnector
           }
         : options
     );
-
+    // TODO this is temp need to hook to wallet connect in actuality
+    this.provider = new CeloProvider(network.rpcUrl);
     this.kit = newKit(network.rpcUrl, wallet);
   }
 
@@ -103,6 +107,11 @@ export default class WalletConnectConnector
         location.href = deepLink;
       }
     }
+  }
+
+  get signer(): JsonRpcSigner {
+    // @ts-expect-error (what is wrong?)
+    return this.provider.getSigner();
   }
 
   async startNetworkChangeFromApp(network: Network) {
