@@ -352,7 +352,7 @@ Opt out of the React-Celo automatically switching which network the dapp / walle
 
 react-celo provides a `feeCurrency` variable and an `updateFeeCurrency` function you can use to display the currently selected feeCurrency (cUSD, CELO, cEUR). The feeCurrency can also be passed to the provider component. Valid values are `CeloContract.GoldToken`, `CeloContract.StableToken`, `CeloContract.StableTokenEUR`. CeloContract can be imported like so:
 
-`import { CeloTokenContract } from '@celo/contractkit'`
+`import { CeloTokenContract } from '@celo/contractkit/lib/base'`
 
 ### Themes and dark-mode
 

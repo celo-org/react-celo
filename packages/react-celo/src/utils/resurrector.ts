@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { CeloContract } from '@celo/contractkit';
+import { CeloContract } from '@celo/contractkit/lib/base';
 
 import {
   CeloExtensionWalletConnector,
