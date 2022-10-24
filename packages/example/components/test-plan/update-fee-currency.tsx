@@ -1,4 +1,4 @@
-import { CeloContract } from '@celo/contractkit';
+import { CeloContract } from '@celo/contractkit/lib/base';
 import { useCelo } from '@celo/react-celo';
 import { useEffect } from 'react';
 

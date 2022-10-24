@@ -8,7 +8,7 @@ With version 4 the full ContractKit is no longer provided instead MiniContractKi
 import { Web3ContractCache } from '@celo/contractkit/lib/web3-contract-cache';
 import { WrapperCache } from '@celo/contractkit/lib/contract-cache';
 import { AddressRegistry } from '@celo/contractkit/lib/address-registry';
-import { ContractKit } from '@celo/contractkit';
+import { ContractKit } from '@celo/contractkit/lib/';
 
 // This creates a contracts cache exactly the same as contractkit.contracts
 function fullContractsCache(

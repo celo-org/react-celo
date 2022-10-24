@@ -1,4 +1,4 @@
-import { CeloTokenContract } from '@celo/contractkit';
+import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 import {

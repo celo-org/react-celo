@@ -1,10 +1,5 @@
-import {
-  CeloContract,
-  CeloTokenContract,
-  CeloTokenType,
-  StableToken,
-  Token,
-} from '@celo/contractkit';
+import { CeloTokenType, StableToken, Token } from '@celo/base/lib/currencies';
+import { CeloContract, CeloTokenContract } from '@celo/contractkit/lib/base';
 
 export function getTypedData(chainId: number) {
   return {
