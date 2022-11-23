@@ -1,4 +1,5 @@
-import { CeloTokenContract, ContractKit } from '@celo/contractkit';
+import { CeloTokenContract } from '@celo/contractkit/lib/base';
+import { ContractKit } from '@celo/contractkit/lib/kit';
 import { MiniContractKit } from '@celo/contractkit/lib/mini-kit';
 import Web3 from 'web3';
 

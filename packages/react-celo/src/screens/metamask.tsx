@@ -71,7 +71,7 @@ export const MetaMaskOrInjectedWallet = ({ onSubmit }: ConnectorProps) => {
         <div className={styles.spinnerContainer}>
           <Spinner />
           <p className={styles.disclaimer}>
-            No pop-up? Check your if your MetaMask extension is unlocked.
+            No pop-up? Check if your MetaMask extension is unlocked.
           </p>
         </div>
       );
