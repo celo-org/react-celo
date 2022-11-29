@@ -18,6 +18,7 @@ import CeloLogo from '../components/celo-logo';
 import { ThemeButton, themes } from '../components/theme-button';
 import { feeTokenMap } from '../utils';
 import { sendTestTransaction } from '../utils/send-test-transaction';
+import { sendTestTransactionStable } from '../utils/send-test-transaction-stable';
 import { signTest } from '../utils/sign-test';
 import { signTestTypedData } from '../utils/sign-test-typed-data';
 
@@ -132,6 +133,12 @@ function HomePage(): React.ReactElement {
     sendTestTransaction,
     'sendTransaction'
   );
+
+  const testSendTransactionStable = wrapAction(
+    sendTestTransactionStable,
+    'sendTransaction'
+  );
+  
   const testSignTypedData = wrapAction(signTestTypedData, 'signTypedData');
   const testSignPersonal = wrapAction(signTest, 'signPersonal');
 
@@ -164,7 +171,7 @@ function HomePage(): React.ReactElement {
       </Head>
       <main className="w-full">
         <section className="flex flex-col justify-center items-center w-full min-h-[285px] p-4  bg-white dark:bg-slate-900 dark:text-white rounded-lg mt-4 border-celo-gold border-solid border">
-          <h1 className="text-dark-600 mt-6 pb-4 text-center">
+          <h1 className="pb-4 mt-6 text-center text-dark-600">
             A{' '}
             <a
               className="underline"
@@ -194,7 +201,7 @@ function HomePage(): React.ReactElement {
             </PrimaryButton>
           )}
 
-          <div className="text-slate-600 dark:text-slate-200 my-4 max-w-sm  text-center">
+          <div className="max-w-sm my-4 text-center text-slate-600 dark:text-slate-200">
             Connect to your wallet of choice, then sign and send a test
             transaction
           </div>
@@ -203,6 +210,12 @@ function HomePage(): React.ReactElement {
               address || 'hidden'
             }`}
           >
+            <SecondaryButton
+              disabled={sending}
+              onClick={testSendTransactionStable}
+            >
+              Send with feeCurrrency
+            </SecondaryButton>
             <SecondaryButton disabled={sending} onClick={testSendTransaction}>
               Test sendTransaction
             </SecondaryButton>
@@ -224,11 +237,11 @@ function HomePage(): React.ReactElement {
         </section>
         <UsedBy />
         <div className="mt-6">
-          <div className="text-slate-600 mb-4 max-w-md">
+          <div className="max-w-md mb-4 text-slate-600">
             <h2 className="mb-2 text-lg text-slate-900 dark:text-slate-200">
               Styling
             </h2>
-            <p className="text-slate-600 dark:text-slate-200 mb-4">
+            <p className="mb-4 text-slate-600 dark:text-slate-200">
               React Celo will go dark when tailwinds tw-dark class is on body or
               you can provide a theme
             </p>
@@ -264,9 +277,9 @@ function HomePage(): React.ReactElement {
           </div>
           <div className="flex flex-col">
             {address && (
-              <div className="w-64 md:w-96 space-y-4 text-slate-700 bg-slate-200 dark:bg-black dark:text-white rounded p-4">
+              <div className="w-64 p-4 space-y-4 rounded md:w-96 text-slate-700 bg-slate-200 dark:bg-black dark:text-white">
                 <div className="mb-4">
-                  <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-200">
+                  <div className="mb-2 text-lg font-bold text-slate-900 dark:text-slate-200">
                     Account Summary on {network.name}
                   </div>
                   <div className="space-y-2">
@@ -282,7 +295,7 @@ function HomePage(): React.ReactElement {
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-100">
+                  <div className="mb-2 text-lg font-bold text-slate-900 dark:text-slate-100">
                     Balances
                   </div>
                   <div className="space-y-2">
@@ -300,7 +313,7 @@ function HomePage(): React.ReactElement {
                   </div>
                 </div>
                 <div>
-                  <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-100">
+                  <div className="mb-2 text-lg font-bold text-slate-900 dark:text-slate-100">
                     Fee Currency{' '}
                     {supportsFeeCurrency || `not supported on ${walletType}`}
                   </div>
@@ -310,7 +323,7 @@ function HomePage(): React.ReactElement {
                     onChange={(event) =>
                       updateFeeCurrency(event.target.value as CeloTokenContract)
                     }
-                    className="border border-slate-300 rounded px-4 py-2"
+                    className="px-4 py-2 border rounded border-slate-300"
                   >
                     {Object.keys(feeTokenMap).map((token) => (
                       <option key={token} value={token}>
@@ -369,7 +382,7 @@ export default function Home(): React.ReactElement {
 
 function UsedBy() {
   return (
-    <div className="mt-6 flex flex-col items-center">
+    <div className="flex flex-col items-center mt-6">
       <h2 className="mb-2 text-lg dark:text-white">Used by</h2>
       <ul className="flex gap-6">
         {[
@@ -410,7 +423,7 @@ function SelectChain() {
   const { network, networks, updateNetwork } = useCelo();
   return (
     <select
-      className="border border-celo-gold outline-celo-gold-light text-slate-800 rounded px-1 py-1 mr-1"
+      className="px-1 py-1 mr-1 border rounded border-celo-gold outline-celo-gold-light text-slate-800"
       value={network.name}
       onChange={(e) => {
         const newNetwork = networks.find((n) => n.name === e.target.value);
