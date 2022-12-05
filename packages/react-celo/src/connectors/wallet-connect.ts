@@ -1,14 +1,18 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
+// import {
+//   EthProposal,
+//   SessionConnect,
+//   SessionDisconnect,
+//   SessionProposal,
+//   SessionUpdate,
+//   WalletConnectWallet as WalletConnectWalletV1,
+//   WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
+// } from '@celo/wallet-walletconnect-v1';
 import {
-  EthProposal,
-  SessionConnect,
-  SessionDisconnect,
-  SessionProposal,
-  SessionUpdate,
-  WalletConnectWallet as WalletConnectWalletV1,
-  WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
-} from '@celo/wallet-walletconnect-v1';
+  WalletConnectWallet,
+  WalletConnectWalletOptions,
+} from '@celo/wallet-walletconnect-v2';
 import { BigNumber } from 'bignumber.js';
 
 import { WalletTypes } from '../constants';
@@ -19,14 +23,6 @@ import {
   ConnectorEvents,
   updateFeeCurrency,
 } from './common';
-
-export function buildOptions(network: Network): WalletConnectWalletOptionsV1 {
-  return {
-    connect: {
-      chainId: network.chainId,
-    },
-  };
-}
 
 export default class WalletConnectConnector
   extends AbstractConnector
@@ -41,41 +37,40 @@ export default class WalletConnectConnector
     manualNetworkMode: boolean,
     public feeCurrency: CeloTokenContract,
     // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
-    readonly options: WalletConnectWalletOptionsV1,
+    readonly options: WalletConnectWalletOptions,
     readonly autoOpen = false,
     public getDeeplinkUrl?: (uri: string) => string | false,
     readonly version?: number,
     readonly walletId?: string
   ) {
     super();
-    const wallet = new WalletConnectWalletV1(
-      manualNetworkMode
-        ? {
-            init: options.init,
-            connect: { ...options.connect, chainId: undefined },
-          }
-        : options
-    );
+    // const wallet = new WalletConnectWallet(
+    //   manualNetworkMode
+    //     ? {
+    //         init: options.init,
+    //         connect: { ...options.connect, chainId: undefined },
+    //       }
+    //     : options
+    // );
+    const wallet = new WalletConnectWallet(options);
 
     this.kit = newKit(network.rpcUrl, wallet);
   }
 
   // this is called automatically and is what gives us the uri for the qr code to be scanned
   async initialise(): Promise<this> {
-    const wallet = this.kit.getWallet() as WalletConnectWalletV1;
+    const wallet = this.kit.getWallet() as WalletConnectWallet;
 
-    wallet.onSessionCreated = this.onSessionCreated.bind(this);
+    wallet.on('session_created', this.onSessionCreated);
 
-    wallet.onSessionUpdated = this.onSessionUpdated.bind(this);
+    // wallet.onCallRequest = this.onCallRequest.bind(this);
 
-    wallet.onCallRequest = this.onCallRequest.bind(this);
+    // wallet.onWcSessionUpdate = this.onWcSessionUpdate.bind(this);
 
-    wallet.onWcSessionUpdate = this.onWcSessionUpdate.bind(this);
+    // wallet.onSessionDeleted = this.onSessionDeleted.bind(this);
 
-    wallet.onSessionDeleted = this.onSessionDeleted.bind(this);
-
-    // must be called after all callbacks are set
-    await wallet.setupClient();
+    // // must be called after all callbacks are set
+    // await wallet.setupClient();
 
     await this.handleUri(wallet);
 
@@ -91,7 +86,7 @@ export default class WalletConnectConnector
     return this;
   }
 
-  private async handleUri(wallet: WalletConnectWalletV1) {
+  private async handleUri(wallet: WalletConnectWallet) {
     const uri = await wallet.getUri();
     if (uri) {
       this.emit(ConnectorEvents.WC_URI_RECEIVED, uri);
@@ -107,7 +102,7 @@ export default class WalletConnectConnector
 
   async startNetworkChangeFromApp(network: Network) {
     try {
-      const wallet = this.kit.getWallet() as WalletConnectWalletV1;
+      const wallet = this.kit.getWallet() as WalletConnectWallet;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -127,7 +122,7 @@ export default class WalletConnectConnector
   }
 
   private restartKit(network: Network) {
-    const wallet = this.kit.getWallet() as WalletConnectWalletV1;
+    const wallet = this.kit.getWallet() as WalletConnectWallet;
     this.network = network; // must set to prevent loop
     try {
       this.kit.connection.stop(); // this blows up if its already stopped
@@ -136,15 +131,15 @@ export default class WalletConnectConnector
     }
   }
 
-  private async onSessionCreated(error: Error | null, session: SessionConnect) {
-    if (error) {
-      getApplicationLogger().error(
-        '[wallet-connect] Error while connecting',
-        error.name,
-        error.message
-      );
-      this.emit(ConnectorEvents.WC_ERROR, error);
-    }
+  private onSessionCreated = async (session: unknown) => {
+    // if (error) {
+    //   getApplicationLogger().error(
+    //     '[wallet-connect] Error while connecting',
+    //     error.name,
+    //     error.message
+    //   );
+    //   this.emit(ConnectorEvents.WC_ERROR, error);
+    // }
     const connectSession = session;
     await this.onConnected(connectSession).catch((e: Error) => {
       this.emit(ConnectorEvents.WC_ERROR, e);
@@ -155,9 +150,9 @@ export default class WalletConnectConnector
         e
       );
     });
-  }
+  };
 
-  private onCallRequest(error: Error | null, payload: EthProposal) {
+  private onCallRequest(error: Error | null, payload: any) {
     getApplicationLogger().debug(
       'wallet-connect',
       'onCallRequest',
@@ -169,28 +164,12 @@ export default class WalletConnectConnector
     }
   }
 
-  private async onWcSessionUpdate(
-    _error: Error | null,
-    session: SessionProposal
-  ) {
-    getApplicationLogger().debug(
-      'wallet-connect',
-      'on-wc-session-update',
-      session,
-      _error
-    );
-    const params = session.params[0];
-    await this.combinedSessionUpdater(params);
-  }
-
-  private async onSessionUpdated(error: Error | null, session: SessionUpdate) {
+  private async onSessionUpdated(session: unknown) {
     getApplicationLogger().debug(
       'wallet-connect',
       'on-session-update',
-      session,
-      error
+      session
     );
-    const params = session.params[0];
 
     if (error) {
       this.emit(ConnectorEvents.WC_ERROR, error);
@@ -203,7 +182,7 @@ export default class WalletConnectConnector
     }
   }
 
-  private onSessionDeleted(_error: Error | null, session: SessionDisconnect) {
+  private onSessionDeleted(_error: Error | null, session: any) {
     getApplicationLogger().debug(
       'wallet-connect',
       'on-session-delete',
@@ -261,21 +240,23 @@ export default class WalletConnectConnector
     this.emit(ConnectorEvents.ADDRESS_CHANGED, address);
   }
 
-  private async onConnected(session: SessionConnect) {
-    const sessionAccount = session.params[0].accounts[0];
-    const walletAddress = await this.fetchWalletAddressForAccount(
-      sessionAccount
-    );
+  private async onConnected(session: any) {
+    debugger;
+    const allNamespaceAccounts = Object.values(session.namespaces)
+      .map((namespace) => namespace.accounts)
+      .flat();
+    const [_eip, chainId, account] = allNamespaceAccounts[0].split(':');
+
+    const walletAddress = await this.fetchWalletAddressForAccount(account);
     if (this.kit.connection.defaultAccount !== walletAddress) {
       this.kit.connection.defaultAccount = walletAddress;
     }
-
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
       walletId: this.walletId as string,
-      walletChainId: session.params[0].chainId,
+      walletChainId: chainId,
       networkName: this.network.name,
-      address: sessionAccount,
+      address: walletAddress,
     });
   }
 
@@ -293,8 +274,8 @@ export default class WalletConnectConnector
   async close(message?: string): Promise<void> {
     getApplicationLogger().log('wallet-connect', 'close', message);
     try {
-      const wallet = this.kit.getWallet() as WalletConnectWalletV1;
-      await wallet.close(`${END_MESSAGE} : ${message || ''}`);
+      const wallet = this.kit.getWallet() as WalletConnectWallet;
+      await wallet.close();
       this.kit.connection.stop();
     } finally {
       this.disconnect();

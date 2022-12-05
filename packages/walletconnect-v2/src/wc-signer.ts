@@ -1,7 +1,7 @@
 import { CeloTx, EncodedTransaction, Signer } from '@celo/connect';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
-import WalletConnect from '@walletconnect/client';
-import { SessionTypes } from '@walletconnect/types/dist/cjs';
+import Client from '@walletconnect/sign-client';
+import { SessionTypes } from '@walletconnect/types';
 import * as ethUtil from 'ethereumjs-util';
 
 import { SupportedMethods } from './types';
@@ -14,8 +14,8 @@ export class WalletConnectSigner implements Signer {
    * Construct a new instance of a WalletConnectSigner
    */
   constructor(
-    protected client: WalletConnect,
-    protected session: SessionTypes.Settled,
+    protected client: Client,
+    protected session: SessionTypes.Struct,
     protected account: string,
     protected chainId: string
   ) {}
@@ -24,8 +24,8 @@ export class WalletConnectSigner implements Signer {
     throw new Error('signTransaction unimplemented; use signRawTransaction');
   }
 
-  private request<T>(method: SupportedMethods, params: T) {
-    return this.client.request({
+  private request<T>(method: SupportedMethods, params: unknown) {
+    return this.client.request<T>({
       topic: this.session.topic,
       chainId: `eip155:${this.chainId}`,
       request: {
@@ -45,10 +45,10 @@ export class WalletConnectSigner implements Signer {
   async signTypedData(
     data: EIP712TypedData
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
-    const result = (await this.request<[string, string]>(
-      SupportedMethods.signTypedData,
-      [this.account, JSON.stringify(data)]
-    )) as string;
+    const result = await this.request<string>(SupportedMethods.signTypedData, [
+      this.account,
+      JSON.stringify(data),
+    ]);
     return ethUtil.fromRpcSig(result) as {
       v: number;
       r: Buffer;
@@ -59,29 +59,28 @@ export class WalletConnectSigner implements Signer {
   async signPersonalMessage(
     data: string
   ): Promise<{ v: number; r: Buffer; s: Buffer }> {
-    const result = (await this.request(SupportedMethods.personalSign, [
+    const result = await this.request<string>(SupportedMethods.personalSign, [
       data,
       this.account,
-    ])) as string;
-
+    ]);
     return ethUtil.fromRpcSig(result) as { v: number; r: Buffer; s: Buffer };
   }
 
   getNativeKey = () => this.account;
 
   async decrypt(data: Buffer) {
-    const result = (await this.request<[string, Buffer]>(
-      SupportedMethods.decrypt,
-      [this.account, data]
-    )) as string;
+    const result = await this.request<string>(SupportedMethods.decrypt, [
+      this.account,
+      data,
+    ]);
     return Buffer.from(result, 'hex');
   }
 
   async computeSharedSecret(publicKey: string) {
-    const result = (await this.request<[string, string]>(
+    const result = await this.request<string>(
       SupportedMethods.computeSharedSecret,
       [this.account, publicKey]
-    )) as string;
+    );
     return Buffer.from(result, 'hex');
   }
 }

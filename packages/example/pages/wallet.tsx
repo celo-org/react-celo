@@ -1,21 +1,13 @@
 import { trimLeading0x } from '@celo/base';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
-import { Alfajores } from '@celo/react-celo';
+import { Alfajores, Baklava, Mainnet } from '@celo/react-celo';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
-import {
-  AccountsProposal,
-  CLIENT_EVENTS,
-  ComputeSharedSecretProposal,
-  DecryptProposal,
-  PersonalSignProposal,
-  Request,
-  SessionProposal,
-  SignTransactionProposal,
-  SignTypedSignProposal,
-  SupportedMethods,
-} from '@celo/wallet-walletconnect-v1';
-import WalletConnect from '@walletconnect/client';
+import { SupportedMethods } from '@celo/wallet-walletconnect-v2';
+// import WalletConnect from '@walletconnect/client';
+import SignClient from '@walletconnect/sign-client';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { getSdkError } from '@walletconnect/utils';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { createRef, useCallback, useEffect, useState } from 'react';
@@ -25,6 +17,7 @@ import { TransactionConfig } from 'web3-core/types';
 
 import { PrimaryButton } from '../components';
 
+const WALLET_CONNECT_PROJECT_ID = 'f597db9e215becf1a4b24a7154c26fa2'; // this is nico's walletconnect project id
 const WALLET_ID = 'test-wallet-clabs';
 
 const web3 = new Web3(Alfajores.rpcUrl);
@@ -51,7 +44,8 @@ function truncateAddress(address: string) {
 export default function Wallet(): React.ReactElement {
   const inputRef = createRef<HTMLInputElement>();
   const [error, setError] = useState<string | null>(null);
-  const [connector, setConnector] = useState<WalletConnect | null>(null);
+  const [signClient, setSignClient] = useState<SignClient | null>(null);
+  const [session, setSession] = useState<SessionTypes.Struct | null>(null);
   const [summary, setSummary] = useState(defaultSummary);
   const [approvalData, setApprovalData] = useState<{
     accept: () => void;
@@ -88,8 +82,8 @@ export default function Wallet(): React.ReactElement {
     });
   }, []);
 
-  const connect = useCallback(() => {
-    if (!inputRef.current) {
+  const connect = useCallback(async () => {
+    if (!inputRef.current || !signClient) {
       return;
     }
 
@@ -100,249 +94,244 @@ export default function Wallet(): React.ReactElement {
     }
     setError(null);
 
-    // Create connector
-    const _connector = new WalletConnect({
-      uri,
-      clientMeta: {
-        description: 'WalletConnect Developer App',
-        url: 'https://walletconnect.org',
-        icons: ['https://walletconnect.org/walletconnect-logo.png'],
-        name: 'WalletConnect',
-      },
-      storageId: WALLET_ID,
-    });
-    setConnector(_connector);
-  }, [inputRef]);
+    await signClient.core.pairing.pair({ uri, activatePairing: false });
+  }, [signClient, inputRef]);
 
-  const approveConnection = useCallback(() => {
-    if (!connector) return;
-    connector.approveSession({
-      chainId: Alfajores.chainId,
-      accounts: [account.address],
-      networkId: 0,
-      rpcUrl: Alfajores.rpcUrl,
-    });
-    setApprovalData(null);
-  }, [connector]);
-
-  const rejectConnection = useCallback(async (): Promise<void> => {
-    if (!connector) return;
-    if (!connector.session?.connected) {
-      connector.rejectSession({
-        message: 'Test wallet rejected the connection manually',
+  const approveConnection = useCallback(
+    async ({
+      id,
+      params: { pairingTopic, requiredNamespaces },
+    }: SignClientTypes.EventArguments['session_proposal']) => {
+      if (!signClient || !pairingTopic) return;
+      await signClient.core.pairing.activate({
+        topic: pairingTopic,
       });
-      setApprovalData(null);
-    } else {
-      await connector.killSession();
-    }
 
-    setConnector(null);
-  }, [connector]);
-
-  const reject = useCallback(
-    (id: number, message: string) => {
-      if (!connector) return;
-
-      connector.rejectRequest({
+      console.log(requiredNamespaces);
+      const { topic: _, acknowledged } = await signClient.approve({
         id,
-        error: {
-          message,
+        namespaces: {
+          eip155: {
+            accounts: requiredNamespaces.eip155.chains.map(
+              (x) => `${x}:${account.address}`
+            ),
+            methods: requiredNamespaces.eip155.methods,
+            events: requiredNamespaces.eip155.events,
+          },
         },
       });
+      setSession(await acknowledged());
+      setApprovalData(null);
     },
-    [connector]
+    [signClient]
+  );
+
+  const rejectConnection = useCallback(
+    async ({
+      topic,
+    }: SignClientTypes.EventArguments['session_delete']): Promise<void> => {
+      if (!signClient) return;
+
+      await signClient.disconnect({ topic });
+      setApprovalData(null);
+      setSession(null);
+      setSignClient(null);
+    },
+    [signClient]
+  );
+
+  const reject = useCallback(
+    async (id: number, message: string) => {
+      if (!signClient) return;
+
+      await signClient.reject({
+        id,
+        reason: getSdkError('USER_DISCONNECTED', message),
+      });
+    },
+    [signClient]
   );
 
   const signTransaction = useCallback(
-    async (id: number, params: TransactionConfig) => {
-      if (!connector) return;
+    async (id: number, topic: string, params: TransactionConfig) => {
+      if (!signClient) return;
 
-      await wallet
-        .signTransaction({ ...params, chainId: Alfajores.chainId })
-        .then((result) => {
-          connector.approveRequest({
-            id,
-            result,
-          });
-        });
+      const gas = params.gas ?? ((params.gasPrice * params.gasLimit) as number);
+      const result = await wallet.signTransaction({
+        ...params,
+        gas,
+        chainId: Alfajores.chainId,
+      });
+
+      console.log({ gas, result });
+      await signClient.respond({
+        topic,
+        response: { id, result, jsonrpc: Alfajores.rpcUrl },
+      });
 
       setTimeout(() => void fetchSummary(), 5000);
       setApprovalData(null);
     },
-    [connector, fetchSummary]
+    [signClient, fetchSummary]
   );
 
   const personalSign = useCallback(
-    async (id: number, message: string) => {
-      if (!connector) return;
+    async (id: number, topic: string, message: string) => {
+      if (!signClient) return;
 
       const result = await wallet.signPersonalMessage(account.address, message);
-      connector.approveRequest({
-        id,
-        result,
+      await signClient.respond({
+        topic,
+        response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
       setApprovalData(null);
     },
-    [connector]
+    [signClient]
   );
 
   const signTypedData = useCallback(
-    async (id: number, data: EIP712TypedData) => {
-      if (!connector) return;
+    async (id: number, topic: string, data: EIP712TypedData) => {
+      if (!signClient) return;
 
       const result = await wallet.signTypedData(account.address, data);
-
-      connector.approveRequest({
-        id,
-        result: result,
+      await signClient.respond({
+        topic,
+        response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
       setApprovalData(null);
     },
-    [connector]
+    [signClient]
   );
 
   const accounts = useCallback(
-    (id: number) => {
-      if (!connector) return;
+    async (id: number, topic: string) => {
+      if (!signClient) return;
 
       const result = wallet.getAccounts();
-      connector.approveRequest({
-        id,
-        result,
+      await signClient.respond({
+        topic,
+        response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
       setApprovalData(null);
     },
-    [connector]
+    [signClient]
   );
 
   const decrypt = useCallback(
-    async (id: number, data: string) => {
-      if (!connector) return;
+    async (id: number, topic: string, data: string) => {
+      if (!signClient) return;
 
       const result = await wallet.decrypt(
         account.address,
         Buffer.from(data, 'hex')
       );
 
-      connector.approveRequest({
-        id,
-        result: result,
+      await signClient.respond({
+        topic,
+        response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
       setApprovalData(null);
     },
-    [connector]
+    [signClient]
   );
 
   const computeSharedSecret = useCallback(
-    async (id: number, publicKey: string) => {
-      if (!connector) return;
+    async (id: number, topic: string, publicKey: string) => {
+      if (!signClient) return;
 
       const result = await wallet.computeSharedSecret(
         account.address,
         publicKey
       );
 
-      connector.approveRequest({
-        id,
-        result: result,
+      await signClient.respond({
+        topic,
+        response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
       setApprovalData(null);
     },
-    [connector]
+    [signClient]
   );
 
   const handleNewRequests = useCallback(
-    (
-      err: Error | null,
-      payload:
-        | AccountsProposal
-        | SignTransactionProposal
-        | PersonalSignProposal
-        | SignTypedSignProposal
-        | DecryptProposal
-        | ComputeSharedSecretProposal
-    ): void => {
-      if (err) return setError(err.message);
-
-      console.log('call_request', payload);
+    ({
+      id,
+      topic,
+      params: { request, chainId },
+    }: SignClientTypes.EventArguments['session_request']): void | Promise<void> => {
+      if (chainId !== `eip155:${Alfajores.chainId}`) {
+        return signClient?.reject({
+          id,
+          reason: getSdkError('UNSUPPORTED_CHAINS'),
+        });
+      }
+      console.log('call_request', { id, topic, chainId, request });
       let decodedMessage: string;
 
-      switch (payload.method) {
+      const requestSession = signClient.session.get(topic);
+      switch (request.method as SupportedMethods) {
         case SupportedMethods.accounts:
           return setApprovalData({
-            accept: () => accounts(payload.id),
-            reject: () =>
-              reject(
-                payload.id,
-                `User rejected computeSharedSecret ${payload.id}`
-              ),
+            accept: () => accounts(id, topic),
+            reject: () => reject(id, `User rejected computeSharedSecret ${id}`),
             meta: {
               title: `Send all accounts of this wallet?`,
-              raw: payload,
+              raw: request,
             },
           });
-          break;
         case SupportedMethods.signTransaction:
           return setApprovalData({
-            accept: () => signTransaction(payload.id, payload.params[0]),
-            reject: () =>
-              reject(payload.id, `User rejected transaction ${payload.id}`),
+            accept: () => signTransaction(id, topic, request.params),
+            reject: () => reject(id, `User rejected transaction ${id}`),
             meta: {
               // TODO: Find out how the value can be determined from the payload// eslint-disable-next-line
               // eslint-disable-next-line
-              title: `Transfer ${payload.params[0].value} CELO from ${payload.params[0].from} to ${payload.params[0].to}`,
-              raw: payload,
+              title: `Transfer ${request.params.value} CELO from ${request.params.from} to ${request.params.to}`,
+              raw: request,
             },
           });
         case SupportedMethods.personalSign:
           decodedMessage = Buffer.from(
-            trimLeading0x(payload.params[0]),
+            trimLeading0x(request.params[0]),
             'hex'
           ).toString('utf8');
           return setApprovalData({
-            accept: () => personalSign(payload.id, payload.params[0]),
-            reject: () =>
-              reject(payload.id, `User rejected personalSign ${payload.id}`),
+            accept: () => personalSign(id, topic, request.params[0]),
+            reject: () => reject(id, `User rejected personalSign ${id}`),
             meta: {
               title: `Sign this message: ${decodedMessage}`,
-              raw: payload,
+              raw: request,
             },
           });
         case SupportedMethods.signTypedData:
           return setApprovalData({
             accept: () =>
               signTypedData(
-                payload.id,
-                JSON.parse(payload.params[1]) as EIP712TypedData
+                id,
+                JSON.parse(request.params[1]) as EIP712TypedData
               ),
-            reject: () =>
-              reject(payload.id, `User rejected signTypedData ${payload.id}`),
+            reject: () => reject(id, `User rejected signTypedData ${id}`),
             meta: {
               title: `Sign this typed data`,
-              raw: payload,
+              raw: request,
             },
           });
         case SupportedMethods.decrypt:
           return setApprovalData({
-            accept: () => decrypt(payload.id, payload.params[1]),
-            reject: () =>
-              reject(payload.id, `User rejected decrypt ${payload.id}`),
+            accept: () => decrypt(id, topic, request.params[1]),
+            reject: () => reject(id, `User rejected decrypt ${id}`),
             meta: {
               title: `Decrypt this encrypted message`,
-              raw: payload,
+              raw: request,
             },
           });
         case SupportedMethods.computeSharedSecret:
           return setApprovalData({
-            accept: () => computeSharedSecret(payload.id, payload.params[1]),
-            reject: () =>
-              reject(
-                payload.id,
-                `User rejected computeSharedSecret ${payload.id}`
-              ),
+            accept: () => computeSharedSecret(id, topic, request.params[1]),
+            reject: () => reject(id, `User rejected computeSharedSecret ${id}`),
             meta: {
-              title: `Compute a shared secret for this publickey ${payload.params[1]}`,
-              raw: payload,
+              title: `Compute a shared secret for this publickey ${request.params[1]}`,
+              raw: request,
             },
           });
       }
@@ -363,81 +352,46 @@ export default function Wallet(): React.ReactElement {
   }, [fetchSummary]);
 
   useEffect(() => {
-    if (!connector) return;
-
-    connector.on(
-      CLIENT_EVENTS.session_request,
-      (requestError, payload: SessionProposal) => {
-        if (requestError) return setError(requestError.message);
-
-        setApprovalData({
-          accept: approveConnection,
-          reject: () => rejectConnection(),
-          meta: {
-            title: `new connection from dApp ${
-              payload?.params[0]?.peerMeta?.name || ''
-            }`,
-            raw: payload,
-          },
-        });
+    void SignClient.init({
+      projectId: WALLET_CONNECT_PROJECT_ID,
+      relayUrl: 'wss://relay.walletconnect.com',
+      metadata: {
+        description: 'This is a test-wallet, do not use with real funds',
+        url: 'https://react-celo.vercel.app/wallet',
+        icons: ['https://avatars.githubusercontent.com/u/37552875?s=200&v=4'],
+        name: 'React-celo test wallet',
+      },
+    }).then((client) => {
+      setSignClient(client);
+      if (client.session.getAll().length) {
+        setSession(client.session);
       }
-    );
+    });
+  }, []);
 
-    connector.on(
-      CLIENT_EVENTS.connect,
-      (connectError, payload: Request<unknown[]>) => {
-        if (connectError) return setError(connectError.message);
+  useEffect(() => {
+    if (!signClient) return;
+    signClient.on('session_proposal', (requestEvent) => {
+      setApprovalData({
+        accept: () => approveConnection(requestEvent),
+        reject: () => rejectConnection(requestEvent),
+        meta: {
+          title: `new connection from dApp ${requestEvent.params.proposer.metadata.name}`,
+          raw: requestEvent,
+        },
+      });
+    });
 
-        console.log(CLIENT_EVENTS.connect, payload);
-
-        connector.on(
-          CLIENT_EVENTS.disconnect,
-          (disconnectError, disconnectPayload: Request<unknown[]>) => {
-            if (disconnectError) return setError(disconnectError.message);
-            if (!connector) return;
-
-            console.log(CLIENT_EVENTS.disconnect, disconnectPayload);
-            setConnector(null);
-            setApprovalData(null);
-          }
-        );
-      }
-    );
-
-    connector.on(
-      CLIENT_EVENTS.session_update,
-      (updateError, payload: Request<unknown[]>) => {
-        if (updateError) return setError(updateError.message);
-
-        console.log(CLIENT_EVENTS.session_update, payload);
-      }
-    );
-    connector.on(
-      CLIENT_EVENTS.wc_sessionRequest,
-      (requestError, payload: Request<unknown[]>) => {
-        if (requestError) return setError(requestError.message);
-
-        console.log(CLIENT_EVENTS.wc_sessionRequest, payload);
-      }
-    );
-    connector.on(
-      CLIENT_EVENTS.wc_sessionUpdate,
-      (updateError, payload: Request<unknown[]>) => {
-        if (updateError) return setError(updateError.message);
-
-        console.log(CLIENT_EVENTS.wc_sessionUpdate, payload);
-      }
-    );
-
-    connector.on(CLIENT_EVENTS.call_request, handleNewRequests);
+    signClient.on('session_request', handleNewRequests);
   }, [
-    connector,
+    signClient,
     approveConnection,
     handleNewRequests,
     rejectConnection,
     signTransaction,
   ]);
 
+  const connected = signClient && session && session.peer;
   return (
     <>
       <Head>
@@ -454,23 +408,26 @@ export default function Wallet(): React.ReactElement {
           style={{
             padding: 10,
             border: '1px solid #aaa',
-            color: connector ? '#777' : '#000',
+            color: signClient ? '#777' : '#000',
           }}
           ref={inputRef}
           type="text"
-          placeholder={connector ? connector.uri : 'Paste your wc url here...'}
-          disabled={!!connector}
+          placeholder={
+            connected ? session.peer.metadata.name : 'Paste your wc url here...'
+          }
+          disabled={!!connected}
         />
         <PrimaryButton
           onClick={() =>
-            connector?.session.connected ? rejectConnection() : connect()
+            connected
+              ? rejectConnection({
+                  topic: signClient.core.pairing.getPairings()[0].topic,
+                  id: Math.round(Math.random() * 1_000_000_000),
+                })
+              : connect()
           }
         >
-          {connector?.session.connected
-            ? 'Disconnect'
-            : connector
-            ? 'Connecting…'
-            : 'Connect'}
+          {connected ? 'Disconnect' : 'Connect'}
         </PrimaryButton>
         <div className={error ? '' : 'hidden'}>
           <span className="text-red-500">{error}</span>
@@ -482,12 +439,7 @@ export default function Wallet(): React.ReactElement {
             </div>
             <div className="space-y-2">
               <div>
-                walletconnect status:{' '}
-                {connector?.session.connected
-                  ? 'connected'
-                  : connector
-                  ? 'connecting…'
-                  : 'disconnected'}
+                walletconnect status: {connected ? 'connected' : 'disconnected'}
               </div>
               <div>Name: {summary.name || 'Not set'}</div>
               <div className="">

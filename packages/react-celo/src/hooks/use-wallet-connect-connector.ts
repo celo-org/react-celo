@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { WalletConnectConnector } from '../connectors';
 import { ConnectorEvents } from '../connectors/common';
-import { buildOptions } from '../connectors/wallet-connect';
+// import { buildOptions } from '../connectors/wallet-connect';
 import { Connector, Maybe } from '../types';
 import { useCeloInternal } from '../use-celo';
 import { getApplicationLogger } from '../utils/logger';
@@ -56,7 +56,7 @@ export default function useWalletConnectConnector(
         network,
         manualNetworkMode,
         feeCurrency,
-        buildOptions(network),
+        {}, // buildOptions(network),
         autoOpen,
         getDeeplinkUrl,
         version,

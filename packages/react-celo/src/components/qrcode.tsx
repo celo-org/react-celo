@@ -28,7 +28,7 @@ const generateMatrix = (value: string) => {
   }
   const qrcode = create(value, {
     errorCorrectionLevel: qrCodeCapacity[i][0],
-  }) as QRCodeClass;
+  }) as unknown as QRCodeClass;
   const arr = Array.from(qrcode.modules.data);
   const sqrt = Math.sqrt(arr.length);
 
@@ -112,8 +112,8 @@ function matrixToDots(matrix: ReturnType<typeof generateMatrix>, size: number) {
         ) {
           dots.push(
             <circle
-              cx={i * cellSize + cellSize / 2}
-              cy={j * cellSize + cellSize / 2}
+              cx={i * cellSize + cellSize / 3}
+              cy={j * cellSize + cellSize / 3}
               className="tw-fill-black"
               key={`circle-${i}-${j}`}
               r={cellSize / 3} // calculate size of single dots

@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 
 import useTheme from '../hooks/use-theme';
+import { Maybe } from '../types';
 import cls from '../utils/tailwind';
 import Button from './button';
 
@@ -18,6 +19,7 @@ interface FooterWithDescription extends Footer {
 interface Props {
   title: string | ReactElement;
   content: ReactElement;
+  wcUri: Maybe<string>;
   footer?: NamedFooter | FooterWithDescription;
 }
 
@@ -50,7 +52,12 @@ const styles = cls({
     tw-font-medium`,
 });
 
-export default function ConnectorScreen({ title, content, footer }: Props) {
+export default function ConnectorScreen({
+  title,
+  content,
+  footer,
+  wcUri,
+}: Props) {
   const theme = useTheme();
 
   return (
@@ -70,6 +77,11 @@ export default function ConnectorScreen({ title, content, footer }: Props) {
             </p>
           </div>
           <div>
+            {wcUri && (
+              <Button as="a" href={footer.url} target="_blank" rel="noreferrer">
+                {footer.CTA || 'GET'}
+              </Button>
+            )}
             <Button as="a" href={footer.url} target="_blank" rel="noreferrer">
               {footer.CTA || 'GET'}
             </Button>
