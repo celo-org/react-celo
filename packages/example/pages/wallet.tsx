@@ -442,7 +442,7 @@ export default function Wallet(): React.ReactElement {
     <>
       <Head>
         <title>react-celo wallet</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico?v=2" />
       </Head>
 
       <main>

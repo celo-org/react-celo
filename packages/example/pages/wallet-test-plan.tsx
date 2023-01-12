@@ -18,7 +18,7 @@ export default function WalletTestPlan(): React.ReactElement {
         name: 'Wallet test plan',
         description: 'Wallet test plan',
         url: 'https://react-celo.vercel.app/wallet-test-plan',
-        icon: 'https://react-celo.vercel.app/favicon.ico',
+        icon: 'https://react-celo.vercel.app/favicon.ico?v=2',
       }}
       network={Mainnet}
       connectModal={{
