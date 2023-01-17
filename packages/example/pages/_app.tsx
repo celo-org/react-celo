@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
   };
 
   return (
-    <div className="flex flex-col justify-between items-center min-h-screen dark:bg-slate-900">
+    <div className="flex flex-col justify-between items-center min-h-screen bg-rc-violet-light dark:bg-slate-900">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -32,8 +32,8 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
           },
         }}
       />
-      <div className="max-w-screen-sm mx-auto px-4">
-        <nav className="flex w-full fixed left-0 z-5 top-0 backdrop-blur-sm bg-rc-mist dark:bg-rc-smog py-2 px-4 gap-[10px] justify-between items-center flex-col md:flex-row lg:flex-row">
+      <div className="max-w-screen-sm mx-auto px-4 ">
+        <nav className="flex w-full fixed left-0 z-5 top-0 backdrop-blur-sm bg-sand dark:bg-rc-smog py-2 px-4 gap-[10px] justify-between items-center flex-col md:flex-row lg:flex-row">
           <a href="/">
             <div className="flex items-center gap-[5px]">
               <CeloLogo />
@@ -56,7 +56,7 @@ function MyApp({ Component, pageProps, router }: AppProps): React.ReactElement {
         <div className="h-20 md:h-14" />
         <Component {...pageProps} />
       </div>
-      <footer className="flex gap-[36px] items-center text-white justify-center w-full py-4 px-6 bg-slate-900 mt-8">
+      <footer className="flex gap-[36px] items-center text-white justify-center w-full py-4 px-6 bg-rc-violet mt-8">
         <a
           target="_blank"
           href="https://discord.com/channels/600834479145353243/929644242790383636"
