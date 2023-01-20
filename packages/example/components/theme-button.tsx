@@ -72,15 +72,15 @@ const defaultLight = {
   background: '#ffffff',
   error: '#ef4444',
 };
-const greenCustom = {
-  primary: '#34d399',
-  secondary: '#ecfccb',
-  text: 'hsla(81, 88%, 80%)',
-  textSecondary: '#d9f99d',
-  textTertiary: '#bef264',
-  muted: '#3f6212',
-  background: '#000',
-  error: '#ef4444',
+const celoStandard = {
+  primary: '#476520',
+  secondary: '#FCFF52 ',
+  text: '#1E002B',
+  textSecondary: '#1E002B',
+  textTertiary: '#655947',
+  muted: '#E7E3D4',
+  background: '#FCF6F1',
+  error: '#E70532',
 };
 const roseCustom = {
   primary: '#e11d48',
@@ -93,4 +93,4 @@ const roseCustom = {
   error: '#ef4444',
 };
 
-export const themes = [defaultDark, defaultLight, greenCustom, roseCustom];
+export const themes = [defaultDark, defaultLight, celoStandard, roseCustom];
