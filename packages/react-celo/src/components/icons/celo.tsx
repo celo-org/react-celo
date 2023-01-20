@@ -2,6 +2,7 @@ import React from 'react';
 
 const Celo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
+    {...props}
     xmlns="http://www.w3.org/2000/svg"
     x="0"
     y="0"
