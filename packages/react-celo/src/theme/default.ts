@@ -9,7 +9,7 @@ const defaultTheme = {
     textTertiary: '#64748b',
     muted: '#334155',
     background: '#1e293b',
-    error: '#ef4444',
+    error: '#E70532',
   },
   light: {
     primary: '#6366f1',
@@ -19,7 +19,7 @@ const defaultTheme = {
     textTertiary: '#64748b',
     muted: '#e2e8f0',
     background: '#ffffff',
-    error: '#ef4444',
+    error: '#E70532',
   },
 } as AppTheme;
 
