@@ -1,6 +1,6 @@
 {
   "name": "@celo/react-celo",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "private": false,
   "scripts": {
     "prebuild": "mkdir -p lib && node ./scripts/json-to-ts.js package.json lib",
@@ -26,11 +26,11 @@
   "readme": "../../readme.md",
   "license": "MIT",
   "dependencies": {
-    "@celo/wallet-base": "^2.3.0",
-    "@celo/wallet-ledger": "^2.3.0",
-    "@celo/wallet-local": "^2.3.0",
-    "@celo/wallet-remote": "^2.3.0",
-    "@celo/wallet-walletconnect-v1": "4.2.1",
+    "@celo/wallet-base": ">=2.3.0",
+    "@celo/wallet-ledger": ">=2.3.0",
+    "@celo/wallet-local": ">=2.3.0",
+    "@celo/wallet-remote": ">=2.3.0",
+    "@celo/wallet-walletconnect-v1": "4.3.0",
     "@coinbase/wallet-sdk": "^3.2.0",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
@@ -55,7 +55,7 @@
     "web3": "^1.3.6"
   },
   "peerDependencies": {
-    "@celo/contractkit": ">=2.0.0 <=3.0.0",
+    "@celo/contractkit": ">=2.0.0 <4.0.0",
     "react": ">=17.0.2 <=^18",
     "react-dom": ">=17.0.2 <=^18",
     "web3": "^1.3.6"
