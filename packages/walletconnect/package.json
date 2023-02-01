@@ -1,6 +1,6 @@
 {
-  "name": "@celo/wallet-walletconnect-v2",
-  "version": "4.1.0",
+  "name": "@celo/wallet-walletconnect",
+  "version": "4.2.1",
   "description": "WalletConnect wallet implementation",
   "author": "Celo",
   "license": "Apache-2.0",
@@ -32,10 +32,10 @@
     "@celo/utils": "^2.2.0",
     "@celo/wallet-base": "^2.2.0",
     "@celo/wallet-remote": "^2.2.0",
-    "@walletconnect/auth-client": "^1.0.1",
-    "@walletconnect/sign-client": "^2.1.4",
-    "@walletconnect/types": "^2.1.4",
-    "@walletconnect/utils": "^2.1.4",
+    "@walletconnect/auth-client": "^2.0.2",
+    "@walletconnect/sign-client": "^2.3.2",
+    "@walletconnect/types": "^2.3.2",
+    "@walletconnect/utils": "^2.3.2",
     "debug": "^4.3.3",
     "ethereumjs-util": "^7.1.3"
   },

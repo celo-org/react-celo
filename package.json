@@ -4,8 +4,7 @@
   "workspaces": [
     "packages/example",
     "packages/react-celo",
-    "packages/walletconnect-v1",
-    "packages/walletconnect-v2"
+    "packages/walletconnect"
   ],
   "pkgs": {
     "path": "./packages"

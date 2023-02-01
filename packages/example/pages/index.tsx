@@ -24,7 +24,6 @@ import { signTestTypedData } from '../utils/sign-test-typed-data';
 interface Summary {
   name: string;
   address: string;
-  wallet: string;
   celo: BigNumber;
   balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
 }
@@ -32,7 +31,6 @@ interface Summary {
 const defaultSummary: Summary = {
   name: '',
   address: '',
-  wallet: '',
   celo: new BigNumber(0),
   balances: [],
 };
@@ -273,12 +271,6 @@ function HomePage(): React.ReactElement {
                     <div>Wallet type: {walletType}</div>
                     <div>Name: {summary.name || 'Not set'}</div>
                     <div className="">Address: {truncateAddress(address)}</div>
-                    <div className="">
-                      Wallet address:{' '}
-                      {summary.wallet
-                        ? truncateAddress(summary.wallet)
-                        : 'Not set'}
-                    </div>
                   </div>
                 </div>
                 <div>

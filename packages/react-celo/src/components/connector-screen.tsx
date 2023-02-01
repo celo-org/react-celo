@@ -19,7 +19,7 @@ interface FooterWithDescription extends Footer {
 interface Props {
   title: string | ReactElement;
   content: ReactElement;
-  wcUri: Maybe<string>;
+  wcUri?: Maybe<string>;
   footer?: NamedFooter | FooterWithDescription;
 }
 
@@ -77,11 +77,6 @@ export default function ConnectorScreen({
             </p>
           </div>
           <div>
-            {wcUri && (
-              <Button as="a" href={footer.url} target="_blank" rel="noreferrer">
-                {footer.CTA || 'GET'}
-              </Button>
-            )}
             <Button as="a" href={footer.url} target="_blank" rel="noreferrer">
               {footer.CTA || 'GET'}
             </Button>

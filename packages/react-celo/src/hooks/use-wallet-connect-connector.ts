@@ -1,6 +1,3 @@
-// Uncomment with WCV2 support
-// import { SupportedMethods } from '@celo/wallet-walletconnect-v1';
-import { CANCELED } from '@celo/wallet-walletconnect-v1';
 import { useCallback, useEffect, useState } from 'react';
 
 import { WalletConnectConnector } from '../connectors';
@@ -86,6 +83,8 @@ export default function useWalletConnectConnector(
 
         onSubmit(connector);
       } catch (reason) {
+        // TODO: CANCELED
+        const CANCELED = Symbol();
         if (reason === CANCELED) {
           getApplicationLogger().debug(
             '[useWalletConnectConnector]',

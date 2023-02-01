@@ -1,9 +1,9 @@
 import { trimLeading0x } from '@celo/base';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
-import { Alfajores, Baklava, Mainnet } from '@celo/react-celo';
+import { Alfajores } from '@celo/react-celo';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
-import { SupportedMethods } from '@celo/wallet-walletconnect-v2';
+import { SupportedMethods } from '@celo/wallet-walletconnect';
 // import WalletConnect from '@walletconnect/client';
 import SignClient from '@walletconnect/sign-client';
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';

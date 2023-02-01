@@ -30,8 +30,7 @@
     "@celo/wallet-ledger": ">=2.3.0",
     "@celo/wallet-local": ">=2.3.0",
     "@celo/wallet-remote": ">=2.3.0",
-    "@celo/wallet-walletconnect-v1": "4.2.1",
-    "@celo/wallet-walletconnect-v2": "4.1.0",packages/example/package.json
+    "@celo/wallet-walletconnect": "4.2.1",
     "@coinbase/wallet-sdk": "^3.2.0",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",

@@ -1,8 +1,7 @@
 import { sleep } from '@celo/base';
 import { CeloTx } from '@celo/connect';
 import { RemoteWallet } from '@celo/wallet-remote';
-import Client, { SIGN_CLIENT_EVENTS } from '@walletconnect/sign-client';
-import { SignClient } from '@walletconnect/sign-client/dist/types/client';
+import Client from '@walletconnect/sign-client';
 import {
   PairingTypes,
   SessionTypes,
@@ -64,23 +63,41 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
   on = <E extends SignClientTypes.Event>(
     event: E,
-    fn: (arg: unknown) => void
+    fn: (error: Error | null, data?: unknown) => void
   ) => {
     this.emitter.on(event, fn);
   };
 
   private emit = <E extends SignClientTypes.Event>(
     event: E,
+    error: Error | null,
     data?: unknown
   ) => {
-    debug('emit', event, data);
-    this.emitter.emit(event, data);
+    debug('emit', event, error, data);
+    this.emitter.emit(event, error, data);
   };
 
   constructor({ init }: WalletConnectWalletOptions) {
     super();
 
     this.initOptions = { ...defaultInitOptions, ...init };
+
+    void this.getWalletConnectClient().then((client) => {
+      this.client = client;
+      // when we're in certain environments (like the browser) the
+      // WalletConnect client will handle retrieving old sessions.
+      if (client.session) {
+        const session = client.session
+          .getAll()
+          .sort((a, b) => b.expiry - a.expiry)
+          .find((x) => x.acknowledged && x.expiry * 1000 > Date.now());
+
+        if (session) {
+          this.session = session;
+          this.emit('session_update', null, this.session);
+        }
+      }
+    });
   }
 
   /**
@@ -90,44 +107,25 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return Client.init(this.initOptions);
   }
 
-  // async switchToChain(params: {
-  //   chainId: number;
-  //   networkId: number;
-  //   rpcUrl: string;
-  //   nativeCurrency: { name: string; symbol: string };
-  // }) {
-  //   return;
-  // }
+  async switchToChain(_params: unknown) {}
 
   /**
    * Get the URI needed for out of band session establishment
    */
   public async getUri(): Promise<string | void> {
-    this.client = await this.getWalletConnectClient();
-    // when we're in certain environments (like the browser) the
-    // WalletConnect client will handle retrieving old sessions.
-    // if (this.client.core.pairing.getPairings().length > 0) {
-    //   this.pairing = this.client.core.pairing.getPairings()[0];
-    //   // return;
-    // }
+    this.client = this.client || (await this.getWalletConnectClient());
 
     this.client.on('session_proposal', this.onSessionProposal);
     this.client.on('session_update', this.onSessionUpdated);
     this.client.on('session_delete', this.onSessionDeleted);
+    this.client.on('session_extend', this.onSessionExtended);
 
-    // this.client.on("session_extend", this.onSessionUpdated); // TODO ?
     this.client.on('session_event', (args) =>
       console.log('EVENT', 'session_event', args)
     );
     this.client.on('session_ping', (args) =>
       console.log('EVENT', 'session_ping', args)
     );
-
-    // pairing events?
-    // this.client.on(CLIENT_EVENTS.pairing.proposal, this.onPairingProposal);
-    // this.client.on(CLIENT_EVENTS.pairing.created, this.onPairingCreated);
-    // this.client.on(CLIENT_EVENTS.pairing.updated, this.onPairingUpdated);
-    // this.client.on(CLIENT_EVENTS.pairing.deleted, this.onPairingDeleted);
 
     const { uri, approval } = await this.client.connect({
       pairingTopic: this.pairing?.topic,
@@ -144,11 +142,14 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       },
     });
     console.log('uri', this.pairing?.topic, uri, approval);
-    void approval().then((session) => {
-      console.log('hello');
-      this.session = session;
-      this.emit('session_created', session);
-    });
+    void approval()
+      .then((session) => {
+        this.session = session;
+        this.emit('session_update', null, this.session);
+      })
+      .catch((err) => {
+        this.emit('session_update', err as Error);
+      });
 
     return uri;
   }
@@ -156,7 +157,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   onSessionProposal = (
     sessionProposal: SignClientTypes.EventArguments['session_proposal']
   ) => {
-    this.emit('session_proposal', sessionProposal);
+    this.emit('session_proposal', null, sessionProposal);
   };
 
   onSessionUpdated = (
@@ -168,7 +169,16 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     } = sessionUpdate;
     const _session = this.client?.session.get(topic);
     this.session = { ..._session!, namespaces };
-    this.emit('session_update', sessionUpdate);
+    this.emit('session_update', null, sessionUpdate);
+  };
+
+  onSessionExtended = (
+    sessionExtend: SignClientTypes.EventArguments['session_extend']
+  ) => {
+    const { topic } = sessionExtend;
+    const _session = this.client?.session.get(topic);
+    this.session = { ..._session! };
+    this.emit('session_extend', null, sessionExtend);
   };
 
   onSessionDeleted = (
@@ -176,29 +186,8 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   ) => {
     this.client = undefined;
     this.session = undefined;
-    this.emit('session_delete', sessionDeleted);
+    this.emit('session_delete', null, sessionDeleted);
   };
-
-  // onPairingProposal = (pairingProposal: PairingTypes.Proposal) => {
-  //   debug('onPairingProposal', pairingProposal);
-  //   this.pairingProposal = pairingProposal;
-  // };
-  // onPairingCreated = (pairing: PairingTypes.Created) => {
-  //   debug('onPairingCreated', pairing);
-  //   this.pairing = pairing;
-  // };
-  // onPairingUpdated = (pairing: PairingTypes.Update) => {
-  //   debug('onPairingUpdated', pairing);
-  //   if (!this.pairing) {
-  //     debug('Attempted to update non existant pairing', pairing);
-  //     return;
-  //   }
-  //   this.pairing.state.metadata = pairing.state.metadata;
-  // };
-  // onPairingDeleted = () => {
-  //   debug('onPairingDeleted');
-  //   this.pairing = undefined;
-  // };
 
   async loadAccountSigners(): Promise<Map<string, WalletConnectSigner>> {
     /**
@@ -251,8 +240,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
         topic: this.session.topic,
         reason,
       });
+      await this.client.session.delete(this.session.topic, reason);
     }
-
-    await this.client.pairing.delete(this.pairing!.topic, reason);
   };
 }

@@ -1,18 +1,10 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { MiniContractKit, newKit } from '@celo/contractkit/lib/mini-kit';
-// import {
-//   EthProposal,
-//   SessionConnect,
-//   SessionDisconnect,
-//   SessionProposal,
-//   SessionUpdate,
-//   WalletConnectWallet as WalletConnectWalletV1,
-//   WalletConnectWalletOptions as WalletConnectWalletOptionsV1,
-// } from '@celo/wallet-walletconnect-v1';
 import {
   WalletConnectWallet,
   WalletConnectWalletOptions,
-} from '@celo/wallet-walletconnect-v2';
+  WCSession,
+} from '@celo/wallet-walletconnect';
 import { BigNumber } from 'bignumber.js';
 
 import { WalletTypes } from '../constants';
@@ -36,7 +28,6 @@ export default class WalletConnectConnector
     private network: Network,
     manualNetworkMode: boolean,
     public feeCurrency: CeloTokenContract,
-    // options: WalletConnectWalletOptions | WalletConnectWalletOptionsV1,
     readonly options: WalletConnectWalletOptions,
     readonly autoOpen = false,
     public getDeeplinkUrl?: (uri: string) => string | false,
@@ -61,16 +52,10 @@ export default class WalletConnectConnector
   async initialise(): Promise<this> {
     const wallet = this.kit.getWallet() as WalletConnectWallet;
 
-    wallet.on('session_created', this.onSessionCreated);
-
-    // wallet.onCallRequest = this.onCallRequest.bind(this);
-
-    // wallet.onWcSessionUpdate = this.onWcSessionUpdate.bind(this);
-
-    // wallet.onSessionDeleted = this.onSessionDeleted.bind(this);
-
-    // // must be called after all callbacks are set
-    // await wallet.setupClient();
+    wallet.on('session_update', this.onSessionCreated);
+    wallet.on('session_update', this.onSessionUpdated);
+    wallet.on('session_delete', this.onSessionDeleted);
+    wallet.on('session_request', this.onCallRequest);
 
     await this.handleUri(wallet);
 
@@ -131,17 +116,17 @@ export default class WalletConnectConnector
     }
   }
 
-  private onSessionCreated = async (session: unknown) => {
-    // if (error) {
-    //   getApplicationLogger().error(
-    //     '[wallet-connect] Error while connecting',
-    //     error.name,
-    //     error.message
-    //   );
-    //   this.emit(ConnectorEvents.WC_ERROR, error);
-    // }
-    const connectSession = session;
-    await this.onConnected(connectSession).catch((e: Error) => {
+  private onSessionCreated = async (error: Error | null, data: unknown) => {
+    console.log('hello', error, data);
+    if (error) {
+      getApplicationLogger().error(
+        '[wallet-connect] Error while connecting',
+        error.name,
+        error.message
+      );
+      this.emit(ConnectorEvents.WC_ERROR, error);
+    }
+    await this.onConnected(data as WCSession).catch((e: Error) => {
       this.emit(ConnectorEvents.WC_ERROR, e);
       getApplicationLogger().error(
         'wallet-connect',
@@ -152,7 +137,7 @@ export default class WalletConnectConnector
     });
   };
 
-  private onCallRequest(error: Error | null, payload: any) {
+  private onCallRequest = (error: Error | null, payload: any) => {
     getApplicationLogger().debug(
       'wallet-connect',
       'onCallRequest',
@@ -162,55 +147,59 @@ export default class WalletConnectConnector
     if (error) {
       this.emit(ConnectorEvents.WC_ERROR, error);
     }
-  }
+  };
 
-  private async onSessionUpdated(session: unknown) {
-    getApplicationLogger().debug(
-      'wallet-connect',
-      'on-session-update',
-      session
-    );
+  private onSessionUpdated = async (_error: Error | null, data: unknown) => {
+    getApplicationLogger().debug('wallet-connect', 'on-session-update', data);
 
-    if (error) {
-      this.emit(ConnectorEvents.WC_ERROR, error);
+    if (_error) {
+      this.emit(ConnectorEvents.WC_ERROR, _error);
     }
     try {
-      await this.combinedSessionUpdater(params);
+      await this.combinedSessionUpdater(data as WCSession);
     } catch (e) {
       getApplicationLogger().error('wallet-connect', 'on-session-update', e);
       this.emit(ConnectorEvents.WC_ERROR, e as Error);
     }
-  }
+  };
 
-  private onSessionDeleted(_error: Error | null, session: any) {
+  private onSessionDeleted = async (_error: Error | null, data: unknown) => {
     getApplicationLogger().debug(
       'wallet-connect',
       'on-session-delete',
-      session,
+      data,
       _error
     );
-    // since dapps send the both when they initiate disconnection and when responding to disconnection requests
-    // check if dapp initiated the closure to avoid closing twice.
-    if (session.params[0]?.message?.startsWith(END_MESSAGE)) {
-      return;
-    }
-    void this.close();
-  }
+    // since dapps send the event both when they initiate disconnection and
+    // when responding to disconnection requests, check if dapp initiated the
+    // connection to avoid closing twice.
 
-  private combinedSessionUpdater(params: {
-    accounts?: string[];
-    chainId: number | null;
-  }) {
-    if (params.chainId == null) {
+    try {
+      await this.close();
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
+  private combinedSessionUpdater(session: WCSession) {
+    if (!session.namespaces.eip155.accounts.length) {
       return this.close();
     }
 
-    if (params.chainId !== this.network.chainId) {
-      return this.emit(ConnectorEvents.WALLET_CHAIN_CHANGED, params.chainId);
+    const chainPredicate = `eip155:${this.network.chainId}:`;
+    if (
+      !session.namespaces.eip155.accounts.find((x) =>
+        x.startsWith(chainPredicate)
+      )
+    ) {
+      return this.emit(
+        ConnectorEvents.WALLET_CHAIN_CHANGED,
+        parseInt(session.namespaces.eip155.accounts[0].split(chainPredicate)[0])
+      );
     }
 
-    const accounts = params.accounts as string[];
-    const addressFromSessionUpdate = accounts[0];
+    const accounts = session.namespaces.eip155.accounts;
+    const addressFromSessionUpdate = accounts[0].split(chainPredicate)[1];
     if (
       typeof addressFromSessionUpdate === 'string' &&
       addressFromSessionUpdate !== this.kit.connection.defaultAccount
@@ -240,12 +229,10 @@ export default class WalletConnectConnector
     this.emit(ConnectorEvents.ADDRESS_CHANGED, address);
   }
 
-  private async onConnected(session: any) {
-    debugger;
-    const allNamespaceAccounts = Object.values(session.namespaces)
-      .map((namespace) => namespace.accounts)
-      .flat();
-    const [_eip, chainId, account] = allNamespaceAccounts[0].split(':');
+  private async onConnected(session: WCSession) {
+    const [_eip155, chainId, account] =
+      session.namespaces.eip155.accounts[0].split(':');
+    console.log({ chainId, account });
 
     const walletAddress = await this.fetchWalletAddressForAccount(account);
     if (this.kit.connection.defaultAccount !== walletAddress) {
@@ -254,9 +241,9 @@ export default class WalletConnectConnector
     this.emit(ConnectorEvents.CONNECTED, {
       walletType: this.type,
       walletId: this.walletId as string,
-      walletChainId: chainId,
+      walletChainId: parseInt(chainId),
       networkName: this.network.name,
-      address: walletAddress,
+      address: walletAddress!,
     });
   }
 
