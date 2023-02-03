@@ -10,6 +10,7 @@ export enum SupportedMethods {
 
 export interface WalletConnectWalletOptions {
   init?: SignClientTypes.Options;
+  projectId?: string;
 }
 
 export type WCSession = SessionTypes.Struct;

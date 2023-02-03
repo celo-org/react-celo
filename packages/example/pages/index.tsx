@@ -340,6 +340,8 @@ async function getBalances(
   );
 }
 
+export const WC_PROJECT_ID = '3ee9bf02f3a89a03837044fc7cdeb232';
+
 export default function Home(): React.ReactElement {
   return (
     <CeloProvider
@@ -348,6 +350,7 @@ export default function Home(): React.ReactElement {
         description: 'A demo DApp to showcase functionality',
         url: 'https://react-celo.vercel.app',
         icon: 'https://react-celo.vercel.app/favicon.ico',
+        walletConnectProjectId: WC_PROJECT_ID,
       }}
       defaultNetwork={Alfajores.name}
       connectModal={{

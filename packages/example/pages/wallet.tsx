@@ -18,7 +18,6 @@ import { TransactionConfig } from 'web3-core/types';
 import { PrimaryButton } from '../components';
 
 const WALLET_CONNECT_PROJECT_ID = 'f597db9e215becf1a4b24a7154c26fa2'; // this is nico's walletconnect project id
-const WALLET_ID = 'test-wallet-clabs';
 
 const web3 = new Web3(Alfajores.rpcUrl);
 const kit = newKitFromWeb3(web3);

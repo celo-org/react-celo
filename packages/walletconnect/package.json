@@ -41,5 +41,8 @@
   },
   "engines": {
     "node": ">=10"
+  },
+  "devDependencies": {
+    "lokijs": "^1.5.12"
   }
 }

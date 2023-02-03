@@ -11,7 +11,7 @@ import { getSdkError } from '@walletconnect/utils';
 import debugConfig from 'debug';
 import EventEmitter from 'events';
 
-import { PROJECT_ID, RELAY_URL } from './constants';
+import { RELAY_URL } from './constants';
 import { SupportedMethods, WalletConnectWalletOptions } from './types';
 import { parseAddress } from './utils';
 import { WalletConnectSigner } from './wc-signer';
@@ -41,7 +41,6 @@ async function waitForTruthy(getValue: () => boolean, attempts = 10) {
 
 const defaultInitOptions: SignClientTypes.Options = {
   relayUrl: RELAY_URL,
-  projectId: PROJECT_ID,
   logger: 'error',
   metadata: {
     name: 'react-celo',
@@ -53,7 +52,9 @@ const defaultInitOptions: SignClientTypes.Options = {
 };
 
 export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
-  private initOptions: SignClientTypes.Options;
+  private initOptions: SignClientTypes.Options & {
+    projectId?: string;
+  };
 
   private client?: Client;
   private pairing?: PairingTypes.Struct;
@@ -77,10 +78,14 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.emitter.emit(event, error, data);
   };
 
-  constructor({ init }: WalletConnectWalletOptions) {
+  constructor({ init, projectId }: WalletConnectWalletOptions) {
     super();
 
-    this.initOptions = { ...defaultInitOptions, ...init };
+    this.initOptions = {
+      ...defaultInitOptions,
+      ...init,
+      projectId,
+    };
 
     void this.getWalletConnectClient().then((client) => {
       this.client = client;
@@ -107,7 +112,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return Client.init(this.initOptions);
   }
 
-  async switchToChain(_params: unknown) {}
+  async switchToChain(_params: unknown) {
+    // noop
+  }
 
   /**
    * Get the URI needed for out of band session establishment
@@ -119,13 +126,8 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.client.on('session_update', this.onSessionUpdated);
     this.client.on('session_delete', this.onSessionDeleted);
     this.client.on('session_extend', this.onSessionExtended);
-
-    this.client.on('session_event', (args) =>
-      console.log('EVENT', 'session_event', args)
-    );
-    this.client.on('session_ping', (args) =>
-      console.log('EVENT', 'session_ping', args)
-    );
+    this.client.on('session_event', this.onSessionEvent);
+    this.client.on('session_ping', this.onSessionPing);
 
     const { uri, approval } = await this.client.connect({
       pairingTopic: this.pairing?.topic,
@@ -141,7 +143,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
         },
       },
     });
-    console.log('uri', this.pairing?.topic, uri, approval);
+
     void approval()
       .then((session) => {
         this.session = session;
@@ -155,38 +157,46 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   }
 
   onSessionProposal = (
-    sessionProposal: SignClientTypes.EventArguments['session_proposal']
+    session: SignClientTypes.EventArguments['session_proposal']
   ) => {
-    this.emit('session_proposal', null, sessionProposal);
+    this.emit('session_proposal', null, session);
   };
 
   onSessionUpdated = (
-    sessionUpdate: SignClientTypes.EventArguments['session_update']
+    session: SignClientTypes.EventArguments['session_update']
   ) => {
     const {
       topic,
       params: { namespaces },
-    } = sessionUpdate;
+    } = session;
     const _session = this.client?.session.get(topic);
     this.session = { ..._session!, namespaces };
-    this.emit('session_update', null, sessionUpdate);
+    this.emit('session_update', null, session);
   };
 
   onSessionExtended = (
-    sessionExtend: SignClientTypes.EventArguments['session_extend']
+    session: SignClientTypes.EventArguments['session_extend']
   ) => {
-    const { topic } = sessionExtend;
+    const { topic } = session;
     const _session = this.client?.session.get(topic);
     this.session = { ..._session! };
-    this.emit('session_extend', null, sessionExtend);
+    this.emit('session_extend', null, session);
   };
 
   onSessionDeleted = (
-    sessionDeleted: SignClientTypes.EventArguments['session_delete']
+    session: SignClientTypes.EventArguments['session_delete']
   ) => {
     this.client = undefined;
     this.session = undefined;
-    this.emit('session_delete', null, sessionDeleted);
+    this.emit('session_delete', null, session);
+  };
+
+  onSessionEvent = (event: SignClientTypes.EventArguments['session_event']) => {
+    this.emit('session_ping', null, event);
+  };
+
+  onSessionPing = (ping: SignClientTypes.EventArguments['session_ping']) => {
+    this.emit('session_ping', null, ping);
   };
 
   async loadAccountSigners(): Promise<Map<string, WalletConnectSigner>> {
@@ -204,7 +214,6 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       .flat();
 
     allNamespaceAccounts.forEach((addressLike) => {
-      console.log(addressLike);
       const { address, networkId } = parseAddress(addressLike);
       const signer = new WalletConnectSigner(
         this.client!,
@@ -236,11 +245,15 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     const reason = getSdkError('USER_DISCONNECTED');
     if (this.session) {
-      await this.client.disconnect({
-        topic: this.session.topic,
-        reason,
-      });
-      await this.client.session.delete(this.session.topic, reason);
+      try {
+        await this.client.disconnect({
+          topic: this.session.topic,
+          reason,
+        });
+        await this.client.session.delete(this.session.topic, reason);
+      } catch (e) {
+        console.log('Error while disconnecting, probably already disconnected');
+      }
     }
   };
 }

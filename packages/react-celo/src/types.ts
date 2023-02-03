@@ -100,6 +100,7 @@ export interface Dapp {
   description: string;
   url: string;
   icon: string;
+  walletConnectProjectId?: string;
 }
 
 export interface WalletEntryLogos {
