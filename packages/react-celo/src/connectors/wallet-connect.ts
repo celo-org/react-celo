@@ -35,14 +35,6 @@ export default class WalletConnectConnector
     readonly walletId?: string
   ) {
     super();
-    // const wallet = new WalletConnectWallet(
-    //   manualNetworkMode
-    //     ? {
-    //         init: options.init,
-    //         connect: { ...options.connect, chainId: undefined },
-    //       }
-    //     : options
-    // );
     const wallet = new WalletConnectWallet(options);
 
     this.kit = newKit(network.rpcUrl, wallet);

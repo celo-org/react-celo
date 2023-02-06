@@ -59,6 +59,8 @@ function WrappedApp() {
         name: 'My awesome dApp',
         description: 'My awesome description',
         url: 'https://example.com',
+        // if you plan on supporting WalletConnect compatible wallets, you need to provide a project ID, you can find it here: https://docs.walletconnect.com/2.0/cloud/relay
+        walletConnectProjectId: '123',
       }}
     >
       <App />

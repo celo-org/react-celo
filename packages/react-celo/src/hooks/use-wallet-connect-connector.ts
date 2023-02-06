@@ -54,6 +54,14 @@ export default function useWalletConnectConnector(
         return;
       }
 
+      if (!dapp.walletConnectProjectId) {
+        const err =
+          'Missing WalletConnect Project Id, create one here: https://docs.walletconnect.com/2.0/cloud/relay';
+        getApplicationLogger().debug('[useWalletConnectConnector]', err);
+        setError(err);
+        return;
+      }
+
       connector = new WalletConnectConnector(
         network,
         manualNetworkMode,
@@ -88,7 +96,6 @@ export default function useWalletConnectConnector(
 
         onSubmit(connector);
       } catch (reason) {
-        // TODO: CANCELED
         const CANCELED = Symbol();
         if (reason === CANCELED) {
           getApplicationLogger().debug(

@@ -11,9 +11,10 @@ import { getSdkError } from '@walletconnect/utils';
 import debugConfig from 'debug';
 import EventEmitter from 'events';
 
-import { RELAY_URL } from './constants';
+import { CANCELED, RELAY_URL } from './constants';
 import { SupportedMethods, WalletConnectWalletOptions } from './types';
 import { parseAddress } from './utils';
+import Canceler from './utils/canceler';
 import { WalletConnectSigner } from './wc-signer';
 
 const debug = debugConfig('kit:wallet:wallet-connect-wallet');
@@ -23,20 +24,16 @@ const debug = debugConfig('kit:wallet:wallet-connect-wallet');
  * communicating the connection URI (often via QR code) we can
  * continue with the setup process
  */
-async function waitForTruthy(getValue: () => boolean, attempts = 10) {
-  let waitDuration = 500;
-  for (let i = 0; i < attempts; i++) {
-    if (getValue()) {
-      return;
-    }
-
-    await sleep(waitDuration);
-    waitDuration = waitDuration * 1.5;
+async function waitForTruthy(
+  getValue: () => boolean,
+  signal: Canceler['status'],
+  waitDuration = 500
+): Promise<void> {
+  if (signal.canceled || getValue()) {
+    return;
   }
-
-  throw new Error(
-    'Unable to get pairing session, did you lose internet connection?'
-  );
+  await sleep(waitDuration);
+  return waitForTruthy(getValue, signal, waitDuration);
 }
 
 const defaultInitOptions: SignClientTypes.Options = {
@@ -60,6 +57,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   private pairing?: PairingTypes.Struct;
   private session?: SessionTypes.Struct;
 
+  private canceler: Canceler;
   private emitter = new EventEmitter();
 
   on = <E extends SignClientTypes.Event>(
@@ -81,6 +79,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   constructor({ init, projectId }: WalletConnectWalletOptions) {
     super();
 
+    this.canceler = new Canceler();
     this.initOptions = {
       ...defaultInitOptions,
       ...init,
@@ -205,7 +204,11 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
      * communicating the connection URI (often via QR code) we can
      * continue with the setup process
      */
-    await waitForTruthy(() => !!this.session);
+    await waitForTruthy(() => !!this.session, this.canceler.status);
+    if (this.canceler.status.canceled) {
+      // This will be true if this.canceler.cancel() was called earlier
+      throw CANCELED;
+    }
 
     const addressToSigner = new Map<string, WalletConnectSigner>();
 
@@ -243,6 +246,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       throw new Error('Wallet must be initialized before calling close()');
     }
 
+    this.canceler.cancel();
     const reason = getSdkError('USER_DISCONNECTED');
     if (this.session) {
       try {
