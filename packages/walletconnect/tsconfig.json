@@ -12,6 +12,5 @@
       "../../node_modules/@types"
     ]
   },
-  "include": ["src/", "test/utils", "test/wc-signer.test.ts"],
-  "exclude": ["test/utils"]
+  "include": ["src/"]
 }

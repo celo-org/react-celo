@@ -109,7 +109,6 @@ export default class WalletConnectConnector
   }
 
   private onSessionCreated = async (error: Error | null, data: unknown) => {
-    console.log('hello', error, data);
     if (error) {
       getApplicationLogger().error(
         '[wallet-connect] Error while connecting',
@@ -129,7 +128,7 @@ export default class WalletConnectConnector
     });
   };
 
-  private onCallRequest = (error: Error | null, payload: any) => {
+  private onCallRequest = (error: Error | null, payload: unknown) => {
     getApplicationLogger().debug(
       'wallet-connect',
       'onCallRequest',
@@ -137,6 +136,12 @@ export default class WalletConnectConnector
       error ? `Error ${error.name} ${error.message}` : ''
     );
     if (error) {
+      getApplicationLogger().debug(
+        'wallet-connect',
+        'on-call-request',
+        payload,
+        error
+      );
       this.emit(ConnectorEvents.WC_ERROR, error);
     }
   };
@@ -179,19 +184,17 @@ export default class WalletConnectConnector
     }
 
     const chainPredicate = `eip155:${this.network.chainId}:`;
-    if (
-      !session.namespaces.eip155.accounts.find((x) =>
-        x.startsWith(chainPredicate)
-      )
-    ) {
+    const accounts = session.namespaces.eip155.accounts;
+    const account = accounts.find((x) => x.startsWith(chainPredicate));
+
+    if (!account) {
       return this.emit(
         ConnectorEvents.WALLET_CHAIN_CHANGED,
-        parseInt(session.namespaces.eip155.accounts[0].split(chainPredicate)[0])
+        parseInt(accounts[0].split(chainPredicate)[0])
       );
     }
 
-    const accounts = session.namespaces.eip155.accounts;
-    const addressFromSessionUpdate = accounts[0].split(chainPredicate)[1];
+    const addressFromSessionUpdate = account.split(chainPredicate)[1];
     if (
       typeof addressFromSessionUpdate === 'string' &&
       addressFromSessionUpdate !== this.kit.connection.defaultAccount

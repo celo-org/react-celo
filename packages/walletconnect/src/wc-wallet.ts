@@ -11,7 +11,7 @@ import { getSdkError } from '@walletconnect/utils';
 import debugConfig from 'debug';
 import EventEmitter from 'events';
 
-import { CANCELED, RELAY_URL } from './constants';
+import { CANCELED } from './constants';
 import { SupportedMethods, WalletConnectWalletOptions } from './types';
 import { parseAddress } from './utils';
 import Canceler from './utils/canceler';
@@ -37,8 +37,7 @@ async function waitForTruthy(
 }
 
 const defaultInitOptions: SignClientTypes.Options = {
-  relayUrl: RELAY_URL,
-  logger: 'error',
+  logger: process.env.NODE_ENV === 'production' ? 'error' : 'debug',
   metadata: {
     name: 'react-celo',
     description:
@@ -48,13 +47,24 @@ const defaultInitOptions: SignClientTypes.Options = {
   },
 };
 
+const requiredNamespaces = {
+  eip155: {
+    chains: [
+      'eip155:44787', // alajores
+      'eip155:42220', // celo
+      'eip155:62320', // baklava
+    ],
+    methods: Object.values(SupportedMethods),
+    events: ['chainChanged', 'accountsChanged'],
+  },
+};
+
 export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   private initOptions: SignClientTypes.Options & {
     projectId?: string;
   };
 
   private client?: Client;
-  private pairing?: PairingTypes.Struct;
   private session?: SessionTypes.Struct;
 
   private canceler: Canceler;
@@ -86,22 +96,50 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       projectId,
     };
 
-    void this.getWalletConnectClient().then((client) => {
-      this.client = client;
-      // when we're in certain environments (like the browser) the
-      // WalletConnect client will handle retrieving old sessions.
-      if (client.session) {
-        const session = client.session
-          .getAll()
-          .sort((a, b) => b.expiry - a.expiry)
-          .find((x) => x.acknowledged && x.expiry * 1000 > Date.now());
+    void this.getWalletConnectClient()
+      .then(async (client) => {
+        this.client = client;
+        this.setupListeners();
+        // when we're in certain environments (like the browser) the
+        // WalletConnect client will handle retrieving old sessions.
+        if (client.session) {
+          const session = client.session
+            .getAll()
+            .sort((a, b) => b.expiry - a.expiry)
+            .find((x) => x.acknowledged && x.expiry * 1000 > Date.now());
 
-        if (session) {
-          this.session = session;
-          this.emit('session_update', null, this.session);
+          if (session) {
+            try {
+              await client.extend({
+                topic: session.topic,
+              });
+            } catch (e) {
+              debug(
+                'session resurrection, extend failed, wallet most likely refuses session extensions',
+                e
+              );
+            }
+            this.session = session;
+            this.emit('session_update', null, this.session);
+          }
         }
-      }
-    });
+      })
+      .catch((e) => {
+        debug('session resurrection failed', e);
+        this.emit('session_update', e as Error);
+      });
+  }
+
+  private setupListeners() {
+    if (!this.client) return;
+
+    this.client.on('session_proposal', this.onSessionProposal);
+    this.client.on('session_update', this.onSessionUpdated);
+    this.client.on('session_delete', this.onSessionDeleted);
+    this.client.on('session_extend', this.onSessionExtended);
+    this.client.on('session_event', this.onSessionEvent);
+    this.client.on('session_ping', this.onSessionPing);
+    this.client.on('session_request', this.onSessionRequest);
   }
 
   /**
@@ -111,8 +149,8 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return Client.init(this.initOptions);
   }
 
-  async switchToChain(_params: unknown) {
-    // noop
+  switchToChain(_params: unknown) {
+    this.emit('session_update', null, this.session);
   }
 
   /**
@@ -121,26 +159,18 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   public async getUri(): Promise<string | void> {
     this.client = this.client || (await this.getWalletConnectClient());
 
-    this.client.on('session_proposal', this.onSessionProposal);
-    this.client.on('session_update', this.onSessionUpdated);
-    this.client.on('session_delete', this.onSessionDeleted);
-    this.client.on('session_extend', this.onSessionExtended);
-    this.client.on('session_event', this.onSessionEvent);
-    this.client.on('session_ping', this.onSessionPing);
+    if (
+      this.session?.acknowledged &&
+      this.session?.expiry &&
+      this.session?.expiry * 1000 > Date.now()
+    ) {
+      return;
+    }
+
+    this.setupListeners();
 
     const { uri, approval } = await this.client.connect({
-      pairingTopic: this.pairing?.topic,
-      requiredNamespaces: {
-        eip155: {
-          chains: [
-            'eip155:44787', // alajores
-            'eip155:42220', // celo
-            'eip155:62320', // baklava
-          ],
-          methods: Object.values(SupportedMethods),
-          events: ['chainChanged', 'accountsChanged'],
-        },
-      },
+      requiredNamespaces,
     });
 
     void approval()
@@ -196,6 +226,12 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
   onSessionPing = (ping: SignClientTypes.EventArguments['session_ping']) => {
     this.emit('session_ping', null, ping);
+  };
+
+  onSessionRequest = (
+    request: SignClientTypes.EventArguments['session_request']
+  ) => {
+    this.emit('session_request', null, request);
   };
 
   async loadAccountSigners(): Promise<Map<string, WalletConnectSigner>> {
