@@ -35,7 +35,10 @@ export default class WalletConnectConnector
     readonly walletId?: string
   ) {
     super();
-    const wallet = new WalletConnectWallet(options);
+    const wallet = new WalletConnectWallet({
+      ...options,
+      chainId: network.chainId,
+    });
 
     this.kit = newKit(network.rpcUrl, wallet);
   }
@@ -227,7 +230,6 @@ export default class WalletConnectConnector
   private async onConnected(session: WCSession) {
     const [_eip155, chainId, account] =
       session.namespaces.eip155.accounts[0].split(':');
-    console.log({ chainId, account });
 
     const walletAddress = await this.fetchWalletAddressForAccount(account);
     if (this.kit.connection.defaultAccount !== walletAddress) {

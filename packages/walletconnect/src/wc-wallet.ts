@@ -1,12 +1,8 @@
-import { sleep } from '@celo/base';
+import { Address, sleep } from '@celo/base';
 import { CeloTx } from '@celo/connect';
 import { RemoteWallet } from '@celo/wallet-remote';
 import Client from '@walletconnect/sign-client';
-import {
-  PairingTypes,
-  SessionTypes,
-  SignClientTypes,
-} from '@walletconnect/types';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 import debugConfig from 'debug';
 import EventEmitter from 'events';
@@ -70,6 +66,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   private canceler: Canceler;
   private emitter = new EventEmitter();
 
+  private chainId: number;
+  private signers: Map<Address, WalletConnectSigner> = new Map();
+
   on = <E extends SignClientTypes.Event>(
     event: E,
     fn: (error: Error | null, data?: unknown) => void
@@ -86,7 +85,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.emitter.emit(event, error, data);
   };
 
-  constructor({ init, projectId }: WalletConnectWalletOptions) {
+  constructor({ init, projectId, chainId }: WalletConnectWalletOptions) {
     super();
 
     this.canceler = new Canceler();
@@ -95,6 +94,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       ...init,
       projectId,
     };
+    this.chainId = chainId;
 
     void this.getWalletConnectClient()
       .then(async (client) => {
@@ -149,7 +149,17 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return Client.init(this.initOptions);
   }
 
-  switchToChain(_params: unknown) {
+  switchToChain(params: {
+    chainId: number;
+    networkId: number;
+    rpcUrl: string;
+    nativeCurrency: { name: string; symbol: string };
+  }) {
+    this.chainId = params.chainId;
+    this.signers.forEach((signer) =>
+      signer.updateChain(String(params.chainId))
+    );
+
     this.emit('session_update', null, this.session);
   }
 
@@ -253,16 +263,17 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       .flat();
 
     allNamespaceAccounts.forEach((addressLike) => {
-      const { address, networkId } = parseAddress(addressLike);
+      const { address } = parseAddress(addressLike);
       const signer = new WalletConnectSigner(
         this.client!,
         this.session!,
         address,
-        networkId
+        String(this.chainId)
       );
       addressToSigner.set(address, signer);
     });
 
+    this.signers = addressToSigner;
     return addressToSigner;
   }
 
@@ -284,16 +295,16 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     this.canceler.cancel();
     const reason = getSdkError('USER_DISCONNECTED');
-    if (this.session) {
-      try {
-        await this.client.disconnect({
-          topic: this.session.topic,
+    const connections = this.client.pairing.values;
+
+    this.session && this.client.session.delete(this.session?.topic, reason);
+    await Promise.all(
+      connections.map((connection) =>
+        this.client!.disconnect({
+          topic: connection.topic,
           reason,
-        });
-        await this.client.session.delete(this.session.topic, reason);
-      } catch (e) {
-        console.log('Error while disconnecting, probably already disconnected');
-      }
-    }
+        })
+      )
+    );
   };
 }

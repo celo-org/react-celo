@@ -24,6 +24,10 @@ export class WalletConnectSigner implements Signer {
     throw new Error('signTransaction unimplemented; use signRawTransaction');
   }
 
+  updateChain(chainId: string) {
+    this.chainId = chainId;
+  }
+
   private request<T>(method: SupportedMethods, params: unknown) {
     return this.client.request<T>({
       topic: this.session.topic,

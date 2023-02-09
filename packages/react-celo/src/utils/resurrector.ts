@@ -80,7 +80,7 @@ export function resurrector(
           network,
           manualNetworkingMode,
           CeloContract.GoldToken,
-          { projectId: dapp.walletConnectProjectId }
+          { projectId: dapp.walletConnectProjectId, chainId: network.chainId }
         );
       }
 

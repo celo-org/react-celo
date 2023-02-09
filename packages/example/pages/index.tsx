@@ -340,7 +340,7 @@ async function getBalances(
   );
 }
 
-export const WC_PROJECT_ID = '3ee9bf02f3a89a03837044fc7cdeb232';
+export const WC_PROJECT_ID = 'cbd4dfc72c388f372fc45f003becb013';
 
 export default function Home(): React.ReactElement {
   return (
