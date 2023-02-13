@@ -80,13 +80,13 @@ export default class WalletConnectConnector
     }
   }
 
-  async startNetworkChangeFromApp(network: Network) {
+  startNetworkChangeFromApp(network: Network) {
     try {
       const wallet = this.kit.getWallet() as WalletConnectWallet;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const resp = await wallet.switchToChain({
+      const resp = wallet.switchToChain({
         ...network,
         networkId: network.chainId,
       });
@@ -266,5 +266,3 @@ export default class WalletConnectConnector
     }
   }
 }
-
-const END_MESSAGE = '[react-celo] WC SESSION ENDED BY DAPP';

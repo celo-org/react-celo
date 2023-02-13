@@ -5,12 +5,7 @@
     "noEmit": false,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "typeRoots": [
-      "./src/global",
-      "./node_modules/@types",
-      "../../node_modules/@types"
-    ]
+    "sourceMap": true
   },
   "include": ["src/"]
 }

@@ -1,4 +1,5 @@
-import { SignClientTypes, SessionTypes } from '@walletconnect/types';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+
 export enum SupportedMethods {
   accounts = 'eth_accounts',
   signTransaction = 'eth_signTransaction',

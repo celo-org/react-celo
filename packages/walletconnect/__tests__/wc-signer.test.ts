@@ -22,7 +22,6 @@ import {
   testAddress,
   testPrivateKey,
 } from './utils/in-memory-wallet';
-import { MockWalletConnectClient } from './utils/mock-client';
 
 const CHAIN_ID = 44378;
 const TYPED_DATA = {
@@ -79,9 +78,6 @@ const testTx = {
 };
 const decryptMessage = 'Hello';
 
-const walletConnectBridge = process.env.WALLET_CONNECT_BRIDGE;
-const E2E = !!walletConnectBridge;
-
 describe('WalletConnectWallet tests', () => {
   const wallet = new WalletConnectWallet({
     init: {
@@ -89,6 +85,7 @@ describe('WalletConnectWallet tests', () => {
       logger: 'error',
     },
     projectId: '3ee9bf02f3a89a03837044fc7cdeb232',
+    chainId: 4220,
   });
   const testWallet: {
     init: (uri: string) => void;

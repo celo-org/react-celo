@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { CeloContract } from '@celo/contractkit';
-import { WalletConnectWallet } from '@celo/wallet-walletconnect-v1';
+import { WalletConnectWallet } from '@celo/wallet-walletconnect';
 import { generateTestingUtils } from 'eth-testing';
 
 import { Alfajores, WalletIds } from '../../src';
 import { ConnectorEvents, WalletConnectConnector } from '../../src/connectors';
-import { buildOptions } from '../../src/connectors/wallet-connect';
 import { setApplicationLogger } from '../../src/utils/logger';
 import { mockLogger } from '../test-logger';
 
@@ -13,7 +12,10 @@ const ACCOUNT = '0xf61B443A155b07D2b2cAeA2d99715dC84E839EEf';
 
 jest.createMockFromModule('@celo/wallet-walletconnect-v1');
 
-const wallet = new WalletConnectWallet({});
+const wallet = new WalletConnectWallet({
+  chainId: 4220,
+  projectId: 'f597db9e215becf1a4b24a7154c26fa2',
+});
 
 jest.spyOn(wallet, 'init').mockImplementation(async function init() {
   return Promise.resolve(undefined);
@@ -59,7 +61,7 @@ describe('WalletConnectConnector', () => {
       Alfajores,
       false,
       CeloContract.GoldToken,
-      buildOptions(Alfajores),
+      { chainId: 4220, projectId: 'cbd4dfc72c388f372fc45f003becb013' },
       false,
       (x: string) => x,
       1,

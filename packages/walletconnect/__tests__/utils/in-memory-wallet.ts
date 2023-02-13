@@ -1,13 +1,8 @@
 import { CeloTx, EncodedTransaction } from '@celo/connect';
 import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { toChecksumAddress } from '@celo/utils/lib/address';
-import WalletConnect, { SIGN_CLIENT_EVENTS } from '@walletconnect/sign-client';
-import {
-  EngineTypes,
-  PairingTypes,
-  SessionTypes,
-  SignClientTypes,
-} from '@walletconnect/types';
+import WalletConnect from '@walletconnect/sign-client';
+import { EngineTypes, SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 import debugConfig from 'debug';
 

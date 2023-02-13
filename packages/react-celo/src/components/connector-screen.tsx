@@ -52,12 +52,7 @@ const styles = cls({
     tw-font-medium`,
 });
 
-export default function ConnectorScreen({
-  title,
-  content,
-  footer,
-  wcUri,
-}: Props) {
+export default function ConnectorScreen({ title, content, footer }: Props) {
   const theme = useTheme();
 
   return (
@@ -86,6 +81,3 @@ export default function ConnectorScreen({
     </div>
   );
 }
-
-// 296.500
-// 248.762
