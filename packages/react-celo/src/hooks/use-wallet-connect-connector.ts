@@ -1,3 +1,4 @@
+import { CANCELED } from '@celo/wallet-walletconnect';
 import { useCallback, useEffect, useState } from 'react';
 
 import { WalletConnectConnector } from '../connectors';
@@ -96,7 +97,6 @@ export default function useWalletConnectConnector(
 
         onSubmit(connector);
       } catch (reason) {
-        const CANCELED = Symbol();
         if (reason === CANCELED) {
           getApplicationLogger().debug(
             '[useWalletConnectConnector]',
