@@ -1,9 +1,10 @@
 {
   "name": "@celo/react-celo",
-  "version": "5.0.0-beta.2-dev",
+  "version": "5.0.1-dev",
   "private": false,
   "scripts": {
     "prebuild": "mkdir -p lib && node ./scripts/json-to-ts.js package.json lib",
+    "postinstall": "sh ./scripts/postinstall.sh",
     "build": "tsc -b && yarn run build-styles",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -30,7 +31,7 @@
     "@celo/wallet-ledger": ">=2.3.0",
     "@celo/wallet-local": ">=2.3.0",
     "@celo/wallet-remote": ">=2.3.0",
-    "@celo/wallet-walletconnect": "5.0.0-beta.2-dev",
+    "@celo/wallet-walletconnect": "5.0.1-dev",
     "@coinbase/wallet-sdk": "^3.2.0",
     "@ethersproject/providers": "^5.5.2",
     "@ledgerhq/hw-transport-webusb": "^5.43.0",
