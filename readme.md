@@ -59,6 +59,8 @@ function WrappedApp() {
         name: 'My awesome dApp',
         description: 'My awesome description',
         url: 'https://example.com',
+        // if you plan on supporting WalletConnect compatible wallets, you need to provide a project ID, you can find it here: https://docs.walletconnect.com/2.0/cloud/relay
+        walletConnectProjectId: '123',
       }}
     >
       <App />
@@ -138,7 +140,7 @@ You can also add new custom wallets that don't exist in the registry or aren't i
           name: 'Example Wallet',
           description: 'Lorem ipsum',
           homepage: 'https://example.com',
-          chains: ['eip:4220'],
+          chains: ['eip:42220'],
           // IMPORTANT
           // This is the version of WC. We only support version 1 at the moment.
           versions: ['1'],

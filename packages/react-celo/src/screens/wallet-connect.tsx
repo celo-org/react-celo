@@ -53,6 +53,11 @@ const styles = cls({
     tw-flex
     tw-items-center
     tw-justify-center`,
+  titleContainer: `
+    tw-flex
+    tw-flex-row
+    tw-items-center
+    tw-justify-center`,
 });
 
 export interface Props {
@@ -165,8 +170,14 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
 
   return (
     <ConnectorScreen
-      title={`Scan with ${provider.name}`}
+      title={
+        <div className={styles.titleContainer}>
+          Scan with {provider.name}
+          {uri && <div>{<CopyText text="" payload={uri} />}</div>}
+        </div>
+      }
       content={<div className={styles.contentContainer}>{content}</div>}
+      wcUri={uri}
       footer={
         provider.installURL
           ? {

@@ -4,4 +4,5 @@ const pkg = require('./package.json');
 module.exports = {
   ...base,
   displayName: pkg.name,
+  testEnvironment: 'node',
 };

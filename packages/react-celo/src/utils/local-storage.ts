@@ -1,5 +1,5 @@
 import { CeloTokenContract } from '@celo/contractkit/lib/base';
-import { WalletConnectWalletOptions } from '@celo/wallet-walletconnect-v1';
+import { WalletConnectWalletOptions } from '@celo/wallet-walletconnect';
 
 import { localStorageKeys, WalletTypes } from '../constants';
 

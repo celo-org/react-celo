@@ -3,6 +3,7 @@ module.exports = {
     config.plugins.push(
       new webpack.IgnorePlugin({ resourceRegExp: /^electron$/ })
     );
+    config.resolve.fallback = { net: false };
     return config;
   },
 

@@ -24,7 +24,6 @@ import { signTestTypedData } from '../utils/sign-test-typed-data';
 interface Summary {
   name: string;
   address: string;
-  wallet: string;
   celo: BigNumber;
   balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
 }
@@ -32,7 +31,6 @@ interface Summary {
 const defaultSummary: Summary = {
   name: '',
   address: '',
-  wallet: '',
   celo: new BigNumber(0),
   balances: [],
 };
@@ -273,12 +271,6 @@ function HomePage(): React.ReactElement {
                     <div>Wallet type: {walletType}</div>
                     <div>Name: {summary.name || 'Not set'}</div>
                     <div className="">Address: {truncateAddress(address)}</div>
-                    <div className="">
-                      Wallet address:{' '}
-                      {summary.wallet
-                        ? truncateAddress(summary.wallet)
-                        : 'Not set'}
-                    </div>
                   </div>
                 </div>
                 <div>
@@ -348,6 +340,8 @@ async function getBalances(
   );
 }
 
+export const WC_PROJECT_ID = 'cbd4dfc72c388f372fc45f003becb013';
+
 export default function Home(): React.ReactElement {
   return (
     <CeloProvider
@@ -356,6 +350,7 @@ export default function Home(): React.ReactElement {
         description: 'A demo DApp to showcase functionality',
         url: 'https://react-celo.vercel.app',
         icon: 'https://react-celo.vercel.app/favicon.ico',
+        walletConnectProjectId: WC_PROJECT_ID,
       }}
       defaultNetwork={Alfajores.name}
       connectModal={{

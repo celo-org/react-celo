@@ -1,4 +1,4 @@
-import { CeloProvider, Mainnet } from '@celo/react-celo';
+import { Alfajores, CeloProvider, Mainnet } from '@celo/react-celo';
 import React from 'react';
 
 import { ConnectWalletCheck } from '../components/test-plan/connect-wallet';
@@ -11,6 +11,7 @@ import {
 import { SwitchNetwork } from '../components/test-plan/switch-networks';
 import { UpdateFeeCurrency } from '../components/test-plan/update-fee-currency';
 
+export const WC_PROJECT_ID = '3ee9bf02f3a89a03837044fc7cdeb232';
 export default function WalletTestPlan(): React.ReactElement {
   return (
     <CeloProvider
@@ -19,8 +20,10 @@ export default function WalletTestPlan(): React.ReactElement {
         description: 'Wallet test plan',
         url: 'https://react-celo.vercel.app/wallet-test-plan',
         icon: 'https://react-celo.vercel.app/favicon.ico?v=2',
+        walletConnectProjectId: WC_PROJECT_ID,
       }}
-      network={Mainnet}
+      defaultNetwork={Mainnet.name}
+      networks={[Mainnet, Alfajores]}
       connectModal={{
         providersOptions: { searchable: true },
       }}

@@ -100,6 +100,11 @@ export interface Dapp {
   description: string;
   url: string;
   icon: string;
+  // NOTE for walletConnectProjectId
+  // This property is mandatory when selecting a WalletConnect wallet
+  // It will not crash the app but will show an error message saying it's
+  // misconfigured
+  walletConnectProjectId?: string;
 }
 
 export interface WalletEntryLogos {

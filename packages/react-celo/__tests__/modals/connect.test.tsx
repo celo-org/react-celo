@@ -21,8 +21,8 @@ describe('ConnectModal', () => {
   describe('when given reactModalProps', () => {
     let dom: RenderResult;
     describe('style.overlay', () => {
-      beforeEach(() => {
-        act(() => {
+      beforeEach(async () => {
+        await act(() => {
           dom = renderComponentInCKProvider(
             <ConnectModal
               reactModalProps={{
