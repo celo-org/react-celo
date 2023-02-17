@@ -23,7 +23,7 @@ import {
   testPrivateKey,
 } from './utils/in-memory-wallet';
 
-const CHAIN_ID = 44378;
+const CHAIN_ID = 44787;
 const TYPED_DATA = {
   types: {
     EIP712Domain: [
@@ -85,7 +85,7 @@ describe('WalletConnectWallet tests', () => {
       logger: 'error',
     },
     projectId: '3ee9bf02f3a89a03837044fc7cdeb232',
-    chainId: 4220,
+    chainId: 44787,
   });
   const testWallet: {
     init: (uri: string) => void;

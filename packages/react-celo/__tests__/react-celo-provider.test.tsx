@@ -328,7 +328,7 @@ describe('CeloProvider', () => {
         primary: '#6366f1',
         secondary: '#eef2ff',
         muted: '#e2e8f0',
-        error: '#ef4444',
+        error: '#e70532',
         text: '#000000',
         textSecondary: '#1f2937',
         textTertiary: '#64748b',
