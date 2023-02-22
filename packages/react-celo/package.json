@@ -18,6 +18,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
+    "scripts/postinstall.sh",
     "lib/**/*.css",
     "lib/**/*.js",
     "lib/**/*.d.ts",
