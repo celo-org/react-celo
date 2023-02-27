@@ -75,7 +75,7 @@ function App() {
 
 ### Default wallets and customization
 
-react-celo provides a list of default wallets (CeloExtensionWallet, Injected, Ledger, MetaMask, PrivateKey (dev only) and WalletConnect). It can be configured as shown below.
+react-celo provides a list of default wallets (Injected, Ledger, MetaMask, PrivateKey (dev only) and WalletConnect). It can be configured as shown below.
 
 ```javascript
 <CeloProvider
@@ -92,7 +92,6 @@ react-celo provides a list of default wallets (CeloExtensionWallet, Injected, Le
       hideFromDefaults: [
         SupportedProvider.MetaMask,
         SupportedProvider.PrivateKey,
-        SupportedProvider.CeloExtensionWallet,
         SupportedProvider.Valora,
       ],
 

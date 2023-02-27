@@ -2,7 +2,6 @@
 import { CeloContract } from '@celo/contractkit/lib/base';
 
 import {
-  CeloExtensionWalletConnector,
   CoinbaseWalletConnector,
   InjectedConnector,
   LedgerConnector,
@@ -40,11 +39,6 @@ export function resurrector(
 
         return new LedgerConnector(network, index, CeloContract.GoldToken);
       }
-      case WalletTypes.CeloExtensionWallet:
-        return new CeloExtensionWalletConnector(
-          network,
-          CeloContract.GoldToken
-        );
       case WalletTypes.MetaMask:
         return new MetaMaskConnector(
           network,

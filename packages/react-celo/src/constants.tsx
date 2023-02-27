@@ -22,7 +22,6 @@ export enum localStorageKeys {
 }
 
 export enum SupportedProviders {
-  CeloExtensionWallet = 'Celo Extension Wallet',
   CeloTerminal = 'Celo Terminal',
   CeloWallet = 'Celo Wallet',
   CeloDance = 'CeloDance',
@@ -44,7 +43,6 @@ export enum WalletTypes {
   CeloDance = 'CeloDance',
   CeloWallet = 'CeloWallet',
   CeloTerminal = 'CeloTerminal',
-  CeloExtensionWallet = 'CeloExtensionWallet',
   Ledger = 'Ledger',
   Injected = 'Injected',
   PrivateKey = 'PrivateKey',
@@ -169,17 +167,6 @@ export const PROVIDERS: {
         window.location.href.replace(/^https?:\/\//, '')
       : 'https://metamask.app.link/',
   },
-  [SupportedProviders.CeloExtensionWallet]: {
-    name: SupportedProviders.CeloExtensionWallet,
-    type: WalletTypes.CeloExtensionWallet,
-    description: 'Use a wallet from the the Celo chrome extension',
-    icon: Icons.ChromeExtensionStore,
-    canConnect: () => !!window.celo,
-    showInList: () => !isMobile,
-    listPriority: () => Priorities.Default,
-    installURL:
-      'https://chrome.google.com/webstore/detail/celoextensionwallet/kkilomkmpmkbdnfelcpgckmpcaemjcdh/related',
-  },
   [SupportedProviders.Injected]: {
     name: SupportedProviders.Injected,
     type: WalletTypes.Injected,
@@ -293,7 +280,7 @@ export const Localhost: Network = {
  * These wallets cannot have their networks
  * updated via react-celo
  */
-export const STATIC_NETWORK_WALLETS = [WalletTypes['CeloExtensionWallet']];
+export const STATIC_NETWORK_WALLETS: WalletTypes[] = [];
 
 /**
  * Gets the provider associated with a wallet type.

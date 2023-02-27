@@ -1,6 +1,5 @@
 import { SupportedProviders } from '../constants';
 import { Connector, WalletConnectProvider } from '../types';
-import { CeloExtensionWallet } from './cew';
 import { CoinbaseWallet } from './coinbase';
 import { Ledger } from './ledger';
 import { MetaMaskOrInjectedWallet } from './metamask';
@@ -17,7 +16,6 @@ export const defaultScreens: {
   [SupportedProviders.CeloWallet]: WalletConnect,
   [SupportedProviders.CeloDance]: WalletConnect,
   [SupportedProviders.CeloTerminal]: WalletConnect,
-  [SupportedProviders.CeloExtensionWallet]: CeloExtensionWallet,
   [SupportedProviders.Omni]: WalletConnect,
   [SupportedProviders.Injected]: MetaMaskOrInjectedWallet,
   [SupportedProviders.PrivateKey]: PrivateKey,
