@@ -32,7 +32,6 @@ yarn add @celo/react-celo @celo/contractkit
 ## Supported wallets
 
 - Celo Dance
-- Celo Extension Wallet (Metamask fork)
 - Celo Terminal
 - Celo Wallet
 - Ledger
