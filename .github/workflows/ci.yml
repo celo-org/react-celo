@@ -46,7 +46,7 @@ jobs:
         if: matrix.node == 'lts/*'
         uses: codecov/codecov-action@v2
         with:
-          files: ./packages/react-celo/coverage/clover.xml,./packages/walletconnect-v1/coverage/clover.xml
+          files: ./packages/react-celo/coverage/clover.xml,./packages/walletconnect/coverage/clover.xml
           fail_ci_if_error: true
           verbose: true
 

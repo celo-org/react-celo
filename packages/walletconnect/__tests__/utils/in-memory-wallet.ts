@@ -1,16 +1,12 @@
 import { CeloTx, EncodedTransaction } from '@celo/connect';
 import { newKit } from '@celo/contractkit/lib/mini-kit';
 import { toChecksumAddress } from '@celo/utils/lib/address';
-import WalletConnect, { CLIENT_EVENTS } from '@walletconnect/client';
-import {
-  ClientTypes,
-  PairingTypes,
-  SessionTypes,
-} from '@walletconnect/types/dist/cjs';
-import { ERROR } from '@walletconnect/utils';
+import WalletConnect from '@walletconnect/sign-client';
+import { EngineTypes, SignClientTypes } from '@walletconnect/types';
+import { getSdkError } from '@walletconnect/utils';
 import debugConfig from 'debug';
 
-import { SupportedMethods } from '../types';
+import { SupportedMethods } from '../../src/types';
 import {
   parseComputeSharedSecret,
   parseDecrypt,
@@ -34,53 +30,66 @@ export const testAddress = toChecksumAddress(account);
 export function getTestWallet() {
   let client: WalletConnect;
   let sessionTopic: string;
-  let pairingTopic: string;
 
-  const onSessionProposal = (proposal: SessionTypes.Proposal) => {
-    const response: ClientTypes.ApproveParams = {
-      response: {
-        metadata: {
-          name: 'Wallet',
-          description: 'A mobile payments wallet that works worldwide',
-          url: 'https://wallet.com',
-          icons: ['https://wallet.com/favicon.ico'],
-        },
-        state: {
-          accounts: [`${account}@celo:44787`],
+  const onSessionProposal = async (
+    proposal: SignClientTypes.EventArguments['session_proposal']
+  ) => {
+    const response: EngineTypes.ApproveParams = {
+      id: Math.floor(Math.random() * 1_000_000),
+      namespaces: {
+        eip155: {
+          methods: Object.values(SupportedMethods),
+          events: ['chainChanged', 'accountsChanged'],
+          accounts: [
+            `eip155:44787:${account}`,
+            `eip155:42220:${account}`,
+            `eip155:62320:${account}`,
+          ],
         },
       },
-      proposal,
     };
-    return client.approve(response);
+    const { topic, acknowledged } = await client.approve({
+      id: proposal.id,
+      namespaces: response.namespaces,
+    });
+    sessionTopic = topic;
+    await acknowledged();
   };
-  const onSessionCreated = (session: SessionTypes.Created) => {
-    sessionTopic = session.topic;
-  };
-  const onSessionUpdated = (session: SessionTypes.Update) => {
+  const onSessionUpdated = (
+    session: SignClientTypes.EventArguments['session_update']
+  ) => {
     debug('onSessionUpdated', session);
   };
-  const onSessionDeleted = (session: SessionTypes.DeleteParams) => {
+  const onSessionDeleted = (
+    session: SignClientTypes.EventArguments['session_delete']
+  ) => {
     debug('onSessionDeleted', session);
   };
-
-  const onPairingProposal = (pairing: PairingTypes.Proposal) => {
-    debug('onPairingProposal', pairing);
+  const onSessionExtended = (
+    session: SignClientTypes.EventArguments['session_extend']
+  ) => {
+    debug('onSessionExtended', session);
   };
-  const onPairingCreated = (pairing: PairingTypes.Created) => {
-    pairingTopic = pairing.topic;
+  const onSessionEvent = (
+    event: SignClientTypes.EventArguments['session_event']
+  ) => {
+    debug('onSessionEvent', event);
   };
-  const onPairingUpdated = (pairing: PairingTypes.Update) => {
-    debug('onPairingUpdated', pairing);
-  };
-  const onPairingDeleted = (pairing: PairingTypes.DeleteParams) => {
-    debug('onPairingDeleted', pairing);
+  const onSessionPing = (
+    ping: SignClientTypes.EventArguments['session_ping']
+  ) => {
+    debug('onSessionPing', ping);
   };
 
   async function onSessionRequest(
-    event: SessionTypes.RequestParams & { request: { id: number } }
+    event: SignClientTypes.EventArguments['session_request']
   ) {
-    const { topic, request } = event;
-    const { method, id } = request;
+    const {
+      id,
+      topic,
+      params: { request },
+    } = event;
+    const { method } = request;
     let result: string | EncodedTransaction;
 
     if (method === SupportedMethods.personalSign) {
@@ -129,27 +138,29 @@ export function getTestWallet() {
     init: async (uri: string) => {
       client = await WalletConnect.init({
         relayUrl: process.env.WALLET_CONNECT_BRIDGE,
-        controller: true,
         logger: 'error',
+        projectId: '3ee9bf02f3a89a03837044fc7cdeb232',
       });
 
-      client.on(CLIENT_EVENTS.session.proposal, onSessionProposal);
-      client.on(CLIENT_EVENTS.session.created, onSessionCreated);
-      client.on(CLIENT_EVENTS.session.updated, onSessionUpdated);
-      client.on(CLIENT_EVENTS.session.deleted, onSessionDeleted);
-      client.on(CLIENT_EVENTS.session.request, onSessionRequest);
+      client.on('session_proposal', onSessionProposal);
+      client.on('session_update', onSessionUpdated);
+      client.on('session_delete', onSessionDeleted);
+      client.on('session_extend', onSessionExtended);
+      client.on('session_request', onSessionRequest);
+      client.on('session_event', onSessionEvent);
+      client.on('session_ping', onSessionPing);
 
-      client.on(CLIENT_EVENTS.pairing.proposal, onPairingProposal);
-      client.on(CLIENT_EVENTS.pairing.created, onPairingCreated);
-      client.on(CLIENT_EVENTS.pairing.updated, onPairingUpdated);
-      client.on(CLIENT_EVENTS.pairing.deleted, onPairingDeleted);
-
-      await client.pair({ uri });
+      await client.core.pairing.pair({ uri });
     },
     async close() {
-      const reason = ERROR.USER_DISCONNECTED.format();
-      await client.disconnect({ topic: sessionTopic, reason });
-      await client.pairing.delete({ topic: pairingTopic, reason });
+      const reason = getSdkError('USER_DISCONNECTED');
+      if (sessionTopic) {
+        await client.disconnect({
+          topic: sessionTopic,
+          reason,
+        });
+        await client.session.delete(sessionTopic, reason);
+      }
     },
   };
 }

@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "4.2.1",
+  "version": "5.0.2-dev",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -14,10 +14,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@celo/contractkit": "^2.2.0",
-    "@celo/react-celo": "^4.2.1",
-    "@celo/utils": "^2.2.0",
-    "@walletconnect/client": "1.8.0",
+    "@celo/contractkit": "^3.2.0",
+    "@celo/react-celo": "5.0.3-dev",
+    "@celo/utils": "^3.2.0",
+    "@walletconnect/sign-client": "^2.1.4",
+    "@walletconnect/types": "^2.1.4",
+    "@walletconnect/utils": "^2.1.4",
     "next": "^12.1.6",
     "postcss": "^8.4.5",
     "react": "^18.1.0",

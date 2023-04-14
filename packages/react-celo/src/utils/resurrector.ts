@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { CeloContract } from '@celo/contractkit';
+import { CeloContract } from '@celo/contractkit/lib/base';
 
 import {
   CeloExtensionWalletConnector,
@@ -10,7 +10,6 @@ import {
   PrivateKeyConnector,
   WalletConnectConnector,
 } from '../connectors';
-import { buildOptions } from '../connectors/wallet-connect';
 import { localStorageKeys, WalletTypes } from '../constants';
 import { Dapp, Network } from '../types';
 import { getTypedStorageKey } from './local-storage';
@@ -80,7 +79,7 @@ export function resurrector(
           network,
           manualNetworkingMode,
           CeloContract.GoldToken,
-          buildOptions(network)
+          { projectId: dapp.walletConnectProjectId, chainId: network.chainId }
         );
       }
 

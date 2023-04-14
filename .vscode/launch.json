@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/packages/walletconnect-v1/src/wc-wallet.ts",
+      "program": "${workspaceFolder}/packages/walletconnect/src/wc-wallet.ts",
       "outFiles": ["${workspaceFolder}/**/*.js"]
     },
     {

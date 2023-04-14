@@ -39,7 +39,7 @@ describe('CeloProvider', () => {
       });
 
       const button = await dom.findByText('Connect');
-      act(() => {
+      await act(() => {
         fireEvent.click(button);
       });
 
@@ -311,13 +311,13 @@ describe('CeloProvider', () => {
       });
     });
 
-    it('updates the current theme', () => {
+    it('updates the current theme', async () => {
       const { result, rerender } = renderUseCeloInternal({});
 
       // FIXME Need to determine behavior when network is not in networks
       expect(result.current.network).toEqual(Mainnet);
 
-      act(() => {
+      await act(() => {
         result.current.updateTheme(defaultTheme.light);
       });
 
@@ -328,7 +328,7 @@ describe('CeloProvider', () => {
         primary: '#6366f1',
         secondary: '#eef2ff',
         muted: '#e2e8f0',
-        error: '#ef4444',
+        error: '#e70532',
         text: '#000000',
         textSecondary: '#1f2937',
         textTertiary: '#64748b',

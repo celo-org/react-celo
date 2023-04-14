@@ -17,14 +17,8 @@ async function main() {
   const name = `CLI DApp ${Math.random().toString().substring(12)}`;
 
   const wallet = new WalletConnectWallet({
-    connect: {
-      metadata: {
-        name,
-        description: 'A CLI DApp for testing WalletConnect integrations',
-        url: 'https://react-celo.vercel.app',
-        icons: [],
-      },
-    },
+    init: {},
+    projectId: '3ee9bf02f3a89a03837044fc7cdeb232',
   });
 
   const uri = await wallet.getUri();

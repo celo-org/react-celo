@@ -6,8 +6,8 @@ export function PrimaryButton(
   return (
     <button
       {...props}
-      className={`px-4 py-2 border border-celo-gold rounded shadow-sm text-base font-medium text-slate-900 bg-celo-gold ${
-        props.disabled ? 'cursor-not-allowed' : 'hover:bg-celo-gold-light'
+      className={`px-4 py-2 border border-forest rounded shadow-sm text-base font-medium text-white bg-forest ${
+        props.disabled ? 'cursor-not-allowed' : 'hover:bg-forest'
       } mt-2 ${props.className || ''}`}
     />
   );

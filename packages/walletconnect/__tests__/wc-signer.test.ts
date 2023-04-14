@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   ensureLeading0x,
   eqAddress,
@@ -14,15 +16,14 @@ import {
 import { recoverTransaction } from '@celo/wallet-base';
 import Web3 from 'web3';
 
-import { WalletConnectWallet } from '../src/wc-wallet';
+import { WalletConnectWallet } from '../src';
 import {
   getTestWallet,
   testAddress,
   testPrivateKey,
 } from './utils/in-memory-wallet';
-import { MockWalletConnectClient } from './utils/mock-client';
 
-const CHAIN_ID = 44378;
+const CHAIN_ID = 44787;
 const TYPED_DATA = {
   types: {
     EIP712Domain: [
@@ -77,42 +78,41 @@ const testTx = {
 };
 const decryptMessage = 'Hello';
 
-const walletConnectBridge = process.env.WALLET_CONNECT_BRIDGE;
-const E2E = !!walletConnectBridge;
-
 describe('WalletConnectWallet tests', () => {
-  let testWallet: {
-    init: (uri: string) => void;
-    close: () => Promise<void>;
-  };
-
   const wallet = new WalletConnectWallet({
     init: {
-      bridge: walletConnectBridge,
+      relayUrl: 'wss://relay.walletconnect.com',
+      logger: 'error',
     },
-    connect: {
-      chainId: CHAIN_ID,
-    },
+    projectId: '3ee9bf02f3a89a03837044fc7cdeb232',
+    chainId: 44787,
   });
+  const testWallet: {
+    init: (uri: string) => void;
+    close: () => Promise<void>;
+  } = getTestWallet();
 
-  if (E2E) {
-    testWallet = getTestWallet();
-  } else {
-    jest
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .spyOn<any, any>(wallet, 'getWalletConnectClient')
-      .mockImplementation(() => new MockWalletConnectClient());
-  }
+  // if (E2E) {
+  //   testWallet = getTestWallet();
+  // } else {
+  //   jest
+  //     .spyOn<any, any>(wallet, 'getWalletConnectClient')
+  //     .mockImplementation(() => new MockWalletConnectClient());
+  // }
 
   beforeAll(async () => {
-    const uri = (await wallet.getUri()) as string;
-    testWallet?.init(uri);
+    const uri = await wallet.getUri();
+    testWallet?.init(uri as string);
     await wallet.init();
   }, 10000);
 
   afterAll(async () => {
     await wallet.close();
     await testWallet?.close();
+    // TODO: bug in WalletConnect V2 ????
+    setTimeout(() => {
+      process.exit(0);
+    }, 10000);
   }, 10000);
 
   it('getAccounts()', () => {
@@ -142,8 +142,8 @@ describe('WalletConnectWallet tests', () => {
       try {
         await wallet.signPersonalMessage(unknownAddress, hexString);
         throw new Error('Expected exception to be thrown');
-      } catch (e) {
-        assertInvalidAddress(e as Error);
+      } catch (e: any) {
+        assertInvalidAddress(e);
       }
     });
 
@@ -151,8 +151,8 @@ describe('WalletConnectWallet tests', () => {
       try {
         await wallet.signTypedData(unknownAddress, TYPED_DATA);
         throw new Error('Expected exception to be thrown');
-      } catch (e) {
-        assertInvalidAddress(e as Error);
+      } catch (e: any) {
+        assertInvalidAddress(e);
       }
     });
 
@@ -163,8 +163,8 @@ describe('WalletConnectWallet tests', () => {
           from: unknownAddress,
         });
         throw new Error('Expected exception to be thrown');
-      } catch (e) {
-        assertInvalidAddress(e as Error);
+      } catch (e: any) {
+        assertInvalidAddress(e);
       }
     });
 
@@ -180,8 +180,8 @@ describe('WalletConnectWallet tests', () => {
       try {
         await wallet.decrypt(unknownAddress, encrypted);
         throw new Error('Expected exception to be thrown');
-      } catch (e) {
-        assertInvalidAddress(e as Error);
+      } catch (e: any) {
+        assertInvalidAddress(e);
       }
     });
 
@@ -192,8 +192,8 @@ describe('WalletConnectWallet tests', () => {
       try {
         await wallet.computeSharedSecret(unknownAddress, otherPubKey);
         throw new Error('Expected exception to be thrown');
-      } catch (e) {
-        assertInvalidAddress(e as Error);
+      } catch (e: any) {
+        assertInvalidAddress(e);
       }
     });
   });

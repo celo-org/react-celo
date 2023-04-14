@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 
 import useTheme from '../hooks/use-theme';
+import { Maybe } from '../types';
 import cls from '../utils/tailwind';
 import Button from './button';
 
@@ -18,6 +19,7 @@ interface FooterWithDescription extends Footer {
 interface Props {
   title: string | ReactElement;
   content: ReactElement;
+  wcUri?: Maybe<string>;
   footer?: NamedFooter | FooterWithDescription;
 }
 
@@ -79,6 +81,3 @@ export default function ConnectorScreen({ title, content, footer }: Props) {
     </div>
   );
 }
-
-// 296.500
-// 248.762

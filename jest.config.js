@@ -1,4 +1,6 @@
 module.exports = {
+  resolver: 'jest-resolver-enhanced',
+  setupFilesAfterEnv: ['<rootDir>/../../jest.setup.ts'],
   roots: ['<rootDir>/src', '<rootDir>/__tests__'],
   preset: 'ts-jest',
   globals: {

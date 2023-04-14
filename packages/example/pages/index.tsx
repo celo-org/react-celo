@@ -1,4 +1,4 @@
-import { CeloTokenContract } from '@celo/contractkit';
+import { CeloTokenContract } from '@celo/contractkit/lib/base';
 import { StableToken } from '@celo/contractkit/lib/celo-tokens';
 import { StableTokenWrapper } from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 import {
@@ -14,7 +14,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 
 import { PrimaryButton, SecondaryButton, toast } from '../components';
-import CeloLogo from '../components/celo-logo';
+import CeloWordMark from '../components/celo-wordmark';
 import { ThemeButton, themes } from '../components/theme-button';
 import { feeTokenMap } from '../utils';
 import { sendTestTransaction } from '../utils/send-test-transaction';
@@ -24,7 +24,6 @@ import { signTestTypedData } from '../utils/sign-test-typed-data';
 interface Summary {
   name: string;
   address: string;
-  wallet: string;
   celo: BigNumber;
   balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
 }
@@ -32,7 +31,6 @@ interface Summary {
 const defaultSummary: Summary = {
   name: '',
   address: '',
-  wallet: '',
   celo: new BigNumber(0),
   balances: [],
 };
@@ -156,14 +154,14 @@ function HomePage(): React.ReactElement {
     <div className="w-full">
       <Head>
         <title>react-celo</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico?v=2" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=5"
         />
       </Head>
       <main className="w-full">
-        <section className="flex flex-col justify-center items-center w-full min-h-[285px] p-4  bg-white dark:bg-slate-900 dark:text-white rounded-lg mt-4 border-celo-gold border-solid border">
+        <section className="flex flex-col justify-center items-center w-full min-h-[285px] p-4  bg-sand dark:bg-wood dark:text-white  mt-4 ">
           <h1 className="text-dark-600 mt-6 pb-4 text-center">
             A{' '}
             <a
@@ -176,7 +174,7 @@ function HomePage(): React.ReactElement {
             </a>{' '}
             to ease connecting to the{' '}
             <a href="https://celo.org/" target="_blank" rel="noreferrer">
-              Celo <CeloLogo />
+              <CeloWordMark height={16} />
             </a>{' '}
             <SelectChain />
             network.
@@ -264,7 +262,7 @@ function HomePage(): React.ReactElement {
           </div>
           <div className="flex flex-col">
             {address && (
-              <div className="w-64 md:w-96 space-y-4 text-slate-700 bg-slate-200 dark:bg-black dark:text-white rounded p-4">
+              <div className="w-64 md:w-96 space-y-4 text-slate-700 bg-sand dark:bg-black dark:text-white rounded p-4">
                 <div className="mb-4">
                   <div className="text-lg font-bold mb-2 text-slate-900 dark:text-slate-200">
                     Account Summary on {network.name}
@@ -273,12 +271,6 @@ function HomePage(): React.ReactElement {
                     <div>Wallet type: {walletType}</div>
                     <div>Name: {summary.name || 'Not set'}</div>
                     <div className="">Address: {truncateAddress(address)}</div>
-                    <div className="">
-                      Wallet address:{' '}
-                      {summary.wallet
-                        ? truncateAddress(summary.wallet)
-                        : 'Not set'}
-                    </div>
                   </div>
                 </div>
                 <div>
@@ -348,6 +340,8 @@ async function getBalances(
   );
 }
 
+export const WC_PROJECT_ID = 'cbd4dfc72c388f372fc45f003becb013';
+
 export default function Home(): React.ReactElement {
   return (
     <CeloProvider
@@ -356,6 +350,7 @@ export default function Home(): React.ReactElement {
         description: 'A demo DApp to showcase functionality',
         url: 'https://react-celo.vercel.app',
         icon: 'https://react-celo.vercel.app/favicon.ico',
+        walletConnectProjectId: WC_PROJECT_ID,
       }}
       defaultNetwork={Alfajores.name}
       connectModal={{
@@ -393,7 +388,7 @@ function UsedBy() {
           <li key={name}>
             <a
               target="_blank"
-              className="text-rc-violet"
+              className="text-rc-violet dark:text-rc-violet-light"
               href={url}
               rel="noreferrer"
             >
@@ -410,7 +405,7 @@ function SelectChain() {
   const { network, networks, updateNetwork } = useCelo();
   return (
     <select
-      className="border border-celo-gold outline-celo-gold-light text-slate-800 rounded px-1 py-1 mr-1"
+      className="border border-forest outline-forest text-slate-800 rounded px-1 py-1 mr-1"
       value={network.name}
       onChange={(e) => {
         const newNetwork = networks.find((n) => n.name === e.target.value);

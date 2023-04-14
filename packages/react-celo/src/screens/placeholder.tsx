@@ -48,7 +48,7 @@ export default function Placeholder() {
       }
       footer={{
         desc: `Don't have a wallet yet?`,
-        url: 'https://docs.celo.org/getting-started/wallets#celo-compatible-wallets',
+        url: 'https://docs.celo.org/wallet#celo-compatible-wallets',
         CTA: 'Learn',
       }}
     />

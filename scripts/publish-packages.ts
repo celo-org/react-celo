@@ -60,7 +60,7 @@ void (async function () {
   // or not to publish or it will use an existing failedPublish.json file.
   const { packages, version, publish } = await getAnswers();
 
-  if (version && !valid(version) && !VERSIONS.includes(version)) {
+  if (!valid(version) && !VERSIONS.includes(version)) {
     console.error(
       red(
         'Invalid version given. Version must be major, minor, patch, or a semantic version.'
@@ -274,8 +274,10 @@ async function getAnswers(): Promise<Answers> {
       {
         name: 'version',
         description: green(
-          `Specify a version: major, minor, patch, a semantic version number, or nothing`
+          `Specify a version: major, minor, patch, a semantic version number`
         ),
+        required: true,
+        conform: (newVersion) => Boolean(valid(newVersion)),
       },
       {
         name: 'publish',

@@ -11,13 +11,9 @@ flags:
   react-celo:
     paths:
       - packages/react-celo/
-  walletconnect-v1:
+  walletconnect:
     paths:
-      - packages/walletconnect-v1/
-  # When WC-v2 is merged
-  # walletconnect:
-  #   paths:
-  #     - packages/walletconnect/
+      - packages/walletconnect/
 ignore:
   - 'packages/*/node_modules'
   - 'node_modules'
