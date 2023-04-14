@@ -30,7 +30,6 @@ const BAKLAVA_PARAMS = Object.freeze({
   },
 });
 
-
 const CANNOLI_PARAMS = Object.freeze({
   chainName: 'Cannoli Testnet',
   testnet: true,
