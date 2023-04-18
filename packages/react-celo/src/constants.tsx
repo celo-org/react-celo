@@ -254,30 +254,39 @@ export const NetworkNames = {
   Alfajores: 'Alfajores' as const,
   Baklava: 'Baklava' as const,
   Mainnet: 'Mainnet' as const,
+  Cannoli: 'Cannoli' as const,
   Localhost: 'Localhost' as const,
 };
 
 export const Alfajores: Network = {
   name: NetworkNames.Alfajores,
   rpcUrl: 'https://alfajores-forno.celo-testnet.org',
-  graphQl: 'https://alfajores-blockscout.celo-testnet.org/graphiql',
-  explorer: 'https://alfajores-blockscout.celo-testnet.org',
+  graphQl: 'https://explorer.celo.org/alfajores/graphiql',
+  explorer: 'https://explorer.celo.org/alfajores',
   chainId: ChainId.Alfajores,
 } as const;
 
 export const Baklava: Network = {
   name: NetworkNames.Baklava,
   rpcUrl: 'https://baklava-forno.celo-testnet.org',
-  graphQl: 'https://baklava-blockscout.celo-testnet.org/graphiql',
-  explorer: 'https://baklava-blockscout.celo-testnet.org',
+  graphQl: 'https://explorer.celo.org/baklava/graphiql',
+  explorer: 'https://explorer.celo.org/baklava',
   chainId: ChainId.Baklava,
+} as const;
+
+export const Cannoli: Network = {
+  name: NetworkNames.Cannoli,
+  rpcUrl: 'https://forno.cannoli.celo-testnet.org',
+  graphQl: 'https://explorer.celo.org/cannoli/graphiql',
+  explorer: 'https://explorer.celo.org/cannoli',
+  chainId: ChainId.Cannoli,
 } as const;
 
 export const Mainnet: Network = {
   name: NetworkNames.Mainnet,
   rpcUrl: 'https://forno.celo.org',
-  graphQl: 'https://explorer.celo.org/graphiql',
-  explorer: 'https://explorer.celo.org',
+  graphQl: 'https://explorer.celo.org/mainnet/graphiql',
+  explorer: 'https://explorer.celo.org/mainnet',
   chainId: ChainId.Mainnet,
 } as const;
 
@@ -312,6 +321,7 @@ export const DEFAULT_NETWORKS: Network[] = [
   Mainnet,
   Alfajores,
   Baklava,
+  Cannoli,
   ...(process.env.NODE_ENV !== 'production' ? [Localhost] : []),
 ];
 
