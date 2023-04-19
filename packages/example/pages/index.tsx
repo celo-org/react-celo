@@ -343,6 +343,10 @@ async function getBalances(
 export const WC_PROJECT_ID = 'cbd4dfc72c388f372fc45f003becb013';
 
 export default function Home(): React.ReactElement {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   return (
     <CeloProvider
       dapp={{
@@ -357,7 +361,7 @@ export default function Home(): React.ReactElement {
         providersOptions: { searchable: true },
       }}
     >
-      <HomePage />
+      {isMounted && <HomePage />}
     </CeloProvider>
   );
 }
