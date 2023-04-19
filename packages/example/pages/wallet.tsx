@@ -181,7 +181,7 @@ export default function Wallet(): React.ReactElement {
       setTimeout(() => void fetchSummary(), 5000);
       setApprovalData(null);
     },
-    [session, fetchSummary]
+    [topic, fetchSummary]
   );
 
   const personalSign = useCallback(
