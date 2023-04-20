@@ -250,6 +250,8 @@ export const PROVIDERS: {
   },
 };
 
+// If adding another chain be sure to add it to the ChainId enum
+// and to requiredNamespaces in packages/walletconnect/src/wc-wallet.ts
 export const NetworkNames = {
   Alfajores: 'Alfajores' as const,
   Baklava: 'Baklava' as const,
