@@ -226,9 +226,8 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   onSessionDeleted = (
     session: SignClientTypes.EventArguments['session_delete']
   ) => {
-    this.client = undefined;
-    this.session = undefined;
     this.emit('session_delete', null, session);
+    void this.close();
   };
 
   onSessionEvent = (event: SignClientTypes.EventArguments['session_event']) => {
@@ -307,5 +306,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
         })
       )
     );
+    this.client = undefined;
+    this.session = undefined;
   };
 }
