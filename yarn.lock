@@ -2743,7 +2743,7 @@
     "@typescript-eslint/types" "5.45.0"
     eslint-visitor-keys "^3.3.0"
 
-"@walletconnect/auth-client@^2.0.4", "@walletconnect/auth-client@^2.0.7":
+"@walletconnect/auth-client@^2.0.4":
   version "2.0.7"
   resolved "https://registry.npmjs.org/@walletconnect/auth-client/-/auth-client-2.0.7.tgz#f6e1eeeaa57865d1d219bbc1439d147d5ab2d354"
   integrity sha512-hebY0yS3Xwc/sD7uFul987fVToiFS1vxePBCAGOwv6eR1CL3o93uM1LVM7lJFWAkr9m5CRFwaCt/B/qeQvPsNg==
