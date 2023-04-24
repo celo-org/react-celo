@@ -177,11 +177,11 @@ export default function Wallet(): React.ReactElement {
   );
 
   const signTransaction = useCallback(
-    async (id: number, params: TransactionConfig) => {
+    async (id: number, params: [TransactionConfig]) => {
       if (!walletConnectWallet) return;
 
       const result = await wallet.signTransaction({
-        ...params,
+        ...params[0],
         chainId: Alfajores.chainId,
       });
 
