@@ -1,6 +1,5 @@
 import { CeloTx, EncodedTransaction, Signer } from '@celo/connect';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
-import { recoverTransaction } from '@celo/wallet-base';
 import Client from '@walletconnect/sign-client';
 import { SessionTypes } from '@walletconnect/types';
 import * as ethUtil from 'ethereumjs-util';
