@@ -39,7 +39,7 @@ export class WalletConnectSigner implements Signer {
     });
   }
 
-  async signRawTransaction(tx: CeloTx): Promise<{ raw: string }> {
+  async signRawTransaction(tx: CeloTx): Promise<EncodedTransaction> {
     const result = await this.request<EncodedTransaction | string>(
       SupportedMethods.signTransaction,
       [tx]
@@ -49,7 +49,7 @@ export class WalletConnectSigner implements Signer {
     // EncodedTransaction object or just the raw signed tx.
     // Both should work.
     if (typeof result === 'string') {
-      return { raw: result };
+      return { raw: result } as EncodedTransaction;
     }
     return result;
   }
