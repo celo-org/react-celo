@@ -46,6 +46,9 @@ export class WalletConnectSigner implements Signer {
       [tx]
     );
 
+    // Note: this change was added because wallets can either return an
+    // EncodedTransaction object or just the raw signed tx.
+    // Both should work.
     if (typeof result === 'string') {
       return { raw: result };
     }
