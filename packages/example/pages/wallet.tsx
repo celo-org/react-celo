@@ -5,7 +5,7 @@ import { Alfajores } from '@celo/react-celo';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import { SupportedMethods } from '@celo/wallet-walletconnect';
 import { Core } from '@walletconnect/core';
-import { ProposalTypes, SessionTypes } from '@walletconnect/types';
+import { SessionTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { BigNumber } from 'bignumber.js';
