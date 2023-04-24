@@ -300,7 +300,7 @@ export default function Wallet(): React.ReactElement {
         case SupportedMethods.signTransaction:
           return setApprovalData({
             accept: () =>
-              signTransaction(id, request.params as TransactionConfig),
+              signTransaction(id, request.params as [TransactionConfig]),
             reject: () => reject(id, `User rejected transaction ${id}`),
             meta: {
               // TODO: Find out how the value can be determined from the payload// eslint-disable-next-line
