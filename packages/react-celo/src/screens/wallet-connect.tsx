@@ -186,7 +186,7 @@ export const WalletConnect = ({ onSubmit, provider }: Props) => {
             }
           : {
               desc: 'Not sure if your wallet is compatible?',
-              url: 'https://walletconnect.com/registry',
+              url: 'https://explorer.walletconnect.com/',
               CTA: 'Learn',
             }
       }

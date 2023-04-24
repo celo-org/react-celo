@@ -72,7 +72,7 @@ describe('makeNetworkParams', () => {
         decimals: 18,
       },
       rpcUrls: ['https://alfajores-forno.celo-testnet.org'],
-      blockExplorerUrls: ['https://alfajores-blockscout.celo-testnet.org'],
+      blockExplorerUrls: ['https://explorer.celo.org/alfajores'],
       iconUrls: ['https://celoreserve.org/assets/tokens/CELO.svg'],
     });
   });
