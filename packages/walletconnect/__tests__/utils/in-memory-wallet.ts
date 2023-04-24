@@ -43,6 +43,7 @@ export function getTestWallet() {
           accounts: [
             `eip155:44787:${account}`,
             `eip155:42220:${account}`,
+            `eip155:17323:${account}`,
             `eip155:62320:${account}`,
           ],
         },
