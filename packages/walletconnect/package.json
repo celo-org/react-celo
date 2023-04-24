@@ -38,9 +38,6 @@
     "debug": "^4.3.3",
     "ethereumjs-util": "^7.1.3"
   },
-  "engines": {
-    "node": ">=10"
-  },
   "devDependencies": {
     "lokijs": "^1.5.12"
   }
