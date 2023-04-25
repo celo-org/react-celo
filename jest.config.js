@@ -3,10 +3,8 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/../../jest.setup.ts'],
   roots: ['<rootDir>/src', '<rootDir>/__tests__'],
   preset: 'ts-jest',
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.spec.json',
-    },
+  transform: {
+    '\\*.tsx': ['ts-jest', '<rootDir>/tsconfig.spec.json'],
   },
   testEnvironment: 'jsdom',
   testRegex: '(/__tests__/.*|(\\.|/))(test|spec)\\.[jt]sx?$',
