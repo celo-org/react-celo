@@ -6,6 +6,7 @@
 
 import '@testing-library/jest-dom';
 
+import fetch from 'isomorphic-fetch';
 import { TextDecoder, TextEncoder } from 'util';
 
 if (typeof window !== 'undefined' && !('TextEncoder' in window)) {
@@ -20,3 +21,5 @@ if (typeof window !== 'undefined' && !('TextEncoder' in window)) {
     value: TextDecoder,
   });
 }
+
+global['fetch'] = fetch;
