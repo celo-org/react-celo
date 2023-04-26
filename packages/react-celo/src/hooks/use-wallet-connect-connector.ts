@@ -67,7 +67,13 @@ export default function useWalletConnectConnector(
         network,
         manualNetworkMode,
         feeCurrency,
-        { projectId: dapp.walletConnectProjectId, chainId: network.chainId },
+        {
+          projectId: dapp.walletConnectProjectId,
+          chainId: network.chainId,
+          init: {
+            metadata: { ...dapp, icons: [dapp.icon] },
+          },
+        },
         autoOpen,
         getDeeplinkUrl,
         version,
