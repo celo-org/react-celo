@@ -139,6 +139,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.client.on('session_delete', this.onSessionDeleted);
     this.client.on('session_extend', this.onSessionExtended);
     this.client.on('session_event', this.onSessionEvent);
+    this.client.on('session_expire', this.onSessionExpire);
     this.client.on('session_ping', this.onSessionPing);
     this.client.on('session_request', this.onSessionRequest);
   }
@@ -186,6 +187,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     void approval()
       .then((session) => {
+        console.info('approved session', session);
         this.session = session;
         this.emit('session_update', null, this.session);
       })
@@ -223,6 +225,25 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.emit('session_extend', null, session);
   };
 
+  onSessionExpire = ({ topic }: { topic: string }) => {
+    // can you be connected to a topic that isnt the main topic? how to just disconnect that topic?
+    if (this.session?.topic === topic) {
+      void this.close();
+    } else if (this.client?.pairing.values) {
+      const sessionForTopic = this.client.pairing.values.find(
+        (connection) => connection.topic === topic
+      );
+      console.warn(
+        'received session expired for topic',
+        topic,
+        'which is not the topic of session',
+        this.session?.topic,
+        'session with such topic in storage',
+        sessionForTopic || 'false'
+      );
+    }
+  };
+
   onSessionDeleted = (
     session: SignClientTypes.EventArguments['session_delete']
   ) => {
@@ -231,7 +252,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   };
 
   onSessionEvent = (event: SignClientTypes.EventArguments['session_event']) => {
-    this.emit('session_ping', null, event);
+    this.emit('session_event', null, event);
   };
 
   onSessionPing = (ping: SignClientTypes.EventArguments['session_ping']) => {
@@ -299,12 +320,16 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     this.session && this.client.session.delete(this.session?.topic, reason);
     await Promise.all(
-      connections.map((connection) =>
-        this.client!.disconnect({
-          topic: connection.topic,
-          reason,
-        })
-      )
+      connections.map((connection) => {
+        try {
+          return this.client!.disconnect({
+            topic: connection.topic,
+            reason,
+          });
+        } catch (e) {
+          console.error('Error closing wc connection', connection, reason, e);
+        }
+      })
     );
     this.client = undefined;
     this.session = undefined;
