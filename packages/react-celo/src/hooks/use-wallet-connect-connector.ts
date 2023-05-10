@@ -26,6 +26,8 @@ export default function useWalletConnectConnector(
     network,
     feeCurrency,
     initConnector,
+    resetInitError,
+    initError,
     disconnect,
     manualNetworkMode,
   } = useCeloInternal();
@@ -38,9 +40,11 @@ export default function useWalletConnectConnector(
   const retry = useCallback(() => {
     setUri(null);
     setError(null);
+    resetInitError();
+    disconnect;
     setLoading(false);
     setRetry((x) => x + 1);
-  }, []);
+  }, [disconnect, resetInitError]);
 
   useEffect(() => {
     let mounted = true;
@@ -132,8 +136,9 @@ export default function useWalletConnectConnector(
       setUri(null);
       mounted = false;
     };
+    // adding all deps here causes an infinite loop.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [version, network.chainId, retryValue]);
+  }, [walletId, network.chainId, retryValue]);
 
-  return { uri, error, loading, retry };
+  return { uri, error: error || initError?.message, loading, retry };
 }

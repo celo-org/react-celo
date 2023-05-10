@@ -2,7 +2,11 @@ import { Address, sleep } from '@celo/base';
 import { CeloTx } from '@celo/connect';
 import { RemoteWallet } from '@celo/wallet-remote';
 import Client from '@walletconnect/sign-client';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import {
+  EngineTypes,
+  SessionTypes,
+  SignClientTypes,
+} from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 import debugConfig from 'debug';
 import EventEmitter from 'events';
@@ -43,7 +47,25 @@ const defaultInitOptions: SignClientTypes.Options = {
   },
 };
 
+/*
+ the WC spec says wallets must support ALL required namesapce https://docs.walletconnect.com/2.0/specs/clients/sign/namespaces#approving-a-session-response
+ however if i only have the current chain listed in required only accounts for that chain are available in the session. and if required is none (ie dapp supports many chains but no single one is required)
+ then even the reference wallet returns zero accounts in the session_update data
+ the reference wallet and valora dont seem to actually follow the spec / care if they dont support one of the namespaces.in required.
+ however omni wallet will not connect if it doesnt support all required namespaces (or all require methods)
+ really im not sure how to handle this.
+
+*/
+
 const requiredNamespaces = {
+  eip155: {
+    chains: [], //the spec says wallet should throw an error unless it supports ALL chains. but no wallet i can find seems to even look at optional namesapces. even the reference wallet.
+    methods: [],
+    events: ['accountsChanged'],
+  },
+};
+
+const optionalNamespaces = {
   eip155: {
     chains: [
       'eip155:44787', // alajores
@@ -72,7 +94,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
   on = <E extends SignClientTypes.Event>(
     event: E,
-    fn: (error: Error | null, data?: unknown) => void
+    fn: (error: Error | null, data?: SignClientTypes.EventArguments[E]) => void
   ) => {
     this.emitter.on(event, fn);
   };
@@ -80,9 +102,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
   private emit = <E extends SignClientTypes.Event>(
     event: E,
     error: Error | null,
-    data?: unknown
+    data?: SignClientTypes.EventArguments[E]
   ) => {
-    debug('emit', event, error, data);
+    console.info('emit', event, error, data);
     this.emitter.emit(event, error, data);
   };
 
@@ -121,7 +143,12 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
               );
             }
             this.session = session;
-            this.emit('session_update', null, this.session);
+            // It might be better not to emit an event here. after all this is a fake event anyway.
+            this.emit('session_update', null, {
+              id: 0,
+              topic: session.topic,
+              params: { namespaces: session.namespaces },
+            });
           }
         }
       })
@@ -137,6 +164,14 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     this.client.on('session_proposal', this.onSessionProposal);
     this.client.on('session_update', this.onSessionUpdated);
     this.client.on('session_delete', this.onSessionDeleted);
+    // currently when disconnecting the pairing from the offical wc w implementation
+    // https://react-wallet.walletconnect.com/pairings our dapp does not disconnect.
+    this.client.pairing.core.events.on(
+      'wc_pairingDeleted',
+      this.onSessionDeleted
+    );
+    this.client.core.on('subscription_deleted', this.onSessionDeleted);
+    this.client.pairing.core.on('wc_pairingDeleted', this.onSessionDeleted);
     this.client.on('session_extend', this.onSessionExtended);
     this.client.on('session_event', this.onSessionEvent);
     this.client.on('session_expire', this.onSessionExpire);
@@ -151,18 +186,69 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     return Client.init(this.initOptions);
   }
 
-  switchToChain(params: {
+  async switchToChain(params: {
     chainId: number;
     networkId: number;
     rpcUrl: string;
-    nativeCurrency: { name: string; symbol: string };
+    nativeCurrency?: { name: string; symbol: string };
   }) {
-    this.chainId = params.chainId;
-    this.signers.forEach((signer) =>
-      signer.updateChain(String(params.chainId))
+    if (!this.client) {
+      return true;
+    }
+    // check if session already has the desired chain in it by checking accounts and chains
+    const accountSessions = this.session?.namespaces?.eip155?.accounts?.filter(
+      (eip155ChainAccount) =>
+        this.chainId.toString() === parseAddress(eip155ChainAccount).networkId
     );
+    const chainSessions = this.session?.namespaces.eip155.chains?.filter(
+      (prefixedChain) => prefixedChain === `eip155:${params.chainId}`
+    );
+    if (!accountSessions?.length && !chainSessions?.length) {
+      const accounts = this.session!.namespaces.eip155!.accounts;
+      // update the chain data in the session.
+      // this is necessary since we only require the current chain when connecting and some wallets
+      //  might not notice the optional namespace chains and thus not include them on the namespaces when connecting even if they do in fact support them
+      try {
+        const updatingSession: EngineTypes.UpdateParams = {
+          topic: this.session!.topic,
+          namespaces: {
+            eip155: {
+              accounts: accounts.concat(
+                accounts.map((account) => {
+                  return `eip155:${params.chainId}:${
+                    parseAddress(account).address
+                  }`;
+                })
+              ),
+              chains: (this.session?.namespaces.eip155.chains || []).concat([
+                `eip155:${params.chainId}`,
+              ]),
+              methods: this.session!.namespaces.eip155!.methods,
+              events: this.session!.namespaces.eip155!.events,
+            },
+          },
+        };
+        const resp = await this.client?.update(updatingSession);
+        await resp?.acknowledged();
+        // ensure we have the new data on the local session.
+        this.onSessionUpdated({
+          id: 0, //this is fine since its not used internally
+          topic: updatingSession.topic,
+          params: { namespaces: updatingSession.namespaces },
+        });
+        return true;
+      } catch (e) {
+        console.error(
+          `switchToChain failed, wallet likely does not support ${params.chainId}`,
+          e
+        );
+        return false;
+      }
+    }
 
-    this.emit('session_update', null, this.session);
+    this.chainId = params.chainId;
+    await this.loadAccountSigners();
+    return true;
   }
 
   /**
@@ -181,15 +267,31 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     this.setupListeners();
 
+    // wallets will literally fail if they don't support a chainId in the required namespaces
+    // likewise wallets return an error if they dont support a method in the required namespaces
+    // how do we get list of chains wallet supports? best would be to ask user to select chain.
     const { uri, approval } = await this.client.connect({
-      requiredNamespaces,
+      requiredNamespaces: {
+        ...requiredNamespaces,
+        eip155: {
+          ...requiredNamespaces.eip155,
+          chains: [`eip155:${this.chainId}`],
+        },
+      },
+      optionalNamespaces,
     });
 
     void approval()
       .then((session) => {
         console.info('approved session', session);
         this.session = session;
-        this.emit('session_update', null, this.session);
+        // TODO reconcile emitting Session Struct vs BaseEventArg [ session _update]
+        // should we actually even be emitting this here AND in the constructor? we are listening to session_update events from client anyway/.
+        this.emit('session_update', null, {
+          id: 1,
+          topic: session.topic,
+          params: { namespaces: session.namespaces },
+        });
       })
       .catch((err) => {
         this.emit('session_update', err as Error);
@@ -248,7 +350,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     session: SignClientTypes.EventArguments['session_delete']
   ) => {
     this.emit('session_delete', null, session);
-    void this.close();
+    void this.close().catch((e) => {
+      console.error('error closing session', e);
+    });
   };
 
   onSessionEvent = (event: SignClientTypes.EventArguments['session_event']) => {
@@ -276,24 +380,31 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       // This will be true if this.canceler.cancel() was called earlier
       throw CANCELED;
     }
-
     const addressToSigner = new Map<string, WalletConnectSigner>();
 
     const allNamespaceAccounts = Object.values(this.session!.namespaces)
       .map((namespace) => namespace.accounts)
       .flat();
 
-    allNamespaceAccounts.forEach((addressLike) => {
-      const { address } = parseAddress(addressLike);
-      const signer = new WalletConnectSigner(
-        this.client!,
-        this.session!,
-        address,
-        String(this.chainId)
-      );
-      addressToSigner.set(address, signer);
-    });
-
+    // namespace.accounts is an array of chain prefixed addresses,
+    // we should not be assuming that every address can work for every chain. but instead filtering based on chain prefix.
+    allNamespaceAccounts
+      .filter((addressLike) => {
+        const { networkId } = parseAddress(addressLike);
+        return networkId === String(this.chainId); // chain id matches this.chainId
+      })
+      .forEach((addressLike) => {
+        const { address } = parseAddress(addressLike);
+        const signer = new WalletConnectSigner(
+          this.client!,
+          this.session!,
+          address,
+          String(this.chainId)
+        );
+        addressToSigner.set(address, signer);
+        this.addSigner(address, signer);
+      });
+    // note the parent of this class has  a private signers map at addressSigners. which is what addSigner and GetSigner access
     this.signers = addressToSigner;
     return addressToSigner;
   }
@@ -313,7 +424,6 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     if (!this.client) {
       throw new Error('Wallet must be initialized before calling close()');
     }
-
     this.canceler.cancel();
     const reason = getSdkError('USER_DISCONNECTED');
     const connections = this.client.pairing.values;
@@ -322,6 +432,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     await Promise.all(
       connections.map((connection) => {
         try {
+          console.info('closing wc connection', connection, reason);
           return this.client!.disconnect({
             topic: connection.topic,
             reason,
@@ -331,6 +442,8 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
         }
       })
     );
+    // ensures pairing is deleted so wallet doesnt have a lingering one.
+    await this.client.pairing.delete(this.session!.topic, reason);
     this.client = undefined;
     this.session = undefined;
   };

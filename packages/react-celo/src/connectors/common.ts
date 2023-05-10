@@ -123,7 +123,12 @@ export class AbstractConnector {
     event: E,
     data?: EventsMap[E]
   ) => {
-    getApplicationLogger().debug('[CONNECTOR EMIT]', this.type, event, data);
+    getApplicationLogger().debug(
+      '[CONNECTOR EMIT]',
+      this.type,
+      event,
+      data ?? ''
+    );
     this.emitter.emit(event, data);
   };
 
