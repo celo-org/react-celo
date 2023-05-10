@@ -7,6 +7,7 @@ export enum SupportedMethods {
   signTypedData = 'eth_signTypedData',
   decrypt = 'personal_decrypt',
   computeSharedSecret = 'personal_computeSharedSecret',
+  wc_pairingDelete = 'wc_pairingDelete',
 }
 
 export interface WalletConnectWalletOptions {

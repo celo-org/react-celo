@@ -28,6 +28,10 @@ export const updater: Updater = (connector, dispatch) => {
     logger.log('Updater witnessed disconnection');
     dispatch('disconnect');
   });
+  connector.on(ConnectorEvents.WC_ERROR, (error) => {
+    logger.log('Updater witnessed error', error);
+    dispatch('setConnectorInitError', error);
+  });
 };
 
 export default updater;

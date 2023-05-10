@@ -17,15 +17,11 @@ export class WalletConnectSigner implements Signer {
     protected client: Client,
     protected session: SessionTypes.Struct,
     protected account: string,
-    protected chainId: string
+    protected readonly chainId: string
   ) {}
 
   signTransaction(): Promise<{ v: number; r: Buffer; s: Buffer }> {
     throw new Error('signTransaction unimplemented; use signRawTransaction');
-  }
-
-  updateChain(chainId: string) {
-    this.chainId = chainId;
   }
 
   private request<T>(method: SupportedMethods, params: unknown) {

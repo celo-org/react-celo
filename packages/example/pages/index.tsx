@@ -414,7 +414,7 @@ function SelectChain() {
       onChange={(e) => {
         const newNetwork = networks.find((n) => n.name === e.target.value);
         if (newNetwork) {
-          void updateNetwork(newNetwork);
+          void updateNetwork(newNetwork).catch(console.error);
         }
       }}
     >
