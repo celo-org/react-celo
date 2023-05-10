@@ -35,6 +35,7 @@ export class WalletConnectSigner implements Signer {
     });
   }
 
+  // is this misnamed its not raw ? https://docs.walletconnect.com/2.0/advanced/rpc-reference/ethereum-rpc#eth_sendrawtransaction
   async signRawTransaction(tx: CeloTx): Promise<EncodedTransaction> {
     const result = await this.request<EncodedTransaction | string>(
       SupportedMethods.signTransaction,

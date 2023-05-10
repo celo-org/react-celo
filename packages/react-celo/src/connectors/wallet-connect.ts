@@ -56,13 +56,13 @@ export default class WalletConnectConnector
     try {
       await this.handleUri(wallet);
     } catch (e) {
-      console.error('Error handling uri', e);
+      getApplicationLogger().error('Error handling uri', e);
     }
 
     try {
       await wallet.init();
     } catch (e) {
-      console.error('error wallet init', e);
+      getApplicationLogger().error('error wallet init', e);
     }
 
     const [address] = wallet.getAccounts();
@@ -92,15 +92,18 @@ export default class WalletConnectConnector
   async startNetworkChangeFromApp(network: Network) {
     try {
       const wallet = this.kit.getWallet() as WalletConnectWallet;
-      const success: boolean = await wallet.switchToChain({
-        ...network,
-        networkId: network.chainId,
-      });
-      getApplicationLogger().debug(
-        '[startNetworkChangeFromApp] response',
-        success
-      );
-      const previousAddress = this.kit.connection.defaultAccount;
+      const previousAddress = this.kit.connection.defaultAccount?.slice();
+      if (this.initialised) {
+        // if not initialised, we don't need to switch networks
+        const success: boolean = await wallet.switchToChain({
+          ...network,
+          networkId: network.chainId,
+        });
+        getApplicationLogger().debug(
+          '[startNetworkChangeFromApp] success?',
+          success
+        );
+      }
       this.restartKit(network);
       const newAddress = this.kit.connection.defaultAccount;
       this.emit(ConnectorEvents.NETWORK_CHANGED, network.name);
@@ -183,16 +186,21 @@ export default class WalletConnectConnector
   };
 
   private onSessionUpdated = async (
-    _error: Error | null,
-    data?: SignClientTypes.EventArguments['session_update'] //TODO this might be the wrong type
+    error: Error | null,
+    data?: SignClientTypes.EventArguments['session_update']
   ) => {
     getApplicationLogger().debug('wallet-connect', 'on-session-update', data);
 
-    if (_error) {
-      this.emit(ConnectorEvents.WC_ERROR, _error);
+    if (error) {
+      this.emit(ConnectorEvents.WC_ERROR, error);
     }
     try {
+      // either there will be data or an error
       if (data) {
+        // session update is called when the wallet connects to the dapp.
+        // it might also be called to just update the session, however this is fine
+        // since the onConnect event just updates values in reducer and if they are the same
+        // it will not trigger a re-render.
         await this.onConnected(data);
       }
     } catch (e) {
@@ -215,7 +223,7 @@ export default class WalletConnectConnector
     try {
       await this.close();
     } catch (e) {
-      console.warn(e);
+      getApplicationLogger().warn(e);
     }
   };
 
@@ -256,6 +264,7 @@ export default class WalletConnectConnector
     const walletAddress = await this.fetchWalletAddressForAccount(account);
     if (!walletAddress) {
       this.emit(ConnectorEvents.WC_ERROR, new Error('No account found'));
+      return; // in rare case that no account is found
     }
 
     if (this.kit.connection.defaultAccount !== walletAddress) {
@@ -266,7 +275,7 @@ export default class WalletConnectConnector
       walletId: this.walletId as string,
       walletChainId: parseInt(chainId),
       networkName: this.network.name,
-      address: walletAddress!,
+      address: walletAddress,
     });
   }
 
@@ -284,6 +293,7 @@ export default class WalletConnectConnector
   async close(message?: string): Promise<void> {
     getApplicationLogger().log('wallet-connect', 'close', message);
     try {
+      this.initialised = false;
       const wallet = this.kit.getWallet() as WalletConnectWallet;
       await wallet.close();
       this.kit.connection.stop();

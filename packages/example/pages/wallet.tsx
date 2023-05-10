@@ -291,7 +291,7 @@ export default function Wallet(): React.ReactElement {
         case SupportedMethods.accounts:
           return setApprovalData({
             accept: () => accounts(id),
-            reject: () => reject(id, `User rejected computeSharedSecret ${id}`),
+            reject: () => reject(id, `User rejected accounts ${id}`),
             meta: {
               title: `Send all accounts of this wallet?`,
               raw: request,
