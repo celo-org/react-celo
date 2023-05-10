@@ -47,20 +47,10 @@ const defaultInitOptions: SignClientTypes.Options = {
   },
 };
 
-/*
- the WC spec says wallets must support ALL required namesapce https://docs.walletconnect.com/2.0/specs/clients/sign/namespaces#approving-a-session-response
- however if i only have the current chain listed in required only accounts for that chain are available in the session. and if required is none (ie dapp supports many chains but no single one is required)
- then even the reference wallet returns zero accounts in the session_update data
- the reference wallet and valora dont seem to actually follow the spec / care if they dont support one of the namespaces.in required.
- however omni wallet will not connect if it doesnt support all required namespaces (or all require methods)
- really im not sure how to handle this.
-
-*/
-
 const requiredNamespaces = {
   eip155: {
-    chains: [], //the spec says wallet should throw an error unless it supports ALL chains. but no wallet i can find seems to even look at optional namesapces. even the reference wallet.
-    methods: [],
+    chains: [], // the spec says wallet should throw an error unless it supports ALL chains. so the current chain id is added at request time to the chains array
+    methods: [SupportedMethods.signTransaction],
     events: ['accountsChanged'],
   },
 };
@@ -272,7 +262,6 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
     // how do we get list of chains wallet supports? best would be to ask user to select chain.
     const { uri, approval } = await this.client.connect({
       requiredNamespaces: {
-        ...requiredNamespaces,
         eip155: {
           ...requiredNamespaces.eip155,
           chains: [`eip155:${this.chainId}`],
@@ -443,7 +432,9 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       })
     );
     // ensures pairing is deleted so wallet doesnt have a lingering one.
-    await this.client.pairing.delete(this.session!.topic, reason);
+    if (this.session?.topic && this.client.pairing) {
+      await this.client.pairing?.delete(this.session.topic, reason);
+    }
     this.client = undefined;
     this.session = undefined;
   };
