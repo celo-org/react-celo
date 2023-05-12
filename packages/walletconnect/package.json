@@ -32,9 +32,10 @@
     "@celo/utils": ">=2.3.0",
     "@celo/wallet-base": ">=2.3.0",
     "@celo/wallet-remote": ">=2.3.0",
-    "@walletconnect/sign-client": "^2.7.0",
-    "@walletconnect/types": "^2.7.0",
-    "@walletconnect/utils": "^2.7.0",
+    "@walletconnect/core": "^2.7.3",
+    "@walletconnect/sign-client": "^2.7.3",
+    "@walletconnect/types": "^2.7.3",
+    "@walletconnect/utils": "^2.7.3",
     "debug": "^4.3.3",
     "ethereumjs-util": "^7.1.3"
   },

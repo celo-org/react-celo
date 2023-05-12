@@ -148,6 +148,10 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       });
   }
 
+  async hasSession() {
+    await waitForTruthy(() => !!this.session, this.canceler.status);
+  }
+
   private setupListeners() {
     if (!this.client) return;
 
@@ -259,7 +263,7 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
 
     // wallets will literally fail if they don't support a chainId in the required namespaces
     // likewise wallets return an error if they dont support a method in the required namespaces
-    // how do we get list of chains wallet supports? best would be to ask user to select chain.
+    // therefore required really is required and we add new chain to namespaces when switching chains. see switchToChain
     const { uri, approval } = await this.client.connect({
       requiredNamespaces: {
         eip155: {
@@ -274,8 +278,6 @@ export class WalletConnectWallet extends RemoteWallet<WalletConnectSigner> {
       .then((session) => {
         console.info('approved session', session);
         this.session = session;
-        // TODO reconcile emitting Session Struct vs BaseEventArg [ session _update]
-        // should we actually even be emitting this here AND in the constructor? we are listening to session_update events from client anyway/.
         this.emit('session_update', null, {
           id: 1,
           topic: session.topic,
