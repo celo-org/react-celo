@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@celo/contractkit": "^3.2.0",
-    "@celo/react-celo": "5.0.3-dev",
+    "@celo/react-celo": "5.0.4-beta.1-dev",
     "@celo/utils": "^3.2.0",
     "@walletconnect/core": "^2.7.3",
     "@walletconnect/sign-client": "^2.7.3",
