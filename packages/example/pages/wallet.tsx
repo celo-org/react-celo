@@ -114,9 +114,10 @@ export default function Wallet(): React.ReactElement {
         id,
         namespaces: {
           eip155: {
-            accounts: requiredNamespaces.eip155!.chains!.map(
-              (x) => `${x}:${account.address}`
-            ),
+            accounts:
+              requiredNamespaces.eip155.chains?.map(
+                (x) => `${x}:${account.address}`
+              ) || [],
             methods: requiredNamespaces.eip155.methods,
             events: requiredNamespaces.eip155.events,
           },
