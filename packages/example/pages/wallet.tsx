@@ -4,10 +4,10 @@ import { newKitFromWeb3 } from '@celo/contractkit/lib/mini-kit';
 import { Alfajores } from '@celo/react-celo';
 import { EIP712TypedData } from '@celo/utils/lib/sign-typed-data-utils';
 import { SupportedMethods } from '@celo/wallet-walletconnect';
-// import WalletConnect from '@walletconnect/client';
-import SignClient from '@walletconnect/sign-client';
-import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { Core } from '@walletconnect/core';
+import { SessionTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
+import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { BigNumber } from 'bignumber.js';
 import Head from 'next/head';
 import { createRef, useCallback, useEffect, useState } from 'react';
@@ -17,8 +17,12 @@ import { TransactionConfig } from 'web3-core/types';
 
 import { PrimaryButton } from '../components';
 
-let signClient: SignClient | null;
+let walletConnectWallet: Awaited<ReturnType<typeof Web3Wallet['init']>> | null;
 const WALLET_CONNECT_PROJECT_ID = 'f597db9e215becf1a4b24a7154c26fa2'; // this is nico's walletconnect project id
+
+const core = new Core({
+  projectId: WALLET_CONNECT_PROJECT_ID,
+});
 
 const web3 = new Web3(Alfajores.rpcUrl);
 const kit = newKitFromWeb3(web3);
@@ -83,7 +87,7 @@ export default function Wallet(): React.ReactElement {
   }, []);
 
   const connect = useCallback(async () => {
-    if (!inputRef.current || !signClient) {
+    if (!inputRef.current || !walletConnectWallet) {
       return;
     }
 
@@ -93,32 +97,39 @@ export default function Wallet(): React.ReactElement {
       return;
     }
     setError(null);
-    await signClient.core.pairing.pair({
+    await walletConnectWallet.pair({
       uri,
     });
   }, [inputRef]);
 
   const approveConnection = useCallback(
-    async ({
-      id,
-      params: { pairingTopic, requiredNamespaces },
-    }: SignClientTypes.EventArguments['session_proposal']) => {
-      if (!signClient || !pairingTopic) return;
+    async (proposal: Web3WalletTypes.SessionProposal) => {
+      const {
+        id,
+        params: { pairingTopic, requiredNamespaces },
+      } = proposal;
+      if (!walletConnectWallet || !pairingTopic) return;
 
-      const { topic: _topic, acknowledged } = await signClient.approve({
+      const { topic: _topic } = await walletConnectWallet.approveSession({
         id,
         namespaces: {
           eip155: {
-            accounts: requiredNamespaces.eip155.chains.map(
-              (x) => `${x}:${account.address}`
-            ),
+            accounts:
+              requiredNamespaces.eip155.chains?.map(
+                (x) => `${x}:${account.address}`
+              ) || [],
             methods: requiredNamespaces.eip155.methods,
             events: requiredNamespaces.eip155.events,
           },
         },
       });
       setTopic(_topic);
-      setSession(await acknowledged());
+      console.log(
+        _topic,
+        walletConnectWallet.getActiveSessions(),
+        walletConnectWallet.getActiveSessions()[_topic]
+      );
+      setSession(walletConnectWallet.getActiveSessions()[_topic]);
       setApprovalData(null);
     },
     [setSession]
@@ -126,29 +137,31 @@ export default function Wallet(): React.ReactElement {
 
   const rejectConnection = useCallback(
     async (id?: number): Promise<void> => {
-      if (!signClient) return;
+      if (!walletConnectWallet) return;
 
       if (id) {
-        await signClient.reject({ id, reason: getSdkError('USER_REJECTED') });
+        await walletConnectWallet.rejectSession({
+          id,
+          reason: getSdkError('USER_REJECTED'),
+        });
       } else {
-        await signClient.disconnect({
+        await walletConnectWallet.disconnectSession({
           topic: topic!,
           reason: getSdkError('USER_DISCONNECTED'),
         });
       }
-      await signClient.session.delete(topic!, getSdkError('USER_DISCONNECTED'));
       setApprovalData(null);
       setSession(null);
-      signClient = null;
+      walletConnectWallet = null;
     },
     [topic]
   );
 
   const reject = useCallback(
     async (id: number, message: string) => {
-      if (!signClient) return;
+      if (!walletConnectWallet) return;
 
-      await signClient.respond({
+      await walletConnectWallet.respondSessionRequest({
         topic: topic!,
         response: {
           id: id,
@@ -165,15 +178,15 @@ export default function Wallet(): React.ReactElement {
   );
 
   const signTransaction = useCallback(
-    async (id: number, params: TransactionConfig) => {
-      if (!signClient) return;
+    async (id: number, [unsignedTx]: [TransactionConfig]) => {
+      if (!walletConnectWallet) return;
 
       const result = await wallet.signTransaction({
-        ...params,
+        ...unsignedTx,
         chainId: Alfajores.chainId,
       });
 
-      await signClient.respond({
+      await walletConnectWallet.respondSessionRequest({
         topic: topic!,
         response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
@@ -181,15 +194,15 @@ export default function Wallet(): React.ReactElement {
       setTimeout(() => void fetchSummary(), 5000);
       setApprovalData(null);
     },
-    [session, fetchSummary]
+    [topic, fetchSummary]
   );
 
   const personalSign = useCallback(
     async (id: number, message: string) => {
-      if (!signClient) return;
+      if (!walletConnectWallet) return;
 
       const result = await wallet.signPersonalMessage(account.address, message);
-      await signClient.respond({
+      await walletConnectWallet.respondSessionRequest({
         topic: topic!,
         response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
@@ -200,10 +213,10 @@ export default function Wallet(): React.ReactElement {
 
   const signTypedData = useCallback(
     async (id: number, data: EIP712TypedData) => {
-      if (!signClient) return;
+      if (!walletConnectWallet) return;
 
       const result = await wallet.signTypedData(account.address, data);
-      await signClient.respond({
+      await walletConnectWallet.respondSessionRequest({
         topic: topic!,
         response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
@@ -214,10 +227,10 @@ export default function Wallet(): React.ReactElement {
 
   const accounts = useCallback(
     async (id: number) => {
-      if (!signClient) return;
+      if (!walletConnectWallet) return;
 
       const result = wallet.getAccounts();
-      await signClient.respond({
+      await walletConnectWallet.respondSessionRequest({
         topic: topic!,
         response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
@@ -228,14 +241,14 @@ export default function Wallet(): React.ReactElement {
 
   const decrypt = useCallback(
     async (id: number, data: string) => {
-      if (!signClient) return;
+      if (!walletConnectWallet) return;
 
       const result = await wallet.decrypt(
         account.address,
         Buffer.from(data, 'hex')
       );
 
-      await signClient.respond({
+      await walletConnectWallet.respondSessionRequest({
         topic: topic!,
         response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
@@ -246,14 +259,14 @@ export default function Wallet(): React.ReactElement {
 
   const computeSharedSecret = useCallback(
     async (id: number, publicKey: string) => {
-      if (!signClient) return;
+      if (!walletConnectWallet) return;
 
       const result = await wallet.computeSharedSecret(
         account.address,
         publicKey
       );
 
-      await signClient.respond({
+      await walletConnectWallet.respondSessionRequest({
         topic: topic!,
         response: { id, result, jsonrpc: Alfajores.rpcUrl },
       });
@@ -266,9 +279,9 @@ export default function Wallet(): React.ReactElement {
     ({
       id,
       params: { request, chainId },
-    }: SignClientTypes.EventArguments['session_request']): void | Promise<void> => {
+    }: Web3WalletTypes.SessionRequest): void | Promise<void> => {
       if (chainId !== `eip155:${Alfajores.chainId}`) {
-        return signClient?.reject({
+        return walletConnectWallet?.rejectSession({
           id,
           reason: getSdkError('UNSUPPORTED_CHAINS'),
         });
@@ -279,7 +292,7 @@ export default function Wallet(): React.ReactElement {
         case SupportedMethods.accounts:
           return setApprovalData({
             accept: () => accounts(id),
-            reject: () => reject(id, `User rejected computeSharedSecret ${id}`),
+            reject: () => reject(id, `User rejected accounts ${id}`),
             meta: {
               title: `Send all accounts of this wallet?`,
               raw: request,
@@ -288,7 +301,7 @@ export default function Wallet(): React.ReactElement {
         case SupportedMethods.signTransaction:
           return setApprovalData({
             accept: () =>
-              signTransaction(id, request.params as TransactionConfig),
+              signTransaction(id, request.params as [TransactionConfig]),
             reject: () => reject(id, `User rejected transaction ${id}`),
             meta: {
               // TODO: Find out how the value can be determined from the payload// eslint-disable-next-line
@@ -362,11 +375,10 @@ export default function Wallet(): React.ReactElement {
   }, [fetchSummary]);
 
   useEffect(() => {
-    if (signClient) return;
+    if (walletConnectWallet) return;
 
-    void SignClient.init({
-      projectId: WALLET_CONNECT_PROJECT_ID,
-      logger: 'debug',
+    void Web3Wallet.init({
+      core,
       metadata: {
         description: 'This is a test-wallet, do not use with real funds',
         url: 'https://react-celo.vercel.app/wallet',
@@ -385,15 +397,14 @@ export default function Wallet(): React.ReactElement {
         });
       });
 
-      signClient = client;
-      if (client.session) {
-        const _session = client.session
-          .getAll()
+      walletConnectWallet = client;
+      if (Object.values(client.getActiveSessions()).length) {
+        const _session = Object.values(client.getActiveSessions())
           .sort((a, b) => b.expiry - a.expiry)
           .find((x) => x.acknowledged && x.expiry * 1000 > Date.now());
 
         if (_session) {
-          await client.extend({
+          await client.extendSession({
             topic: _session.topic,
           });
           setSession(_session);
@@ -404,21 +415,21 @@ export default function Wallet(): React.ReactElement {
   }, [approveConnection, handleNewRequests, rejectConnection]);
 
   useEffect(() => {
-    if (!signClient) return;
-
-    signClient.on('session_request', handleNewRequests);
-    signClient.on('session_delete', async (params) => {
-      await signClient?.session.delete(
-        params.topic,
-        getSdkError('USER_DISCONNECTED')
-      );
+    if (!walletConnectWallet) return;
+    walletConnectWallet.on('session_request', handleNewRequests);
+    walletConnectWallet.on('session_delete', async (params) => {
+      await walletConnectWallet?.disconnectSession({
+        topic: params.topic,
+        reason: getSdkError('USER_DISCONNECTED'),
+      });
     });
     return () => {
-      signClient && signClient.off('session_request', handleNewRequests);
+      walletConnectWallet &&
+        walletConnectWallet.off('session_request', handleNewRequests);
     };
   }, [handleNewRequests]);
 
-  const connected = signClient && session?.peer;
+  const connected = walletConnectWallet && session?.peer;
   return (
     <>
       <Head>
@@ -435,7 +446,7 @@ export default function Wallet(): React.ReactElement {
           style={{
             padding: 10,
             border: '1px solid #aaa',
-            color: signClient ? '#777' : '#000',
+            color: walletConnectWallet ? '#777' : '#000',
           }}
           ref={inputRef}
           type="text"

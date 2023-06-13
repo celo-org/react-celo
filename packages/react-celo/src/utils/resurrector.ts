@@ -79,7 +79,13 @@ export function resurrector(
           network,
           manualNetworkingMode,
           CeloContract.GoldToken,
-          { projectId: dapp.walletConnectProjectId, chainId: network.chainId }
+          {
+            projectId: dapp.walletConnectProjectId,
+            chainId: network.chainId,
+            init: {
+              metadata: { ...dapp, icons: [dapp.icon] },
+            },
+          }
         );
       }
 

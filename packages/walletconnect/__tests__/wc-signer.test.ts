@@ -104,6 +104,7 @@ describe('WalletConnectWallet tests', () => {
     const uri = await wallet.getUri();
     testWallet?.init(uri as string);
     await wallet.init();
+    await wallet.hasSession();
   }, 10000);
 
   afterAll(async () => {

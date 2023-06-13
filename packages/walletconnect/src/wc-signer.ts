@@ -17,15 +17,11 @@ export class WalletConnectSigner implements Signer {
     protected client: Client,
     protected session: SessionTypes.Struct,
     protected account: string,
-    protected chainId: string
+    protected readonly chainId: string
   ) {}
 
   signTransaction(): Promise<{ v: number; r: Buffer; s: Buffer }> {
     throw new Error('signTransaction unimplemented; use signRawTransaction');
-  }
-
-  updateChain(chainId: string) {
-    this.chainId = chainId;
   }
 
   private request<T>(method: SupportedMethods, params: unknown) {
@@ -39,11 +35,20 @@ export class WalletConnectSigner implements Signer {
     });
   }
 
-  signRawTransaction(tx: CeloTx): Promise<EncodedTransaction> {
-    return this.request<CeloTx>(
+  // is this misnamed its not raw ? https://docs.walletconnect.com/2.0/advanced/rpc-reference/ethereum-rpc#eth_sendrawtransaction
+  async signRawTransaction(tx: CeloTx): Promise<EncodedTransaction> {
+    const result = await this.request<EncodedTransaction | string>(
       SupportedMethods.signTransaction,
-      tx
-    ) as Promise<EncodedTransaction>;
+      [tx]
+    );
+
+    // Note: this change was added because wallets can either return an
+    // EncodedTransaction object or just the raw signed tx.
+    // Both should work.
+    if (typeof result === 'string') {
+      return { raw: result } as EncodedTransaction;
+    }
+    return result;
   }
 
   async signTypedData(
