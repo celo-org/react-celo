@@ -505,10 +505,10 @@
     eth-lib "^0.2.8"
     ethereumjs-util "^5.2.0"
 
-"@celo/wallet-walletconnect@5.0.4-beta.1":
-  version "5.0.4-beta.1"
-  resolved "https://registry.npmjs.org/@celo/wallet-walletconnect/-/wallet-walletconnect-5.0.4-beta.1.tgz#bbc7c790645373aa3bb1ba0ac2d7cc853593bb41"
-  integrity sha512-YIfZgbhZDr/77wiZ1REI/fpZOKkUKKgSNVzAOKzlTdl8e83ea/1r/ftK9/8eD7jSegn9N+CGP6SdyBVVeSnGfw==
+"@celo/wallet-walletconnect@5.0.4":
+  version "5.0.4"
+  resolved "https://registry.npmjs.org/@celo/wallet-walletconnect/-/wallet-walletconnect-5.0.4.tgz#7828d0037366d147f7d482a14f5c61050c5d584c"
+  integrity sha512-YQgHRHh+qhsK038UAEXsoEO327kSd4HJshL7WjNjhVH7C5EkUmfXsabEKEI+LfnICDvWU4lGbpRyO9fyMjX5vA==
   dependencies:
     "@celo/connect" ">=2.3.0"
     "@celo/utils" ">=2.3.0"
