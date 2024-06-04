@@ -251,7 +251,7 @@ function App() {
 
 ### Fee currency
 
-While react-celo provides a `feeCurrency` variable and an `updateFeeCurrency` helper method, this isn't the case for rainbowkit. However, rainbowkit also supports `feeCurrency` out of the box thanks to its Celo-specific block and transactions formatters. You can find an advanced example in the [`rainbowkit-celo` package right here](https://rainbowkit-with-celo.vercel.app/fee-currency).
+While react-celo provides a `feeCurrency` variable and an `updateFeeCurrency` helper method, this isn't the case for rainbowkit. However, rainbowkit@2.0+ also supports `feeCurrency` out of the box thanks to its Celo-specific block and transactions formatters. You can find an advanced example in the [`rainbowkit-celo` package right here](https://rainbowkit-with-celo.vercel.app/fee-currency).
 
 ## Further reading
 

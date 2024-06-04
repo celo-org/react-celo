@@ -1,9 +1,10 @@
 # react-celo
 
-(_Formerly known as use-contractkit. [read the upgrade guide](/guides/migrate-to-v4.md)_)
+> [!CAUTION]
+> React-Celo is now in [the end of of its life](forum.celo.org/LINK). Do not use for new projects and please migrate to an alternative by {DATE}. To assist we have created an [example guide for moving to rainbowkit + viem](./migration-notes.md)
+
 
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-org/react-celo/blob/master/LICENSEs)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/celo-org/react-celo/issues)
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![npm version](https://badge.fury.io/js/%40celo%2Freact-celo.png)](https://badge.fury.io/js/%40celo%2Freact-celo)
 [![codecov](https://codecov.io/gh/celo-org/react-celo/branch/master/graph/badge.svg?token=vy6ALIKLwt)](https://codecov.io/gh/celo-org/react-celo)
@@ -31,14 +32,14 @@ yarn add @celo/react-celo @celo/contractkit
 
 ## Supported wallets
 
-- Celo Dance
-- Celo Extension Wallet (Metamask fork)
-- Celo Terminal
-- Celo Wallet
+- ~Celo Dance~
+- ~Celo Extension Wallet (Metamask fork)~
+- ~Celo Terminal~
+- ~Celo Wallet~
 - Ledger
 - MetaMask
 - Plaintext private key
-- [Omni](https://omni.app)
+- ~[Omni](https://omni.app)~
 - Valora
 - WalletConnect
 
