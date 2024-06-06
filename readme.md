@@ -1,7 +1,7 @@
 # react-celo
 
 > [!CAUTION]
-> React-Celo is now in [the end of of its life](forum.celo.org/LINK). Do not use for new projects and please migrate to an alternative by {DATE}. To assist we have created an [example guide for moving to rainbowkit + viem](./migration-notes.md)
+> React-Celo is now in [the end of of its life](https://forum.celo.org/t/celo-react-celo-deprecation-and-intent-sunset-notice/8082). Do not use for new projects and please migrate to an alternative by 2024-09-06. To assist we have created an [example guide for moving to rainbowkit + viem](./migration-notes.md)
 
 
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/celo-org/react-celo/blob/master/LICENSEs)
