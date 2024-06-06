@@ -5,13 +5,13 @@ Hello devs 🌱 this is a migration path away from react-celo, formerly known as
 ## Requirements
 
 ```bash
-npm install @rainbow-me/rainbowkit wagmi viem
+npm install @rainbow-me/rainbowkit@2 wagmi@2 viem@2.x @tanstack/react-query
 ```
 
 Optional recommended packages
 
 ```bash
-npm install @celo/rainbowkit-celo @celo/abis
+npm install @celo/abis
 ```
 
 ## Initialization
@@ -40,39 +40,33 @@ function WrappedApp() {
 
 ```ts
 // rainbowkit
-import celoGroups from '@celo/rainbowkit-celo/lists';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import '@rainbow-me/rainbowkit/styles.css'
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { WagmiProvider, http } from 'wagmi'
 import { celo, celoAlfajores } from 'wagmi/chains';
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 
-const { chains, publicClient } = configureChains(
-  [celo, celoAlfajores],
-  [
-    jsonRpcProvider({
-      rpc: (chain) => ({ http: chain.rpcUrls.default.http[0] }),
-    }),
-  ]
-);
-
-const connectors = celoGroups({
-  chains,
-  projectId: '123',
-  appName: 'My awesome dApp',
-});
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-});
+const config = getDefaultConfig({
+   appName: 'Your app',
+   projectId: 'YOUR_PROJECT_ID',
+   chains: [celo, celoAlfajores],
+   transports: {
+     [celo.id]: http(),
+     [celoAlfajores.id]: http(),
+   },
+ })
 
 function WrappedApp() {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-        <App />
-      <RainbowKitProvider/>
-    </WagmiConfig>
+    <WagmiProvider config={config}>
+       <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
+       {/* Your App */}
+       </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
 ```
@@ -251,7 +245,31 @@ function App() {
 
 ### Fee currency
 
-While react-celo provides a `feeCurrency` variable and an `updateFeeCurrency` helper method, this isn't the case for rainbowkit. However, rainbowkit@2.0+ also supports `feeCurrency` out of the box thanks to its Celo-specific block and transactions formatters. You can find an advanced example in the [`rainbowkit-celo` package right here](https://rainbowkit-with-celo.vercel.app/fee-currency).
+While react-celo provides a `feeCurrency` variable and an `updateFeeCurrency` helper method, this isn't the case for rainbowkit. However, rainbowkit@2.0+ also supports `feeCurrency` out of the box thanks to its Celo-specific block and transactions formatters. 
+
+```tsx
+
+import { useSendTransaction } from 'wagmi'
+
+function App() {
+  const { sendTransaction } = useSendTransaction()
+
+  return (
+    <button
+      onClick={() =>
+        sendTransaction({
+          to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+          value: parseEther('0.01'),
+          feeCurrency: '<USDC TOKEN ADDRESS HERE>'
+        })
+      }
+    >
+      Send transaction
+    </button>
+  )
+}
+
+```
 
 ## Further reading
 
