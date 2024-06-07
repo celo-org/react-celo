@@ -2485,9 +2485,9 @@
     "@types/node" "*"
 
 "@types/ledgerhq__hw-transport-webusb@^4.70.1":
-  version "4.70.1"
-  resolved "https://registry.npmjs.org/@types/ledgerhq__hw-transport-webusb/-/ledgerhq__hw-transport-webusb-4.70.1.tgz"
-  integrity sha512-s+bt/fU5cH7etjLrNRn2LebZZqUL+YHIWciC1T6SUw2kyFpSqQQmjcM81ZrMR/tccQGfYTy3ebrJx9ZK3Mn+HA==
+  version "4.70.4"
+  resolved "https://registry.npmjs.org/@types/ledgerhq__hw-transport-webusb/-/ledgerhq__hw-transport-webusb-4.70.4.tgz#8e1523afff30252a5b9823ea48e3607fbb394c65"
+  integrity sha512-k5mBuAPkhS/DvPkPlaCgHl4zSkOJqMG9htBQ21lggm5IhEwraUuDj0/pYIhA1E9CuquoZ/TEj09s/Jnwt5nU4A==
   dependencies:
     "@types/ledgerhq__hw-transport" "*"
     "@types/node" "*"
