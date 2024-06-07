@@ -521,10 +521,10 @@
     debug "^4.3.3"
     ethereumjs-util "^7.1.3"
 
-"@clabs/packages-publisher@0.0.1-alpha.3":
-  version "0.0.1-alpha.3"
-  resolved "https://registry.npmjs.org/@clabs/packages-publisher/-/packages-publisher-0.0.1-alpha.3.tgz"
-  integrity sha512-ooxBTiRStigZFaGSF4SlAW20t7aA/y22D04QcEN0aAMR3JUFfOZ4CDBw/zZjmt94dbM315I+cfAZF2aJjwyENA==
+"@clabs/packages-publisher@0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@clabs/packages-publisher/-/packages-publisher-0.0.1.tgz#03941b28168633cca418d62db82fd32f940345ae"
+  integrity sha512-0jV7O46XNCEFTbsvtS0NeXvajIlOwGGEZcge4tzeFgDI6eu5Qk+vZ0dorlCK7r7F98My8uX4EpPCEeuK6f4o2A==
   dependencies:
     execa "5.1.1"
     kleur "^4.1.4"
